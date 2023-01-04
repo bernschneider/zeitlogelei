@@ -1,0 +1,30 @@
+/* Zeit Logelei 2014/17
+https://www.zeit.de/2014/17/spiele-logelei-17 */
+import cp.
+
+main ?=>
+  K=1, M=2, R=3, S=4, Z=5, Name = ["Kowalski", "Metzger", "Rutter", "Sin-Yun", "Zöblin"], 
+  Pak = new_list(5), Pak :: [3,4,8,9,12],  all_different(Pak), % Anzahl der Pakete
+  Hnr = new_list(5), Hnr :: [3,6,7,12,14], all_different(Hnr), % Hausnummer
+  Hnr[Z] mod 3 #!= 0, % Die Hausnummer von Zöblins ist nicht durch 3 teilbar.
+  Pak[R] mod 2 #= 1, % Die Bestellmenge von Rutters ist ungerade.
+  Hnr[R] mod 2 #= 1, % Rutters haben auch eine ungerade Hausnummer
+  Pak[S] mod 2 #= 1, % Sin-Yun hat eine ungerade Menge bestellt
+  Pak[Z] #!= 3 * Pak[M], % Zöblin hat nicht dreimal so viel bestellt wie Metzger
+  foreach(I in 1..5)
+      Pak[I] #= 4  #=> Hnr[I] mod 2 #= 1, % Der mit den 4 Paketen hat eine ungerade Hausnummer
+      Pak[I] #= 12 #=> Hnr[Z] #=< Hnr[I], % Zöblins haben keine größere Hausnummer als der mit den 12 Paketen
+      Pak[I] #= 9  #=> Hnr[I] mod 3 #!= 0, % Der mit den 9 Paketen hat eine Hausnummer, die nicht durch 3 teilbar ist.
+      Hnr[I] #= 12 #=> Pak[I] mod 2 #= 1  % Der mit der Hausnummer 12 hat eine ungerade Menge bestellt
+  end,
+  solve(Pak ++ Hnr),
+  foreach(I in 1..5) 
+      printf("%s wohnt in Nr. %d und hat %d Pakete bestellt.%n", Name[I], Hnr[I], Pak[I])
+  end, fail.
+/*
+Kowalski wohnt in Nr. 3 und hat 4 Pakete bestellt.
+Metzger wohnt in Nr. 6 und hat 8 Pakete bestellt.
+Rutter wohnt in Nr. 7 und hat 9 Pakete bestellt.
+Sin-Yun wohnt in Nr. 12 und hat 3 Pakete bestellt.
+Zöblin wohnt in Nr. 14 und hat 12 Pakete bestellt.
+CPU time 0.0 seconds korrekt */

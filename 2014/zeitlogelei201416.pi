@@ -1,0 +1,31 @@
+/* Zeit Logelei 2014/16 Graf Rechteck */
+import sat.
+
+main =>
+   Haus = {{ 0, 0,0,0,8, 0, 0,0, 0,0},
+   		  { 0, 0,0,0,0, 0, 6,0, 0,0},
+   		  { 0, 0,0,8,0, 0, 0,0, 0,0},
+   		  {10, 0,0,0,0, 6, 0,0, 0,4},
+   		  { 0, 0,4,0,0, 0, 0,4, 0,0},
+   		  { 0, 0,0,0,6, 0, 0,0, 0,0},
+   		  { 0,12,0,0,0, 0, 3,0,12,0},
+   		  { 0, 0,0,0,3, 0, 0,0, 0,0},
+   		  { 0, 0,0,0,0, 0,12,0, 0,0},
+   		  { 2, 0,0,0,0, 0, 0,0, 0,0}},
+   NZ = len(Haus), NS = len(Haus[1]), 
+   M = new_array(NZ,NS), M :: 1..15,
+   Cnt = [Haus[Z,S] : Z in 1..NZ, S in 1..NS, Haus[Z,S]>0],
+   foreach(I in 1..15)
+   		sum([(M[Z,S]#=I) : Z in 1..NZ, S in 1..NS]) #= Cnt[I]
+   end,
+   foreach(R1 in 1..NZ, R2 in R1+1..NZ, C1 in 1..NS, C2 in 1..NS, C1!=C2, R in min(R1,R2)..max(R1,R2), C in min(C1,C2)..max(C1,C2))
+		(M[R1,C1] #= M[R2,C2]) #=> (M[R,C] #=  M[R1,C1])
+   end,
+   solve(M),
+   foreach(Z in 1..NZ)
+   	foreach(S in 1..NS)
+   		print(M[Z,S])
+   	end, nl
+   end.
+/* 
+ */

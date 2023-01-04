@@ -1,0 +1,26 @@
+/*
+Zeit Logelei 2014/41
+Seite 1: Erst _Sonnenstrahlen _dünsten, dann _Zigarettenstummel _deglacieren. 
+		Erst Schneckeneier pochieren, dann Brombeeren schälen. 
+		Erst Sonnenstrahlen dünsten, dann Spinnweben vanillieren.
+Seite 2: Erst Spinnweben vanillieren, dann Sonnenstrahlen dünsten. 
+		Erst Schneckeneier pochieren, dann Sonnenstrahlen dünsten. 
+		Erst Spinnweben vanillieren, dann Zigarettenstummel deglacieren.
+Seite 3: Erst Zigarettenstummel deglacieren, dann Sonnenstrahlen dünsten. 
+		Erst Schneckeneier pochieren, dann Zigarettenstummel deglacieren. 
+		Erst Zigarettenstummel deglacieren, dann Brombeeren schälen.
+Derweil lacht sich die Hexe Gabraxa in ihrem Häuschen ins Fäustchen: "Gut, dass ich auf jeder Seite drei Anweisungen aufgeschrieben habe, von denen aber immer nur genau eine richtig ist. Die werden meine Spinnweben-Quiche nie hinbekommen!"
+In welcher Reihenfolge müssen die Arbeitsschritte durchgeführt werden?
+*/
+import cp.
+main =>
+   Actions = [Sd,Zd,Sp,Bs,Sv], Actions :: 1..5, all_different(Actions),
+   (Sd #< Zd) + (Sp #< Bs) + (Sd #< Sv) #= 1, % Lösung: sd < sv
+   (Sv #< Sd) + (Sp #< Sd) + (Sv #< Zd) #= 1, % Lösung: sp < sd
+   (Zd #< Sd) + (Sp #< Zd) + (Zd #< Bs) #= 1, % Lösung: zd < sd
+   solve(Actions), 
+   Name = ["Sd","Zd","Sp","Bs","Sv"],
+	foreach(I in 1..5) printf("%s ", Name[Actions[I]]) end.
+/*Bs Zd Sp Sd Sv 
+Erst Brombeeren schälen, dann Zigarettenstummel deglacieren, dann Schneckeneier pochieren, dann Sonnenstrahlen dünsten und zuletzt Spinnweben vanillieren
+*/

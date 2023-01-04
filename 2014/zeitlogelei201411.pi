@@ -1,0 +1,39 @@
+/* Zeit Logelei 2014/11 Nora lernt Primzahlen
+Nora hat zum Geburtstag neun Klötze bekommen, auf denen die Ziffern 1 bis 9 stehen.
+https://www.zeit.de/2014/11/spiele-logelei-11 */
+import cp.
+main ?=>
+  % Nora nimmt fünf ihrer Klötze, legt daraus eine Zahl M[1] bzw. Num[1].
+  % Sie vertauscht zwei benachbarte Klötze. Das macht sie 4x: M[2..5]
+  M = new_array(5,5), M :: 1..9, % J|K 
+  Num = new_list(5), Num :: 12345..98765,
+  foreach(J in 1..5) 
+    all_different(M[J]), to_num(M[J], Num[J])
+  end,
+  Ix = new_list(4), Ix :: 1..4, % die Indizes, an denen getauscht wird
+  foreach(J in 1..4, K in 1..5) % tausche die Positionen Ix[J] und Ix[J]+1:
+    if K<5 then K #= Ix[J]          #=> M[J+1,K] #= M[J,K+1] end, 
+    if K>1 then K #= Ix[J]+1        #=> M[J+1,K] #= M[J,K-1] end,
+    (K #!= Ix[J] #/\ K #!= Ix[J]+1) #=> M[J+1,K] #= M[J,K] % der Rest bleibt wo er ist
+  end,
+  Num[1] mod 7  #= 0, % die ist durch 7 teilbar
+  Num[2] mod 7  #= 0, % die ist durch 7 teilbar
+  Num[2] mod 5  #= 0, % die ist durch 5 teilbar
+  Num[3] mod 8  #= 0, % die ist durch 8 teilbar
+  Num[4] mod 11 #= 0, % die ist durch 11 teilbar
+  % Die letzte Zahl ist weder durch 2,3,5,7 noch 11 teilbar:
+  foreach(T in [2,3,5,7,11]) Num[5] mod T #!= 0 end,
+  solve(vars(M) ++ Num), 
+  foreach(J in 1..5) 
+      printf("%w%n", Num[J])
+  end, fail.
+/* 
+64295
+64925
+64952
+64592
+64529
+CPU time 0.277 seconds, no more solutions, korrekt */
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).

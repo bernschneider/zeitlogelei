@@ -1,0 +1,20 @@
+/* Zeit Logelei 2014/21 Bis eins zählen
+ */
+import util, sat.
+main =>
+    W = ["eins", "one", "un", "een", "ew", "bat", "bir", "kow", "mot", "huq", "egy", "tahi", 
+         "yksi","wahed", "peyak", "nigen", "kingal", "setunggal", "siji", "atauhiq", "kutjarra"],
+    B = tail(sort_remove_dups(join(W))), N = len(B), % alle verwendeten Buchstaben
+    % Wir erlauben positive und negative Dezimalzahlen mit bis zu 3 Nachkommastellen ..
+    Z = new_list(N), Z :: -3000..3000, % .. und rechnen mit den 1000-fachen Werten. 
+    foreach(Word in W) % Diese addieren sich dann jeweils zu 1000 (statt zu 1):
+       1000 #= sum([Z[find_first_of(B, C)] : C in Word]) 
+    end,
+    solve(Z),
+    foreach(I in 1..N)
+        printf("%c = %2.3f, ", chr(96+I), Z[I]/1000)
+    end.  /* 
+a = 0.875,  b = 1.625,  c = -2.750, d = 0.250,  e = 0.000, f = 1.875, g = -0.250, 
+h = 1.000,  i = 0.000,  j = -0.125, k = 2.250,  l = 0.500, m = 0.250, n = -0.875, 
+o = -1.375, p = -0.375, q = 0.500,  r = -1.500, s = 0.500, t = 0.750, u = 0.750 
+CPU time 8.008 seconds korrekt */  

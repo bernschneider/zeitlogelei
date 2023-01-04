@@ -1,0 +1,17 @@
+/* Zeit Logelei 2015/34 
+Zwei Forscherteams sind dabei, das Alter einer Emuleberzelle zu bestimmen. 
+Verglichen wird das Alter der Leberzelle mit dem Alter einer Herz- und einer Darmzelle */
+import cp.
+main =>
+    Alter = [L,H,D], Alter :: 0..100, [DeltaD, DeltaH] :: 1..100,
+    % Vor drei Jahren war die Leberzelle dreimal so alt, wie die Herzzelle war, als die Darmzelle so alt war, wie die Herzzelle jetzt ist:
+    L - 3 #= 3 * (H - DeltaD), D - DeltaD #= H,
+    % Wenn die Herzzelle so alt sein wird, wie die Darmzelle jetzt ist, dann werden beide zusammen fünfmal so alt sein, wie die Herzzelle jetzt ist:
+    DeltaH #= D - H, (D + DeltaH) + (H + DeltaH) #= 5 * H,
+    solve_all(Alter ++ [DeltaD, DeltaH]) = Sols, 
+    foreach(Sol in Sols) println(leberzelle=Sol[1]) end.
+/*
+leberzelle = 3
+...
+leberzelle = 3
+CPU time 0.005 seconds korrekt */

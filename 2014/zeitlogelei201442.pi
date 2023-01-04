@@ -1,0 +1,157 @@
+/* ZEIT Logelei 2014/ 42
+  Crossfigure problem in Picat.
+% 1 2 3 4 5 6 
+% -----------
+% A B C D|E F  % 1
+% G    |H      % 2
+%     -   -
+% I  |J  |K    % 3
+% -         -
+% L  |M     N  % 4 
+%   -   -
+% O P  |Q      % 5 
+% R  |S        % 6
+*/
+import util.
+import sat.
+import ordset.
+
+main =>
+   Primes = [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97],
+   NoPrimes = subtract(1..99,Primes),
+   Squares = [I*I : I in 1..32], 
+   N = 6,
+   M = new_array(N,N),
+   MVars = array_matrix_to_list(M),
+   MVars :: 0..9,
+
+   AList = [AA,AE,AG,AH,AI,AK,AL,AM,AO,AQ,AR,AS],
+   AList :: 0..9999,
+   DList = [DA,DB,DC,DD,DE,DF,DJ,DK,DL,DN,DP],
+   DList :: 0..9999,
+
+   % Set up the constraints between the matrix elements and the
+   % clue numbers.
+   across(M, AA, 4, 1, 1), 
+   across(M, AE, 2, 1, 5), 
+   across(M, AG, 3, 2, 1), 
+   across(M, AH, 3, 2, 4), 
+   across(M, AI, 4, 3, 1), 
+   across(M, AK, 2, 3, 5), 
+   across(M, AL, 2, 4, 1), 
+   across(M, AM, 4, 4, 3), 
+   across(M, AO, 3, 5, 1), 
+   across(M, AQ, 3, 5, 4), 
+   across(M, AR, 2, 6, 1), 
+   across(M, AS, 4, 6, 3), 
+ 
+   down(M, DA, 3, 1, 1), 
+   down(M, DB, 4, 1, 2), 
+   down(M, DC, 2, 1, 3), 
+   down(M, DD, 4, 1, 4), 
+   down(M, DE, 2, 1, 5), 
+   down(M, DF, 3, 1, 6), 
+   down(M, DJ, 4, 3, 3), 
+   down(M, DK, 4, 3, 5), 
+   down(M, DL, 3, 4, 1), 
+   down(M, DN, 3, 4, 6), 
+   down(M, DP, 2, 5, 2), 
+   down(M, DQ, 2, 5, 4),   
+/*
+Waagerecht:
+A Vielfaches von Q waagerecht E Primzahl G Vielfaches von K waagerecht H Quadratzahl 
+I Quadrat von E waagerecht K Keine Primzahl L Primzahl M A waagerecht plus I waagerecht 
+O Vielfaches des Rückwerts von Q senkrecht Q Quadratzahl R Primzahl S A waagerecht plus M waagerecht
+*/
+   vielfaches(AA, AQ),
+   AE :: Primes,
+   vielfaches(AG, AK),
+   AH :: Squares,
+   AI #= AE * AE,
+   AK :: NoPrimes,
+   AL :: Primes,
+   AM #= AA + AI,
+   RDQ #= M[5,4]+10*M[6,4], % muss sein - sonst gibts einen Instantiation Error, * /2!
+   vielfaches(AO, RDQ),
+   AQ :: Squares,
+   AR :: Primes,
+   AS #= AA + AM,
+
+/*
+Senkrecht:
+A Palindrom B Quadrat von C senkrecht C Primzahl D Palindrom E Primzahl F Quadratzahl 
+J Quadrat von P senkrecht K Vielfaches von Q senkrecht L Vielfaches von E senkrecht N Ungerade 
+P Keine Primzahl Q Primzahl 
+*/ 
+   M[1,1] #= M[3,1], % palindrome(DA),
+   DB #= DC * DC,
+   DC :: Primes,
+   M[1,4] #= M[4,4], M[2,4] #= M[3,4], % palindrome(DD),
+   DE :: Primes,
+   DF :: Squares,
+   DJ #= DP * DP,
+   vielfaches(DK, DQ),
+   vielfaches(DL, DE),
+   ungerade(DN),
+   DP :: NoPrimes,
+   DQ :: Primes,
+ 
+   Vars = MVars ++ AList ++ DList,
+   solve(Vars),
+
+   foreach(I in 1..N) 
+      foreach(J in 1..N) 
+           printf("%d ", M[I,J])
+      end,
+      nl
+   end,
+   nl.
+/*
+3 1 4 6 5 9
+4 8 3 1 9 6
+3 4 8 1 2 1
+2 9 6 6 2 7
+9 9 4 1 2 1
+5 3 9 7 7 3 CPU time 4.802 seconds korrekt */
+/*
+ across(Matrix, Across, Len, Row, Col)
+	Constrains 'Across' to be equal to the number represented by the
+	'Len' digits starting at position (Row, Col) of the array 'Matrix'
+	and proceeding across.
+*/
+across(Matrix, Across, Len, Row, Col) =>
+   Tmp = new_list(Len),
+   Tmp :: 0..9999,
+   to_num(Tmp, Across),
+   foreach(I in 0..Len-1)
+      Matrix[Row,Col+I] #= Tmp[I+1]
+   end.
+
+
+/*
+ down(Matrix, Down, Len, Row, Col):
+	Constrains 'Down' to be equal to the number represented by the
+	'Len' digits starting at position (Row, Col) of the array 'Matrix'
+	and proceeding down.
+*/
+down(Matrix, Down, Len, Row, Col) =>
+   Tmp = new_list(Len),
+   Tmp :: 0..9999,
+   to_num(Tmp, Down),
+   foreach(I in 0..Len-1)
+      Matrix[Row+I,Col] #= Tmp[I+1]
+   end.
+
+	
+to_num(List, Num) => 
+  to_num(List, 10, Num).
+
+to_num(List, Base, Num) =>
+        Len = length(List),
+        Num #= sum([List[I]*Base**(Len-I) : I in 1..Len]).
+
+vielfaches(X,Y) =>
+	X mod Y #= 0.
+
+ungerade(X) =>
+	X mod 2 #= 1.

@@ -1,0 +1,40 @@
+/*
+Zeit Logelei 2015/02
+Nullsi: "Einsi ist ein Schrimpf." 
+Einsi: "Dreisi ist ein Schrimpf." 
+Zweisi: "Viersi ist ein Schrimpf." 
+Dreisi: "Sechsi ist ein Schrimpf." 
+Viersi: "Siebsi ist ein Schrimpf." 
+Fünfsi: "Neunsi ist ein Schrimpf." 
+Sechsi: "Zweisi ist ein Schrimpf." 
+Siebsi: "Achtsi ist ein Schrimpf." 
+Achtsi: "Fünfsi ist ein Schrimpf."
+An dieser Stelle brummt Knusi genervt: "Wenn ihr so weitermacht, bekomme ich ja nie raus, wer von euch zu welcher Volksgruppe gehört!" 
+Daraufhin Neunsi: "Nullsi und Sechsi gehören unterschiedlichen Volksgruppen an." 
+Wer ist was?
+*/
+import cp.
+main => go.
+go =>
+   N = new_list(10), % Nullsi = 10, Einsi = 1, Zweisi = 2 usw.
+   N :: 0..1,
+
+   N[10] #!= N[1],
+   N[1] #!= N[3],
+   N[2] #!= N[4],
+   N[3] #!= N[6],
+   N[4] #!= N[7],
+   N[5] #!= N[9],
+   N[6] #!= N[2],
+   N[7] #!= N[8],
+   N[8] #!= N[5],
+   N[9] #= (N[10] #!= N[6]),
+
+   solve(N),
+   foreach (I in 1..10)
+	if N[I]=1 then printf("%d ",I)
+	end
+   end,
+   print("sind Wachse, die übrigen Schrimpfe.").
+/* 1 4 6 8 9 sind Wachse, die übrigen Schrimpfe. 
+ZEIT: Wachse sind Einsi, Viersi, Sechsi, Achtsi und Neunsi. Die anderen sind Schrimpfe */

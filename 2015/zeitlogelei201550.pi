@@ -1,0 +1,41 @@
+/* Zeit Logelei 2015/50 */
+import cp.
+
+go1 =>
+   Vars = [A,D,V,E,N,T,M],
+   Vars :: 0..9,
+   all_different(Vars),
+   to_num([A,D,V,E,N,T], ADVENT), to_num([T,A,N,D,E,M], TANDEM),      
+   A #!= 0, T #!= 0, 
+   ADVENT + ADVENT #= TANDEM,
+   solve(Vars),
+   printf("%d\n",ADVENT), 
+   printf("%d\n",ADVENT), 
+   print("------\n"),
+   print(TANDEM). 
+/* 318576
+   318576
+   ------
+   637152 */
+   
+go2 =>
+   Vars = [T,A,N,D,E,M,L],
+   Vars :: 0..9,
+   all_different(Vars),
+   to_num([D,A,T,T,E,L], DATTEL), to_num([T,A,N,D,E,M], TANDEM),      
+   D #!= 0, T #!= 0, 
+   TANDEM + TANDEM #= DATTEL,
+   solve(Vars),
+   printf("%d\n",TANDEM), 
+   printf("%d\n",TANDEM), 
+   print("------\n"),
+   print(DATTEL). 
+/* 301697
+   301697
+   ------
+   603394 */
+
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).
+

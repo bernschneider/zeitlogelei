@@ -1,0 +1,33 @@
+/* Zeit Logelei 2015/22 redundant */
+import cp.
+
+main =>
+   Ahmed = 1, _Hassan = 2, Mohammed = 3, Yussuf = 4,
+   Syrien = 1, Libyen = 2, Tunesien = 3, Sudan = 4,
+   NL  = new_list(4), NL :: 1..4,  all_different(NL),		 % Land -> Name
+   WN = new_list(4), WN :: [2, 4, 8, 16], all_different(WN), % Name -> Wochen
+   WL = new_list(4), WL :: [2, 4, 8, 16], all_different(WL), % Land -> Wochen
+   % Schaffe Konsistenz der drei Listen:
+   foreach(L in 1..4)   	
+   	element(NL[L], WN, WL[L])
+   end,
+   WN[Mohammed] #> 4,
+   NL[Tunesien] #!= Ahmed,
+   WN[Ahmed] #= 2 * WL[Syrien],
+   WL[Tunesien] #!= 8,
+   Yussuf #!= NL[Syrien],
+   WN[Ahmed] #!= 8, WN[Mohammed] #!= 8,
+   WL[Libyen] #!= 2 * WL[Sudan],
+
+   solve(WN ++ WL ++ NL),
+
+   Name = ["Ahmed", "Hassan", "Mohammed", "Yussuf"],
+   Land = ["Syrien", "Libyen", "Tunesien", "Sudan"],
+   foreach(L in 1..4)
+	 printf("%s kommt aus %s und war %i Wochen unterwegs.\n", Name[NL[L]], Land[L], WL[L]) 
+   end.
+/*
+Hassan kommt aus Syrien und war 2 Wochen unterwegs.
+Ahmed kommt aus Libyen und war 4 Wochen unterwegs.
+Mohammed kommt aus Tunesien und war 16 Wochen unterwegs.
+Yussuf kommt aus Sudan und war 8 Wochen unterwegs. korrekt */

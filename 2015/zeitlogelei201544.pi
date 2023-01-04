@@ -1,0 +1,50 @@
+/* Zeit Logelei 2015/44 */
+import util, cp.
+
+main => 
+   R = 1, L = 2, O = 3, P = 4, B = 5, G = 6, F = 7, % Farben Rot, Lila, Orange, Pink, Blau, Gelb, F = Fähigkeit (schwarz)
+   % Waben: Zeilen horizontal, Spalten diagonal = /, die Matrix ist aufgefüllt mit Nullen:
+   M = {{R,_,L,_,0,0,0}, 
+		{O,F,P,F,B,0,0},
+		{_,_,_,_,_,_,0},
+		{_,F,_,F,_,F,G},
+		{0,G,L,_,_,_,O},
+		{0,0,_,F,R,F,P},
+		{0,0,0,_,B,G,_}},
+   MVars = array_matrix_to_list(M),
+   MVars :: 0..7,
+   Templ = {{1,1,1,1,0,0,0}, % 1 = echte Farbe, F = Fähigkeit (schwarz)
+   			{1,F,1,F,1,0,0},
+   			{1,1,1,1,1,1,0},
+			{1,F,1,F,1,F,1},
+   			{0,1,1,1,1,1,1},
+			{0,0,1,F,1,F,1},
+  			{0,0,0,1,1,1,1}},
+   foreach(Z in 1..7, S in 1..7, Templ[Z,S]=1) % wo eine 1 steht ...
+   		M[Z,S] #!= 0, M[Z,S] #!= F             % ... muss eine echte Farbe hin!
+   end,
+   foreach(Z in 2..6, S in 2..6, Templ[Z,S]=F) % wo eine Fähigkeit steht ...
+   		Neib #= [M[Z1,S1] : (Z1,S1) in [(Z-1,S-1), (Z-1,S), (Z,S-1), (Z,S+1), (Z+1,S), (Z+1,S+1)] ],
+   		all_different(Neib),  % ... gruppieren sich alle 6 Farben drum herum!
+   		foreach(I in 1..5)
+   			Neib[I] #!= Neib[I+1]  % dabei sind benachbarte Farben verschieden!
+   		end,
+   		Neib[6] #!= Neib[1] 
+   end,
+   % benachbarte Farben sind verschieden - auch dort wo es um verschiedene Fähigkeiten geht:
+   M[2,1] #!= M[3,1], M[2,5] #!= M[3,6], M[5,2] #!= M[6,3], M[5,7] #!= M[6,7], M[1,2] #!= M[1,3], M[7,5] #!= M[7,6], 
+   solve(MVars),
+   Farbe = [' ', 'R', 'L', 'O', 'P', 'B', 'G', '*'],
+   foreach(Z in 1..7) 
+      foreach(S in 1..7) 
+           printf(" %c", Farbe[1+M[Z,S]])
+	  end, nl
+   end.
+/* 
+ R G L O      
+ O * P * B    
+ P B L G R P  
+ O * R * B * G
+   G L P O L O
+     O * R * P
+       G B G B CPU time 0.001 seconds korrekt */

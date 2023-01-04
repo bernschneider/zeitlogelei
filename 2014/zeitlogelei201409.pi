@@ -1,0 +1,33 @@
+/* Zeit Logelei 2014/09 Schifffahrtsmuseum von Bannebüddel
+https://www.zeit.de/2014/09/spiele-logelei-09 */
+import cp.
+
+main ?=>
+  S=1, G=2, W=3, D=4, 
+  Name = ["Der Schoner", "Die Galere", "Der Windjammer", "Die Dschunke"], 
+  Lae = new_list(4), Lae :: [25,27,30,33], all_different(Lae), % Länge der Schiffe
+  Tfg = new_list(4), Tfg :: 1..4,          all_different(Tfg), % Tiefgang
+  Lae[G] #> Lae[S], % Die Galeere ist länger als der Schoner. 
+  foreach(I in 1..4, J in 1..4, I!=J)
+    (Lae[I] #= 25 #/\ Lae[J] #= 27) #=> Tfg[I] #> Tfg[J] % Das kürzeste Schiff hat einen größeren Tiefgang als das Schiff, das 27 Meter lang ist. 
+  end,
+  Tfg[G] #> Tfg[S], % Die Galeere hat einen größeren Tiefgang als der Schoner. 
+  Lae[W] #!= 25, Tfg[W] #!= 3, % Der Windjammer ist weder das 25-Meter-Schiff, noch hat er einen Tiefgang von 3 Metern. 
+  Tfg[D] #!= 4, Lae[D] #!= 33, % Die Dschunke hat weder einen Tiefgang von 4 Metern, noch ist sie 33 Meter lang. 
+  Tfg[S] #!= 3, Tfg[D] #!= 3, % Weder Schoner noch Dschunke haben einen Tiefgang von 3 Metern. 
+  Lae[G] #!= 27, Lae[W] #!= 27, % Weder Galeere noch Windjammer sind 27 Meter lang. 
+  Tfg[D] #= 2 #=> Lae[S] #= 25, % Wenn die Dschunke einen Tiefgang von 2 Metern hat, dann ist das 25-Meter-Schiff der Schoner. 
+  foreach(I in 1..4)
+    (Lae[I] #= 30 #/\ Tfg[I] #= 4) #=> Tfg[D] #= 1, % Wenn das 30-Meter-Schiff 4 Meter Tiefgang hat, dann hat die Dschunke einen Tiefgang von 1 Meter. 
+    (Lae[I] #= 33 #/\ Tfg[I] #= 3) #=> Lae[G] #= 30 % Wenn das längste Schiff 3 Meter Tiefgang hat, dann ist die Galeere 30 Meter lang.
+  end,
+  solve(Lae ++ Tfg),
+  foreach(I in 1..4) 
+      printf("%s ist %dm lang und hat einen Tiefgang von %dm%n", Name[I], Lae[I], Tfg[I])
+  end, fail.
+/*
+Der Schoner ist 25m lang und hat einen Tiefgang von 2m
+Die Galere ist 30m lang und hat einen Tiefgang von 3m
+Der Windjammer ist 33m lang und hat einen Tiefgang von 4m
+Die Dschunke ist 27m lang und hat einen Tiefgang von 1m
+CPU time 0.001 seconds, no more solutions, korrekt */

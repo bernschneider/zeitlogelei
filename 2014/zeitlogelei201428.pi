@@ -1,0 +1,61 @@
+/* Zeit Logelei 2014/28 (nach tetromino_template.pi)
+https://www.zeit.de/2014/28/spiele-logelei-28 */
+import sat. 
+main =>  
+   Geb = {{1,1,1,1,1,1,10,10,10},
+          {1,4,4,4,4,1,10,10,10},
+          {2,2,4,4,4,4, 4,10,10},
+          {2,2,2,4,7,7, 4, 4,11},
+          {2,5,5,7,7,8, 9, 9,11},
+          {2,6,5,7,8,8, 8, 9,11},
+          {3,6,5,5,5,8, 8, 9,11},
+          {3,6,6,6,5,5, 9, 9,11},
+          {3,3,3,6,6,9, 9,11,11}}, 
+   Ts = 11, N = len(Geb), M = new_array(N,N), M :: 0..Ts, % 0 = Leerfeld
+   foreach(F in 1..Ts)
+        foreach(Z in 1..N, S in 1..N, Geb[Z,S]=F) M[Z,S] :: [0,F] end, % Tetromino F liegt im Gebiet F ..
+   		4 #= sum([(M[Z,S]#=F) : Z in 1..N, S in 1..N, Geb[Z,S]=F])     % .. und enthält 4 Wohneinheitem
+   end,
+   Typ = new_list(1+Ts), Typ :: 0..5, Mt = new_array(N,N), Mt :: 0..5, Typ[1] #= 5, % I=0, O=1, L=2, T=3, S=4, Leer=5
+   foreach(Z in 1..N, S in 1..N) I #= 1 + M[Z,S], element(I, Typ, Mt[Z,S]) end,
+   ONb = new_array(N,N), ONb :: 0..4, % Zahl der orthogonalen Nachbarn gleicher Farbe (ein Leerfeld kann 4 Nachbarn haben!)
+   DNb = new_array(N,N), DNb :: 0..1, % .. sowie DNb für die Existenz von diagonalen Nachbarn
+   foreach(Z in 1..N, S in 1..N)
+   		F #= M[Z,S],
+   		ONb[Z,S] #= sum([(M[Z1,S1] #= F): {Z1,S1} in [{Z-1,S},{Z,S-1},{Z,S+1},{Z+1,S}], Z1 > 0, Z1 =< N, S1 > 0, S1 =< N]),
+   		DNb[Z,S] #= (sum([(M[Z1,S1] #= F): {Z1,S1} in [{Z-1,S-1},{Z-1,S+1},{Z+1,S-1},{Z+1,S+1}], Z1 > 0, Z1 =< N, S1 > 0, S1 =< N]) #> 0)
+   end,
+   % "O"-Tetrominos (O=1) haben in der Summe 8 orthogonale Nachbarn, die anderen 6:
+   foreach(F in 1..Ts)
+        SumONb #= sum([ONb[Z1,S1] * (M[Z1,S1]#=F): Z1 in 1..N, S1 in 1..N]), SumONb :: [6,8], 
+        SumDNb #= sum([DNb[Z1,S1] * (M[Z1,S1]#=F): Z1 in 1..N, S1 in 1..N]), SumDNb :: 0..4, % die 4 ist für die Leerfelder
+   		Typ[1+F] #= 1      #<=> SumONb #= 8, % O=1
+   		Typ[1+F] #= SumDNb #<=> SumONb #= 6  % I=0, L=2, T=3, S=4
+   end,   
+   % kein 2x2-Bereich komplett bebaut:
+   foreach(Z in 1..N-1, S in 1..N-1) M[Z,S] #= 0 #\/ M[Z,S+1] #= 0 #\/ M[Z+1,S] #= 0 #\/ M[Z+1,S+1] #= 0 end,
+   % Grenzen zwei Blocks aneinander, so dürfen diese nicht dieselbe Form haben:
+   foreach(Z in 1..N, S in 1..N-1) (Mt[Z,S] #< 5 #/\ Mt[Z,S] #= Mt[Z,S+1]) #=> M[Z,S] #= M[Z,S+1] end,
+   foreach(Z in 1..N-1, S in 1..N) (Mt[Z,S] #< 5 #/\ Mt[Z,S] #= Mt[Z+1,S]) #=> M[Z,S] #= M[Z+1,S] end,
+   % Alle Wohneinheiten müssen zusammenhängen:
+    Dist = new_array(N,N), DistVars = vars(Dist), MaxDist = 4 * Ts + 1, Dist :: 0..MaxDist,
+    Dist[5,4] #= 0, % Root (Hier muss ein Block sein, weil sonst kein Tetromino in das Gebiet passt.)
+    foreach(Z in 1..N, S in 1..N, (Z,S)!=(5,4))
+   	  	 M[Z,S] #> 0 #=> Dist[Z,S] #= 1 + min([ Dist[Z1,S1]*(M[Z1,S1] #> 0)+MaxDist*(M[Z1,S1] #= 0)
+   	  	                                        : (Z1,S1) in [(Z-1,S),(Z,S-1),(Z,S+1),(Z+1,S)], Z1 >= 1, Z1 =< N, S1 >= 1, S1 =< N])
+    end,
+   solve(Typ ++ vars(M) ++ vars(Mt) ++ vars(ONb) ++ vars(DNb) ++ DistVars), println(Typ), Code = "IOLTS",
+   foreach(Z in 1..N, S in 1..N) 
+		if M[Z,S]=0 then print("   |") else printf("%2d%c|", M[Z,S], Code[1 + Mt[Z,S]]) end, if S = N then nl end
+   end.
+/*                                      ZEIT:
+   |   |   | 1L| 1L| 1L|   |   |   |    +++XXX+++
+   |   |   | 4T|   | 1L|10S|10S|   |    +++X+XXX+
+ 2I|   | 4T| 4T| 4T|   |   |10S|10S|    X+XXX++XX
+ 2I|   |   |   | 7S| 7S|   |   |11I|    X+++XX++X
+ 2I| 5L| 5L| 7S| 7S|   |   |   |11I|    XXXXX+++X
+ 2I|   | 5L|   | 8T| 8T| 8T|   |11I|    X+X+XXX+X
+ 3L|   | 5L|   |   | 8T|   | 9S|11I|    X+X++X+XX
+ 3L|   | 6S| 6S|   |   | 9S| 9S|   |    X+XX++XX+
+ 3L| 3L|   | 6S| 6S|   | 9S|   |   |    XX+XX+X++
+CPU time 82 seconds korrekt */

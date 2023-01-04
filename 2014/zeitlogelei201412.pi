@@ -1,0 +1,41 @@
+/* Zeit Logeleo 2014/12 (nach Janko ABC Kombi Nr. 1)
+https://www.zeit.de/2014/12/spiele-logelei-12 */
+import util.
+import sat. 
+
+go =>  
+   Rlabels = 
+	{{_,_,4,_,3,_,0},
+	 {_,1,_,0,_,_,_},
+	 {_,_,0,_,1,_,_},
+	 {_,2,_,3,_,4,_}},
+	Clabels =
+	{{_,_,_,3,_,3,2},
+	 {1,2,3,2,_,_,_},
+	 {3,1,_,_,_,_,3},
+	 {_,_,3,1,_,1,1}},
+   Cnt = len(Rlabels), N = len(Rlabels[1]), println([Cnt, N]),
+   M = new_array(N,N), M :: 1..Cnt, Mtrans = transpose(M), Mvars = array_matrix_to_list(M),
+   % Die Zahlen am oberen und linken Rand des Diagramms geben an, wie oft welcher Buchstabe in der jeweiligen Zeile bzw. Spalte vorkommt:
+   foreach(Lbl in 1..Cnt, I in 1..N)
+   		exactly(Rlabels[Lbl, I], M[I],      Lbl), 
+   		exactly(Clabels[Lbl, I], Mtrans[I], Lbl) 
+   end,
+   % Orthogonal benachbarte Felder dürfen nicht den gleichen Buchstaben enthalten:
+   foreach(Z in 1..N, S in 1..N-1) M[Z,S] #!= M[Z,S+1] end,   
+   foreach(Z in 1..N-1, S in 1..N) M[Z,S] #!= M[Z+1,S] end,   
+   solve(Mvars),
+   foreach(Z in 1..N) 
+      foreach(S in 1..N) 
+		 printf("%c|",chr(64 + M[Z,S]))
+	  end, nl
+   end.
+/* 
+B|A|D|B|A|C|B|
+C|D|B|A|D|A|C|
+A|B|A|B|A|B|A|
+D|C|D|A|D|A|C|
+C|A|B|D|A|B|A|
+D|B|D|A|D|A|D|
+C|D|B|C|B|D|C|
+CPU time 0.161 seconds korrekt */

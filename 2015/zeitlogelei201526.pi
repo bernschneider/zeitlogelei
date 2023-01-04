@@ -1,0 +1,33 @@
+/* Zeit Logelei 2015/26  */
+import cp.
+
+main =>
+   Vars = [B,D,E,G,I,L,N,S,W,Y],
+   Vars :: 0..9,
+   all_different(Vars),
+   to_num([W,E,G], WEG), to_num([S,Y,D,N,E,Y], SYDNEY),      
+   to_num([S,G,L,W], SGLW), to_num([D,E,L,E], DELE), to_num([G,D,E,Y], GDEY), 
+   B #!= 0, W #!= 0, S #!= 0,
+   % Schriftliche Multiplikation:
+   B * WEG #= SGLW, I * WEG #= DELE, N * WEG #= GDEY,
+   SGLW * 100 + DELE * 10 + GDEY #= SYDNEY,
+   solve(Vars),
+   printf("%d%d%d * %d\n", B,I,N, WEG), 
+   print("---------\n"),
+   printf("%d\n",      SGLW),  
+   printf(" %d\n",     DELE),  
+   printf("  %d\n",    GDEY),  
+   print("---------\n"),
+   printf("%d\n",      SYDNEY).
+/*  953 * 802
+	---------
+	7218
+	 4010
+	  2406
+	---------
+	764306
+*/
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).
+

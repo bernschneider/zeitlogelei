@@ -1,0 +1,48 @@
+/* Zeit Logelei 2015/04 */
+import cp, util.
+main =>
+    Board = [[4, _, _, _, 3],
+    	     [_, _, _, _, _],
+    	     [_, _, _, _, _],
+    	     [_, _, _, _, _],
+    	     [4, _, _, _, 3]],
+    Vars = array_matrix_to_list(Board),
+    Vars :: 1..4,
+
+   	Sets  = [					% Jeder Pfeil bezeichnet eine Menge von Matrix-Elementen:
+			 [[(1,I) : I in 2..5], [(1,1)], [(1,I) : I in 1..5, I != 3], [(J,4) : J in 2..5], [(I,6-I) : I in 2..5]],
+			 [[(I,1) : I in 1..5, I != 2], [(I,2) : I in 1..5, I != 2], [(2,I) : I in 1..5, I != 3], [(2,I) : I in 1..5, I != 4], [(I,5) : I in 1..5, I != 2]],
+			 [[(4,1),(5,1)], [(4,2),(5,2)], [(4,4),(5,5)], [(1,2),(2,3),(4,5)], [(4,4),(5,3)]],  
+			 [[(I,5-I) : I in 1..3], [(5,1)], [(5,2),(3,4),(2,5)], [(4,I) : I in 1..5, I != 4], [(I,5) : I in 1..5, I != 4]],
+			 [[(J,1) : J in 1..4], [(5,I) : I in 1..5, I != 2], [(5,4),(5,5)], [(5,I) : I in 1..5, I != 4], [(I,I) : I in 1..4]]
+ 			],
+    foreach(I in 1..5)
+    	foreach(J in 1..5)
+	    	L = [ Board[Z,S] : (Z,S) in Sets[I,J] ], % L = Menge der Zahlen, auf die der Pfeil an Position I,J zeigt 
+	    	nvalue(Board[I,J],L)                     % an Position I,J steht, wie viele Elemente die Menge L hat
+	    end
+	end,	
+	solve_all(Vars) = Sols,
+	println(sols=len(Sols)),
+	foreach(Sol in Sols)
+    	print_board(Sol)
+    end.
+/*  4  1  4  2  3
+    3  3  2  2  2
+    2  2  2  2  2
+    1  1  2  2  2
+    4  3  1  3  3 CPU time 0.007 seconds korrekt
+Zeilenweise: 41423, 33222, 22222, 11222, 43133 */
+nvalue(N, X) => 							% N = Zahl der verschiedenen Elemente von X
+   Len = length(X),
+   N #= sum([ (sum([ (X[J] #= I) : J in 1..Len]) #> 0) : I in 1..4]).
+
+print_board(Sol) =>
+   N = 5,
+   foreach(I in 1..N)
+      foreach(J in 1..N)
+         X = Sol[5*(I-1)+J],
+		 printf("  %w", X)
+      end,
+      nl
+   end.

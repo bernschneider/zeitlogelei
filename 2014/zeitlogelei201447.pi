@@ -1,0 +1,67 @@
+/* Zeit Logelei 2014/47 */
+import util, sat.
+
+main =>
+   N = 7, Max = 6,   % 7 Zeilen x 7 Spalten, Ziffern von 0..6
+   SigZ = [[6,13], [4,12], [3,7,6], [5,2,10], [3,6,8], [9,4,2], [18,3]],
+   SigS = [[6,15], [5,11], [4,16], [8,2], [14,7], [5,7], [21]],
+   Board = new_array(N, N),
+   Boardvars = array_matrix_to_list(Board),
+   Boardvars :: 0..Max,  
+   foreach(Row in rows(Board))
+		all_different_except_0(Row)
+   end,
+   foreach(Col in columns(Board))
+		all_different_except_0(Col)
+   end,
+   CumZ = new_array(N,N+1),   % zeilenweise kumulierte Summen, rechts 0 als Begrenzung
+   CumZvars = vars(CumZ),
+   foreach(Z in 1..N)
+        CumZ[Z,1] #= Board[Z,1], CumZ[Z,N+1] #= 0,     % rechts 0 als Begrenzung
+		foreach(S in 2..N)
+			Board[Z,S] #> 0 #=> CumZ[Z,S] #= CumZ[Z,S-1] + Board[Z,S], % kumulieren!
+			Board[Z,S] #= 0 #=> CumZ[Z,S] #= 0  % bei 0 zurücksetzen!
+		end,
+   		signature(N, Max, L, SigZ[Z]),   % die Zeilensignatur stimmt!
+   		L = [CumZ[Z,S] : S in 1..N+1]
+   end,
+   CumS = new_array(N+1,N),   % spaltenweise kumulierte Summen (analog zu oben, unten eine 0 extra)
+   CumSvars = vars(CumS),
+   foreach(S in 1..N)
+        CumS[1,S] #= Board[1,S], CumS[N+1,S] #= 0,
+		foreach(Z in 2..N)
+			Board[Z,S] #> 0 #=> CumS[Z,S] #= CumS[Z-1,S] + Board[Z,S],
+			Board[Z,S] #= 0 #=> CumS[Z,S] #= 0
+		end,
+   		signature(N, Max, L, SigS[S]),  % die Spaltensignatur stimmt!
+   		L = [CumS[Z,S] : Z in 1..N+1]
+   end,
+   solve([ff,down], Boardvars ++ CumZvars ++ CumSvars),
+   print_board(Board).
+   /*    6 0 4 1 5 3 0
+		 0 4 0 3 6 2 1
+		 2 1 0 4 3 0 6
+		 5 0 2 0 0 6 4
+		 3 0 6 0 2 1 5
+		 1 5 3 0 4 0 2
+		 4 6 5 2 1 0 3    CPU time 0.65 seconds */
+
+signature(N, Max, L, Sig) =>     % berechnet L aus Sig!
+	L = new_list(N+1), L :: 0..Max*(Max+1) div 2, L[N+1] #= 0,
+	Len = len(Sig),
+    Idx = new_list(Len), Idx :: 2..N+1,  % Indices der End-0er (N+1 heißt "Rand")
+	foreach(J in 1..Len)
+	    if J<Len then Idx[J] #< Idx[J+1] end, % ... sind aufsteigend
+    	I1 #= Idx[J], element(I1,L,0),        % I1 zeigt auf die 0
+    	I11 #= I1-1,  element(I11,L,Sig[J])   % I1-1 zeigt auf die jeweilige Summe in der Signatur
+    end.
+    
+print_board(Board) =>
+   N = Board.length,
+   foreach(I in 1..N)
+      foreach(J in 1..N)
+         printf(" %1d", Board[I,J])
+      end,
+      nl
+   end,
+   nl.

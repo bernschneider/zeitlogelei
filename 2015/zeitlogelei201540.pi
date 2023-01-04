@@ -1,0 +1,51 @@
+/* Zeit Logelei 2015/40 */
+import util, sat.
+main =>
+   F = 1, W = 2, % F=Gas-, W=Wasseranschluss
+   A = {{F,W,0,W,0,F,0},
+		  {0,F,0,0,W,W,W},
+		  {F,W,0,0,F,W,0},
+		  {F,0,0,0,F,0,F},
+		  {W,0,0,W,0,0,F},
+		  {0,F,F,F,0,W,W},
+        {0,0,W,0,0,W,0}}, N = len(A),
+   % Baue 12 L-förmige Häuserblocks zu je 4 Feldern!
+   M = new_array(N,N),
+   MVars = array_matrix_to_list(M),
+   MVars :: 0..12,
+   foreach(I in 1..12) count(I, MVars, 4) end,
+   count(0, MVars, 1), % genau ein Feld wird ein Park
+   DNb = new_array(N,N), DNb :: 0..1, % hat diagonalen Nachbar
+   % Alle Häuserblöcke müssen einen einzigen orthogonal zusammenhängenden Bereich Bereich bilden:
+   Dist = new_array(N,N), DistVars = vars(Dist), MaxDist = N * N // 2, Dist :: 0..MaxDist,
+   Gm = 0,
+   foreach(Z in 1..N, S in 1..N)
+   	 DNb[Z,S] #= (sum([(M[Z1,S1] #= M[Z,S]): {Z1,S1} in [{Z-1,S-1},{Z-1,S+1},{Z+1,S-1},{Z+1,S+1}], Z1 > 0, Z1 =< N, S1 > 0, S1 =< N]) #> 0),
+     if A[Z,S]=F 
+         then % Jeder Block muss genau einen Gasanschluss haben -> Root:
+            Dist[Z,S] #= 0, Gm := Gm + 1, M[Z,S] #= Gm
+         else
+   	  	   M[Z,S] #> 0 #=> Dist[Z,S] #= 1 + min([ Dist[Z1,S1]*(M[Z,S]#=M[Z1,S1])+MaxDist*(M[Z,S]#!=M[Z1,S1])
+   	  	    : (Z1,S1) in [(Z-1,S),(Z,S-1),(Z,S+1),(Z+1,S)], Z1 >= 1, Z1 =< N, S1 >= 1, S1 =< N])
+     end
+   end,
+   foreach(G in 1..Gm) % alle Häuserblocks haben L-Form, also genau 2 Felder mit diagonalen Nachbarn:
+        sum([DNb[Z,S]*(M[Z,S]#=G) : Z in 1..N, S in 1..N]) #= 2
+   end,
+   % Jeder Block muss genau einen Wasseranschluss haben:
+   all_different([ M[R,C] : R in 1..7, C in 1..7, A[R,C] = W ]),
+   solve(MVars ++ vars(DNb) ++ DistVars), Ans = " gw",
+   foreach(Z in 1..N) 
+      foreach(S in 1..N) 
+           printf("%c%c|",chr(64+M[Z,S]), Ans[1+A[Z,S]])
+	  end, nl
+   end.
+/*
+Ag|Aw|A |Cw|B |Bg|B |
+A |Cg|C |C |Bw|@w|Hw|
+Dg|Dw|D |E |Eg|Ew|H |
+Fg|F |D |E |Gg|H |Hg|
+Fw|J |J |Jw|G |I |Ig|
+F |Jg|Kg|Lg|G |Gw|Iw|
+K |K |Kw|L |L |Lw|I |
+CPU time 11.092 seconds korrekt */

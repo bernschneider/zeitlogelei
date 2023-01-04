@@ -1,0 +1,25 @@
+% ZEIT Logelei 2014/ 45
+
+import cp.
+
+go1 =>
+   Vars = [F, C, M],
+   Vars :: 1..99,
+   F + 2 #= 2*(C + 2),
+   M - 4 #= 2*(F + 3),
+   F + M #= C * C,
+   solve(Vars),
+   print(Vars).
+% [F, C, M] 
+% [18,8,46]
+go2 =>
+   Vars = [E, H],
+   Vars :: 1..99,
+   E + (E - H) #= 3*(H - (E - H)),
+   Squares = [I*I : I  in 1..14], % Squares in 1..200
+   Sum :: Squares,
+   Sum #= H + E,
+   solve_all(Vars) = Sols,
+   print(Sols).
+%  [Enkel] [E, H] 
+% [[21,15],[84,60]]

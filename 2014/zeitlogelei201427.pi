@@ -1,0 +1,59 @@
+/* ZEIT Logelei 2014/27: Nachfahren von Oma Frieda */
+import cp.
+main ?=>
+    Cordula=1, Elisabeth=2, Evelyn=3, Gundula=4, Katrin=5, Margrit=6, Sonja=7, Tina=8, Vanessa=9, 
+    N = 9, Nf = new_array(N,N), Nf :: 0..1, % Nf[I,J] = 1 <=> I ist Nachfahre von J
+    Cnt = new_list(N), Cnt :: 0..3, % Generation, d.h. Zahl der Vorfahren
+    foreach(I in 1..N) Cnt[I] #= sum(Nf[I]) end, 
+    foreach(I in 1..N) Nf[I,I] #= 0 end, % keine ist Nachfahre von sich selbst!
+    foreach(I in 1..N, J in 1..N, I!=J) Nf[I,J] #= 1 #=> Nf[J,I] #= 0 end, 
+    foreach(I in 1..N, J in 1..N, K in 1..N, I!=J, K!=J, K!=I)
+        % Nachfahre ist transitiv:
+        (Nf[I,J] #/\ Nf[J,K]) #=> Nf[I,K], 
+        % Wenn J und K aus der gleichen Generation sind, dann haben sie keinen gemeinsamen Nachfahren:
+        Cnt[J] #= Cnt[K] #=> (Nf[I,J] #= 0 #\/ Nf[I,K] #= 0)
+    end,
+    % Omi Frieda ist gerührt: Ihre erste Ururenkelin ist auf die Welt gekommen:
+    count(3, Cnt, 1),
+    % Entweder Tina ist Nachfahre von Evelyn, oder Elisabeth ist Nachfahre von Gundula, aber nicht beides:
+    Nf[Tina, Evelyn] + Nf[Elisabeth, Gundula] #= 1,
+    % Evelyn ist Nachfahre von Vanessa oder von Tina, aber nicht von beiden:
+    Nf[Evelyn,Vanessa] + Nf[Evelyn,Tina] #= 1,
+    % Katrin ist Nachfahre von Gundula:
+    Nf[Katrin,Gundula] #= 1,
+    % Evelyn ist kein Nachfahre von Gundula
+    Nf[Evelyn,Gundula] #= 0,
+    % Entweder Margrit ist Nachfahre von Sonja, oder Cordula ist Nachfahre von Evelyn, aber nicht beides:
+    Nf[Margrit,Sonja] + Nf[Cordula,Evelyn] #= 1,
+    % Sonja ist kein Nachfahre von Tina
+    Nf[Sonja,Tina] #= 0,
+    % Entweder Vanessa ist Nachfahre von Elisabeth, oder Tina ist Nachfahre von Margrit, aber nicht beides
+    Nf[Vanessa,Elisabeth] + Nf[Tina,Margrit] #= 1,
+    % Gundula ist Nachfahre von Vanessa
+    Nf[Gundula,Vanessa] #= 1,
+    % Entweder Sonja ist Nachfahre von Margrit, oder Elisabeth ist Nachfahre von Evelyn, aber nicht beides:
+    Nf[Sonja,Margrit] + Nf[Elisabeth,Evelyn] #= 1,
+    % Cordula ist kein Nachfahre von Vanessa:
+    Nf[Cordula,Vanessa] #= 0,
+    solve(Cnt ++ vars(Nf)),
+    drucke(Nf, Cnt, 0, 0), fail.
+/*    
+Ma
+  So
+  Ti
+    Ev
+      Co
+Va
+  Gu
+    El
+    Ka
+CPU time 0.084 seconds korrekt
+   Die Kinder von Omi sind Vanessa und Margrit. Die Tochter von Vanessa heißt Gundula, die hat zwei Kinder:
+   Elisabeth und Kathrin. Margrit hat auch zwei Kinder: Sonja und Tina. Das Kind von Tina ist Evelyn, 
+   sie hat die Ururenkelin Cordula geboren */
+drucke(Nf, Cnt, Ct, Mutter) =>
+    N = len(Nf), Name = ["Co","El","Ev","Gu","Ka","Ma","So","Ti","Va"],
+    foreach(I in 1..N, Cnt[I]=Ct, (Mutter=0;Nf[I,Mutter]=1)) % für alle direkten Nachfahren von Mutter
+        foreach(_ in 1..Ct) print("  ") end, println(Name[I]), % rücke Generation ein & drucke den Namen
+        if Ct<3 then drucke(Nf, Cnt, Ct+1, I) end % drucke alle Nachfahren von I
+    end.

@@ -1,0 +1,36 @@
+/*
+Zeit Logelei 2015/46
+Co: Wenn Di Babe ist, dann auch El. – 
+Di: Wenn Am Gibe ist, dann auch Bu. – 
+El: Wenn Go Babe ist, dann ist Di Gibe. – 
+Fu: Wenn Co Gibe ist, dann ist Ha Babe. – 
+Go: Wenn Bu Babe ist, dann auch Am. – 
+Ha: Wenn El Gibe ist, dann auch Fu.
+*/
+import cp.
+
+main => go.
+
+go =>
+   Gibe = 0, Babe = 1,
+   W = [Am,Bu,Co,Di,El,Fu,Go,Ha],
+   W :: [0,1], 
+   Co #= (Di #= Babe #=> El #= Babe),
+   Di #= (Am #= Gibe #=> Bu #= Gibe),
+   El #= (Go #= Babe #=> Di #= Gibe),
+   Fu #= (Co #= Gibe #=> Ha #= Babe),
+   Go #= (Bu #= Babe #=> Am #= Babe),
+   Ha #= (El #= Gibe #=> Fu #= Gibe),
+
+   solve(W),
+   foreach(Z in W)
+	print(cond(Z=1,'Babe ','Gibe '))
+   end, nl,
+   solve_all(W) = Sols,
+   printf("%d Lösung",len(Sols)).
+/*  
+Am,  Bu,  Co,  Di,  El,  Fu,  Go,  Ha
+Gibe Babe Babe Gibe Babe Babe Gibe Babe
+1 Lösung, korrekt:
+ZEIT: Giben sind Am, Di und Go. Alle anderen sind Baben
+*/   

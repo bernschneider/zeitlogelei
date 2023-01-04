@@ -1,0 +1,22 @@
+/* Zeit Logelei 2016 / 34  */
+import cp.
+
+go1 =>
+   % 1. Laura: "Finja ist doppelt so alt wie Marja und ich zusammen." 
+   % Finja: "Laura ist halb so alt wie Marja und ich zusammen." Wie alt ist Marja? 
+   Vars = [Laura, Finja, Marja],
+   Vars :: 1..99,
+   Finja #= 2 * (Marja + Laura),
+   Laura * 2 #= Marja + Finja,
+   solve_all(Vars) = Sols,
+   print(Sols).
+   % [[10,4,18]]
+   
+go2 =>
+	Vars = [Hans_Kai, Kasimir],
+	Vars :: 1..99,
+	Hans_Kai #= 3 * Kasimir,
+	Hans_Kai + Kasimir #= 40,   
+	solve_all(Vars) = Sols,
+    print(Sols).
+    % [[30,10]]

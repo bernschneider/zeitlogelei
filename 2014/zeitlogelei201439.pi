@@ -1,0 +1,48 @@
+/*
+Zeit Logelei 2014/39
+Alfont: "Otta und Bettine gehören zum selben Stamm."
+Bettine: "Dorit und Otta gehören zum selben Stamm."
+Carmel: "Dorit und Emir gehören zum selben Stamm."
+Dorit: "Moniko und Ingrim gehören zum selben Stamm."
+Emir: "Carmel und Klaub gehören zum selben Stamm."
+Franq: "Gundule und Horsp gehören zum selben Stamm." 
+Gundule: "Otta und Ingrim gehören zum selben Stamm."
+Horsp: "Klaub und Carmel gehören zum selben Stamm."
+Ingrim: "Jasmir und Klaub gehören zum selben Stamm."
+Jasmir: "Bettine und Norberl gehören zu unterschiedlichen Stämmen."
+Klaub: "Alfont und Franq gehören zum selben Stamm."
+Ludwif: "Norberl und Moniko gehören zum selben Stamm."
+Moniko: "Dorit und Gundule gehören zum selben Stamm."
+Norberl: "Bettine und Otta gehören zum selben Stamm."
+Otta: "Bettine und Carmel gehören zum selben Stamm."
+*/
+import cp.
+main => go.
+go =>
+   Names = [A,B,C,D,E,F,G,H,I,J,K,L,M,N,O],
+   Names :: 0..1,
+
+   A #= (O #= B),
+   B #= (D #= O),
+   C #= (D #= E),
+   D #= (M #= I),
+   E #= (C #= K),
+   F #= (G #= H),
+   G #= (O #= I),
+   H #= (K #= C),
+   I #= (J #= K),
+   J #= (B #!= N),
+   K #= (A #= F),
+   L #= (N #= M),
+   M #= (D #= G),
+   N #= (B #= O),
+   O #= (B #= C),
+   E #= (C #= K),
+   
+   println(" A B C D E F G H I J K L M N O"),
+ /* Result: [0,0,0,0,1,1,1,1,1,0,0,1,0,0,1]  */
+   solve_all(Names) = Solutions,
+   foreach (Sol in Solutions)
+	println(Sol)
+   end.
+/* Emir, Franq, Gundule, Horsp, Ingrim, Ludwif und Otta sind Funtiker, alle anderen sind Wellinger */

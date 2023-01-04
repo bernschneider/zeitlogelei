@@ -1,0 +1,23 @@
+/* ZEIT Logelei 2014/33: Geheime U-Bahn-Linie 
+In London gibt es eine geheime U-Bahn-Linie, die von Westminster nach Baker Street fährt 
+und zwischendurch an genau fünf Stationen hält */
+import cp.
+main ?=>
+    A=1, E=2, H=3, L=4, M=5, O=6, R=7, S=8, T=9, U=10, 
+    Vor = [(E,O), (H,A), (A,L), (S,R), (R,M), (R,O), (S,U), (L,M), 
+           (H,O), (T,L), (U,R), (O,L), (E,M), (M,S), (R,E), (L,A),
+           (E,R), (L,R), (O,T), (M,E), (T,S), (R,T), (O,M), (U,H),
+           (O,E), (T,O), (R,U), (S,T), (U,O), (H,U), (A,H)],
+    Sta = new_list(10), Sta :: 0..5, % 0: hält nicht hier, >0: Nr. der Haltestelle
+    all_different_except_0(Sta),
+    5 #= sum([(Sta[I] #> 0) : I in 1..10]), 
+    foreach((S1,S2) in Vor)
+        Sta[S1] #= 0 #\/ Sta[S2] #= 0 #\/ Sta[S1] #< Sta[S2]
+    end,
+    solve(Sta), Chr = "AEHLMORSTU",
+    foreach(Nr in 1..5, I in 1..10, Sta[I]=Nr)
+       printf("%c - ", Chr[I]) 
+    end, 
+    fail.
+/* H - O - L - M - S
+CPU time 0.019 seconds korrekt */

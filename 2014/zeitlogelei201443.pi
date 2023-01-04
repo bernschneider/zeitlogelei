@@ -1,0 +1,25 @@
+/* Zeit Logelei 2014/43 */
+import cp.
+import util.
+main =>                                                % 10 9 8 7 ... 2 1
+	S = new_list(10), % Zahl der Hühner von Alfred/ Bert: A B A B ... A B (chronolgisch)
+    S :: 1..10000,
+	foreach(I in 8..-1..1)
+	  (S[I+1] + 1) mod I #= 0,                % die Rechnung muss immer ein ganzzahliges Ergebnis haben
+	  S[I+2] - ((S[I+1] + 1) div I) #= S[I]   % Verkauf 
+    end,
+	S[1] #= 17 * S[2], % Am Ende hat Bert 17 mal mehr Hühner als Alfred
+	solve(S),
+	println("  Alfred\t   Bert"),
+	foreach(I in 10..-2..2)
+		printf("%2d: %4d\t%d: %d\n", I,S[I],I-1,S[I-1])
+	end.
+/*
+  Alfred           Bert
+10: 8027        9: 9567   Startwerte
+ 8: 6831        7: 8591   9568/8=1196, 6832/7= 976
+ 6: 5399        5: 7511   8592/6=1432, 5400/5=1080
+ 4: 3521        3: 6337   7512/4=1878, 3522/3=1174
+ 2:  352        1: 5984   6338/2=3169,  353/1= 353
+	see also my Excel file zeitlogelei201443.xlsx
+*/

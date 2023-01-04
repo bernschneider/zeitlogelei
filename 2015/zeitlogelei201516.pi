@@ -1,0 +1,63 @@
+/* Zeit Logelei 2015/16*/
+import sat.
+main =>
+    % C > 0 gibt die Zahl der Linien an, die im Punkt Z|S zusammenlaufen:
+    C = {{0, 1, 1, 0, 2, 3, 0, 3, 3}, 
+	     {0, 3, 1, 0, 1, 0, 3, 0, 0}, 
+	     {0, 0, 0, 1, 2, 0, 0, 2, 3}, 
+	     {0, 1, 1, 0, 0, 1, 1, 0, 1}, 
+	     {0, 0, 2, 0, 2, 1, 0, 1, 1}, 
+	     {0, 1, 3, 0, 0, 0, 0, 0, 0}, 
+	     {0, 3, 1, 1, 3, 2, 0, 1, 1}, 
+	     {0, 2, 1, 3, 1, 3, 1, 2, 3},
+	     {0, 0, 0, 0, 0, 0, 0, 0, 0}},
+	N = len(C), Max = N*N//2,
+	D1 = new_array(N, N),  % / 1. Diagonale
+	D2 = new_array(N, N),  % \ 2. Diagonale
+	Vars = vars(D1) ++ vars(D2),
+    Vars :: [0, 1],
+    foreach(Z in 1..N, S in 1..N)
+        D1[Z, S] + D2[Z, S] #= 1   % Entweder / oder \ !
+    end, 
+    foreach(Z in 1..N, S in 2..N, C[Z, S] > 0)
+        C[Z, S] #= D1[Z, S] + D1[Z+1, S-1] + D2[Z, S-1] + D2[Z+1, S]
+    end,
+    % Die Linien dürfen keinen geschlossenen Kreis bilden.
+	% m.a.W.: Jeder Punkt auf einer orthogonalen Linie hängt mit einer Randlinie zusammen
+	H = new_array(N+1,N), V = new_array(N,N+1), H ++ V :: 0..Max, % Distanzen
+    % Die das Quadrat nach außen begrenzenden Randlinien haben Distanz 0:
+    foreach(I in 1..N) 
+		H[1,I] #= 0, H[N+1,I] #= 0, 
+		V[I,1] #= 0, V[I,N+1] #= 0
+	end,
+	% Bei / hängt die untere mit der rechten und die linke mit der oberen Linie zusammen.
+	% Bei \ hängt die untere mit der linken und die rechte mit der oberen Linie zusammen.
+	% Horizontale Linien:
+	foreach(Z in 2..N, S in 1..N)
+		X #= D1[Z-1,S] * V[Z-1,S+1] + D2[Z-1,S] * V[Z-1,S], % V darüber
+		Y #= D1[Z,S]   * V[Z,S]     + D2[Z,S]   * V[Z,S+1], % V darunter
+		H[Z,S] #= 1 + min(X, Y)
+	end,
+	% Vertikale Linien:
+	foreach(Z in 1..N, S in 2..N)
+		X #= D1[Z,S-1] * H[Z+1,S-1] + D2[Z,S-1] * H[Z,S-1], % H links
+		Y #= D1[Z,S]   * H[Z,S]     + D2[Z,S]   * H[Z+1,S], % H rechts
+		V[Z,S] #= 1 + min(X, Y)
+	end,
+    solve(Vars ++ H ++ V),
+    foreach(Z in 1..N)
+        	foreach(S in 1..N)
+	        	if D1[Z, S]==1 then print('/') else print('\\') end
+    		end, nl
+    end.
+/*
+//\\\/\//
+\///////\
+\\/\//\//
+//\\/\\/\
+\//\\\/\\
+///\\/\\/
+\/\\\//\\
+\\\/\/\\/
+\\///////
+CPU time 0.985 seconds. korrekt! */

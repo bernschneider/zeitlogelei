@@ -1,0 +1,51 @@
+/* ZEIT Logelei 2014/ 49 */
+import util.
+import cp.
+main => go1.
+/* 1. Seit einiger Zeit hängt an der Tür des Sekretariats der Mathematischen Fakultät jeden Tag ein Zettel mit einer mathematischen Aufgabe. 
+Keiner weiß, woher der Zettel kommt. Heute steht auf dem Zettel: Gesucht ist eine siebenstellige Zahl. Keine Ziffer der Zahl ist 0. 
+Die Zahl ist auch kein Palindrom. Der Rückwert der Zahl ist Vielfaches der Zahl. Wie lautet die Zahl, wenn man weiß, dass der Rückwert einer Zahl 
+die Zahl rückwärts geschrieben ist und dass ein Palindrom eine Zahl ist, die ihrem Rückwert gleicht? */
+go1 =>
+   N = 7,
+   M = new_list(N),
+   M :: 1..9,
+   reverse(M) = M1,
+   M #!= M1,
+   to_num(M, NumM),
+   to_num(M1, NumM1),
+   vielfaches(NumM1, NumM),
+   solve(M),
+   print (M).
+   %  2199978 * 4 = 8799912, die Zahl lautet 2199978 - korrekt!
+
+/* 2. Am nächsten Tag steht dort fast dieselbe Aufgabe: Es handelt sich um eine siebenstellige Zahl im Sechsersystem. Keine Ziffer der Zahl ist 0. 
+Die Zahl ist auch kein Palindrom. Der Rückwert der Zahl ist Vielfaches der Zahl. Alle Angaben beziehen sich auf das Sechsersystem. 
+Wie lautet die Zahl diesmal? */
+go2 =>
+   N = 7,
+   M = new_list(N),
+   M :: 1..5,
+   reverse(M) = M1,
+   M #!= M1,
+   to_num(M, 6, NumM),
+   to_num(M1, 6, NumM1),
+   vielfaches(NumM1, NumM),
+   solve(M),
+   printf("Die Zahl lautet: "),
+   foreach(I in M) printf("%d",I) end,   
+   printf("\nAls Dezimalzahl: %d * %d = %d", NumM, NumM1//NumM, NumM1).
+   % Die Zahl lautet: 2155534
+   % Als Dezimalzahl: 108850 * 2 = 217700 - korrekt!
+   
+to_num(List, Num) => 
+  to_num(List, 10, Num).
+
+to_num(List, Base, Num) =>
+        Len = length(List),
+        Num #= sum([List[I]*Base**(Len-I) : I in 1..Len]).
+		
+is_palindrome(L) => reverse(L) #= L.
+
+vielfaches(X,Y) =>
+	X mod Y #= 0.

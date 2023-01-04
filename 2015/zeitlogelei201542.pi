@@ -1,0 +1,17 @@
+/* Zeit Logelei 2015/42 30-60-90 Dreieck */
+main =>
+    % Winkel Alpha < Beta < Gamma,
+    % Beta - Alpha = Gamme - Beta => 2*Beta = Alpha +   Gamma (1)
+    % Gamma - Alpha = Beta        =>   Beta = -Alpha +  Gamma (2)
+    % (1)+(2)                        3*Beta =         2*Gamma (3)
+    % (1)-(2)                          Beta = 2*Alpha
+    %  => Gamma = 3/2*Beta = 3*Alpha
+    % Winkelsumme im Dreieck: Alpha + Beta + Gamma = 180 [Grad]
+    % =>                      Alpha + 2*Alpha + 3*Alpha = 180
+    % =>                      Alpha = 30, Beta = 60, Gamma = 90
+    % Google 30-60-90 Dreieck -> Seiten a. b, c mit b = 1/2*c, a = 1/2*sqrt(3)*c (4)
+    %                            Fläche = 1/2*a*b soll sein = 6*sqrt(1/3) => a*b = 12/sqrt(3)
+    % (4) => a*b = sqrt(3)/4*c^2 => c^2 = 48/3 => c = 4 [decimeter]
+    % nochmal (4) => b = 2, a = 2*sqrt(3)
+    print("b = 2, c = 4, a = 2*sqrt(3)").
+    % korrekt!

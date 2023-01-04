@@ -1,0 +1,100 @@
+/* Zeit Logelei 2015/24 */
+import util, cp.
+main =>
+   N = 6,
+   M = new_array(N,N),
+   MVars = array_matrix_to_list(M),
+   MVars :: 1..9,
+   Squares = [I*I : I in 1..33],
+   % waagrecht
+   square(M, 1, 1, 0, 1),
+   square(M, 1, 4, 0, 1),   
+   to_num([M[2,1],M[2,2]], GW), to_num([M[4,4],M[5,4],M[6,4]], PS), PS mod GW #= 0,   
+   to_num([M[2,3],M[2,4],M[2,5],M[2,6]], HW), to_num([M[1,6],M[2,6]], FS), to_num([M[1,5],M[2,5]], ES),  HW #= FS * ES,
+   is_prime(M, 3, 1, 0, 1),
+   to_num([M[3,1],M[3,2]], IW), sum([M[3,S] : S in 3..6]) #= IW,
+   NW #= M[4,1]*10+M[4,2], NW :: Squares,
+   cube(M, 6, 1, 0, 1),
+   to_num([M[4,S] : S in 3..6], OW), to_num([M[3,S] : S in 3..6], KW), to_num([M[2,S] : S in 3..6], HW), OW #= HW + KW,
+   RQW #= M[5,1]+10*M[5,2], RQW :: Squares,
+   M[5,3]*10+M[5,4] #= RW, sum([M[Z,2] : Z in 3..6]) #= RW,
+   SW #= M[5,5]*10+M[5,6], SW :: Squares,
+   cube(M, 6, 1, 0, 1),
+   to_num([M[6,S] : S in 4..6], VW), VW #= (M[5,5]*10+M[5,6]) * (M[5,6]*10+M[6,6]),
+   % senkrecht
+   is_prime(M, 1, 2, 1, 0),
+   is_prime(M, 1, 5, 1, 0),
+   is_prime(M, 1, 6, 1, 0),
+   is_prime(M, 3, 5, 1, 0),
+   is_prime(M, 3, 6, 1, 0),
+   is_prime(M, 5, 3, 1, 0),
+   is_prime(M, 5, 5, 1, 0),
+   is_prime(M, 5, 6, 1, 0),
+   to_num([M[Z,1] : Z in 1..3], AS), AS mod IW #= 0,
+   to_num([M[Z,3] : Z in 1..4], CS), CS mod IW #= 0,
+   to_num([M[Z,4] : Z in 1..3], DS), DS mod IW #= 0,
+   to_num([M[Z,2] : Z in 3..6], JS), JS mod IW #= 0,
+   to_num([M[Z,1] : Z in 4..6], NS), NS mod IW #= 0,
+   to_num([M[Z,4] : Z in 4..6], PS), PS mod IW #= 0,
+   
+   solve(MVars),
+   foreach(I in 1..N) 
+      foreach(J in 1..N) 
+           printf("%d ", M[I,J])
+      end,
+      nl
+   end,
+   nl.
+/*
+6 7 6 1 6 9
+1 3 5 9 1 7
+1 3 3 5 1 4
+2 5 9 4 3 1
+4 6 1 6 8 1
+7 2 9 8 9 1 CPU time 1.014 seconds, korrekt!
+*/   
+
+/*
+ x is a prime
+*/
+
+is_prime(M, Row, Col, Dr, Dc) =>
+   X #= M[Row, Col]*10 + M[Row + Dr, Col + Dc],
+   X #> 1,
+   Max = fd_max(X),
+   foreach(I in 2..Max // 2)
+      I #!= X #=> X mod I #> 0
+   end.
+
+%
+% x is a square
+%
+square(M, Row, Col, Dr, Dc) =>
+   X #= M[Row, Col]*100 + M[Row + Dr, Col + Dc]*10 + M[Row + 2*Dr, Col + 2*Dc],
+   Max = fd_max(X),
+   Tmp :: 0..Max,
+   X #= Tmp**2.
+
+%
+% x is a cube
+%
+cube(M, Row, Col, Dr, Dc) =>
+   X #= M[Row, Col]*100 + M[Row + Dr, Col + Dc]*10 + M[Row + 2*Dr, Col + 2*Dc],
+   Max = fd_max(X),
+   Tmp :: 0..Max,
+   X #= Tmp**3.
+
+%
+% x is a palindrom
+%
+palindrom(M, Row, Col, Dr, Dc) =>
+   M[Row, Col] #= M[Row + 3*Dr, Col + 3*Dc],
+   M[Row + Dr, Col + Dc] #= M[Row + 2*Dr, Col + 2*Dc].
+
+%
+% converts a number Num to/from a list of integer List given a base Base
+%
+to_num(List, Num) =>
+   Len = length(List),
+   Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).
+   

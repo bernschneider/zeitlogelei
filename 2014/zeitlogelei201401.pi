@@ -1,0 +1,28 @@
+/* Zeit Logelei 2014/01 Neujahrsskirennen in Pistenbühl
+https://www.zeit.de/2014/01/spiele-logelei-01 */
+import cp.
+  % Niederschlag Sonne  Temp Humidity, jeweils min=n, max=x:
+main ?=> %  n  m  n  x  n  x min max    
+    C = [ ( _,18, 2, 8, 4, 1, 60, 90), % Radio X
+          ( 9,16, _, _, 3, 8, 60,100), % Wetterstation Nebenbühl
+          (14,18, 5, 8,-3, 2,100,100), % Fernsehsender SKI, selected (siehe Z.25)
+          (18,25, _, 7, 2, 9, 70,100), % Hans Heiner, selected (siehe Z.25)
+          (13,19, 7,11,-3, 5,  _,  _), % Internet, selected (siehe Z.25)
+          ( _, _, 3, 6,-3, 1, 70,100)],% Tageszeitung
+    % Wenn wir drei der Vorhersagen ignorieren, dann liefern die anderen drei eine brauchbare Vorhersage:
+    Sel = new_list(6), Sel :: 0..1, sum(Sel) #= 3, % ausgewählte Vorhersagen
+    Vars = [Ns, So, Tmp, Hum], Ns :: 9..25, So :: 2..11, Tmp :: -4..9, Hum :: 60..100,
+    foreach(I in 1..len(C)) 
+        % Niederschlag Sonne Temp Humidity, jeweils min=n, max=x:
+        (Nsn,Nsx, Son,Sox, Tmpn,Tmpx, Humn,Humx) = C[I],
+        Sel[I] #=> (Nsn  #=< Ns #/\  Ns  #=< Nsx 
+                #/\ Son  #=< So #/\  So  #=< Sox
+                #/\ Tmpn #=< Tmp #/\ Tmp #=< Tmpx
+                #/\ Humn #=< Hum #/\ Hum #=< Humx)
+    end,
+    solve(Sel ++ Vars), 
+    println(select=Sel),
+    println(vorhersage=Vars), fail.
+/* [select = [0,0,1,1,1,0]
+vorhersage = [18,7,2,100]
+CPU time 0.0 seconds, no more solutions, korrekt  */

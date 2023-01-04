@@ -1,0 +1,56 @@
+/* Zeit Logelei 2015/28 */
+import util, cp.
+main =>
+   W = new_array(8,10),
+   S = new_array(7,11),
+   MVars = array_matrix_to_list(W) ++ array_matrix_to_list(S),
+   MVars :: [0,1], 
+   Cnt = {{3,0,0,0,0,2,0,3,1,3},
+		  {0,1,0,0,3,0,0,0,0,0},
+		  {0,0,3,0,0,0,0,0,1,2},
+		  {0,0,0,2,3,3,1,3,1,0},
+		  {3,1,2,0,2,0,0,0,2,0},
+		  {0,0,0,0,1,2,0,0,0,0},
+		  {2,0,2,0,2,0,2,0,0,3}},
+   foreach(R in 1..7, C in 1..10, Cnt[R,C]>0)
+	Cnt[R,C] #= W[R,C] + W[R+1,C] + S[R,C] + S[R,C+1]
+   end,
+   % An jeder Kreuzung treffen sich 0 oder 2 Linien:
+   foreach(R in 1..8, C in 1..11)
+	Xcnt #= sum([W[R,C1] : C1 in [C-1,C], C1>0, C1=<10])
+	     + sum([S[R1,C] : R1 in [R-1,R], R1>0, R1=<7]),
+	Xcnt :: [0,2] 	
+   end,
+   % Magic (erzwingt einen einzigen Faden):
+   W[1,3] #= 1, W[1,4] #= 1, W[2,2] #= 1, W[4,3] #= 1, W[7,7] #= 1,
+   solve(MVars),
+   foreach(R in 1..7) 
+      foreach(C in 1..10) 
+           if W[R,C]=1 then print(' -') else print('  ') end
+	  end, nl,
+      foreach(C in 1..10) 
+           if S[R,C]=1 then print('|') else print(' ') end,
+		   if Cnt[R,C]>0 then print(Cnt[R,C]) else print(' ') end
+	  end, 
+	  if S[R,11]=1 then print('|') end, nl
+   end,
+   foreach(C in 1..10) 
+        if W[8,C]=1 then print(' -') else print('  ') end
+   end, nl.
+/*
+ - - - - - -   - - -
+|3         2| |3 1 3|
+ - - - - -     -   -
+   1     3| |   | |
+     - - -     -
+    |3      | |  1|2
+     -   -     -   -
+      |2|3|3|1 3|1  |
+ -         -   -   -
+|3|1 2| |2    |  2|
+     -   - -     -
+| | |    1 2| | |
+   -   -     -   - -
+|2   2| |2   2     3|
+ - - -   - - - - - -
+*/   

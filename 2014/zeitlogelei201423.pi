@@ -1,0 +1,29 @@
+/* Zeit Logelei 2014/23 Professor Knusi mit Gegenteiltag
+ */
+import cp.
+main ?=>
+    Fafa = 0,    % lügt meistens, außer am Gegenteiltag
+    Bawukka = 1, % sagt meistens die Wahrheit, außer am Gegenteiltag
+    W = [A,B,C,D,E], W :: [0,1], N = len(W), Gtag :: 1..N,
+    % 1. Tag: Asamtanka sagt, dass Elsonie oder Cosurafie oder beide Fafas sind:
+    (A #^ Gtag #= 1) #= (E #= Fafa #\/ C #= Fafa),
+    % 2. Tag: Betroffinze sagt, dass Dodofifi oder Asamtanka oder beide Bawukka sind:
+    (B #^ Gtag #= 2) #= (D #= Bawukka #\/ A #= Bawukka),
+    % 3. Tag: Cosurafie sagt, dass Asamtanka oder Betroffinze oder beide Bawukka sind:
+    (C #^ Gtag #= 3) #= (A #= Bawukka #\/ B #= Bawukka),
+    % 4. Tag: Dodofifi sagt, dass Betroffinze oder Elsonie oder beide Bawukka sind:
+    (D #^ Gtag #= 4) #= (B #= Bawukka #\/ E #= Bawukka),
+    % 5. Tag: Elsonie sagt, dass Asamtanka oder Dodofifi oder beide Fafas sind:
+    (E #^ Gtag #= 5) #= (A #= Fafa #\/ D #= Fafa),
+    solve([Gtag|W]), println(gegenteiltag=Gtag),
+    foreach(I in 1..len(W))
+    	printf("%w ist %s%n",chr(64+I), cond(W[I]=0,"Fafa","Bawukka"))
+    end, nl, fail.
+/* gegenteiltag = 3
+A ist Bawukka
+B ist Bawukka
+C ist Fafa
+D ist Bawukka
+E ist Fafa
+CPU time 0.0 seconds, no more solutions, korrekt
+ZEIT: Der dritte Tag war der Gegenteiltag. Asamtanka, Betroffinze und Dodofifi sind Bawukka, Cosurafie und Elsonie Fafas */

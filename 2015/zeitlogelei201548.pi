@@ -1,0 +1,76 @@
+/* Zeit Logelei 2015/48
+Constraint connected: Jede Farbe hat einen Ankerpunkt mit Distanz 0.
+Von dort lassen sich alle Punkte dieser Farbe erreichen. Je Schritt erhöht sich die Distanz um 1.
+Farbe 1 -> Dist[1,R,C] (wird als "1er" ausgedruckt)
+Farbe 2 -> Dist[2,R,C] (wird als "2er" ausgedruckt) */
+import util.
+import sat. % cp ist zu langsam
+main =>   % 8 x 8
+   M = {{2,_,_,_,_,_,_,_},	% 1 = weiß, 2 = schwarz
+   		  {_,2,_,_,_,1,_,_},	
+   		  {_,_,_,1,_,_,1,_},
+   		  {_,1,_,_,_,_,_,_},
+   		  {1,_,_,1,1,_,_,_},
+   		  {_,_,1,_,_,1,_,2}, % (6,8) ist magic Ankerpunkt - siehe auch unten
+   		  {_,1,_,1,_,_,_,_},
+   		  {_,_,_,_,_,_,_,_}},
+   Anker = {(5,4),(6,8)},
+   MVars = array_matrix_to_list(M),
+   MVars :: [1,2], 
+   N = 8, Dist = new_array(2,N,N), 
+   MaxDist = N * N // 2, % sollte wohl reichen (in diesem Fall reicht sogar schon 23)
+   DistVars = vars(Dist), DistVars :: 0..MaxDist, 
+   % Keine 2x2 Felder mit nur einer Farbe:
+   foreach(R in 1..N-1, C in 1..N-1)
+	Cnt #= M[R,C] + M[R+1,C] + M[R,C+1] + M[R+1,C+1],
+	Cnt #!= 4, Cnt #!= 8		% alle 1 ergibt 4, alle 2 ergibt 8!
+   end,
+   foreach(Color in 1..2)   
+   	  Dist[Color,Anker[Color,1],Anker[Color,2]] #= 0, % Ankerpunkt möglichst in der Mitte der Kette
+      foreach(R in 1..N, C in 1..N, (R,C) != Anker[Color])
+   	  	 M[R,C] #= Color   #=> Dist[Color,R,C] #= 1 + min([ Dist[Color,R1,C1] : (R1,C1) in [(R-1,C),(R,C-1),(R,C+1),(R+1,C)], R1 >= 1, R1 =< N, C1 >= 1, C1 =< N ]), 
+   		 M[R,C] #= 3-Color #=> Dist[Color,R,C] #= MaxDist 
+      end
+   end,
+   solve(MVars ++ DistVars), Chr = "O#",
+   foreach(R in 1..N) 
+      foreach(C in 1..N) 
+		   printf("%c|",Chr[M[R,C]])
+	  end, nl
+   end,
+   foreach(Color in 1..2)
+   	printf("%cer:%n",Chr[Color]),
+   	foreach(R in 1..N) 
+      foreach(C in 1..N) 
+		   if M[R,C]=Color then printf("%3d",Dist[Color,R,C]) else print("  -") end
+	  end, nl
+   	end
+   end.
+/* ZEIT: ########, O#O#OOO#, O#OOO#O#, OOO#####, O#OOOOO#, ##O##O##, #OOO#OO#, ########
+#|#|#|#|#|#|#|#|
+O|#|O|#|O|O|O|#|
+O|#|O|O|O|#|O|#|
+O|O|O|#|#|#|#|#|
+O|#|O|O|O|O|O|#|
+#|#|O|#|#|O|#|#|
+#|O|O|O|#|O|O|#|
+#|#|#|#|#|#|#|#| korrekt
+Oer:
+  -  -  -  -  -  -  -  -
+  6  -  4  -  6  7  8  -
+  5  -  3  4  5  -  9  -
+  4  3  2  -  -  -  -  -
+  5  -  1  0  1  2  3  -
+  -  -  2  -  -  3  -  -
+  -  4  3  4  -  4  5  -
+  -  -  -  -  -  -  -  -
+#er:
+ 12 11 10  9  8  7  6  5
+  - 12  - 10  -  -  -  4
+  - 13  -  -  -  5  -  3
+  -  -  -  6  5  4  3  2
+  - 13  -  -  -  -  -  1
+ 11 12  -  8  7  -  1  0
+ 10  -  -  -  6  -  -  1
+  9  8  7  6  5  4  3  2
+CPU time 11.055 seconds */

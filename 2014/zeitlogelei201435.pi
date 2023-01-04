@@ -1,0 +1,36 @@
+/* ZEIT Logelei 2014/35: Sechs Virenstämme */
+import cp.
+main ?=>
+    % Virenstämme:
+    Wanataken=1, Juniferen=2, _Mittanten=3, Hinokokken=4, Sebilaren=5, Ferbilen=6, 
+    % Fähigkeiten:
+    Nilpen=1, Singkorasen=2, _Omniperifermuren=3, Tungiferen=4, Semidensen=5, Alfinobeln=6,
+    N = 6, F = new_list(N), F :: 1..N, all_different(F),
+    % entweder nilpen die zirbufirumsierenden Wanataken, oder die silbafenden Juniferen singkorasen, aber nicht beides:
+    (F[Wanataken] #= Nilpen) #^ (F[Juniferen] #= Singkorasen),
+    % Wenn die serumsenden Ferbilen tungiferen, dann semidensen die mosumierenden Sebilaren:
+    F[Ferbilen] #= Tungiferen #=> F[Sebilaren] #= Semidensen,
+    % Wenn die mitchollensenden _Mittanten [...], dann _omniperifermuren [...].
+    % (Das ist der 3. Stamm und die 3. Fähigkeit -> so kommen wir auf jeweils 6)
+    % Entweder tungiferen die silbafenden Juniferen, oder die kerburaffenden Hinokokken singkorasen:
+    (F[Juniferen] #= Tungiferen) #^ (F[Hinokokken] #= Singkorasen),
+    % wenn die silbafenden Juniferen alfinobeln, dann tungiferen die serumsenden Ferbilen:
+    F[Juniferen] #= Alfinobeln #=> F[Ferbilen] #= Tungiferen,
+    % nilpen die zirbufirumsierenden Wanataken, dann alfinobeln die silbafenden Juniferen:
+    F[Wanataken] #= Nilpen #=> F[Juniferen] #= Alfinobeln,
+    solve(F), drucke(F), fail.
+/*    
+Die Wanataken nilpen.
+Die Juniferen alfinobeln.
+Die Mittanten omniperifermuren.
+Die Hinokokken singkorasen.
+Die Sebilaren semidensen.
+Die Ferbilen tungiferen.
+No more solutions. CPU time 0.001 seconds korrekt */
+drucke(F) =>
+    N = len(F), 
+    Name = ["Wanataken","Juniferen","Mittanten", "Hinokokken", "Sebilaren", "Ferbilen"],
+    Faehigkeit = ["nilpen","singkorasen","omniperifermuren", "tungiferen", "semidensen", "alfinobeln"],
+    foreach(I in 1..N) 
+        printf("Die %s %s.%n", Name[I], Faehigkeit[F[I]])
+    end.

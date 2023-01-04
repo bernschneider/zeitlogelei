@@ -1,0 +1,68 @@
+/* Zeit Logelei 2015/08 
+Sol: 1 9 6 1 6 9 
+	 9 6 1 6 7 6 
+	 6 1 1 6 6 1 
+	 3 7 9 1 1 9 
+	 2 8 9 1 9 6 
+	 4 4 1 3 6 1  CPU time 0.036 seconds korrekt */
+import cp.
+import util.
+main =>
+   N = 6,
+   M = new_array(N,N),
+   MVars = array_matrix_to_list(M),
+   MVars :: 1..9,
+   M[1,3] #= 6,
+   M[3,5] #= 6,
+   M[4,2] #= 7,
+   M[6,4] #= 3,
+   is_prime(M, 3, 5, 0, 1),
+   is_prime(M, 4, 1, 0, 1),
+   is_prime(M, 1, 3, 1, 0),
+   is_prime(M, 5, 4, 1, 0),
+   square(M, 1, 1, 0, 1),
+   square(M, 1, 4, 0, 1),
+   square(M, 2, 1, 0, 1),
+   square(M, 2, 4, 0, 1),
+   square(M, 5, 1, 0, 1),
+   square(M, 5, 4, 0, 1),
+   square(M, 6, 1, 0, 1),
+   square(M, 6, 4, 0, 1),   
+   square(M, 1, 1, 1, 0),
+   square(M, 1, 2, 1, 0),
+   square(M, 1, 5, 1, 0),
+   square(M, 1, 6, 1, 0),
+   square(M, 4, 1, 1, 0),
+   square(M, 4, 2, 1, 0),
+   square(M, 4, 5, 1, 0),
+   square(M, 4, 6, 1, 0),
+   palindrom(M, 3, 1, 0, 1),          
+   palindrom(M, 4, 3, 0, 1),          
+   palindrom(M, 1, 4, 1, 0),          
+   palindrom(M, 3, 3, 1, 0),          
+   solve(MVars),
+   foreach(I in 1..N) 
+      foreach(J in 1..N) 
+           printf("%d ", M[I,J])
+      end,
+      nl
+   end,
+   nl.
+% x is a prime
+is_prime(M, Row, Col, Dr, Dc) =>
+   X #= M[Row, Col]*10 + M[Row + Dr, Col + Dc],
+   X #> 1,
+   Max = fd_max(X),
+   foreach(I in 2..sqrt(Max))
+      I #!= X #=> X mod I #> 0
+   end.
+% x is a square
+square(M, Row, Col, Dr, Dc) =>
+   X #= M[Row, Col]*100 + M[Row + Dr, Col + Dc]*10 + M[Row + 2*Dr, Col + 2*Dc],
+   Max = fd_max(X),
+   Tmp :: 0..Max,
+   X #= Tmp**2.
+% x is a palindrom
+palindrom(M, Row, Col, Dr, Dc) =>
+   M[Row, Col] #= M[Row + 3*Dr, Col + 3*Dc],
+   M[Row + Dr, Col + Dc] #= M[Row + 2*Dr, Col + 2*Dc].

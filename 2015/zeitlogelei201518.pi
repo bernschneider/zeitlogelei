@@ -1,0 +1,18 @@
+/* Zeit Logelei 2015/18  */
+import cp.
+
+main =>
+   A = new_array(5), B = new_array(5),
+   Vars = to_list(A) ++ to_list(B),
+   Vars :: 0..9,
+   all_different(Vars),
+   [Aval, Bval] :: 10000..99999,
+   to_num(A, Aval), to_num(B, Bval),      
+   2 * Aval #= 19 * Bval,  % Aval = 9.5 * Bval
+   solve(Vars),
+   printf("9.5 * %d = %d", Bval, Aval). %  9.5 * 10248 = 97356
+   % Die beiden Zahlen lauten 10248 und 97356
+   
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).

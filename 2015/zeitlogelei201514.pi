@@ -1,0 +1,37 @@
+/*
+Zeit Logelei 2015/14
+Professor Knusi ist in Zusien, dort gibt es Gurgel und Wurgel. Die Aussagen von Gurgeln sind immer richtig, bei Wurgeln weiß man das nie. 
+Er befragt Zusianer nach deren Gruppenzugehörigkeit. 
+Er weiß, dass Nolpi und Zolpi unterschiedlichen Gruppen angehören. 
+Wolpi: "Polpi und Solpi wurzen nicht." 
+Tolpi: "Zolpi und Holpi wurzen nicht." 
+Golpi: "Solpi und Lolpi wurzen." 
+Nolpi: "Wolpi und Solpi wurzen nicht." 
+Zolpi: "Solpi und Nolpi wurzen nicht." 
+Polpi: "Wolpi und Nolpi wurzen nicht." 
+Solpi: "Golpi und Lolpi wurzen nicht." 
+Xolpi: "Nolpi und Polpi wurzen nicht." 
+Lolpi: "Golpi und Xolpi wurzen nicht." 
+Holpi: "Lolpi und Xolpi wurzen nicht." 
+Mit "wurzen" meinen die Zusianer, dass die Genannten zur selben Gruppe gehören. Wer ist Gurgel, wer Wurgel? */
+import cp.
+main => 
+   Vars = [N, Z, P, S, T, W, H, L, G, X], % Nolpi, Zolpi, ...
+   Vars :: 0..1,  % 0 = Wurgel(?), 1 = Gurgel(true)
+
+   N #!= Z,
+   W #=> (P #!= S),
+   T #=> (Z #!= H),
+   G #=> (S #=  L),
+   N #=> (W #!= S), % true - see result
+   Z #=> (S #!= N),
+   P #=> (W #!= N),
+   S #=> (G #!= L), % true
+   X #=> (N #!= P), % true
+   L #=> (G #!= X), % true
+   H #=> (L #!= X),
+   
+   solve_all(Vars) = Res,
+   println(       "  N Z P S T W H L G X"),
+   println(Res). % [[1,0,0,1,0,0,0,1,0,1]] korrekt:
+   % Die Gurgel sind Nolpi, Solpi, Xolpi und Lolpi

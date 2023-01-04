@@ -1,0 +1,32 @@
+/* Zeit Logelei 2015/30 Proffessor Knusi 
+In Lüwa lügen einige Einwohner immer, einige sagen immer die Wahrheit */
+import cp.
+
+main ?=>
+  L = 0, W = 1, % L = lügt, W = sagt die Wahrheit
+  Ba = 1, % "Ba" bedeutet, dass die Personen, auf die gezeigt wird, zu unterschiedlichen Gruppen gehören. 
+  Ga = 2, % "Ga" bedeutet, dass sie zur gleichen Gruppe gehören.
+  /* 1 zeigt auf 3 und 10 – sagt: "Ba." 
+    2 auf 3 und 6 – sagt: "Ga." 
+    3 auf 4 und 5 – sagt: "Ga." 
+    4 auf 2 und 6 – sagt: "Ga." 
+    5 auf 4 und 7 – sagt: "Ba." 
+    6 auf 8 und 9 – sagt: "Ba." 
+    7 auf 1 und 3 – sagt: "Ga." 
+    8 auf 2 und 6 – sagt: "Ga." 
+    9 auf 7 und 8 – sagt: "Ga." 
+   10 auf 1 und 2 – sagt: "Ba." */
+  Cons = [(1,3,10,Ba), (2,3,6,Ga), (3,4,5,Ga), (4,2,6,Ga), (5,4,7,Ba), (6,8,9,Ba), (7,1,3,Ga), (8,2,6,Ga), (9,7,8,Ga), (10,1,2,Ba)],
+  P = new_list(10), P :: [L, W],
+  foreach((A,B,C,D) in Cons)
+      if D=Ba then P[A] #= W #<=> P[B] #!= P[C] 
+              else P[A] #= W #<=> P[B] #= P[C]
+      end
+  end,
+  solve(P), Chr = "LW",
+  println("1 2 3 4 5 6 7 8 9 10"),
+  foreach(I in 1..10) printf("%c ", Chr[1+P[I]]) end, nl,
+  fail.
+/* ZEIT: 1, 7 und 9 lügen. Alle anderen sagen die Wahrheit
+1 2 3 4 5 6 7 8 9 10
+L W W W W W L W L W  korrekt */

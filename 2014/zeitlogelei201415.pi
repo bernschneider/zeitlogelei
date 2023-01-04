@@ -1,0 +1,30 @@
+/* Zeit Logelei 2014/15 Yorick, Melisa und Chantal essen zusammen ein Eis
+https://www.zeit.de/2014/15/spiele-logelei-15 */
+import cp.
+
+main1 ?=>
+  Jahre = [Y,M,C], Jahre :: 1..100,
+  sum(Jahre) #= 5 * Y, % Yorick: zusammen sind wir drei genau fünfmal so alt, wie ich jetzt bin.
+  % Melissa zu Yorick: ich war vor sieben Jahren noch genau doppelt so alt wie du!
+  M - 7 #= 2 * (Y - 7),
+  % Chantal zu Melissa: ich war vor sieben Jahren noch genau doppelt so alt wie du!
+  C - 7 #= 2 * (M - 7),
+  solve(Jahre), 
+  Name = ["Yorick", "Melisa", "Chantal"],
+  foreach(I in 1..3) 
+      printf("%s ist %d Jahre alt.%n", Name[I], Jahre[I])
+  end, fail.
+/*
+Yorick ist 14 Jahre alt.
+Melisa ist 21 Jahre alt.
+Chantal ist 35 Jahre alt. CPU time 0.0 seconds, no more solutions, korrekt */
+main2 ?=> 
+    % Vier Regenwürmer der Länge nach sortiert:
+    R = new_list(4), R :: 1..100, increasing(R),
+    R[1] + R[4] #= R[2] + R[3], % Zwei von uns sind zusammen genauso lang wie die anderen beiden zusammen.
+    2 * (R[1] + R[2]) #= R[3] + R[4], % Zwei von uns sind zusammen doppelt so lang wie die anderen beiden
+    % Drei von uns sind zusammen dreimal so lang wie der vierte:
+    (R[1] + R[3] + R[4] #= 3 * R[2] #\/ R[1] + R[2] + R[4] #= 3 * R[3]),
+    R[1] #= 4, % ich armer Tropf bin mit nur vier Zentimetern der Kürzeste von uns allen
+    solve(R), println(R), fail.
+/* [4,12,12,20] CPU time 0.001 seconds, no more solutions, korrekt */

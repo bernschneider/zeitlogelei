@@ -1,0 +1,67 @@
+/* Zeit Logelei 2014 / 24 
+Constraint connected: Jede Farbe hat einen Ankerpunkt mit Distanz 0.
+Von dort lassen sich alle Punkte dieser Farbe erreichen. Je Schritt erhöht sich die Distanz um 1.
+Farbe 1 -> Dist[1,R,C] (wird als "1er" ausgedruckt)
+Farbe 2 -> Dist[2,R,C] (wird als "2er" ausgedruckt) usw. 
+*/
+import util.
+import cp. % CPU time 0.016 seconds - much faster than sat
+main => go.
+
+go =>  % 7 x 7
+    N = 7,
+    North = [0,2,3,2,1,1,1], South = [4,2,1,2,1,3,4], 
+    West = [0,2,1,3,2,3,2], East = [7,2,1,0,1,1,4], 
+    M   = {{1,_,_,_,_,_,_},	
+   		   {_,_,_,_,_,_,_},	
+   		   {_,_,2,_,3,_,_},
+   		   {_,_,_,_,_,_,4},
+   		   {_,_,5,_,_,_,_},
+  		   {_,6,_,_,7,_,_},
+   		   {_,_,_,_,_,_,_}},
+   MVars = array_matrix_to_list(M),
+   MVars :: 1..N, 
+   Dist = new_array(N,N,N), 
+   foreach(R in 1..N, C in 1..N, ground(M[R,C]))
+   		Color = M[R,C],
+   		Dist[Color,R,C] #= 0, % Ankerpunkt
+        North[Color] #= sum([(M[R1,C1]#=Color) : R1 in 1..R-1, C1 in 1..N]),
+        South[Color] #= sum([(M[R1,C1]#=Color) : R1 in R+1..N, C1 in 1..N]),
+        East[Color] #= sum([(M[R1,C1]#=Color) : R1 in 1..N, C1 in C+1..N]),
+        West[Color] #= sum([(M[R1,C1]#=Color) : R1 in 1..N, C1 in 1..C-1])
+   end,
+   MaxDist = 10, % magic
+   DistVars = vars(Dist), DistVars :: 0..MaxDist,
+   foreach(Color in 1..N, R in 1..N, C in 1..N)
+	 if (ground(M[R,C]), M[R,C] = Color) then   
+	     Dist[Color,R,C] #= 0
+	 else
+   	  	 M[R,C] #= Color #=> Dist[Color,R,C] #= 1 +
+   	  	 min([ Dist[Color,R1,C1] : (R1,C1) in [(R-1,C),(R,C-1),(R,C+1),(R+1,C)], R1 >= 1, R1 =< N, C1 >= 1, C1 =< N ]), 
+   		 M[R,C] #!= Color #=> Dist[Color,R,C] #= MaxDist 
+     end
+   end,
+   solve(MVars ++ DistVars), % [down] ist optimal, [] ist sehr langsam, [min] ist extrem langsam
+   Code = "ABCDEFG",
+   foreach(R in 1..N) 
+      foreach(C in 1..N) 
+		   printf("%c ",Code[M[R,C]])
+	  end, nl
+   end,
+   foreach(Color in 1..N)
+   	printf("%der:%n",Color),
+   	foreach(R in 1..N) 
+      foreach(C in 1..N) 
+		   if M[R,C]=Color then printf("%3d",Dist[Color,R,C]) else print("  -") end
+	  end, nl
+   	end
+   end.
+/*
+A A A A A A A 
+A B B C C C A 
+A B B B C D D 
+A E B B C D D 
+F E E E G D D 
+F F E G G G G 
+F F F G G G G korrekt!
+*/   

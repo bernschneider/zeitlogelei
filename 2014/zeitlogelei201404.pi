@@ -1,0 +1,61 @@
+/* Zeit Logelei 2014/04 (nach Janko Slitherlink)
+https://www.zeit.de/2014/04/spiele-logelei-04 */
+import util,sat.
+main =>
+    N = 6, N2 = N+2, E = -1, % E = empty field
+    Cnt = {{2,2,2,2,1,1},
+		   {E,E,3,E,E,3},
+		   {E,2,3,E,3,2},
+		   {E,E,E,E,1,2},
+		   {E,E,E,E,3,2},
+		   {E,3,E,0,E,3}},
+    M = new_array(N,N), M :: 0..1, % M bezeichnet die Felder im Inneren des Rundwegs
+    M2 = new_array(N2,N2),         % M2 legt einen 0er Rand darum herum:
+    foreach(Z in 1..N2) M2[Z,1] #= 0, M2[Z,N2] #= 0 end, % Erste und letzte Spalte 0er
+    foreach(S in 1..N2) M2[1,S] #= 0, M2[N2,S] #= 0 end, % Erste und letzte Zeile 0er
+    foreach(Z in 1..N, S in 1..N) M2[1+Z,1+S] #= M[Z,S] end,
+    % 42 Kilometer sind zu laufen:
+    42 #= sum([(M2[R,C] #!= M2[R,C+1]) : R in 1..N+2, C in 1..N+1])
+        + sum([(M2[R,C] #!= M2[R+1,C]) : R in 1..N+1, C in 1..N+2]),
+    % Die Zahlen außerhalb der Strecke geben an, wie viele Nachbarstraßen durchlaufen werden.
+    % Die Zahlen innerhalb der Strecke sind entweder eins zu groß oder eins zu klein:
+    foreach(R in 2..N+1, C in 2..N+1, Cnt[R-1,C-1]>E)
+	    X #= sum([ (M2[R,C] #!= M2[R1,C1]) : (R1,C1) in [(R-1,C), (R,C-1), (R,C+1), (R+1,C)] ]),
+        abs(X - Cnt[R-1,C-1]) #= M2[R,C] % außen gleich, innen +-1
+    end,
+    % Während des Marathons werden Sie an keiner Kreuzung mehr als einmal vorbeikommen:
+	foreach(Z in 1..N-1, S in 1..N-1)
+		(M[Z,S] #= 1 #/\ M[Z+1,S+1] #= 1) #=> (M[Z,S+1] #= 1 #\/ M[Z+1,S] #= 1),
+		(M[Z,S+1] #= 1 #/\ M[Z+1,S] #= 1) #=> (M[Z,S] #= 1 #\/ M[Z+1,S+1] #= 1)
+    end,
+    % Das Innere bildet einen zusammenhängenden Bereich:
+    Anker = (3,4), M[Anker[1],Anker[2]] #= 1, % (ein inneres Feld etwa in der Mitte)   
+    MaxDist = N * N // 2, 
+    Dist = new_array(N,N), Dist :: 0..MaxDist, 
+    Dist[Anker[1],Anker[2]] #= 0, 
+    foreach(Z in 1..N, S in 1..N, (Z,S) != Anker)
+   	  	 M[Z,S] #= 1 #=> Dist[Z,S] #= 1 + min([ Dist[Z1,S1] : (Z1,S1) in [(Z-1,S),(Z,S-1),(Z,S+1),(Z+1,S)], Z1 >= 1, Z1 =< N, S1 >= 1, S1 =< N ]), 
+   		 M[Z,S] #= 0 #=> Dist[Z,S] #= MaxDist 
+    end,
+    /*
+    % Das Äußere hängt ebenfalls zusammen (ohne diese Bedingung gibt es evt. weiße Inseln und damit keinen einzigen Rundweg um die 1er herum):
+    % Genauer: Wenn man einen Rahmen mit lauter 0ern herumlegt, hängen die 0er Felder zusammen.
+    Dist2 = new_array(N2,N2), Dist2 :: 0..MaxDist, 
+    M2[1,1] #= 0, Dist2[1,1] #= 0, % ein Punkt auf dem 0er-Rahmen
+    foreach(Z in 1..N2, S in 1..N2, (Z,S) != (1,1))
+   	  	 M2[Z,S] #= 0 #=> Dist2[Z,S] #= 1 + min([ Dist2[Z1,S1] : (Z1,S1) in [(Z-1,S),(Z,S-1),(Z,S+1),(Z+1,S)], Z1 >= 1, Z1 =< N2, S1 >= 1, S1 =< N2 ]), 
+   		 M2[Z,S] #= 1 #=> Dist2[Z,S] #= MaxDist 
+    end, */
+    solve(vars(M) ++ vars(Dist)), % ++ vars(Dist2)),  
+    foreach(Z in 1..N, S in 1..N)
+		if M[Z,S]=1 then print(" X|") else printf("  |") end,
+    	if S = N then nl end
+    end.
+/*
+ X|  | X|  |  |  |
+ X|  | X| X| X| X|
+ X|  |  | X|  | X|
+ X| X| X| X|  |  |
+ X| X| X| X|  | X|
+ X|  | X| X| X| X|
+CPU time 1.137 seconds korrekt */

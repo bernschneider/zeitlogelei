@@ -1,0 +1,130 @@
+/* Zeit Logelei 2015/52 */
+import util, cp.
+
+find(Letter) = Res =>
+	LM = {{a,b,c,d,e,f},
+	      {g,x,h,x,i,x},
+	      {j,x,k,l,x,m},
+	      {n,o,x,x,p,x},
+	      {q,x,r,s,t,u},
+	      {v,x,x,w,x,x}},
+	N = len(LM),
+	Row :: 1..N, Col :: 1..N,
+	foreach(R in 1..N, C in 1..N)
+		if LM[R,C] = Letter then Row := R, Col := C end
+	end, 
+	Res = (Row,Col). 
+
+constrain(M,Dir,Letter,Len,Predicate) =>
+	(Row,Col) = find(Letter),
+	M[Row,Col] #!= 0,
+	if Dir = waagrecht then 
+		across(M, X, Len, Row, Col)
+	else
+		down(M, X, Len, Row, Col)
+	end,
+	call(Predicate,X).
+
+main =>
+   N = 6,
+   M = new_array(N,N),
+   MVars = array_matrix_to_list(M),
+   MVars :: 0..9,
+   down(M,As,2,1,1),
+   down(M,Cs,2,1,3), down(M,Ds,2,1,4), % siehe E senkrecht
+   QCs #= M[1,3] + M[2,3], % Quersumme C senkrecht
+   QKs #= M[3,3] + M[4,3], % Quersumme K senkrecht
+   down(M,Fs,2,1,6), % siehe L senkrecht
+   QRs #= M[5,3] + M[6,3], % siehe M senkrecht
+   across(M,Rw,2,5,3), across(M,Tw,2,5,5), % siehe O senkrecht
+   M[5,1] #= M[6,1], % Q senkrecht ist Palindrom 
+   RRw #= M[5,3] + 10 * M[5,4], % Rückwert R waagrecht, siehe R senkrecht  
+   Cons = [(waagrecht,a,3,$multiple(As)),
+   		   (waagrecht,d,3,$multiple(As)),
+   		   (waagrecht,g,2,$multiple(As)),
+   		   (waagrecht,h,2,$multiple(As)),
+   		   (waagrecht,i,2,$multiple(As)),
+   		   (waagrecht,j,6,$multiple(As)),
+   		   (waagrecht,n,6,$multiple(As)),
+   		   (waagrecht,q,2,$multiple(As)),
+   		   (waagrecht,r,2,$multiple(As)),
+   		   (waagrecht,t,2,$multiple(As)),
+   		   (waagrecht,v,3,$multiple(As)),
+   		   (waagrecht,w,3,$multiple(As)),
+           (senkrecht,a,2,$is_prime),
+   		   (senkrecht,b,3,$square),
+   		   (senkrecht,c,2,$is_prime),
+   		   (senkrecht,d,2,$is_prime),
+   		   (senkrecht,e,3,$equals(Cs * Ds)),
+   		   (senkrecht,f,2,$square),
+   		   (senkrecht,j,2,$equals(QCs)),
+   		   (senkrecht,a,2,$equals(QKs)),
+   		   (senkrecht,l,2,$multiple(Fs)),
+   		   (senkrecht,m,2,$equals(QRs)),
+   		   (senkrecht,o,3,$equals(Rw + Tw)),
+   		   (senkrecht,p,3,$square),
+   		   (senkrecht,r,2,$multiple(RRw)),
+   		   (senkrecht,s,2,$is_prime),
+   		   (senkrecht,u,2,$square)],
+   foreach((Dir,Letter,Len,Predicate) in Cons)
+   		constrain(M,Dir,Letter,Len,Predicate)
+   end,	 
+   Vars = MVars,
+   solve(Vars),
+
+   foreach(I in 1..N) 
+      foreach(J in 1..N) 
+           printf("%d ", M[I,J])
+      end,
+      nl
+   end,
+   nl.
+/* 
+1 1 7 1 8 2 
+3 9 9 1 6 5 
+1 6 7 7 9 1 
+6 1 6 5 6 4 
+9 1 9 1 2 6 
+9 7 5 7 5 4 korrekt!
+Waagerecht: A 117 D 182 G 39 H 91 I 65 J 167791 N 616564 Q 91 R 91 T 26 V 975 W 754
+Senkrecht: A 13 B 196 C 79 D 11 E 869 F 25 J 16 K 76 L 75 M 14 O 117 P 625 Q 99 R 95 S 17 U 64 */
+
+across(Matrix, Across, Len, Row, Col) =>
+   Tmp = new_list(Len),
+   Tmp :: 0..9999,
+   to_num(Tmp, Across),
+   foreach(I in 0..Len-1)
+      Matrix[Row,Col+I] #= Tmp[I+1]
+   end.
+
+down(Matrix, Down, Len, Row, Col) =>
+   Tmp = new_list(Len),
+   Tmp :: 0..9999,
+   to_num(Tmp, Down),
+   foreach(I in 0..Len-1)
+      Matrix[Row+I,Col] #= Tmp[I+1]
+   end.
+
+equals(A,X) =>
+	A #= X.
+	
+multiple(A,X) =>
+   X mod A #= 0.
+   
+is_prime(X) =>
+   Max = fd_max(X),
+   foreach(I in 2..Max // 2)
+      I #!= X #=> X mod I #> 0
+   end.
+
+square(X) =>
+   Max = fd_max(X),
+   Tmp :: 0..Max,
+   X #= Tmp**2.
+
+to_num(List, Num) => 
+  to_num(List, 10, Num).
+
+to_num(List, Base, Num) =>
+        Len = length(List),
+        Num #= sum([List[I]*Base**(Len-I) : I in 1..Len]).

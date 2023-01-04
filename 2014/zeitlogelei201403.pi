@@ -1,0 +1,25 @@
+/* Zeit Logelei 2014/03 Familie Wulffer macht Ferien auf dem Land
+https://www.zeit.de/2014/03/spiele-logelei-03 */
+import cp.
+main ?=>
+  Jahre = [T,H,R,P], Jahre :: 4..100, % wegen der Aussage "vor 4 Jahren"
+  % Frau Ochsenspann: "Einer von euch vieren kann nicht rechnen":
+  Korrekt = [KT,KH,KR,KP], Korrekt :: 0..1, sum(Korrekt) #= 3,
+  % Tanja: "Vor vier Jahren waren Hannah und ich zusammen doppelt so alt wie Ralf und Paul zusammen."
+  KT #= ( (H - 4) + (T - 4) #= 2 * (R -4 + P - 4) ),
+  T #= H, % Tanja und Hannah sind Zwillingsschwestern.
+  % Hannah: "Wenn Paul so alt sein wird, wie Ralf jetzt ist, ist Ralf so alt, wie ich jetzt bin."
+  DeltaH #= R - P, KH #= ( R + DeltaH #= H ),
+  % Ralf: "Wenn ich ein Jahr älter bin, als Tanja jetzt ist, dann ist Paul dreimal so alt, wie Hannah dann sein wird."
+  DeltaR #= T - R + 1, KR #= ( P + DeltaR #= 3 * (H + DeltaR)  ),
+  % Paul: In zwölf Jahren sind wir vier zusammen 100 Jahre alt:
+  KP #= ( 12 * 4 + sum(Jahre) #= 100 ),
+  solve(Korrekt ++ Jahre), 
+  Name = ["Tanja", "Hannah", "Ralf", "Paul"],
+  foreach(I in 1..4, Korrekt[I]=0) printf("%s kann nicht rechnen.%n", Name[I]) end, 
+  foreach(I in 1..4) printf("%s ist %d Jahre alt.%n", Name[I], Jahre[I]) end, nl, fail.
+/* Ralf kann nicht rechnen.
+Tanja ist 16 Jahre alt.
+Hannah ist 16 Jahre alt.
+Ralf ist 12 Jahre alt.
+Paul ist 8 Jahre alt.  - CPU time 0.0 seconds, no more solutions, korrekt */

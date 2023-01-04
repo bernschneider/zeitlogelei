@@ -1,0 +1,46 @@
+/* Zeit Logelei 2014/53 (nach Janko Pentominos)
+https://www.zeit.de/2014/53/spiele-logelei-53 */
+import sat, util, matrixL. % matrixL wurde für diese Logelei erstellt (nach matrix.pi)
+main =>
+    B = {{1,0,0,0,0, 0,0,0,1,0, 0,0,0,1,1},
+	     {0,0,0,0,1, 0,0,1,0,0, 1,0,0,1,0},
+	     {0,0,0,0,0, 1,0,0,0,0, 0,0,0,0,0},
+	     {1,1,1,0,0, 0,0,0,0,0, 0,0,0,0,0}},
+    % Pentominos:
+    NZ = len(B), NS = len(B[1]), M = new_array(NZ+4,NS+4), 
+    foreach(Z in 1..NZ+4, S in NS+1..NS+4) M[Z,S] #= 0 end,
+    foreach(Z in NZ+1..NZ+4, S in 1..NS+4) M[Z,S] #= 0 end,
+    erzeuge(P),  % P[1] = X-Pentomino, dann kommen P[2] = I, P[3] = Z, P[4..] = TWUVLNYFP (aus Modul matrixL)
+    /* foreach(L in P)
+        foreach(Mat in L) matprint(Mat) end, println("---")
+    end, */
+    Np = len(P), Mvars = vars(M), Mvars :: 1..Np, 
+    foreach(G in 1..Np) 
+        count(G, Mvars, 5),
+        % In jedem Bereich soll sich genau ein Weihnachtsbaum befinden:
+        1 #= sum([(M[Z,S] #= G) : Z in 1..NZ, S in 1..NS, B[Z,S]=1])
+    end,
+    Idx = new_list(Np), % X hat 1 Drehvariante, I und Z jeweils 2, der Rest 4:
+    Idx[1] #= 1, Idx[2] :: 1..2, Idx[3..7] :: 1..4, Idx :: 1..8,
+    DZ = new_list(Np), DZ :: 0..NZ-1, % Translation des I.ten Pentominos
+    DS = new_list(Np), DS :: 0..NS-1,
+    foreach(I in 1..Np, J in 1..len(P[I]) ) % Constraint nur, wenn Idx[I] #= J!
+        PNZ = len(P[I,J]), PNS = len(P[I,J,1]), 
+        % Achtung: matrix_element terminiert nicht! Deshalb DZI und DSI eingeführt:
+        foreach(DZI in 0..NZ-1, DSI in 0..NS-1, Z in 1..PNZ, S in 1..PNS, P[I,J,Z,S]=1) 
+            (Idx[I] #= J #/\ DZ[I] #= DZI #/\ DS[I] #= DSI) #=> M[DZI+Z,DSI+S] #= I
+        end
+    end,
+    solve(Mvars ++ DZ ++ DS ++ Idx),
+    Chr = "XIZTWUVLNYFP",
+    foreach(Z in 1..NZ)
+        foreach(S in 1..NS)
+		    printf("%c|", Chr[M[Z,S]]) 
+    	end, nl
+    end.
+/*
+I|I|I|I|I|N|N|N|T|T|T|P|P|P|L|
+V|V|V|Z|N|N|X|U|U|T|F|P|P|W|L|
+V|Z|Z|Z|Y|X|X|X|U|T|F|F|W|W|L|
+V|Z|Y|Y|Y|Y|X|U|U|F|F|W|W|L|L|
+CPU time 148.579 seconds korrekt */
