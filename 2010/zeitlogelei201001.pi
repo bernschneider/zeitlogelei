@@ -1,0 +1,35 @@
+/* Zeit Logelei 2010/01 Alfred Hügel ist ein moderner 7-Ton-Musiker
+https://www.zeit.de/2010/01/Spiele-Logelei-01 */
+import cp, util.
+main ?=>
+    C=1, D=2, _E=3, F=4, _G=5, A=6, H=7, Ton = "CDEFGAH", % tief..hoch
+    Prim=0, Sekund=1, Terz=2, Quart=3, Quint=4, Sext=5, Septime=6,
+    IVstr = ["Pri", "Sek", "Ter", "Qua", "Qui", "Sex", "Sep"],
+    Th = [D,A,_,_,_,_,_,_,_,_,_,_,_,C], Th :: 1..7, N = len(Th), % Thema
+    ThIV = new_list(N-1), % die Intervalle des Themas
+    foreach(I in 1..N-1)
+        ThIV[I] #= abs(Th[I+1] - Th[I]),
+        % Ein Tritonus (F–H oder H–F) darf nicht vorkommen:
+        Th[I] #= F #=> Th[I+1] #!= H, Th[I] #= H #=> Th[I+1] #!= F 
+    end,
+    foreach(I in 1..N-2)
+        IV1 #= ThIV[I], IV2 #= ThIV[I+1], % Zwei aufeinanderfolgende Intervalle ..
+        IV1 #!= IV2, % .. dürfen nicht gleich sein. 
+        IV2 #= Prim #=> IV1 #= Septime, % Vor einer Prim muss eine Septime kommen, 
+        IV1 #= Prim #=> IV2 #= Terz, % Auf eine Prim muss eine Terz folgen, oder das Thema muss direkt danach enden. 
+        Th[I+1] - Th[I] #= Terz #=> IV2 #= Quint,  % Auf eine Terz nach oben muss eine Quint folgen. 
+        Th[I] #= A #<=> IV2 #= Quart, % Die beiden Töne nach einem A müssen eine Quart bilden, und nur dort darf eine Quart vorkommen. 
+        IV1 #= Quint #=> Th[I+2] #< Th[I+1] % Nach einer Quint muss ein tieferer Ton als der zuletzt gespielte kommen. 
+    end,
+    foreach(I in 1..N-3)
+        ThIV[I] #= Sekund #=> ThIV[I+2] #= Sext % Die beiden Töne, die nach einer Sekund gespielt werden, müssen eine Sext bilden
+    end,
+    foreach(IV in 0..6) count(IV, ThIV, Cnt), Cnt #=< 2 end, % kein Intervall darf mehr als zweimal vorkommen
+    solve(Th ++ ThIV),
+    print(" "), foreach(I in 1..N-1) printf("%s ", IVstr[1+ThIV[I]]) end, nl,
+    foreach(I in 1..N) printf("%  c   ", Ton[Th[I]]) end,
+    nl, fail.
+/* 
+ Qui Ter Qua Sex Sek Qua Sex Sep Pri Ter Qui Sep Pri 
+D   A   F   C   A   G   D   H   C   C   E   H   C   C   
+CPU time 0.007 seconds, no more solutions, korrekt */

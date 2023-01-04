@@ -1,0 +1,27 @@
+/* Zeit Logelei 2011/06 PDas Rezept der Hexe Braxabra für den Teig ihres sagenhaften Zauberkuchens
+https://www.zeit.de/2011/06/Spiele-Logelei-06 */
+import cp, util.
+main ?=>
+    % In welcher Reihenfolge müssen die Zutaten in den Teig?
+    Name = ["Krähenfüße","Kupferdraht","Mehl","verschimmelte Milch","Regenwurmhornhaut","Spinnenbeine","Zimt"],
+    Rang = [Kr,Ku,Me,Mi,Re,Sp,Zi], N = len(Rang), Rang :: 1..N, all_different(Rang),
+    foreach((A,B,C,D) in [  
+        (Sp,Re,Ku,Mi), % Wenn Spinnenbeine vor Regenwurmhornhaut kommen, dann kommt Kupferdraht vor verschimmelter Milch.
+        (Ku,Zi,Me,Re), % Wenn Kupferdraht vor Zimt kommt, dann kommt Mehl vor Regenwurmhornhaut.
+        (Zi,Ku,Me,Sp), % Wenn Zimt vor Kupferdraht kommt, dann kommt Mehl vor den Spinnenbeinen.
+        (Kr,Mi,Re,Ku), % Wenn Krähenfüße vor verschimmelter Milch kommen, dann kommt Regenwurmhornhaut vor Kupferdraht.
+        (Ku,Mi,Mi,Zi), % Wenn Kupferdraht vor verschimmelter Milch kommt, dann kommt verschimmelte Milch vor Zimt.
+        (Sp,Kr,Ku,Me), % Wenn Spinnenbeine vor Krähenfüßen kommen, dann kommt Kupferdraht vor Mehl.
+        (Me,Zi,Ku,Re), % Wenn Mehl vor Zimt kommt, dann kommt Kupferdraht vor Regenwurmhornhaut.
+        (Kr,Re,Me,Zi), % Wenn Krähenfüße vor Regenwurmhornhaut kommen, dann kommt Mehl vor Zimt.
+        (Ku,Me,Zi,Sp), % Wenn Kupferdraht vor Mehl kommt, dann kommt Zimt vor Spinnenbeinen.
+        (Zi,Me,Sp,Kr), % Wenn Zimt vor Mehl kommt, dann kommen Spinnenbeine vor Krähenfüßen.
+        (Me,Sp,Kr,Mi)])% Wenn Mehl vor den Spinnenbeinen kommt, dann kommen Krähenfüße vor verschimmelter Milch.
+            A #< B #=> C #< D
+    end,
+    solve(Rang),
+    Ranking = [(Rang[I],I) : I in 1..N].sort(),
+    foreach((_,I) in Ranking) printf("%s - ", Name[I]) end,
+    nl, fail.
+/* Kupferdraht - verschimmelte Milch - Zimt - Spinnenbeine - Mehl - Regenwurmhornhaut - Krähenfüße
+CPU time 0.002 seconds, no more solutions, korrekt */

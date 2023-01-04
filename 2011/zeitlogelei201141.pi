@@ -1,0 +1,35 @@
+/* Zeit Logelei 2011/41 (nach Janko Naoki Haido)
+https://www.zeit.de/2011/41/Spiele-Logelei-41 */
+import util, cp.
+main =>
+  SO = [4,0,2,0,0],  % SO = Spalte oben,
+  SU = [0,0,0,0,0],  % SU = Spalte unten
+  ZL = [3,0,0,0,3],  % ZL = Zeile links
+  ZR = [2,0,0,4,3],  % ZR = Zeile rechts
+  N = len(SO), MAX = N,
+  X = new_array(N,N), X :: 1..MAX,
+  foreach(I in 1..N) 
+    RL_A = [X[I,J] : J in 1..N], num_skyscrapes(RL_A, ZL[I]),
+    RR_A = reverse(RL_A),        num_skyscrapes(RR_A, ZR[I]),
+    sum(RL_A) #= MAX*(MAX+1)//2, all_different(RL_A),
+    CU_A = [X[J,I] : J in 1..N], num_skyscrapes(CU_A, SO[I]),
+    CL_A = reverse(CU_A),        num_skyscrapes(CL_A, SU[I]),
+    sum(CU_A) #= MAX*(MAX+1)//2, all_different(CU_A)
+  end,
+  solve([max,split],X),
+  foreach(Z in 1..N, S in 1..N)
+        printf("%d|", X[Z,S]), if S=N then nl end
+  end.
+/*
+2|1|4|5|3|
+3|5|1|2|4|
+4|2|3|1|5|
+5|4|2|3|1|
+1|3|5|4|2|
+CPU time 0.012 seconds, korrekt */
+% Skyscraper Num
+num_skyscrapes(_, 0)  => true.
+num_skyscrapes(Y, Num) =>
+  N = len(Y),  
+  % Now count all the positions where Y[I] is larger then all Y[1..I-1]
+  Num #= 1 + sum([ sum([(Y[I] #> Y[J]) : J in 1..I-1]) #= I-1 : I in 2..N]).

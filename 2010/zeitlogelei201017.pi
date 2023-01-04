@@ -1,0 +1,44 @@
+/* Zeit Logelei 2010/17 Das Vermögen von Baron von Hauffendurst soll unter seinen acht Erben aufgeteilt werden.
+https://www.zeit.de/2010/17/Spiele-Logelei-17 */
+import sat, util.
+main ?=>
+    Total = 900, % Mio. EUR
+    Erbe = [Ad,As,Ee,Eh,F,G,H,L], Erbe :: 0..900, N = len(Erbe), 
+    Name = ["Adelheid", "Agnes", "Eleonore", "Elisabeth", "Friedrich", "Gustav", "Heinrich", "Leopold"],
+    sum(Erbe) #= Total,
+    % Wenn Leopold 30 Prozent des Anteils von Eleonore bekommt, dann erhält Heinrich ein Viertel desjenigen Anteils, den Friedrich bekommt.
+    100 * L #= 30 * Ee #=> 100 * H #= 25 * F,
+    % Wenn Adelheid 20 Prozent des Anteils von Friedrich bekommt, dann erhält Agnes 26 Prozent des Anteils von Heinrich, 
+    100 * Ad #= 20 * F #=> 100 * As #= 26 * H,
+    % ansonsten bekommt Adelheid den gleichen Anteil wie Elisabeth. 
+    100 * Ad #!= 20 * F #=> Ad #= Eh,
+    % Wenn Elisabeth halb so viel bekommt wie Agnes, dann bekommt Friedrich fünfmal so viel wie Adelheid, 
+    100 * Eh #= 50 * As #=> F #= 5 * Ad,
+    % ansonsten bekommt Leopold 70 Prozent des Anteils von Eleonore. 
+    100 * Eh #!= 50 * As #=> 100 * L #= 70 * Ee,
+    % Wenn Elisabeth 13 Prozent des Anteils von Heinrich bekommt, bekommt Leopold dreimal so viel wie Eleonore, 
+    100 * Eh #= 13 * H #=> L #= 3 * Ee,
+    % ansonsten bekommt Eleonore dreimal so viel wie Leopold. 
+    100 * Eh #!= 13 * H #=> Ee #= 3 * L,
+    % Wenn Friedrich doppelt so viel bekommt wie Adelheid, bekommt Heinrich halb so viel wie Gustav und Leopold zusammen,
+    F #= 2 * Ad #=> 100 * H #= 50 * (G + L),
+    % ansonsten bekommt Leopold doppelt so viel wie Gustav und Heinrich zusammen. 
+    F #!= 2 * Ad #=> L #= 2 * (G + H),
+    % Wenn Agnes siebenmal so viel bekommt wie Adelheid, bekommt Heinrich halb so viel wie Elisabeth, 
+    As #= 7 * Ad #=> 100 * H #= 50 * Eh,
+    % ansonsten bekommt Friedrich dreimal so viel wie Adelheid
+    As #!= 7 * Ad #=> F #= 3 * Ad,
+    solve(Erbe),
+    Ranking = [(Erbe[I],Name[I]) : I in 1..N].sort_down(),
+    foreach((Er,Na) in Ranking) printf("%9s bekommt %3d Mio. Euro.%n", Na, Er) end,
+    fail. 
+/* 
+    Agnes bekommt 504 Mio. Euro.
+Friedrich bekommt 144 Mio. Euro.
+   Gustav bekommt  72 Mio. Euro.
+Elisabeth bekommt  72 Mio. Euro.
+ Adelheid bekommt  72 Mio. Euro.
+ Heinrich bekommt  36 Mio. Euro.
+  Leopold bekommt   0 Mio. Euro.
+ Eleonore bekommt   0 Mio. Euro.
+CPU time 1.702 seconds, no more solutions, korrekt */

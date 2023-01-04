@@ -1,0 +1,37 @@
+/* Zeit Logelei 2010/03 Professor Knusi war kürzlich in Forbanien
+https://www.zeit.de/2010/03/Spiele-Logelei-03 */
+import cp, util.
+main ?=>
+    % Er befragt fünf Forbanierpaare (10 Forbanier):
+    N = 10, Paar = new_list(N), Paar :: 1..5, 
+    A=1,B=2,C=3,D=4,E=5,F=6,G=7,H=8,I=9,J=10,
+    Art = new_list(N), Art :: 0..1, % Wemukken sagen die Wahrheit (1), Falpoffen lügen (0)
+    % Jedes Paar besteht aus einem Wemukken und einem Falpoffen:
+    all_different([(Paar[X],Art[X]) : X in 1..N]), 
+    foreach((X,Y,Z) in [
+        (A,C,D), % Affel: "Cuffl und Duffl sind miteinander verheiratet."
+        (B,D,F), % Beffl: "Duffl und Faffl sind miteinander verheiratet."
+        (C,J,A), % Cuffl: "Jeffl und Affel sind miteinander verheiratet."
+        (D,B,I), % Duffl: "Beffl und Iffel sind miteinander verheiratet."
+        (E,F,G), % Effel: "Faffl und Goffl sind miteinander verheiratet."
+        (F,H,G), % Faffl: "Hiffl und Goffl sind miteinander verheiratet."
+        (G,C,B), % Goffl: "Cuffl und Beffl sind miteinander verheiratet."
+        (H,E,J), % Hiffl: "Effel und Jeffl sind miteinander verheiratet."
+        (I,A,J), % Iffel: "Affel und Jeffl sind miteinander verheiratet."
+        (J,H,G)])% Jeffl: "Hiffl und Goffl sind miteinander verheiratet."
+                Art[X] #= (Paar[Y] #= Paar[Z])
+    end,
+    solve(Art ++ Paar),
+    % Grouping = [(1,0,X1),(1,1,X2),1,0,X3),(1,1,X4), usw.] = Paarweise Liste der Forbanier
+    Grouping = [[Paar[X],Art[X],X] : X in 1..N].sort(), % (vgl. Zeile 10)
+    println("Paare (jeweils erst Falpoffe, dann Wemukke):"),
+    foreach(Y in 1..N)
+        printf("%c ", chr(64+Grouping[Y,3])), if Y mod 2 = 0 then nl end
+    end. 
+/* Paare (jeweils erst Falpoffe, dann Wemukke):
+A J 
+B C 
+D I 
+E F 
+H G 
+CPU time 0.008 seconds, no more solutions, korrekt */

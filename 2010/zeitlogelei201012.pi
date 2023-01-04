@@ -1,0 +1,47 @@
+/* Zeit Logelei 2010/12 Susanne fährt mit dem Fahrrad auf dem Verkehrsübungsplatz
+https://www.zeit.de/2010/12/Spiele-Logelei-12 */
+import sat.
+main ?=> 
+    N = 12, Vals = 0..N-1, % = Eing- und Ausgang, 1..11 = Kreuzungen 
+    X = new_list(2*N), X :: Vals, % der Weg durch den Verkehrsübungsplatz
+    foreach(I in 2..2*N-1) X[I] #= 0 #=> X[I+1] #= 0 end,
+    % Liste der geradeaus führenden symmetrischen Wege (3er; Nummerierung siehe Ausdruck):
+    WegS = [[0,1,2,3], [3,4,5,6,7], [11,10,8,4]], 
+    % Liste der geradeaus führenden asymmetrischen Wege (3er mit Einbahnstraßen):
+    WegA = [[5,3,4], [2,8,9,6], [7,11,10], [7,9,11]],
+    %         0   1    2     3   4     5   6     7      8    9    10
+    WegS2 = {[1],[10],[3,8],[4],[5,8],[6],[7,9],[],    [10],[11],[11]}, % Array der symmetrisch abbiegenden Wege (2er)
+    WegA2 = {[0],[],  [],   [], [],   [3],[],   [9,11],[9],  [], []  }, % Array der asymmetrisch abbiegenden Wege (2er)
+    % Liste aller möglichen geraden Schritte: {Ort von, Ort zu}:
+    Steps1 = [{L[Von],L[Von+1]} : L in WegS ++ WegA, Von in 1..len(L)-1]
+          ++ [{L[Von+1],L[Von]} : L in WegS,         Von in 1..len(L)-1],
+    % Liste aller möglichen abbiegenden Schritte: {Ort von, Ort zu}:
+    Steps2 = [{I,J} : I in 0..10, J in WegS2[1+I]++WegA2[1+I]]
+          ++ [{J,I} : I in 0..10, J in WegS2[1+I]],
+    Steps = Steps1 ++ Steps2,
+    % Liste aller Gerdeausfahrten (3er):
+    Steps3 = [{L[Von-1],L[Von],L[Von+1]} : L in WegS ++ WegA, Von in 2..len(L)-2]
+          ++ [{L[Von+1],L[Von],L[Von-1]} : L in WegS,         Von in 2..len(L)-2],
+    println(Steps1), println(Steps2), println(Steps3),
+    X[1] #= 0, X[2*N] #= 0, % Start und Ziel am Eingang
+    foreach(I in 1..2*N-1) table_in({X[I],X[I+1]}, Steps) end,
+    /*XG = new_list(2*N-1), XG :: 0..N, % XG[I] = J heißt: Im I-ten Schritt wird die Kreuzung J geradeaus durchfahren
+    XG[1] #= 0,
+    foreach(I in 2..2*N-1) 
+        % table_in({X[I-1],X[I],X[I+1]},    Steps3) #=> XG[I] #= I,
+        % table_notin({X[I-1],X[I],X[I+1]}, Steps3) #=> XG[I] #= 0
+    end,*/
+    % Umkehren ist verboten:
+    foreach(I in 2..2*N-1) X[I-1] #!= X[I+1] end,    
+    % Jede Kreuzung wird ein- oder zweimal durchfahren:
+    Cnt = new_list(N-1), Cnt :: 1..2,
+    foreach(J in 1..N-1) count(J, X, Cnt[J]) end,
+    2*(N-1)-1 #= sum(Cnt),
+    solve(X ++ Cnt), % [$min(Scnt)], 
+    println(Cnt),
+    foreach(I in 1..2*N) 
+        printf("%d, ", X[I]) 
+    end,
+    nl, fail.
+/* 
+ */

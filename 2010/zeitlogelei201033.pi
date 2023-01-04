@@ -1,0 +1,21 @@
+/* Zeit Logelei 2010/33 Gerichtsverhandlung zum Diebstahl des Gemäldes Der Sternentag
+https://www.zeit.de/2010/33/Spiele-Logelei-33 */
+import sat.
+main ?=> 
+    P = [Mo,Di,Mi,Du,Fr,Sa,So], P :: 0..1, % 0=lügt/ist Dieb, 1=sagt die Wahrheit/ist unschuldig
+    foreach((P0,P1,W1,P2,W2) in [  
+        (Mo,Fr,0,Sa,0), % Frau Montag: "Entweder Herr Freitag oder Herr Sonnabend war einer der Diebe, aber nicht beide."
+        (Di,Sa,1,Mi,1), % Frau Dienstag: "Entweder Herr Sonnabend oder Herr Mittwoch haben mit dem Diebstahl nichts zu tun, aber nicht beide." 
+        (Mi,Mo,1,Du,1), % Herr Mittwoch: "Entweder Frau Montag oder Frau Dunschdig haben mit dem Diebstahl nichts zu tun, aber nicht beide."
+        (Du,Mi,1,So,0), % Frau Dunschdig: "Entweder Herr Mittwoch hat mit dem Diebstahl nichts zu tun, oder aber Frau Sonntag war Mitglied der Diebesbande, aber nicht beides."
+        (Fr,So,0,Mi,1), % Herr Freitag: "Entweder Frau Sonntag war eine Diebin, oder aber Herr Mittwoch hat mit dem Diebstahl nichts zu tun, aber nicht beides." 
+        (Sa,Di,0,Mo,0), % Herr Sonnabend: "Entweder war Frau Dienstag oder Frau Montag in den Diebstahl verwickelt, aber nicht beide." 
+        (So,Sa,1,Mo,0)])% Frau Sonntag: "Entweder Herr Sonnabend hat mit dem Diebstahl nichts zu tun, oder aber Frau Montag ist Teil der Diebesbande, aber nicht beides."
+            P0 #= (P1 #= W1 #^ P2 #= W2)
+    end,
+    solve(P), Name = ["Mo","Di","Mi","Du","Fr","Sa","Frau Sonntag"],
+    foreach(I in 1..7, P[I]=1) printf("%s ", Name[I]) end,
+    println("ist unschuldig, der Rest gehört zu der Diebesbande!"),
+    nl, fail.
+/* Frau Sonntag ist unschuldig, der Rest gehört zu der Diebesbande!
+CPU time 0.001 seconds, no more solutions, korrekt */

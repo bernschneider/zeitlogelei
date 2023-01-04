@@ -1,0 +1,49 @@
+/* Zeit Logelei 2011/22 Ingrid, Karoline, Ingo und Karl spielen zusammen ein Brettspiel
+https://www.zeit.de/2011/22/Spiele-Logelei-22 */
+import cp.
+main ?=>
+    NPerson = ["Ingrid", "Karoline", "Ingo", "Karl"],
+    Ingrid=1, Karoline=2, _Ingo=3, Karl=4,
+    NForm = ["Quadrat", "Kreis", "Dreieck", "Sechseck"],
+    Quadrat=1, Kreis=2, _Dreieck=3, Sechseck=4,
+    Form = new_list(4), Form :: 1..4, assignment(Form, RForm),
+    NTier = ["Elefant", "Katze", "Löwe", "Panda"],
+    Elefant=1, Katze=2, Loewe=3, Panda=4,
+    Tier = new_list(4), Tier :: 1..4, assignment(Tier, RTier),
+    NFarbe = ["Rot", "Grün", "Gelb", "Blau"],
+    Rot=1, Gruen=2, _Gelb=3, Blau=4,
+    Farbe = new_list(4), Farbe :: 1..4, assignment(Farbe, RFarbe),
+    % Der Kreis ging an eine Person, deren Vorname mit einem K beginnt.
+    Form[Karoline] #= Kreis #\/ Form[Karl] #= Kreis,
+    % Der Spieler mit dem Löwen hatte nicht den roten Spielstein:
+    element(RTier[Loewe], Farbe, F1), F1 #!= Rot,
+    % Der Spieler mit dem Sechseck hatte weder Elefant noch Blau:
+    P2 #= RForm[Sechseck], 
+    element(P2, Tier, T2), T2 #!= Elefant,   
+    element(P2, Farbe, F2), F2 #!= Blau,   
+    % Der mit dem blauen Spielstein hat kein Quadrat gewählt.
+    element(RFarbe[Blau], Form, Form3), Form3 #!= Quadrat,    
+    % Den Panda hat sich eine Frau ausgesucht:
+    Tier[Ingrid] #= Panda #\/ Tier[Karoline] #= Panda,
+    % Der Spieler mit dem Quadrat hatte nicht Rot.
+    element(RForm[Quadrat], Farbe, F4), F4 #!= Rot,        
+    % Der Spieler mit dem Panda hatte Blau. Das war nicht Karoline.
+    P5 #= RTier[Panda], element(P5, Farbe, Blau), P5 #!= Karoline,
+    % Der mit dem Elefanten hatte weder das Quadrat noch den roten Spielstein.
+    element(RTier[Elefant], Form, Form6), Form6 #!= Quadrat,    
+    element(RTier[Elefant], Farbe, F6), F6 #!= Rot,    
+    % Karl hatte weder Grün noch die Katze:
+    Farbe[Karl] #!= Gruen, Tier[Karl] #!= Katze, 
+    % Der Spieler mit dem grünen Spielstein hatte nicht den Löwen.
+    element(RFarbe[Gruen], Tier, T8), T8 #!= Loewe,        
+    solve(Form ++ RForm ++ Tier ++ RTier ++ Farbe ++ RFarbe ),
+    foreach(I in 1..4)
+        printf("%8s: %8s, %7s, %4s%n", NPerson[I], NForm[Form[I]], NTier[Tier[I]], NFarbe[Farbe[I]])
+    end,
+    nl, fail.
+/*
+  Ingrid:  Dreieck,   Panda, Blau
+Karoline:    Kreis, Elefant, Grün
+    Ingo: Sechseck,   Katze,  Rot
+    Karl:  Quadrat,    Löwe, Gelb 
+CPU time 0.002 seconds, no more solutions, korrekt */

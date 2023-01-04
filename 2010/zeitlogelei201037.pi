@@ -1,0 +1,41 @@
+/* Zeit Logelei 20110/39 Im Studentenwohnheim
+https://www.zeit.de/2010/37/Spiele-Logelei-37 */
+import cp.
+main ?=>
+    N = 7,
+    Nr = new_list(7), Nr :: [17, 28, 31, 36, 41, 49, 97], all_different(Nr), 
+    NPR = [28, 36, 49], NQU = [17, 28, 31, 41, 97],
+    Gtag  = new_list(N), Gtag :: [2,3,4,7,8,9,11], all_different(Gtag),    
+    foreach(I in 1..N) 
+        Gtag[I] #= 7 #=> Nr[I] :: NPR, % Weder die Zimmernummer des Studenten, der im Juli Geburtstag hat, ..
+        Gtag[I] #= 9 #=> Nr[I] :: NPR,  % .. noch desjenigen, der im September Geburtstag hat, ist prim.
+        Gtag[I] #= 4 #=> Nr[1] #< Nr[I], % Das erste Zimmer hat eine kleinere Zimmernummer als dasjenige des Studenten, der im April Geburtstag hat.
+        Gtag[I] #= 4 #=> Nr[I] #= 49, % Der Student, der im April Geburtstag hat, wohnt im Zimmer 49.
+        foreach(J in 1..N)
+            (Nr[I] #= 28 #/\ Nr[J] #= 36) #=> I #< J, % Das Zimmer mit der Nummer 28 liegt vor dem Zimmer mit der Nummer 36.
+            (Nr[I] #= 97 #/\ Nr[J] #= 17) #=> I #< J % Das Zimmer mit der Nummer 97 liegt vor dem Zimmer mit der Nummer 17.
+        end,
+        Gtag[I] #= 2 #=> Nr[I] #< Nr[N] % Der Student, der im Februar Geburtstag hat, wohnt in einem Zimmer mit einer kleineren Zimmernummer als die des letzten Zimmers.
+    end,
+    % Die Zimmernummer des vorletzten Zimmers ist weder ungerade noch eine Quadratzahl.
+    Nr[6] mod 2 #= 0, Nr[6] :: NQU,
+    % Der Student im drittletzten Zimmer hat im November Geburtstag.
+    Gtag[N-2] #= 11,
+    % Der Student im zweiten Zimmer hat später Geburtstag als der Student im vorletzten Zimmer. 
+    Gtag[2] #> Gtag[N-1],
+    % Das dritte Zimmer hat die Nummer 41.
+    Nr[3] #= 41,
+    solve(Nr ++ Gtag),
+    foreach(I in 1..N)
+        printf("Zimmer Nr. %d, Geburtstag %d%n", Nr[I], Gtag[I])
+    end,
+    nl, fail.
+/*
+Zimmer Nr. 31, Geburtstag 2
+Zimmer Nr. 97, Geburtstag 8
+Zimmer Nr. 41, Geburtstag 3
+Zimmer Nr. 49, Geburtstag 4
+Zimmer Nr. 17, Geburtstag 11
+Zimmer Nr. 28, Geburtstag 7
+Zimmer Nr. 36, Geburtstag 9
+CPU time 0.003 seconds, no more solutions, korrekt */

@@ -1,0 +1,49 @@
+/* Zeit Logelei 2010/35 Hurz-Oper mit 7 Takten für Sopran und Tenor
+https://www.zeit.de/2010/35/Spiele-Logelei-35 */
+import cp.
+main ?=>
+    M = new_array(7,2), M :: 0..3, Mvars = vars(M),
+    Name = [" -- ","Wolf","Lamm","Hurz"], W=1, L=2, H=3,
+    % Alternativ kann jede Stimme auch einen Takt lang Pause machen, aber nie länger, sonst wird das Stück langweilig:
+    foreach(St in 1..2, T in 1..6) M[T,St] #> 0 #\/ M[T+1,St] #> 0 end,
+    % Es müssen mindestens 5 Pausen vorkommen:
+    sum([(X #= 0) : X in Mvars]) #>= 5,
+    % Im ersten Takt dürfen nicht alle Stimmen Pause machen:
+    M[1,1] #> 0 #\/ M[1,2] #> 0,
+    foreach(T in 1..6)
+        % Wird in einem Takt Wolf und Lamm gleichzeitig gesungen, so muss im folgenden Takt mindestens eine Stimme Hurz singen:
+        ( (M[T,1] #= W #/\ M[T,2] #= L) #\/ (M[T,1] #= L #/\ M[T,2] #= W) )
+          #=> (M[T+1,1] #= H #\/ M[T+1,2] #= H),
+        % Auf einen Takt mit einem Hurz darf kein Lamm folgen:
+        (M[T,1] #= H #\/ M[T,2] #= H) #=> (M[T+1,1] #!= L #/\ M[T+1,2] #!= L),
+        % Irritierend würde auch ein Hurz direkt nach einem Wolf innerhalb derselben Stimme wirken:
+        foreach(St in 1..2) M[T,St] #= W #=> M[T+1,St] #!= H end
+    end,
+    foreach(T in 1..7)
+        % Tenöre dürfen kein Hurz singen:
+        M[T,2] #!= H,
+        % Hurz und Wolf dürfen nie gleichzeitig vorkommen:
+        M[T,1] #= H #=> M[T,2] #!= W,
+        M[T,2] #= H #=> M[T,1] #!= W
+    end,
+    % Die Folge aus Zeile 14ff muss mindestens zweimal in einem Stück vorkommen:
+    sum([(M[T,1] #= W)*(M[T,2] #= L)+(M[T,1] #= L)*(M[T,2] #= W) : T in 1..6]) #>= 2,
+    % Der erste und der letzte Takt im Tenor muss identisch sein:
+    M[1,2] #= M[7,2],
+    % Lamm und Wolf müssen gleich oft gesungen werden:
+    count(L, Mvars, Cnt), count(W, Mvars, Cnt), 
+    solve(vars(M) ++ [Cnt]),
+    println("Sopran  Tenor"),
+    foreach(T in 1..7) 
+        printf("%6s %6s%n", Name[1+M[T,1]], Name[1+M[T,2]])
+    end, nl, fail.
+/*
+Sopran  Tenor
+  Hurz    -- 
+   --    Wolf
+  Lamm   Wolf
+  Hurz   Lamm
+   --     -- 
+  Lamm   Wolf
+  Hurz    -- 
+CPU time 0.081 seconds, no more solutions, korrekt */

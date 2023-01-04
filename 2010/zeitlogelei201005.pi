@@ -1,0 +1,34 @@
+/* Zeit Logelei 2010/05 Beim Schneefigurenwettbewerb waren 10 Schülerinnen mehr oder minder kreativ
+https://www.zeit.de/2010/05/Spiele-Logelei-05 */
+import cp, util.
+main ?=>
+    StrName = ["Elfriede","Helga","Marina","Miriam","Monika","Ruth","Sandra","Selma","Sonja","Tanja"],
+    SF = [Elfriede,Helga,_Marina,Miriam,Monika,Ruth,Sandra,Selma,Sonja,Tanja], N = len(SF), 
+    SF :: 1..N, all_different(SF),
+    FName = ["Haus", "Katze", "Kaninchen", "Nikolaus", "Rose", "Schnecke", "Schneefrau", "Schneemann", "Stern", "Zauberer"],
+    Haus=1, Katze=2, Kaninchen=3, Nikolaus=4, Rose=5, Schnecke=6, Schneefrau=7, Schneemann=8, Stern=9, Zauberer=10,     
+    foreach((S1,W1,F1, S2,F2) in [
+        (Sonja,1,Katze, Ruth,Schneefrau), % Wenn von Sonja die Katze war, war von Ruth die Schneefrau.
+        (Monika,1,Kaninchen, Sandra,Zauberer), % Wenn von Monika das Kaninchen war, war von Sandra der Zauberer.
+        (Sandra,1,Kaninchen, Miriam,Haus), % Wenn von Sandra das Kaninchen war, war von Miriam das Haus.
+        (Miriam,0,Stern, Ruth,Schnecke), % Wenn von Miriam nicht der Stern war, war von Ruth die Schnecke.
+        (Elfriede,1,Kaninchen, Ruth,Schneefrau), % Wenn von Elfriede das Kaninchen war, war von Ruth die Schneefrau.
+        (Miriam,0,Nikolaus, Ruth,Zauberer), % Wenn von Miriam nicht der Nikolaus war, war von Ruth der Zauberer.
+        (Sonja,1,Kaninchen, Helga,Schneemann), % Wenn von Sonja das Kaninchen war, war von Helga der Schneemann.
+        (Monika,1,Schneefrau, Miriam,Schnecke), % Wenn von Monika die Schneefrau war, war von Miriam die Schnecke.
+        (Tanja,0,Zauberer, Ruth,Haus), % Wenn von Tanja nicht der Zauberer war, war von Ruth das Haus.
+        (Elfriede,1,Schneefrau, Selma,Schneemann), % Wenn von Elfriede die Schneefrau war, war von Selma der Schneemann.
+        (Sonja,0,Katze, Helga,Stern), % Wenn von Sonja nicht die Katze war, war von Helga der Stern.
+        (Elfriede,1,Katze, Selma,Rose), % Wenn von Elfriede die Katze war, war von Selma die Rose.
+        (Tanja,0,Katze, Selma,Haus), % Wenn von Tanja nicht die Katze war, war von Selma das Haus.
+        (Monika,1,Katze, Selma,Zauberer), % Wenn von Monika die Katze war, war von Selma der Zauberer.
+        (Elfriede,1,Schneemann, Selma,Schneefrau)])% Wenn von Elfriede der Schneemann war, war von Selma die Schneefrau.
+               if W1=1 then S1 #= F1  #=> S2 #= F2 
+                       else S1 #!= F1 #=> S2 #= F2
+               end
+    end,
+    solve(SF),
+    foreach(J in 1..N) printf("Die Figur '%s' war von %s.%n", FName[SF[J]], StrName[J]) end,
+    nl, fail.
+/* 
+ */

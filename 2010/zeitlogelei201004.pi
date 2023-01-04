@@ -1,0 +1,40 @@
+/* Zeit Logelei 2010/04 Peter hat mit Teleskop-Hilfe eine Karte der Dubladen angefertigt, eines Sternhaufens aus neun Doppelsternen
+https://www.zeit.de/2010/04/Spiele-Logelei-04 */
+import sat, util.
+main ?=>
+    % Auf der Karte hat Peter die neun Gebiete eingezeichnet:
+    Geb = {{1,3,3,3,6,6,6,9,9}, 
+           {1,3,3,3,6,6,6,9,9}, 
+           {1,4,4,4,6,9,9,9,9}, 
+           {1,1,4,4,4,9,9,9,9}, 
+           {1,1,4,4,4,7,7,9,9}, 
+           {1,1,1,4,7,7,7,7,7}, 
+           {2,2,2,2,8,8,8,7,7}, 
+           {2,2,2,5,5,8,5,5,5}, 
+           {2,2,2,5,5,5,5,5,5}}, N = len(Geb),
+    M = new_array(N,N), M :: 0..1, % 1 = Stern
+    % In jedem Gebiet befinden sich je ein Doppelsternpaar:
+    foreach(G in 1..N) sum([M[Z,S] : Z in 1..N, S in 1..N, Geb[Z,S]=G]) #= 2 end,
+    % in jeder Quadrantenzeile und jeder Quadrantenspalte befinden sich genau zwei Sterne:
+    foreach(L in M.rows() ++ M.columns()) sum(L) #= 2 end,
+    % Zwei Sterne dürfen sich nie in benachbarten Quadranten befinden, auch nicht in diagonal benachbarten:
+    foreach(Z in 1..N,   S in 1..N-1) M[Z,S] + M[Z,S+1] #< 2 end,
+    foreach(Z in 1..N-1, S in 1..N)   M[Z,S] + M[Z+1,S] #< 2 end,
+    foreach(Z in 1..N-1, S in 1..N-1) M[Z,S] + M[Z+1,S+1] #< 2, M[Z,S+1] + M[Z+1,S] #< 2 end,
+    solve(M), Chr = " *",
+    foreach(Z in 1..N)
+    	foreach(S in 1..N) 
+            printf("%c%c|", Chr[1+M[Z,S]], chr(96+Geb[Z,S]))
+        end, nl
+    end, fail.
+/*
+ a|*c| c|*c| f| f| f| i| i|
+ a| c| c| c| f| f|*f| i|*i|
+ a| d|*d| d|*f| i| i| i| i|
+*a| a| d| d| d| i| i|*i| i|
+ a| a| d|*d| d|*g| g| i| i|
+ a|*a| a| d| g| g| g| g|*g|
+ b| b| b| b|*h| h|*h| g| g|
+*b| b|*b| e| e| h| e| e| e|
+ b| b| b| e| e|*e| e|*e| e|
+CPU time 0.031 seconds, no more solutions, korrekt */

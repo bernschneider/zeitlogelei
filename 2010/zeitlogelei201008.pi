@@ -1,0 +1,42 @@
+/* Zeit Logelei 2010/08 Doktor Annstein hat ein Vectimobil mit fünf Hebeln erfunden (Planner)
+https://www.zeit.de/2010/08/Spiele-Logelei-08 */
+import planner.
+
+main => %(H,R,S,V,W)
+    S0 = (0,0,0,0,0), % Im Moment stehen alle Hebel auf aus
+    plan(S0,20,Plan),
+    foreach(Str in Plan) printf("%s, ", Str) end.
+/* W an, H an, S aus, V an, R an, V an, H aus, W an, S aus, W aus, H aus, W an, W aus, W an, H an, S an
+CPU time 0.0 second, korrekt */
+
+final(S1) => 
+	S1 = (1,1,1,1,1). % Alle Hebel sind auf an zu bringen
+
+action(S0,S1,Action,Cost) ?=> % (H,R,S,V,W)
+	S0 = (H,R,S,V,1),         % Hebel H kann nur bewegt werden, wenn Hebel W an ist.
+	S1 = (1-H,1-R,1-S,1-V,0), % Wenn man H umschaltet, schalten sich sämtliche anderen Hebel auch um.
+    Action = "H" ++ switch(H), Cost = 1.
+
+action(S0,S1,Action,Cost) ?=> % (H,R,S,V,W)
+	S0 = (H,R,  R,R,  _), % Hebel R kann nur bewegt werden, wenn er in der gleichen Stellung wie S und V steht. 
+	S1 = (H,1-R,R,R,1-R), % Wenn man ihn umschaltet, bewegt sich Hebel W in die gleiche Stellung.
+    Action = "R" ++ switch(R), Cost = 1.
+
+action(S0,S1,Action,Cost) ?=> % (H,R,S,V,W)
+    S0 =              (H,1,S,1,W),  % Hebel S kann nur bewegt werden, wenn R und V an sind. 
+	S1 = cond( S = 0, (H,1,1,1,H), (H,1,0,W,W) ), % Wenn man S anschaltet, bewegt sich Hebel W in die Stellung von H. 
+                                   % Wenn man S ausschaltet, bewegt sich V in die Stellung von W
+    Action = "S" ++ switch(S), Cost = 1.
+
+action(S0,S1,Action,Cost) ?=> % (H,R,S,V,W) (Ausschalten kann man Hebel V gar nicht manuell.) 
+	S0 = (1,R,0,0,W),   % Anschalten kann man Hebel V nur, wenn S aus ist und H an. 
+	S1 = (1,1-R,0,0,W), % In diesem Fall schaltet sich R um, und danach schaltet sich V von selbst wieder aus.
+    Action = "V an, ", Cost = 1.
+
+action(S0,S1,Action,Cost) ?=> % (H,R,S,V,W)
+	S0 =              (0,R,S,V,W), % Hebel W kann nur bewegt werden, wenn H aus ist. 
+    % Wenn man W ausschaltet, schaltet sich R auch aus, und danach bewegen sich die Hebel W und H in die Stellung von Hebel V:
+    S1 = cond( W = 1, (V,0,S,V,V), (0,R,S,V,1) ),
+    Action = "W" ++ switch(W), Cost = 1.
+
+switch(X) = cond(X=0, " an", " aus").

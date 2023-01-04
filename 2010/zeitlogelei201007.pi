@@ -1,0 +1,48 @@
+/* Zeit Logelei 2010/07 Schiffe von Koblenz nach Bingen
+https://www.zeit.de/2010/07/Spiele-Logelei-07*/
+import cp, util.
+main ?=>
+    % Von Koblenz aus gesehen haben die sieben Schiffe die Positionen <- 1, 2, 3, 4, 5, 6, 7
+    Schiff = [A, D, E, G, M, P, _T], N = len(Schiff), Schiff :: 1..N, all_different(Schiff), 
+    
+    % Die drei Skipper sind in Gegenrichtung in Richtung Bingen unterwegs. Sie passieren der Reihe nach alle 7 Schiffe. 
+    Skipper = [Braun,Weiss,Schwarz], Skipper :: 1..N-2, all_different(Skipper), 
+    % (Position des zuletzt passierten Schiffs A..T ganz zu Beginn)
+
+    % Braun: "Wenn die Elisabeth noch vor mir ist, dann ist die Gerda hinter mir." 
+    E #> Braun #=> G #=< Braun, % E vor Braun => G hinter Braun
+    % Weiß: "Wenn die Dagmar noch vor mir ist, dann ist die Gerda hinter mir." 
+    D #> Weiss #=> G #=< Weiss, % usw.
+    % Schwarz: "Wenn die Adelheid noch vor mir ist, dann ist die Gerda hinter mir." 
+    A #> Schwarz #=> G #=< Schwarz,
+    % Funkpause, denn alle drei Skipper passieren ein entgegenkommendes Schiff. 
+    % Braun: "Wenn die Gerda noch vor mir ist, dann ist die Paula hinter mir." 
+    G #> Braun + 1 #=> P #=< Braun + 1, % + 1 weil Braun eins der Schiffe passiert hat
+    % Weiß: "Wenn die Melanie noch vor mir ist, dann ist auch die Dagmar vor mir." 
+    M #> Weiss + 1 #=> D #> Weiss + 1,
+    % Schwarz: "Wenn die Melanie noch vor mir ist, dann ist auch die Gerda vor mir." 
+    M #> Schwarz + 1 #=> G #> Schwarz + 1,
+    % Erneut fahren die drei Skipper an einem entgegenkommenden Schiff vorbei, bevor sie weiterfunken. 
+    % Braun: "Wenn die Elisabeth hinter mir ist, dann ist die Paula noch vor mir." 
+    E #=< Braun + 2 #=> P #> Braun + 2,  % + 2 weil Braun ein weiteres Schiff passiert hat
+    % Weiß: "Wenn die Adelheid hinter mir ist, dann ist die Gerda noch vor mir." 
+    A #=< Weiss + 2 #=> G #> Weiss + 2,
+    % Schwarz: "Wenn die Gerda hinter mir ist, dann ist die Melanie noch vor mir."
+    G #=< Schwarz + 2 #=> M #> Schwarz + 2,
+    solve(Skipper ++ Schiff), 
+    Str = ["A", "D", "E", "G", "M", "P", "T"], StrSkipper = ["Braun","Weiss","Schwarz"],
+    Ranking = [(Schiff[J],J) : J in 1..N].sort(),
+    foreach((R,I) in Ranking) 
+        printf("%d. %s ", R, Str[I]),
+        S = find_first_of(Skipper, R),             % Befindet sich auf Position R ein Skipper, ..
+        if S > 0 then print(StrSkipper[S]) end, nl % .. gebe seinen Namen aus
+    end, nl, fail.
+/* 
+1. A Schwarz
+2. D Weiss
+3. M 
+4. E Braun
+5. G 
+6. T 
+7. P 
+CPU time 0.002 seconds, no more solutions, korrekt */

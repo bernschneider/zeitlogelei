@@ -1,0 +1,47 @@
+/* Zeit Logelei 2010/49 Aauf dem Parkplatz stehen fünf Autos in drei verschiedenen Farben von drei verschiedenen Herstellern und in drei verschiedenen Bauformen
+https://www.zeit.de/2010/49/Spiele-Logelei-49 */
+import cp.
+main ?=>
+    NFarbe = ["blau","schwarz", "silber-metallic"], Fb=1, Fs=2, Fsm=3,
+    Farbe = new_list(5), Farbe :: 1..3, 
+    NHerst = ["BMW", "Mercedes", "VW"],      B=1, M=2, V=3,
+    Herst = new_list(5), Herst :: 1..3, 
+    NForm = ["Coupe", "Kombi", "Limousine"], C=1, K=2, L=3,
+    Form = new_list(5), Form :: 1..3, 
+    [CntFb, CntFs, CntFsm, CntBMW, CntMercedes, CntVW, CntCoupe, CntKombi, CntLimo] :: 1..5,
+    count(Fb, Farbe, CntFb), count(Fs, Farbe, CntFs), count(Fsm, Farbe, CntFsm), 
+    count(B, Herst, CntBMW), count(M, Herst, CntMercedes), count(V, Herst, CntVW),
+    count(C, Form, CntCoupe), count(K, Form, CntKombi), count(L, Form, CntLimo), 
+    [F0,H0] :: 1..3,
+    foreach(I in 1..5)
+        Form[I]  #= C #=> Farbe[I] #!= Fs, % kein Coupé ist schwarz
+        Herst[I] #= B #=> (Form[I] #!= C #\/ Farbe[I] #!= Fb), % kein BMW ist sowohl Coupé als auch blau
+        Farbe[I] #= Fs #=> Form[I] #= F0, CntFs #> 1, % die schwarzen Autos haben doch alle dieselbe Bauform
+        Form[I]  #= C #=> Herst[I] #= H0, CntCoupe #> 1  % die Coupés sind dafür aber alle vom selben Hersteller,
+    end,
+    % Es gibt mehr BMW als Kombis:
+    CntBMW #> CntKombi, % CntKombi #> 1,
+    % Es gibt genauso viele Limousinen wie Autos in Silbermetallic:
+    CntLimo #= CntFsm,
+    % Keiner der Hersteller ist dreimal vertreten:
+    [CntBMW, CntMercedes, CntVW] :: 1..2,  
+    % Es gibt mehr schwarze Autos als VW:
+    CntFs #> CntVW,
+    % die Limousinen gibt es von zwei unterschiedlichen Herstellern:
+    [H1,H2] :: 1..3, H1 #< H2, 
+    sum([(Form[I] #= L)*(Herst[I] #= H1) : I in 1..5]) #> 0,
+    sum([(Form[I] #= L)*(Herst[I] #= H2) : I in 1..5]) #> 0,
+    % die Coupes haben nicht alle dieselbe Farbe:
+    [F1,F2] :: 1..3, F1 #< F2, 
+    sum([(Form[I] #= C)*(Farbe[I] #= F1) : I in 1..5]) #> 0,
+    sum([(Form[I] #= C)*(Farbe[I] #= F2) : I in 1..5]) #> 0,
+    solve(Farbe ++ Herst ++ Form ++ [F0,F1,F2,H0,H1,H2]),
+    foreach(I in 1..5)
+        printf("%15s - %10s - %8s%n", NFarbe[Farbe[I]], NForm[Form[I]], NHerst[Herst[I]])
+    end.
+/*         blau -      Coupe - Mercedes
+        schwarz -  Limousine -      BMW
+        schwarz -  Limousine -       VW
+silber-metallic -      Kombi -      BMW
+silber-metallic -      Coupe - Mercedes
+korrekt */

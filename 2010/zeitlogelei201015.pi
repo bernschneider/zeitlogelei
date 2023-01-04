@@ -1,0 +1,44 @@
+/* Zeit Logelei 2010/15 Benjamin möchte heute Abend der kleinen Nina eine Geschichte vorlesen
+Von wie vielen Wölfen und Ziegen möchte Benjamin erzählen?
+https://www.zeit.de/2010/15/Spiele-Logelei-15 
+TBC: Was bedeuten diese Informationen:
+Nach längerem Grübeln stellt Benjamin fest: "Na, dann weiß ich jetzt alles, außer ob sie meine Geschichte mag."
+Aus dem Nebenraum ruft Nina, die offenbar zugehört hat: "Deine Geschichte werde ich auch mögen." */
+import cp.
+
+main =>
+    NW = 13, NZ = 11,
+    % M[1+W,1+Z]=1 <=> Nina mag Geschichen mit W Wölfen und Z Ziegen:
+    M = new_array(1+NW,1+NZ), M :: 0..1, 
+    M[1+1,1+7] #= 0, % magic: Benjamin erzählt eine Geschichte mit einem Wolf und sieben Ziegen und Nina mag sie.
+    % Wenn Sie eine Geschichte ganz ohne Ziegen mag, dann mag sie diese Geschichte auch noch, 
+    % .. wenn man jeden Wolf durch eine Ziege ersetzt und noch zwei weitere Ziegen hinzufügt":
+    foreach(W in 0..NZ-2) M[1+W,1+0] #= 1 #=> M[1+0,1+W+2] #= 1 end,
+    % Wenn sie eine Geschichte mit Ziegen mag, bei der die Anzahl der Ziegen gerade ist, 
+    % .. dann darf man die Anzahl der Ziegen halbieren, wenn man dafür die Anzahl der Wölfe verdoppelt:
+    foreach(W in 0..NW//2, Z in 0..NZ, even(Z)) M[1+W,1+Z] #= 1 #=> M[1+2*W,1+Z//2] #= 1 end,
+    % wenn sie eine Geschichte mit einer ungeraden Anzahl Ziegen mag, 
+    % .. dann darf man eine der Ziegen durch einen Wolf ersetzen:
+    foreach(W in 0..NW-1, Z in 0..NZ, odd(Z)) M[1+W,1+Z] #= 1 #=> M[1+W+1,1+Z-1] #= 1 end,
+    % Allerdings mag sie Geschichten ohne Wolf nur dann, wenn die Anzahl der Ziegen eine ganz bestimmte ist:
+    sum(M[1+0]) #= 1,
+    solve(M), Chr = " X",
+    foreach(W in 0..NW, Z in 0..NZ)
+        printf("%c|", Chr[1+M[1+W,1+Z]]), if Z=NZ then nl end
+    end.
+    % nl, fail.
+/*
+0 1 2 3 4 5 6 7 8 9 0 1 2 3 Wölfe
+ | | | | | | | | | | | | |X| 0 
+ | | | | | | |X| | | | |X| | 1
+ | | | | | |X| | | | | | | | 2
+ | | | | | | | | | | | | | | 3
+ | | |X| | | | | | | | | | | 4
+ | |X| | | | | | | | | | | | 5
+ | | | | | | | | | | | | | | 6
+ | | | | | | | | | | | | | | 7
+ | | | | | | | | | | | | | | 8
+ | | | | | | | | | | | | | | 9
+ |X| | | | | | | | | | | | | 10
+X| | | | | | | | | | | | | | 11 Ziegen
+CPU time 0.003 seconds, das stimmt zwar, aber nur mit Magic (Zeile 13) und es gibt viele weitere Lösungen! */

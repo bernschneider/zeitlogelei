@@ -1,0 +1,23 @@
+/* Zeit Logelei 2011/42 Anton und Berta radeln zwischen A-Stadt und B-Stadt hin und her
+https://www.zeit.de/2011/42/Spiele-Logelei-42 
+A-Stadt ..[7 km].. Berg ..[5km].. B-Stadt
+V = S/T => S = T*V => T = S/V */
+main => 
+/* 1.
+Anton fährt von A-Stadt nach B-Stadt, braucht Zeit T  
+Berta fährt von B-Stadt nach A-Stadt, braucht gleiche Zeit T  
+Geschwindgkeit bergauf bei Anton ist Va, bei Beta Vb
+Geschwindigkeit bergab ist bei Anton 4Va, bei Berta 3Vb
+Anton: T = 7/Va + 5/(4Va), o.E. Va=1 => T = 7 + 5/4
+Berta: T = 5/Vb + 7/(3Vb)
+Gleichsetzung: 33/4 = 22/(3Vb) => Vb = 8/9, 1/Vb = 9/8
+Behauptung: Anton und Berta treffen sich in der Mitte (also nach Sa = 6 km, Sb = 5+1 km):
+Ta = Tb      <=> 6 = 5/Vb + 1/(3Vb) = 16/(3Vb)
+wg. Zeile 12 <=> 6 = 16/3 * 9/8 = 2 * 3 q.e.d */
+println("Anton und Berta treffen sich in der Mitte (also nach Sa = 6 km, Sb = 5+1 km):"),
+/* 2.
+Anton fährt von B-Stadt nach A-Stadt, braucht Zeit Ta = 5 + 7/4 = 27/4
+Berta fährt von A-Stadt nach B-Stadt, braucht Zeit Tb = 7/Vb + 5/(3Vb) = 26/(3Vb) = 26/3 * 9/8 = 39/4
+Tb/Ta = 39/4 * 4/27 = 39/27 = 13/9 = 1 + 4/9 */
+println("Berta benötigt vier Neuntel von Antons Zeit mehr.").
+/* Korrekt */

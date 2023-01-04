@@ -1,0 +1,38 @@
+/* Zeit Logelei 2010/11 Welcher Räuber heißt wie?
+https://www.zeit.de/2010/11/Spiele-Logelei-11 */
+import cp, util.
+main ?=>
+    StrName = ["Billy", "El Chefe", "Ede", "Freddy", "Jesse", "Kalle", "Kjeld", "Robin", "Dr. Yes"],
+    P = [Bi, Ch, Ed, Fr, Je, Ka, Kj, Ro, Ye], N = len(P), P :: 1..N, all_different(P),
+    StrBeschreibung = ["im Anzug", "Dicke", "mit dem Fahrrad", "humpelt", "mit dem Hut", "mit dem Koffer",  "Kahlrasierte", "Lange", "Unscheinbare"],
+    Anz=1, Dic=2, Fah=3, Hum=4, Hut=5, Kof=6, Kah=7, Lan=8, Uns=9,     
+    foreach((Beschreibung,Name) in [
+        % Mo: Anwesend: der Lange, der Dicke, der Unscheinbare und der, der mit dem Fahrrad kommt; gefallene Namen: Kjeld, Kalle, Dr. Yes, Robin:
+        ([Lan,Dic,Uns,Fah], [Kj,Ka,Ye,Ro]), % [Namen: Ye,Ro,Kj,Ka - passt]
+        % Di: Anwesend: der mit dem Koffer, der im Anzug, der Kahlrasierte und der Unscheinbare; Namen: Kalle, Billy, El Chefe
+        ([Kof,Anz,Kah,Uns], [Ka,Bi,Ch]),    % [Namen: Fr,Ed,Je,Kj - alle abwesend]
+        % Mi: Anwesend: der mit Hut, der Kahlrasierte und der mit dem Koffer; Namen: Ede und Dr. Yes.
+        ([Hut,Kah,Kof], [Ed,Ye]),           % [Namen: Bi,Je,Fr - alle abwesend]
+        % Do: Anwesend: der, der humpelt, der mit dem Koffer, der Unscheinbare und der Kahlrasierte; Namen: El Chefe, Jesse, Kjeld
+        ([Hum,Kof,Uns,Kah], [Ch,Je,Kj]),    % [Namen: Ch,Fr,Kj,Je - Fr ist da, aber nicht erwähnt]
+        % Fr: Anwesend: der Kahlrasierte, der Dicke und der mit dem Koffer; Namen: Robin und Freddy.
+        ([Kah,Dic,Kof], [Ro,Fr]),           % [Namen: Je,Ro,Fr - Je wird nicht erwähnt]
+        % Sa: Anwesend: der Lange, der Dicke, der Kahlrasierte und der Unscheinbare; Namen: Freddy, Billy, El Chefe, Kalle.
+        ([Lan,Dic,Kah,Uns], [Fr,Bi,Ch,Ka])  % [Namen: Ye,Ro,Je,Kj - alle abwesend]
+    ]) 
+                Name :: Beschreibung #^ Name notin Beschreibung
+    end,
+    solve(P),
+    foreach(J in N..-1..1) printf("Der %s heißt %s.%n", StrBeschreibung[P[J]], StrName[J]) end,
+    nl, fail.
+/* 
+Der Lange heißt Dr. Yes.
+Der Dicke heißt Robin.
+Der Unscheinbare heißt Kjeld.
+Der mit dem Fahrrad heißt Kalle.
+Der Kahlrasierte heißt Jesse.
+Der mit dem Koffer heißt Freddy.
+Der im Anzug heißt Ede.
+Der humpelt heißt El Chefe.
+Der mit dem Hut heißt Billy
+CPU time 0.001 seconds, no more solutions, korrekt */

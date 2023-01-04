@@ -1,0 +1,35 @@
+/* Zeit Logelei 2010/32 Primzahllabyrinth
+https://www.zeit.de/2010/32/Spiele-Logelei-32 */
+import sat.
+main ?=> 
+    Vals = [1,2,4,6,8], 
+    Vars = new_list(12), Vars :: Vals, % Vars = [A,B,..L]
+    global_cardinality(Vars, $[1-1,2-5,4-2,6-3,8-1]),
+    % Liste der besuchten Orte (Nummerierung siehe Ausdruck):
+    Weg = [1,2,3,4,1,6,7,8,2,10,3,1,10], 
+    % Liste aller möglichen Schritte: {Kante, Ort von, Ort zu}
+    Steps = [{Von,Weg[Von],Weg[Von+1]} : Von in 1..12]
+         ++ [{Von,Weg[Von+1],Weg[Von]} : Von in 1..12],
+    PR = primes(100),
+    Orte = new_list(25), Orte :: [1,2,3,4,6,7,8,10], % Liste der besuchten Orte
+    Kante = new_list(24), Kante :: 1..12, % Liste der besuchten Kanten
+    Orte[1] #= 6, Orte[25] #= 6, % Start und Ziel am roten Punkt (siehe Ausdruck)
+    foreach(I in 1..24) 
+        table_in({Kante[I],Orte[I],Orte[I+1]}, Steps),
+        Delta = PR[I+1] - PR[I], element(Kante[I], Vars, Delta),
+        % Es gibt immer nur eine Möglichkeit, die nächste Primzahl zu erhalten, 
+        % außer man läuft zurück (das soll man aber offenbar nicht!)
+        if I > 1 then
+            foreach({J,O1,O2} in Steps)
+                (O1 #= Orte[I] #/\ O2 #!= Orte[I-1] #/\ Vars[J] #= Delta) #=> J #= Kante[I]
+            end
+        end
+    end,
+    solve(Vars ++ Orte ++ Kante),
+    foreach(B in 1..12) printf("%c=%d, ", chr(64+B), Vars[B]) end, nl,
+    foreach(I in 1..24) 
+        printf("%d + %c(%d) = ", PR[I], chr(64+Kante[I]), Vars[Kante[I]]) 
+    end, println(PR[25]), nl, fail.
+/* A=2, B=6, C=2, D=6, E=8, F=1, G=2, H=2, I=4, J=2, K=4, L=6, 
+2 + F(1) = 3 + G(2) = 5 + H(2) = 7 + I(4) = 11 + J(2) = 13 + K(4) = 17 + A(2) = 19 + I(4) = 23 + L(6) = 29 + A(2) = 31 + B(6) = 37 + K(4) = 41 + A(2) = 43 + I(4) = 47 + L(6) = 53 + D(6) = 59 + C(2) = 61 + B(6) = 67 + I(4) = 71 + J(2) = 73 + B(6) = 79 + I(4) = 83 + L(6) = 89 + E(8) = 97
+CPU time 0.125 seconds, no ore solutions, korrekt*/

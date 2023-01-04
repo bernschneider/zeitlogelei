@@ -1,0 +1,32 @@
+/* Zeit Logelei 2011/48 Im Wirtshaus Zur langen Nase hört der Wirt, dass an einem Tisch ein Glas zerbrochen wurde
+Als er die Gäste an diesem Tisch fragt, wer es gewesen ist, antworten alle drei gleichzeitig:
+"Ich war’s nicht." Dann fragt er: "Wer von euch hat denn schon wie viel getrunken?"
+https://www.zeit.de/2011/48/Spiele-Logelei-48 */
+import sat.
+main ?=>
+    C=1, H=2, G=3, Name = ["Carola","Heinz","Gunther"],
+    Glaeser = [Carola,Heinz,Gunther], Glaeser :: 0..3, N = 3, 
+    Wahr = new_array(N,3), Wahr :: 0..1, % Wahr = 1
+    % Als er die Gäste an diesem Tisch fragt, wer es gewesen ist, antworten alle drei gleichzeitig:
+    % "Ich war’s nicht." 
+    Wahr[C,1] + Wahr[H,1] + Wahr[G,1] #= 2, % einer hat das Glas zerbrochen
+    % Jeder Gast hat genauso viele falsche Aussagen gemacht, wie er Gläser getrunken hat. 
+    foreach(I in 1..N) sum(Wahr[I]) + Glaeser[I] #= 3 end,
+    % Dann fragt er: "Wer von euch hat denn schon wie viel getrunken?":
+    Wahr[C,2] #= 0, % Carola: "Ich habe schon zwölf Fässer getrunken." - das stimmt nicht!
+    Wahr[H,2] #= (Carola #< Heinz), % Heinz: "Ach was, Carola hat weniger Gläser getrunken als ich." 
+    Wahr[G,2] #= (Wahr[C,2] #= 0 #/\ Wahr[H,2] #= 0), % Gunther: "Carola und Heinz haben gerade beide gelogen." 
+    Wahr[C,3] #= (Carola #!= Heinz #/\ Carola #!= Gunther #/\ Heinz #!= Gunther), % Carola: "Aber wir haben alle verschieden viel getrunken." 
+    Wahr[H,3] #= (sum(Glaeser) #= 4), % Heinz: "Insgesamt waren es vier Gläser." 
+    Wahr[G,3] #= (Gunther #= Carola + Heinz), % Gunther: "Ich habe so viel getrunken wie Carola und Heinz zusammen."
+    solve(Glaeser ++ vars(Wahr)),
+    foreach(I in 1..N)
+        printf("%7s hat %d Gläser getrunken%s", Name[I], Glaeser[I], 
+                cond(Wahr[I,1]=0," und das Glas zerbrochen.",",")), nl
+    end,
+    nl, fail.
+/* 
+ Carola hat 2 Gläser getrunken,
+  Heinz hat 2 Gläser getrunken,
+Gunther hat 2 Gläser getrunken und das Glas zerbrochen.
+CPU time 0.008 seconds, no more solutions, korrekt */

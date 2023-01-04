@@ -1,0 +1,45 @@
+/* Zeit Logelei 2010/13 Sechs Herren saßen um einen runden Tisch. Wo saß der Russe um Mitternacht?
+https://www.zeit.de/2010/13/Spiele-Logelei-13 */
+import cp, util.
+main ?=>
+    A=1,D=2,E=3,F=4,I=5,_R=6, 
+    Land = ["Amerikaner","Deutscher","Engländer", "Franzose", "Italiener", "Russe"], 
+    N = len(Land), Z10=1, Z12=2, % 10 Uhr, 12 Uhr 
+    Platz = new_array(2,N), Platz :: 1..6, % Platz[1,L]=Platz von L um 10h, Platz[2,L]=Platz von L um 12h  
+    Rev =   new_array(2,N), 
+    foreach(Z in 1..2)  assignment(Platz[Z], Rev[Z]) end,
+    matrix_element(Platz, Z12, Rev[Z10,1], P101),
+    matrix_element(Platz, Z12, Rev[Z10,2], P102), 
+    matrix_element(Platz, Z12, Rev[Z10,3], P103), 
+    matrix_element(Platz, Z12, Rev[Z10,5], P105), 
+    matrix_element(Platz, Z12, Rev[Z10,6], P106), 
+    matrix_element(Platz, Z10, Rev[Z12,1], P121), 
+    matrix_element(Platz, Z10, Rev[Z12,4], P124), 
+    % Der Herr, der um 10 Uhr auf Platz 5 saß, saß um Mitternacht rechts neben dem Herrn, der um 10 Uhr auf Platz 3 saß:
+    (P105 - P103) mod 6 #= 1, 
+    % Der Italiener saß um 10 Uhr links neben dem Herrn, der um Mitternacht auf Platz 1 saß:
+    (P121 - Platz[Z10,I]) mod 6 #= 1, 
+    % Der Herr, der um 10 Uhr auf Platz 3 saß, saß um Mitternacht rechts neben dem Engländer: 
+    (P103 - Platz[Z12,E]) mod 6 #= 1, 
+    % Der Herr, der um 10 Uhr auf Platz 1 saß, saß um Mitternacht rechts neben dem Herrn, der um 10 Uhr auf Platz 6 saß: 
+    (P101 - P106) mod 6 #= 1, 
+    % Der Herr, der um 10 Uhr auf Platz 2 saß, saß um Mitternacht gegenüber vom Italiener:
+    (P102 - Platz[Z12,I]) mod 6 #= 3, 
+    % Der Herr, der um 10 Uhr auf Platz 5 saß, saß um Mitternacht gegenüber vom Amerikaner:
+    (P105 - Platz[Z12,A]) mod 6 #= 3, 
+    % Der Herr, der um Mitternacht auf Platz 4 saß, saß um 10 Uhr gegenüber vom Franzosen:
+    (P124 - Platz[Z10,F]) mod 6 #= 3, 
+    % Der Deutsche saß um Mitternacht links neben dem Herrn, der um 10 Uhr auf Platz 5 saß:
+    (P105 - Platz[Z12,D]) mod 6 #= 1, 
+    solve(vars(Platz) ++ vars(Rev)),
+    Ranking10 = [(Platz[1,J],J) : J in 1..N].sort(),
+    Ranking12 = [(Platz[2,J],J) : J in 1..N].sort(),
+    print("Sitzordnung um Mitternacht: "),
+    foreach(J in 1..N) printf("%s - ", Land[Ranking12[J,2]]) end, nl,
+    print("Sitzordnung um 10h: "), 
+    foreach(J in 1..N) printf("%s - ", Land[Ranking10[J,2]]) end, 
+    nl, fail. 
+/* 
+Sitzordnung um Mitternacht: Russe - Franzose - Amerikaner - Engländer - Deutscher - Italiener - 
+Sitzordnung um 10h:         Franzose - Amerikaner - Deutscher - Engländer - Italiener - Russe - 
+CPU time 0.035 seconds, korrekt */

@@ -1,0 +1,35 @@
+/* Zeit Logelei 2011/36 Wie heißt das Passwort für Onkel Franz´ Onlinebanking?
+https://www.zeit.de/2011/36/Spiele-Logelei-36 */
+import cp.
+main ?=>
+    PW = new_list(6), PW :: 1..52, % a..zA..Z
+    % Das Passort enthält genau gleich viele Groß- und Kleinbuchstaben:
+    sum([(PW[I] #> 26) : I in 1..6]) #= 3,
+    PWklein = new_list(6), % Passwort in KLeinschreibung
+    foreach(I in 1..6) PWklein[I] #= 1 + (PW[I] - 1) mod 26 end,
+    % Das Passwort hat genau zwei Vokale:
+    Vokale = [myord(C) : C in "aeiou"],
+    [I1,I2] :: 1..6, I1 #< I2, 
+    element(I1, PWklein, V1), element(I2, PWklein, V2), [V1,V2] :: Vokale, 
+    foreach(I in 1..6) (I #!= I1 #/\ I #!= I2) #=> PWklein[I] notin Vokale end,
+    % Zwischen den beiden Vokalen stehen keine Großbuchstaben:
+    foreach(I in 1..6) (I1 #< I #/\ I #< I2) #=> PW[I] #=< 26 end,
+    KleinesW = myord('w'), PW[1] #= KleinesW, % Das Passwort beginnt mit einem kleinen w ..
+    % .. und jeder weitere Buchstabe kommt früher im Alphabet als der davor:
+    foreach(I in 2..6) PWklein[I] #< PWklein[I-1] end,
+    % Die Wortsumme für das ganze Passwort ist 77:
+    sum(PWklein) #= 77,
+    % Die Wortsumme für die Buchstaben zwischen den Vokalen ist 23
+    sum([PWklein[I]*(I1 #< I)*(I #< I2)  : I in 1..6]) #= 23,
+    solve(PW ++ PWklein ++ [I1,I2]),
+    foreach(I in 1..6)
+        printf("%c", mychr(PW[I]))
+    end, nl, fail.
+/*
+wOlkIG <-- nicht korrekt, denn "das Passwort ist kein Wort der deutschen Sprache"
+wOmjIG <-- korrekt
+CPU time 0.027 seconds, no more solutions */
+mychr(I) = cond(I=<26,chr(96+I),chr(64+I-26)).
+myord(C) = I =>
+    I0 = ord(C),
+    I = cond(I0<96,I0-64+26,I0-96).

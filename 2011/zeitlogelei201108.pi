@@ -1,0 +1,27 @@
+/* Zeit Logelei 2011/08 Professor Knusi in Bonfanien
+https://www.zeit.de/2011/08/Spiele-Logelei-08 */
+import sat, util.
+main ?=>
+    Ef=1, Di=2, % In Bonfanien gibt es Eftiben und Distiben. 
+    Einw = [A,B,C,D,E, F,G,H,I,J], Einw :: [Ef,Di],
+    foreach((P1,G1,P2,G2) in [  
+        (D,Di,H,Di), % Wenn Donf ein Distibe ist, dann ist Henf kein Eftibe.
+        (H,Ef,A,Ef), % Wenn Henf ein Eftibe ist, dann ist Anf kein Distibe.
+        (E,Di,F,Di), % Wenn Enf ein Distibe ist, dann ist Funf kein Eftibe.
+        (F,Ef,C,Di), % Wenn Funf ein Eftibe ist, dann ist Chonf ein Distibe.
+        (J,Di,E,Ef), % Wenn Janf ein Distibe ist, dann ist Enf ein Eftibe.
+        (C,Di,J,Di), % Wenn Chonf kein Eftibe ist, dann ist Janf ein Distibe.
+        (I,Di,A,Ef), % Wenn Inf ein Distibe ist, dann ist Anf ein Eftibe.
+        (H,Di,I,Di), % Wenn Henf kein Eftibe ist, dann ist Inf ein Distibe.
+        (G,Di,A,Di), % Wenn Gonf ein Distibe ist, dann ist Anf kein Eftibe.
+        (B,Di,G,Di), % Wenn Bonf kein Eftibe ist, dann ist Gonf ein Distibe.
+        (F,Di,D,Ef), % Wenn Funf ein Distibe ist, dann ist Donf ein Eftibe.
+        (D,Ef,B,Di)])% Wenn Donf ein Eftibe ist, dann ist Bonf ein Distibe.
+            P1 #= G1 #=> P2 #= G2
+    end,
+    solve(Einw), Chr = "ABCDEFGHIJ",
+    foreach(K in 1..8, Einw[K]=Ef) printf("%c ", Chr[K]) end,
+    println("sind Eftiben, der Rest Distiben."),
+    nl, fail.
+/* A B E F G sind Eftiben, der Rest Distiben.
+CPU time 0.004 seconds, no ore solutions, korrekt */

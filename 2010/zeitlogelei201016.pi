@@ -1,0 +1,50 @@
+/* Zeit Logelei 2010/16 und Logelei Jubiläumsausgabe S. 23 (Sheep Dog) Ohne cp oder sat, ohne between!
+https://www.zeit.de/2010/16/Spiele-Logelei-16 */
+import planner.
+
+main =>
+    S0 =    $s(2,4,{{0,0,0,0,0,0,0},  % der Hund steht auf Position 2|4; M0 = Zahl der Schafe
+               		{0,1,1,0,1,1,0},
+        	   		{0,1,1,2,1,1,0},
+        	   		{0,1,1,1,1,1,0},
+         	   		{0,1,1,1,1,1,0},
+        	   		{0,0,0,0,0,0,0}}),
+    plan(S0,16,Plan),
+    writeln(Plan).
+
+final(DogS1) => 
+	DogS1 = $s(_,_, {{0,0,1,0,2,0,0},
+                     {0,1,0,0,0,0,1},
+                     {0,2,0,0,0,0,0},
+                     {0,1,4,0,0,0,0},
+                     {0,1,2,0,0,2,2},
+        	         {0,0,0,1,0,0,0}}). 
+/* [sueden,westen,norden,sueden,osten,sueden,osten,osten,norden,westen,norden,norden,osten,sueden,sueden,westen]
+CPU time 48 seconds, korrekt */
+action(S0,S1,Action,Cost) ?=>
+	S0 = $s(DogZ,DogS,M0), DogZ1 = DogZ, DogS1 = DogS + 1, % Laufziel östlich von DogZ0|DogS0
+    while(DogS1 < 7, M0[DogZ1,DogS1] = 0) DogS1 := DogS1 + 1 end, DogS1 < 7, 
+    M1 = { {cond((Z,S)=(DogZ1,DogS1), 0, % der Hund vertreibt die Schafe ein Feld nach Osten
+            cond((Z,S)=(DogZ1,DogS1+1), M0[Z,S]+M0[DogZ1,DogS1], M0[Z,S])) : S in 1..7} : Z in 1..6},
+	S1 = $s(DogZ,DogS1,M1), Action = osten, Cost = 1.
+
+action(S0,S1,Action,Cost) ?=>
+	S0 = $s(DogZ,DogS,M0), DogZ1 = DogZ, DogS1 = DogS - 1, % Laufziel westlich von DogZ0|DogS0
+    while(DogS1 > 1, M0[DogZ1,DogS1] = 0) DogS1 := DogS1 - 1 end, DogS1 > 1,
+    M1 = { {cond((Z,S)=(DogZ1,DogS1), 0, % der Hund vertreibt die Schafe ein Feld nach Westen
+            cond((Z,S)=(DogZ1,DogS1-1), M0[Z,S]+M0[DogZ1,DogS1], M0[Z,S])) : S in 1..7} : Z in 1..6},
+	S1 = $s(DogZ,DogS1,M1), Action = westen, Cost = 1.
+
+action(S0,S1,Action,Cost) ?=>
+	S0 = $s(DogZ,DogS,M0), DogZ1 = DogZ + 1, DogS1 = DogS, % Laufziel südlich von DogZ0|DogS0
+    while(DogZ1 < 6, M0[DogZ1,DogS1] = 0) DogZ1 := DogZ1 + 1 end, DogZ1 < 6,
+    M1 = { {cond((Z,S)=(DogZ1,DogS1), 0,  % der Hund vertreibt die Schafe ein Feld nach Süden 
+            cond((Z,S)=(DogZ1+1,DogS1), M0[Z,S]+M0[DogZ1,DogS1], M0[Z,S])) : S in 1..7} : Z in 1..6},
+	S1 = $s(DogZ1,DogS,M1), Action = sueden, Cost = 1.
+
+action(S0,S1,Action,Cost) ?=>
+	S0 = $s(DogZ,DogS,M0), DogZ1 = DogZ - 1, DogS1 = DogS, % Laufziel nördlich von DogZ0|DogS0
+    while(DogZ1 > 1, M0[DogZ1,DogS1] = 0) DogZ1 := DogZ1 - 1 end, DogZ1 > 1,
+    M1 = { {cond((Z,S)=(DogZ1,DogS1), 0, % der Hund vertreibt die Schafe ein Feld nach Norden 
+            cond((Z,S)=(DogZ1-1,DogS1), M0[Z,S]+M0[DogZ1,DogS1], M0[Z,S])) : S in 1..7} : Z in 1..6},
+	S1 = $s(DogZ1,DogS,M1), Action = norden, Cost = 1.

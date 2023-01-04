@@ -1,0 +1,48 @@
+/* Zeit Logelei 2011/44 Neulich im Patentamt
+"Ich würde gerne diese Tastatur patentieren, bei der es für jeden Finger genau eine Taste gibt."
+"Jeden Buchstaben (außer das Y, das wird abgeschafft) erhält man als Kombination von einem Finger der linken und einem Finger der rechten Hand.
+https://www.zeit.de/2011/44/Spiele-Logelei-44 */
+import sat, util.
+main ?=>
+    D=0, Z=1, M=2, R=3, K=4, % Daumen, Zeige-, Mittel-, Ringfinger, Kleiner Finger
+    Bst = new_list(25), Bst :: 1..25, assignment(Bst,Fng), % zugeordneter Buchstabe
+    % Um zum Beispiel ETWAS zu tippen, drückt man ..
+    foreach((Li,Re,B) in [  
+        (D,Z,'E'), % erst links den Daumen und rechts den Zeigefinger (für E), 
+        (M,R,'T'), % dann links den Mittelfinger und rechts den Ringfinger (für T), 
+        (R,M,'W'), % dann links den Ringfinger und rechts den Mittelfinger (für W), 
+        (K,D,'A'), % dann links den kleinen Finger und rechts den Daumen (für A) 
+        (D,K,'S')])% und schließlich links den Daumen und rechts den kleinen Finger (für S).
+            C = ord(B)-64, Bst[1+5*Li+Re] #= C
+    end,
+    Satz = "ALS GESCHMACKSRICHTUNGEN HABEN WIR APFEL JOGHURT SCHOKO OLIVE QUARK UND LAKRITZE",
+    % In JOGHURT muss man einmal beide Finger wechseln und in OLIVE, QUARK und LAKRITZE je zweimal: 
+    Beide = [0,0,0,0,0, 1,0,2,2,0, 2], % so oft muss man beide Finger wechseln
+    foreach({Cnt,Wort} in zip(Beide,Satz.split(" ")))
+        Idx = [myord(C) : C in Wort], N = len(Idx),
+        Links = new_list(N), Rechts = new_list(N), 
+        foreach(I in 1..N)
+            Links[I]  #= (Fng[Idx[I]] - 1) div 5, 
+            Rechts[I] #= (Fng[Idx[I]] - 1) mod 5
+        end,
+        % Cnt = wie oft man man beide Finger wechseln muss:
+        Cnt #= sum([(Links[I] #!= Links[I+1])*(Rechts[I] #!= Rechts[I+1]) : I in 1..N-1])
+    end,
+    solve(Bst ++ Fng),
+    println("Im Folgenden steht 1 für Daumen, 2 für Zeigefinger etc.;"),
+    println("zuerst steht der Finger der linken Hand, dann der der rechten Hand:"),
+    foreach(B in 1..25)
+        F = Fng[B] - 1,
+        printf("%c: %d%d, ", mychr(B), 1 + F div 5, 1 + F mod 5)
+    end,
+    nl, fail.
+/* Im Folgenden steht 1 für Daumen, 2 für Zeigefinger etc.;
+zuerst steht der Finger der linken Hand, dann der der rechten Hand:
+A: 51, B: 52, C: 55, D: 23, E: 12, F: 22, G: 14, H: 54, I: 45, 
+J: 44, K: 25, L: 11, M: 53, N: 13, O: 24, P: 21, Q: 31, R: 35, 
+S: 15, T: 34, U: 33, V: 42, W: 43, X: 41, Z: 32
+CPU time 0.234 seconds, no more solutions, korrekt */
+mychr(I) = cond(I<25, chr(64+I), 'Z').
+myord(C) = I => 
+    I0 = ord(C) - 64, 
+    I = cond(I0<25, I0, 25).

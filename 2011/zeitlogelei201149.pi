@@ -1,0 +1,31 @@
+/* Zeit Logelei 2011/49 Straighthattan besteht aus einer einzigen Hochhausreihe
+https://www.zeit.de/2011/49/Spiele-Logelei-49 */
+import sat.
+main ?=>
+    Haus = [4,6,3,5,1,1,6,3,1,3,4,3,5,1,2,3,3,3,3,1,5,2], NH = len(Haus),
+    % Wer Häuser in welchem Wert bekommt, wurde bereits ausgehandelt: 
+    % Alice: 5 Mio. $, Bob: 6 Mio. $, Chris: 7 Mio. $, Doreen: 8 Mio. $, Ellen: 9 Mio. $, Francis: 10 Mio. $, Gerry: 11 Mio. $, Hilary: 12 Mio. $.
+    Erbe = [("Alice", 5), ("Bob", 6), ("Chris", 7), ("Doreen", 8), ("Ellen", 9), ("Francis", 10), ("Gerry", 11), ("Hilary", 12)],
+    NE = len(Erbe),
+    % Damit sich die Erben später nicht in die Quere kommen, soll jeder eine Reihe aufeinanderfolgender Häuser erhalten:
+    Start = new_list(NE), Start :: 1..NH,                % Erste Hausnummer von Erbe I
+    Len   = new_list(NE), Len   :: 1..5, sum(Len) #= NH, % Zahl der Häuser von Erbe I
+    serialized(Start, Len), % die Intervalle Start[I]..Start[I]+Len[I]-1 überschneiden sich nicht
+    foreach(I in 1..NE)
+        Erbe[I,2] #= sum([Haus[J]*(Start[I] #=< J)*(J #< Start[I]+Len[I]) : J in 1..NH]) 
+    end,
+    solve(Start ++ Len),
+    Ranking = [[Start[I], Len[I], Erbe[I,1]] : I in 1..NE].sort(),
+    foreach(I in 1..NE) 
+        printf("%s erhält die %d Häuser ab Hausnummer %d.%n", Ranking[I,3], Ranking[I,2], Ranking[I,1])
+    end,
+    nl, fail.
+/* Francis erhält die 2 Häuser ab Hausnummer 1.
+Doreen erhält die 2 Häuser ab Hausnummer 3.
+Hilary erhält die 5 Häuser ab Hausnummer 5.
+Chris erhält die 2 Häuser ab Hausnummer 10.
+Ellen erhält die 3 Häuser ab Hausnummer 12.
+Alice erhält die 2 Häuser ab Hausnummer 15.
+Bob erhält die 2 Häuser ab Hausnummer 17.
+Gerry erhält die 4 Häuser ab Hausnummer 19.
+CPU time 6.5 seconds, no more solutions, korrekt */

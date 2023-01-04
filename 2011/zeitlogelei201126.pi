@@ -1,0 +1,38 @@
+/* Zeit Logelei Nr. 2011/26 Der attraktive Mann der Mann soll erraten, wer von uns welche Zahl hat!
+https://www.zeit.de/2011/26/Spiele-Logelei-26 */
+import cp, util.
+main ?=>
+    % Wir wählen drei verschiedene Ziffern aus. Damit kann man sechs verschiedene dreistellige Zahlen erstellen. 
+    L = [A,B,C], L :: 1..9, increasing_strict(L),
+    % Jede von uns erhält genau eine dieser Zahlen:
+    Name = ["Andrea", "Doris", "Ina", "Karoline", "Michaela", "Simone"],
+    Zahl = [Andrea, Doris, Ina, Karoline, Michaela, Simone], Zahl :: 123..987,
+    all_different(Zahl),
+    M = new_array(6,3), M :: 1..9,
+    foreach(I in 1..6) 
+        to_num(M[I],Zahl[I]), all_different(M[I]),
+        foreach(D in 1..3) M[I,D] #= A #\/ M[I,D] #= B #\/ M[I,D] #= C end
+    end,
+    % Die Zahlen von Andrea und von Karoline sind beide durch 11 teilbar:
+    Andrea mod 11 #= 0, Karoline mod 11 #= 0, 
+    % Doris: "Meine Zahl ist genau um 180 größer als die von Michaela.":
+    Doris #= 180 + Michaela,
+    % Karoline: "Meine Zahl ist, genau wie die von Simone, durch 5 teilbar.":
+    Karoline mod 5 #= 0, Simone mod 5 #= 0, 
+    % Simone: "Meine Zahl ist größer als die von Ina.":
+    Simone #> Ina,
+    solve(L ++ Zahl ++ vars(M)),
+    foreach(I in 1..6) printf("Die Zahl von %s ist %d%n", Name[I], Zahl[I]) end,
+    nl, fail.
+/*
+Die Zahl von Andrea ist 517
+Die Zahl von Doris ist 751
+Die Zahl von Ina ist 157
+Die Zahl von Karoline ist 715
+Die Zahl von Michaela ist 571
+Die Zahl von Simone ist 175
+CPU time 0.141 seconds, no more solutions, korrekt */
+
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).

@@ -1,0 +1,43 @@
+/* Zeit Logelei 201031 Geheimzahl meiner Kreditkarte
+https://www.zeit.de/2010/31/Spiele-Logelei-31 */
+import cp.
+
+main1 ?=>
+    L = new_list(4), L :: 1..9, 
+    Lsort = new_list(4), increasing_strict(Lsort),
+    foreach(V in Lsort) element(_, L, V) end,
+    to_num(L,Num), to_num(Lsort,Numsort), 
+    Num #= 7 * Numsort,
+    solve([L ++ Lsort ++ [Num, Numsort]]),
+    printf("Geheimzahl = %d", Num),
+    nl, fail.
+    /* Geheimzahl = 9513
+    CPU time 0.002 seconds, no more solutions, korrekt */
+
+main2 ?=>
+    L = new_list(6), L :: 0..9, 
+    Lsort = new_list(6), Lsort :: 0..9, Lsort[1] #= 0, increasing(Lsort), 
+    foreach(V in Lsort) count(V, L, N), count(V, Lsort, N) end,
+    to_num(L,Num), to_num(Lsort,Numsort), 
+    Num #= 71 * Numsort, Num #!= 0,
+    solve([L ++ Lsort ++ [Num, Numsort]]),
+    printf("Die PIN ist %d", Num),
+    nl, fail.
+    /* Die PIN ist 901629
+    CPU time 0.022 seconds, no more solutions, korrekt */
+
+main3 ?=>
+    L = new_list(7), L :: 0..9, 
+    Lsort = new_list(7), Lsort :: 0..9, decreasing_strict(Lsort), 
+    foreach(V in Lsort) element(_, L, V) end,
+    to_num(L,Num), to_num(Lsort,Numsort), 
+    Numsort #= 5 * Num, 
+    solve([L ++ Lsort ++ [Num, Numsort]]),
+    printf("Die PIN ist %d", Num),
+    nl, fail.
+    /* Die PIN ist 1750842
+    CPU time 0.004 seconds, no more solutions, korrekt */
+
+to_num(List, Num) => 
+    Len = length(List),
+    Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).

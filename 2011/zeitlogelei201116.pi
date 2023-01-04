@@ -1,0 +1,36 @@
+/* Zeit Logelei Nr. 2011/16 Herr Anton hat beschlossen, bei den Brain Watchers teilzunehmen
+https://www.zeit.de/2011/16/Spiele-Logelei-16 */
+import cp, util.
+main ?=>
+    NameT = ["Do", "Fr", "Sa", "So"],
+    Avail = [["Sudoku",     2, 3], % 2 Spiele á 3 Points
+             ["Heyawake",   2, 5], % Eins hat er schon gelöst!
+             ["Rundwege",   3, 7],
+             ["Jap. Summen",2,13],
+             ["Tapa",       2,19],
+             ["Logelei",    1,31]], N = len(Avail), 
+    TV = [0, 3, 2, 1], % TV-Stunden je Wochentag
+    Goal = [21 + 8 * TV[I] : I in 1..4], % Ziel Rätselstunden je Wochentag
+    M = new_array(4,N), M :: 0..3, 
+    M[1,2] #> 0, % Es ist Donnerstagmorgen. Herr Anton hat gerade ein Heyawake gelöst.
+    foreach(S in 1..N) 
+        sum([M[I,S] : I in 1..4]) #=< Avail[S,2] 
+    end,
+    Points = [Avail[S,3] : S in 1..N], 
+    foreach(I in 1..4)
+        scalar_product(M[I], Points, Ppd), Ppd #>= Goal[I] 
+    end,
+    solve(vars(M)), 
+    println(Points), println(Ppd), 
+    foreach(I in 1..4) 
+        printf("%s: ", NameT[I]),
+        foreach(S in 1..N, M[I,S]>0)
+            printf("%d %s, ", M[I,S], Avail[S,1]) 
+        end, nl
+    end, nl, fail.
+/* 
+Do: 1 Sudoku, 1 Heyawake, 1 Jap. Summen, 
+Fr: 2 Rundwege, 1 Logelei, 
+Sa: 1 Heyawake, 1 Jap. Summen, 1 Tapa, 
+So: 1 Sudoku, 1 Rundwege, 1 Tapa, 
+CPU time 0.011 seconds, no more solutions, korrekt */

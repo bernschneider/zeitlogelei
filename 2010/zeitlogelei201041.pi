@@ -1,0 +1,38 @@
+/* Zeit Logelei 201041 Dreistellige Geheimzahl
+https://www.zeit.de/2010/41/Spiele-Logelei-41 */
+import cp.
+
+main ?=>
+   L = new_list(3), L :: 0..9, L[1] #> 0,
+   Qprod #= prod(L), Qsum #= sum(L), to_num(L, Zahl),
+   Name = ["Prinzessin","Hofnarr","Wächter","Oberaufseher","Chefköchin"],
+   P=1, H=2, W=3, O=4, C=5,
+   Wahr = new_list(5), Wahr :: 0..1,
+   ZP = [2**I : I in 0..9],
+   % Die Prinzessin: 
+   Wahr[P] #= 0 #<=> Qprod :: ZP, % "Das Querprodukt ist keine Zweierpotenz."
+   Wahr[P] #= 1 #<=> Qsum mod 6 #= 0, % "Die Quersumme ist durch 6 teilbar." 
+   % Der Hofnarr:
+   Wahr[H] #= 1 #<=> Qsum mod 5 #= 0, % "Die Quersumme ist durch 5 teilbar."
+   Wahr[H] #= 1 #<=> Zahl mod 13 #= 0, % "Die Zahl ist durch 13 teilbar." 
+   % Der Wächter des Seiteneingangs:
+   Wahr[W] #= 1 #<=> Zahl mod 14 #> 0, % "Die Zahl ist nicht durch 14 teilbar."
+   Wahr[W] #= 1 #<=> (L[1] #= L[2] #/\ L[2] #= L[3]), % "Alle Ziffern sind gleich." 
+   % Der Oberaufseher für Reinigungsangelegenheiten:
+   Wahr[O] #= 1 #<=> L[1] #!= L[3], % "Die Zahl ist kein Palindrom."
+   Wahr[O] #= 1 #<=> Qsum mod 2 #= 1, % "Die Quersumme ist ungerade." 
+   % Die Chefköchin:
+   Wahr[C] #= 1 #<=> (L[1] #!= L[2] #/\ L[1] #!= L[3] #/\ L[2] #!= L[3]), % "Keine Ziffer kommt doppelt vor."
+   Wahr[C] #= 1 #<=> Qsum mod 10 #> 0, % "Die Quersumme ist nicht durch 10 teilbar."
+   solve(L ++ [Zahl] ++ Wahr),
+   printf("Die Zahl ist %d%n", Zahl),
+   foreach(I in 1..5, Wahr[I]=1) printf("%s ", Name[I]) end,
+   println("sagen die Wahrheit."), 
+   nl, fail.
+/* Die Zahl ist 812
+Oberaufseher Chefköchin sagen die Wahrheit.
+CPU time 0.003 seconds, no more solutions, korrekt */
+
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).

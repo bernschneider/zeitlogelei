@@ -1,0 +1,36 @@
+/* Zeit Logelei 2010/45 Die  Wetschraten haben je nach Stammeszugehörigkeit unterschiedliche Tätigkeiten
+https://www.zeit.de/2011/46/Spiele-Logelei-46 */
+import sat.
+main ?=>
+    NameS = ["Hinuffen", "Fersuffen", "Malpiffen", "Sindoffen", "Wertuffen"],
+    H=1, F=2, M=3, S=4, W=5,
+    NameP = ["gerinten Setune", "jorbensen Molpine", "molgreven Rafine", "semiefen Zutine", "verbotzen Perbane"],
+    GS=1, JM=2, MR=3, SZ=4, VP=5,
+    N=5, T = new_list(N), T :: 1..N, % Tätigkeit von S ist P 
+    foreach((S1,P1,S2,P2) in [  
+        (H,MR,M,GS), % Wenn Hinuffen Rafine molgreven, gerinten Malpiffen Setune. 
+        (F,SZ,M,JM), % Wenn Fersuffen Zutine semiefen, jorbensen Malpiffen Molpine. 
+        (H,GS,S,MR), % Wenn Hinuffen Setune gerinten, molgreven Sindoffen Rafine. 
+        (S,SZ,W,GS), % Wenn Sindoffen Zutine semiefen, gerinten Wertuffen Setune.
+        (H,JM,S,SZ), % Wenn Hinuffen Molpine jorbensen, semiefen Sindoffen Zutine. 
+        (W,GS,F,SZ), % Wenn Wertuffen Setune gerinten, semiefen Fersuffen Zutine. 
+        (S,MR,W,VP), % Wenn Sindoffen Rafine molgreven, verbotzen Wertuffen Perbane. 
+        (S,GS,F,GS), % Wenn Sindoffen Setune gerinten, gerinten auch Fersuffen Setune.
+        (M,GS,H,VP), % Wenn Malpiffen Setune gerinten, verbotzen Hinuffen Perbane. 
+        (H,SZ,S,MR), % Wenn Hinuffen Zutine semiefen, molgreven Sindoffen Rafine. 
+        (W,VP,S,JM), % Wenn Wertuffen Perbane verbotzen, jorbensen Sindoffen Molpine. 
+        (F,GS,H,GS), % Wenn Fersuffen Setune gerinten, gerinten auch Hinuffen Setune. 
+        (H,VP,S,GS)])% Wenn Hinuffen Perbane verbotzen, gerinten Sindoffen Setune.
+             T[S1] #= P1 #=> T[S2] #= P2
+    end,
+    solve(T),
+    Plist = [[I : I in 1..N, T[I]=PP] : PP in 1..N],
+    foreach(I in 1..N, Ss = Plist[I], Ss!=[])        
+        printf("%w %s%n", [NameS[J] : J in Ss], NameP[I])
+    end,
+    nl, fail.
+/*
+[Wertuffen] gerinten Setune
+[Hinuffen,Malpiffen] jorbensen Molpine
+[Fersuffen,Sindoffen] semiefen Zutine
+CPU time 0.004 seconds, no more solutions, korrekt */

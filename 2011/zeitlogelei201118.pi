@@ -1,0 +1,58 @@
+/* Zeit Logelei 2011/18 nach Arukone
+Modified by Peter Bernschneider to allow for empty fields (lines 21, 34f)
+https://www.zeit.de/2011/18/Spiele-Logelei-18 */
+import util, sat.
+main =>
+    inputM(INo,NP,InputM),
+    printf("solving %d%n",INo),
+    once(subMat(NP,InputM.length,InputM[1].length,InputM)),
+    fail.
+
+subMat(NP,NR,NC,InputM) =>
+    SubM = new_array(NP,NR,NC),
+    Vars = vars(SubM),
+    Vars :: [0,1],
+    % initialize preoccupied squares
+    foreach(I in 1..NR, J in 1..NC)
+        (InputM[I,J] !== 0 -> SubM[InputM[I,J],I,J] = 1; true)
+    end,
+    % ensure that no two numbers occupy the same square
+    foreach(J in 1..NR, K in 1..NC)
+        sum([SubM[I,J,K] : I in 1..NP]) #=< 1 % modifed to allow empty fields
+    end,
+    % each end node has one connected neighbor and each interior node has two connected neighbors
+    foreach(I in 1..NP, J in 1..NR, K in 1..NC)
+        Neibs = [SubM[I,J1,K1] : (J1,K1) in [(J-1,K),(J+1,K),(J,K-1),(J,K+1)],(J1>=1, K1>=1, J1=<NR, K1=<NC)],
+        (InputM[J,K]==I->sum(Neibs) #= 1; SubM[I,J,K] #=> (sum(Neibs) #= 2))
+    end,
+    solve(Vars), 
+    write_matrix(SubM,NP,NR,NC).
+                
+% write the matrix in the better format
+write_matrix(M,NP,NR,NC) =>
+    foreach(I in 1..NR, J in 1..NC)
+        P0 = find_first_of([M[P,I,J] : P in 1..NP], 1), % modified by Peter B.
+        printf("%c|", cond(P0>0, chr(64+P0), ' ')),     % to allow for empty field
+        (J==NC->nl;true)
+    end,
+    nl,nl.
+/*
+A|A|B|B|B|B|B|B|B|B|C|C|C| |
+A|B|B|C|C|C|D|D|D|C|C|F|F|F|
+A|B|E|C|F|C|C|C|C|C|F|F|G|F|
+A|B|E|C|F|F|F|F|F|F|F|G|G|F|
+A|B|E|C|C|C|C|C|C|C|C|C|C|F|
+B|B|E| |B|B|B|B|B|B|B|B|C|F|
+B|H|H|H|H|H|H|H|H|H|H|B|C|F|
+B|B|B|B|B|B|B|B|B|B|B|B|C| |
+CPU time 4.735 seconds korrekt */
+inputM(INo,NP,M) ?=>
+    INo=1, NP=8,
+    M={{0,1,0,0,0,0,0, 0,0,2,0,0,3,0},
+       {0,0,0,0,0,0,4, 0,4,0,0,0,0,0},
+       {0,0,5,0,6,0,0, 0,0,0,0,0,7,0},
+       {0,0,0,0,0,0,0, 0,0,0,0,7,0,0},
+       {1,0,0,0,0,0,0, 0,0,0,0,0,0,0},
+       {0,0,5,0,2,0,0, 0,0,0,0,0,0,0},
+       {0,8,0,0,0,0,0, 0,0,0,8,0,0,6},
+       {0,0,0,0,0,0,0, 0,0,0,0,0,3,0}}.

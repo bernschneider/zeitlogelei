@@ -1,0 +1,56 @@
+/* Zeit Logelei 2011/07 (nach Janko Doppelblock)
+https://www.zeit.de/2011/07/Spiele-Logelei-07 */
+import cp.
+main ?=>		 
+    SumS = {-1, 5,10,-1,-1,-1}, 
+    SumZ = { 6, 0, 3, 7, 6, 3}, 
+	N = len(SumS), 
+	M = new_array(N, N),  % 
+	MVars = vars(M) ,
+    MVars :: 0..N-2, % 0 = Block
+    foreach(Z in 1..N)
+    	L := [M[Z,S] : S in 1..N], % Zeile Z
+    	all_different_except_0(L),
+    	exactly(2,L,0 )            % genau 2 Blöcke/ 0er
+    end,
+    foreach(S in 1..N)
+    	L := [M[Z,S] : Z in 1..N], % Spalte S
+    	all_different_except_0(L),
+    	exactly(2,L,0 )
+    end,
+    AZ = new_array(N,N), % AZ[Z,S]=1 <-> Z|S zeilenweise zwischen den Blöcken liegt
+    AZVars = vars(AZ),
+    AZVars :: 0..1,
+    foreach(Z in 1..N)
+    	AZ[Z,1] #= 0,    % Das erste Feld liegt nicht zwischen den Blöcken
+    	foreach(S in 1..N-1)
+    	   (M[Z,S] #= 0) #<=> (AZ[Z,S] #!= AZ[Z,S+1]) % Ein Block toggled diese Eigenschaft
+    	end,
+    	% wir summieren nur die Felder zwischen den Blöcken:
+    	if SumZ[Z] >= 0 then SumZ[Z] #=  sum([M[Z,S] * AZ[Z,S] : S in 1..N]) end
+    end,
+    AS = new_array(N,N),  % AS[Z,S]=1 <-> Z|S spaltenweise zwischen den Blöcken liegt
+    ASVars = vars(AS),
+    ASVars :: 0..1,
+    foreach(S in 1..N)
+    	AS[1,S] #= 0,
+    	foreach(Z in 1..N-1)
+    	   (M[Z,S] #= 0) #<=> (AS[Z,S] #!= AS[Z+1,S])
+    	end,
+    	if SumS[S] >= 0 then SumS[S] #=  sum([M[Z,S] * AS[Z,S] : Z in 1..N]) end
+    end,
+    Vars = MVars ++ AZVars ++ ASVars,
+    solve(Vars),
+    foreach(Z in 1..N, S in 1..N)
+		if M[Z,S] > 0 then printf("%1d|",M[Z,S]) else print("X|") end,
+    	if S = N then nl end
+    end, 
+    nl, fail.
+/*
+3|1|X|2|4|X|
+X|X|3|1|2|4|
+4|2|1|X|3|X|
+X|3|4|X|1|2|
+1|X|2|4|X|3|
+2|4|X|3|X|1|
+CPU time 1.403 seconds, no more solutios, korrekt */

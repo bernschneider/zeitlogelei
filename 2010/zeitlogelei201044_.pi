@@ -1,0 +1,66 @@
+/* Zeit Logelei 2010/44 DDie Insel Pelland ist in sechseckige Äcker aufgeteilt, die den Familien Häblauer und Rothenkamp gehören
+https://www.zeit.de/2010/44/Spiele-Logelei-44 */
+import sat, util.
+main ?=>
+    C = {{0, 0, 0, 0, 0, 4, 0,-4,3}, % Waben gestaucht: \ Zeilen, / Spalten
+         {0, 0, 0, 5, 0, 3, 5, 0,3}, % rot - , blau +
+         {0, 0,-3, 0, 0, 0, 0, 0,0},
+         {0,-3, 0, 0, 0, 0,-2, 0,0},
+         {0, 0,-5, 0, 0, 6, 0, 0,0},
+         {0, 0, 0,-3, 0,-4, 0,-3,0},
+         {0, 0, 0, 0, 4, 0, 0, 0,0},
+         {0, 0, 0, 5, 4, 0, 0, 0,0},
+         {0, 0, 0, 0,-5, 0, 0, 0,0}},
+    M = {{0,0,0,0,_,_,_,_,_},
+         {0,0,0,_,_,_,_,_,_},
+         {0,0,_,_,_,_,_,_,_},
+         {0,_,_,_,_,_,_,_,_},
+         {_,_,_,_,_,_,_,_,_},
+         {_,_,_,_,_,_,_,_,0},
+         {_,_,_,_,_,_,_,0,0},
+         {_,_,_,_,_,_,0,0,0},
+         {_,_,_,_,_,0,0,0,0}}, M :: 0..8, % Gebiet 1..4 blau, 5..8 rot
+    N = len(M), Blau = 1, Rot = 2,
+    F = new_array(N,N), F :: 0..2,
+    foreach(Z in 1..N, S in 1..N) 
+        if var(M[Z,S]) then M[Z,S] #> 0 end,
+        F[Z,S] #= (M[Z,S]-1) div 4 + 1 
+    end,
+    % Zusammenhängend:
+    Root = new_array(N,N), Root :: 0..1,
+    foreach(Z1 in 1..N, S1 in 1..N, Z2 in 1..N, S2 in 1..N, (Z1,S1)!=(Z2,S2))
+        (Root[Z1,S1] #= 1 #/\ Root[Z2,S2] #= 1) #=> M[Z1,S1] #!= M[Z2,S2]
+    end,
+    RootVars = array_matrix_to_list(Root), sum(RootVars) #= 8,
+    % Alle Gebiete müssen einen einzigen orthogonal zusammenhängenden Bereich Bereich bilden:
+    Dist = new_array(N,N), DistVars = vars(Dist), MaxDist = N * N // 2, Dist :: 0..MaxDist,
+    foreach(Z in 1..N, S in 1..N)
+         Root[Z,S] #= 1 #=> Dist[Z,S] #= 0,
+   	  	 (M[Z,S] #> 0 #/\ Root[Z,S] #= 0) #=> Dist[Z,S] #= 1 + min([ Dist[Z1,S1]*(M[Z,S]#=M[Z1,S1])+MaxDist*(M[Z,S]#!=M[Z1,S1])
+   	  	 : (Z1,S1) in [(Z-1,S),(Z,S-1),(Z,S+1),(Z+1,S)], Z1 >= 1, Z1 =< N, S1 >= 1, S1 =< N])
+    end,
+    foreach(Z in 1..4, S in 1..N, C[Z,S]!=0)
+        L = [M[Z1,S1] : (Z1,S1) in [(Z-1,S-1),(Z,S-1),(Z-1,S),(Z,S+1),(Z+1,S),(Z+1,S+1)],
+                        0<Z1, Z1=<N, 0<S1, S1=<N],
+        F1 = cond(C[Z,S]<0,Rot,Blau), F2 = 3 - F1,
+        Freq = new_list(8),
+        foreach(I in 1..8) Freq[I] #= sum([(X #= I) : X in L]) end,
+        if F1=Blau then Cnt1 #= sum([(Freq[I] #> 0) : I in 1..4])
+                   else Cnt1 #= sum([(Freq[I] #> 0) : I in 5..8])
+        end,
+        if     abs(C[Z,S])=2 then F[Z,S] #= F2, Cnt1 #= 3
+        elseif abs(C[Z,S])=3 then F[Z,S] #= F2 #=> Cnt1 #= 3,
+                                  F[Z,S] #= F1 #=> Cnt1 #= 0
+        elseif abs(C[Z,S])=5 then F[Z,S] #= F2 #=> Cnt1 #= 0,
+                                  F[Z,S] #= F2 #=> Cnt1 #= 2
+        elseif abs(C[Z,S])=6 then F[Z,S] #= F1, Cnt1 #= 3
+        end
+    end,
+    solve(vars(M) ++ vars(F) ++ vars(Root) ++ DistVars),
+    foreach(Z in 1..N)
+    	foreach(S in 1..N) 
+            if M[Z,S]=0 then print(" |") else printf("%1d|", M[Z,S]) end
+        end, nl
+    end. %, fail.
+/* 
+ */

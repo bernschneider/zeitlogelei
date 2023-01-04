@@ -1,0 +1,23 @@
+/* Zeit Logelei 2011/38 Professor Knusi in Waldonien
+Dort gibt es nur Wahrsager und Falschsager. */
+import cp.
+main ?=>
+  Wal = [A,B,C,D,E,F,G,H,I,J], Wal :: 0..1, % 1=Wahrsager
+  foreach((X,Y,Z,W) in [
+      (A,B,C,0), % Asl: "Weder Besl noch Cesl lügt."
+      (B,D,F,0), % Besl: "Weder Desl noch eFsl lügt."
+      (C,J,F,0), % Cesl: "Weder Jotsel noch eFsl lügt."
+      (D,H,E,0), % Desl: "Weder Hasl noch Esl lügt."
+      (E,D,C,0), % Esl: "Weder Desl noch Cesl lügt."
+      (F,H,I,1), % eFsl: "Weder Hasl noch Isl sagt die Wahrheit."
+      (G,A,F,1), % Gesl: "Weder Asl noch eFsl sagt die Wahrheit."
+      (H,B,E,1), % Hasl: "Weder Besl noch Esl sagt die Wahrheit."
+      (I,C,B,1), % Isl: "Weder Cesl noch Besl sagt die Wahrheit."
+      (J,D,G,1)])% Jotsel: "Weder Desl noch Gesl sagt die Wahrheit."
+        X #= (Y #!= W #/\ Z #!= W) % X: Weder Y nach Z lügt bzw. sagt die Wahrheit
+  end,
+  solve(Wal),
+  foreach(X in 1..10, Wal[X]=1) printf("%c ", chr(64+X)) end, 
+  println("sagen die Wahrheit, der Rest lügt."), fail.
+/* G H I sagen die Wahrheit, der Rest lügt.
+CPU time 0.001 seconds, no more solutions, korrekt */

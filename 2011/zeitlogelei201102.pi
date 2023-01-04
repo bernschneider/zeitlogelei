@@ -1,0 +1,34 @@
+/* Zeit Logelei 2011/02 Professor Knusi hat vier Gelotaner unterschiedlichen Alters zu ihrem Alter befragt
+https://www.zeit.de/2011/02/Spiele-Logelei-02 */
+import sat, util.
+main ?=>
+    N=1, O=2, P=3, T=4, Name = ["Nertel","Oertel","Parfel","Tarfel"],
+    A = new_list(4), A :: 1..100,  % Alter     
+    Rang = new_list(4), Rang :: 1..4, all_different(Rang), % Altersrang aufsteigend
+    foreach(I in 1..4, J in 1..4, I!=J) Rang[I] #< Rang[J] #=> A[I] #< A[J] end,
+    % Der Älteste einer Gruppe sagt immer die Wahrheit, der Zweitälteste lügt genau ein Mal, der Drittälteste zwei Mal und so weiter ..
+    % d.h. Altersrang aufsteigend = 1 + Anzahl der wahren Aussagen:
+    Rang[N] #= 1 + (A[N] #= A[T] - 2)   % Nertel: "Ich bin zwei Jahre jünger als Tarfel. 
+                 + (A[N] #> A[P])       % Ich bin älter als Parfel. 
+                 + (A[P] #= 2 * A[T]),  % Parfel ist doppelt so alt wie Tarfel."
+    Rang[O] #= 1 + (A[O] #= abs(A[P] - A[N])) % Oertel: "Ich bin so alt wie der Altersunterschied von Parfel und Nertel. 
+                 + (A[N] #= 3 + A[T])   % Nertel ist drei Jahre älter als Tarfel. 
+                 + (A[P] #= 2 * A[N]),  % Parfel ist doppelt so alt wie Nertel."
+    Rang[P] #= 1 + (A[P] #> A[T])       % Parfel: "Ich bin älter als Tarfel. 
+                 + (A[P] #= A[T] + A[O])% Ich bin so alt wie Tarfel und Oertel zusammen. 
+                 + (A[T] #< A[N] + A[O]),% Tarfel ist jünger als Nertel und Oertel zusammen."
+    Rang[T] #= 1 + (A[T] #= 18)         % Tarfel: "Ich bin 18. 
+                 + (A[N] #> A[T])       % Nertel ist älter als ich. 
+                 + (A[T] #= 2 * A[O]),  % Ich bin doppelt so alt wie Oertel."
+    solve(A ++ Rang),
+    Ranking = [(A[I],Name[I]) : I in 1..4].sort_down(),
+    foreach((Alter,Nam) in Ranking)
+        printf("%s ist %d Jahre alt.%n", Nam, Alter)
+    end,
+    nl, fail.
+/*
+Parfel ist 27 Jahre alt.
+Tarfel ist 18 Jahre alt.
+Nertel ist 16 Jahre alt.
+Oertel ist 9 Jahre alt.
+CPU time 0.021 seconds, no more solutios, korrekt */

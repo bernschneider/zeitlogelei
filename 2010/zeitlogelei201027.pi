@@ -1,0 +1,31 @@
+/* Zeit Logelei 2010/27 Professor Knusi bei den Ansasen
+https://www.zeit.de/2010/27/Spiele-Logelei-27 */
+import sat, util.
+main ?=>
+    % Von den Ansasen gibt es zwei Arten. Die eine Art Aw sagt immer die Wahrheit, die andere Art Awf sagt, wozu sie Lust hat:
+    % Von den Bonesen gibt es zwei Arten. Hier lügt die eine Art Bf immer, die andere Art Bwf sagt immer das, wozu sie Lust hat:
+    Aw=1, Awf=2, Bwf=3, _Bf=4, Art = ["Anase w", "Anase wf","Bonese wf", "Bonese f"], 
+    P = [W,X,Y,Z], P :: 1..4, Name = ["Wolban", "Xenol", "Yebur", "Zabra"], all_different(P),
+    foreach((P0, Term) in [
+        (W, X #=< Awf), % Wolban: "Xenol ist ein Ansase."
+        (X, Y #>= Bwf), % Xenol: "Yebur ist ein Bonese"
+        (Y, Z #=< Awf), % Yebur: "Zabra ist ein Ansase."
+        (Z, W #!= Aw), % Zabra: "Wolban sagt nicht immer die Wahrheit."
+        (W, Y #=< Awf), % Wolban: "Yebur ist ein Ansase."
+        (X, Z #>= Bwf), % Xenol: "Zabra ist ein Bonese"
+        (Y, W #=< Awf), % Yebur: "Wolban ist ein Ansase."
+        (Z, X #!= Aw)])% Zabra: "Xenol sagt nicht immer die Wahrheit."
+        P0 #= 1 #=> Term, 
+        Term #=> P0 #!= 4 % P0 #= 4 #=> ~A
+    end, 
+    solve(P), 
+    foreach(I in 1..4)
+        printf("%s ist %s.%n", Name[I], Art[P[I]]) 
+    end,
+    nl, fail.
+/* 
+Wolban ist Bonese wf.
+Xenol ist Bonese f.
+Yebur ist Anase wf.
+Zabra ist Anase w.^
+no more solutions, korrekt */

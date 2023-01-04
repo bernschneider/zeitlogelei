@@ -1,0 +1,50 @@
+/* Zeit Logelei 2011/29 Zeichnen Sie in das Diagramm einige Magnetplatten mit Nord- und Südpol ein.
+https://www.zeit.de/2011/29/Spiele-Logelei-29 */
+import util, sat. 
+main ?=> 
+    Hcnt = [[2,2,4,4,1,4,2,3,2,3], [3,1,5,2,4,2,3,2,1,4]],
+    Vcnt = [[3,2,5,2,3,3,2,1,3,3], [3,4,2,5,0,4,2,3,1,3]],
+    P = ["<><><><>^^",
+         "^<>^<><>vv",
+         "v<>v^<>^<>",
+         "<><>v<>v^^",
+         "^<><>^<>vv",
+         "v<>^^v<><>",
+         "<>^vv^^<>^",
+         "<>v<>vv^^v",
+         "^^<>^<>vv^",
+         "vv<>v<><>v"], 
+   NZ = len(P), NS = len(P[1]), No=1, So=2,
+   M = new_array(NZ,NS), M :: [0,No,So], % Magnetplatten
+   % Die Zahlen am Rand geben an, wie viele Nord- und Südpole in der entsprechenden Zeile oder Spalte vorkommen:
+   foreach(Pol in [No,So], {Cnt,L} in zip(Hcnt[Pol],M.rows()) ++ zip(Vcnt[Pol],M.columns()))
+       Cnt #= sum([(V #= Pol) : V in L])
+   end,
+   foreach(Z in 1..NZ, S in 1..NS-1)
+      % Jedes Domino enthält N und S oder ist ganz leer:
+      if P[Z,S]='<' then Sum #= M[Z,S] + M[Z,S+1], Sum :: [0,3] end,
+      % Zwei Magnethälften mit derselben Polung dürfen einander nicht orthogonal berühren:
+      M[Z,S] #= M[Z,S+1] #=> M[Z,S] #= 0
+   end,
+   foreach(Z in 1..NZ-1, S in 1..NS) % das Gleiche senkrecht:
+      if P[Z,S]='^' then Sum #= M[Z,S] + M[Z+1,S], Sum :: [0,3] end,
+      M[Z,S] #= M[Z+1,S] #=> M[Z,S] #= 0
+   end,
+   solve(M), Chr =" NS",
+   foreach(Z in 1..NZ) 
+     foreach(S in 1..NS) 
+		printf("%c%c|", P[Z,S], Chr[1+M[Z,S]])
+	end, nl
+   end, fail.
+/*
+< |> |<N|>S|<N|>S|< |> |^ |^S|
+^S|< |> |^N|< |> |< |> |v |vN|
+vN|<S|>N|vS|^ |<S|>N|^S|<N|>S|
+< |> |<S|>N|v |<N|>S|vN|^ |^N|
+^S|< |> |<S|>N|^S|< |> |v |vS|
+vN|<S|>N|^ |^ |vN|< |> |<S|>N|
+<S|>N|^S|v |v |^ |^ |<S|>N|^ |
+<N|>S|vN|<S|>N|v |v |^ |^ |v |
+^ |^N|< |> |^ |<N|>S|v |v |^ |
+v |vS|<N|>S|v |<S|>N|<S|>N|v |
+CPU time 0.996 seconds, no more solutions, korrekt */

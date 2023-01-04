@@ -1,0 +1,32 @@
+/* Zeit Logelei 2011/04 Tom: "Ich hab mir eine sechsstellige Zahl gedacht.""
+https://www.zeit.de/2011/04/Spiele-Logelei-04 */
+import cp, util.
+main ?=>
+    % 1.
+    L = new_list(6), L :: 0..9, L[1] #> 0, L[5] #> 0, to_num(L,Num),
+    L1 = L[5..6] ++ L[1..4], to_num(L1,Num1),
+    Num1 * 9 #= Num,
+    solve(L ++ L1 ++ [Num,Num1]),
+    printf("1. %d * 9 = %d%n", Num1, Num), % 109890 * 9 = 989010
+    % 2.
+    L2 = new_list(6), L2 :: 0..9, L2[1] #> 1, L2[5] #> 0, to_num(L2,Num2),
+    L2a = L2[5..6] ++ L2[1..4], to_num(L2a,Num2a),
+    Num2 * 4 #= Num2a,
+    solve(L2 ++ L2a ++ [Num2,Num2a]),
+    printf("2. %d * 4 = %d%n", Num2, Num2a), % 238095 * 4 = 952380
+    % 3.
+    L3 = new_list(6), L3 :: 0..9, L3[1] #> 0, L3[4] #= 0, to_num(L3,Num3),
+    L3a = L3[5..6] ++ L3[1..3], to_num(L3a,Num3a),
+    Num3a * 25 #= Num3,
+    solve(L3 ++ L3a ++ [Num3,Num3a]),
+    printf("3. %d * 25 = %d%n", Num3a, Num3), % 25641 * 25 = 641025
+    % 4.
+    L4 = new_list(6), L4 :: 0..9, L4[1] #> 0, L4[2] #= 0, to_num(L4,Num4),
+    L4a = L4[3..6] ++ L4[1..1], to_num(L4a,Num4a),
+    Num4a * 54 #= Num4,
+    solve(L4 ++ L4a ++ [Num4,Num4a]),
+    printf("4. %d * 54 = %d%n", Num4a, Num4). % 12987 * 54 = 701298
+
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).

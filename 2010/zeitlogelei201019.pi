@@ -1,0 +1,31 @@
+/* Zeit Logelei 2010/19 Der Mörder muss allein mit James in einem Raum gewesen sein
+https://www.zeit.de/2010/19/Spiele-Logelei-19 */
+import cp, util.
+main ?=>
+    D=1, E=2, Gl=3, Gy=4, H=5, P=6, W=7, Name = ["Dale", "Everglade", "Garlic", "Garymore", "Horsecraft", "Parsnip", "Winter"],
+    N = 7, 
+    Raum = new_list(N), Raum :: 1..4, % Z war in Raum Nr. 1..4 
+    Cnt =  new_list(N), Cnt  :: 1..2, % Anzahl der wahren Aussagen 
+    foreach((P0, P1a,P1b,W1, P2a,P2b,W2) in [
+        (D, W,Gl,1, H,Gy,1),   % Lord Dale: "Mrs Winter und Miss Garlic waren zusammen; Sir Horsecraft und Lady Garymoore auch."
+        (Gl, E,Gy,0, W,P,1),   % Miss Garlic: "Mr Everglade und Lady Garymoore waren nicht zusammen, aber Mrs Winter und Reverend Parsnip."
+        (H, W,Gl,0, D,Gl,0),   % Sir Horsecraft: "Mrs Winter war nicht bei Miss Garlic; Lord Dale war auch nicht bei Miss Garlic."
+        (W, Gy,H,1, P,H,0),    % Mrs Winter: "Lady Garymoore und Sir Horsecraft waren zusammen, aber Reverend Parsnip und Sir Horsecraft nicht."
+        (Gy, P,H,1, W,D,1),    % Lady Garymoore: "Reverend Parsnip und Sir Horsecraft waren zusammen; Mrs Winter und Lord Dale auch."
+        (E, P,E,0, H,Gy,0),    % Mr Everglade: "Reverend Parsnip war nicht bei mir, und Sir Horsecraft und Lady Garymoore waren auch nicht zusammen."
+        (P, Gy,P,0, H,E,1)])   % Reverend Parsnip: "Lady Garymoore war nicht bei mir, aber Sir Horsecraft und Mr Everglade waren zusammen."
+            Cnt[P0] #= ( ((Raum[P1a] #= Raum[P1b]) #= W1) + ((Raum[P2a] #= Raum[P2b]) #= W2) )
+    end,
+    % Nur der Mörder achtet darauf, nichts Falsches zu sagen und er muss allein mit James in einem Raum gewesen sein:
+    Candidate = new_list(N), Candidate :: 0..1, sum(Candidate) #>= 1, 
+    foreach(Z in 1..N) 
+        count(Raum[Z], Raum, CntM),
+        Candidate[Z] #= 1 #<=> (Cnt[Z] #= 2 #/\ CntM #= 1) end,
+    solve(Raum ++ Cnt ++ Candidate), % println(Cnt),
+    Moerder = find_first_of(Candidate, 1),
+    printf("%s hat James umgebracht.%n", Name[Moerder]),
+    print("Räume: "),
+    foreach(I in 1..4) printf("%w ", [Name[Z] : Z in 1..N, Raum[Z] = I]) end.
+/* Garlic hat James umgebracht.
+Räume: [Dale,Parsnip,Winter] [Everglade] [Garlic] [Garymore,Horsecraft] 
+CPU time 0.004 seconds, korrekt */

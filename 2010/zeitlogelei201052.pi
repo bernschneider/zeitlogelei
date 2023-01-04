@@ -1,0 +1,39 @@
+/* Zeit Logelei 2010/52 Weihnachten bei Käges
+https://www.zeit.de/2010/52/Spiele-Logelei-52 */
+import cp, util.
+main ?=>
+    P=1, T=2, L=3, V=4, M=5, % Peter, Tanja, Lisa, Vater, Mutter
+    A = new_array(5,3), A :: 0..1,  % 5 Personen mal 3 Aussagen, 1 = Aussage ist wahr
+    Ort = new_list(5), % wo die Geschenke sein können
+    % Peter: 
+    A[P,1] #= (sum(A[P]) #< sum(A[V])), % In diesem Brief sind weniger wahre Aussagen als im Brief an Deinen Vater
+    A[P,2] #= (sum(A[L]) #= 0), % In Lisas Brief sind alle Aussagen falsch. 
+    Ort[P] = "Im Keller findet Ihr Geschenke.", % A[P,3]
+    % Tanja: 
+    A[T,1] #= (sum(A[P]) #> sum(A[T])), % "Im Brief an Peter sind mehr wahre Aussagen als in diesem Brief. 
+    A[T,2] #= (sum([A[I,1] : I in 1..5]) #= 5), % Die erste Aussage in jedem Brief ist richtig. 
+    Ort[T] = "Im Badezimmer findet Ihr Geschenke.", % A[T,3]
+    % Lisa:
+    A[L,1] #= (sum(A[P]) #> sum(A[M])), % In Peters Brief sind mehr Aussagen wahr als in dem an Deine Mutter. 
+    A[L,2] #= (sum(A[L]) #< sum(A[P])), % In diesem Brief sind weniger Aussagen wahr als im Brief an Peter. 
+    Ort[L] = "In der Küche findet Ihr Geschenke.", % A[L,3]
+    % Herr Käge (Vater):
+    A[V,1] #= (sum(A[L]) #< sum(A[T])), % Im Brief an Lisa sind weniger wahre Aussagen als im Brief an Tanja. 
+    A[V,2] #= (sum(A[M]) #> sum(A[V])), % Im Brief Ihrer Frau sind mehr Aussagen wahr als in diesem Brief. 
+    Ort[V] = "In der Garage findet Ihr Geschenke.", % A[V,3]
+    % Frau Käge (Mutter):
+    A[M,1] #= (A[L,1] #= 1), % Die erste Aussage in Lisas Brief ist wahr. 
+    A[M,2] #= (sum(A[V]) #= 0), % Im Brief Ihres Mannes ist keine Aussage wahr. 
+    Ort[M] = "Auf dem Dachboden findet Ihr Geschenke.", % A[M,3]
+    solve(A), println(A),
+    foreach(I in 1..5, A[I,3]=1)
+        printf("%s%n", Ort[I])
+    end,
+    nl, fail.
+/* {{0,0,1},{0,0,1},{0,0,1},{0,0,1},{0,0,1}}
+Im Keller findet Ihr Geschenke.
+Im Badezimmer findet Ihr Geschenke.
+In der Küche findet Ihr Geschenke.
+In der Garage findet Ihr Geschenke.
+Auf dem Dachboden findet Ihr Geschenke.
+CPU time 0.001 seconds, no moire solutions, korrekt */

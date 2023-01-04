@@ -1,0 +1,55 @@
+/* Zeit Logelei 2011/19
+https://www.zeit.de/2011/19/Spiele-Logelei-19
+MICH * KANN = FACHMANN, M * KANN = FHMNN usw.
+MICH * KANN = HOCHOFEN, M * KANN = HKENC usw. */
+import cp, util.
+main ?=>
+    A = [Tom, Karl, Vater, Delta, X], A :: 1..100, % Alter
+    %  Wenn Tom und Karl zusammen so alt sein werden wie ihr Vater, ..
+    Tom + Delta + Karl + Delta #= Vater + Delta,
+    % .. wird Karl doppelt so alt sein wie Tom:
+    Karl + Delta #= 2 * (Tom + Delta),
+    % Vor sieben Jahren war der Vater genau neunmal so alt wie Tom: 
+    Vater - 7 #= 9 * (Tom - 7), 
+    % Zählt man die gelebten Jahre der drei zusammen, so erhält man eine Quadratzahl:
+    Tom + Karl + Vater #= X * X,
+    solve(A), printf("Tom ist %d, Karl %d und ihr Vater %d Jahre alt.%n%n", Tom, Karl, Vater),
+    % Tom ist 11, Karl 27 und ihr Vater 43 Jahre alt, korrekt
+    mult(["NEUN", "SECHS", "BNICH", "RTTT", "BETIN", "BNICH", "BIERTISCH"]). /*
+2472 * 54605
+-----------
+12360
+  9888
+  14832
+   12360
+-----------
+134983560 korrekt */
+mult(L) =>
+   Letter = keys(new_set(flatten(L))), % verwendete Buchstaben
+   Digit = new_list(len(Letter)), Digit :: 0..9, % eine Ziffer je Buchstabe
+   all_different(Digit),
+   Zeilen = len(L[1]), % Anzahl der Teilrechnungen, im Beispiel = 4
+   LenZeile = max([len(L[2+I]) : I in 1..Zeilen]), % maximale Länge der Zeilen, im Beispiel = 5
+   Num = new_array(len(L)), % numerische Repräsentation der Elemente von L
+   foreach(I in 1..len(L))
+       S = [Digit[find_first_of(Letter, C)] : C in L[I]], % Convert Letter C -> Digit
+       to_num(S, Num[I]), S[1] #!= 0
+   end,
+   Num[1] * Num[2] #= Num[len(L)], % Hauptgleichung (im 1. Beispiel MICH * KANN = FACHMANN)
+   /* L1 = L[1],
+   foreach(I in 1..Zeilen) % zeilenweise Teilrechnung:
+       Digit[find_first_of(Letter, L1[I])] * Num[2] #= Num[2+I]
+   end,*/
+   solve(Digit ++ Num),
+   printf("%d * %d%n", Num[1], Num[2]),
+   printf("-----------%n"),
+   foreach(I in 1..Zeilen)
+       foreach(_ in 2..I+LenZeile-len(L[2+I])) print(' ') end, % Indent
+       println(Num[2+I])
+   end,
+   printf("-----------%n"),
+   printf("%d%n%n", Num[len(L)]).
+
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).

@@ -1,0 +1,56 @@
+/* Zeit Logelei 2010/47 Familie Maier hat Familie Müller zum "Überraschen" eingeladen
+https://www.zeit.de/2010/47/Spiele-Logelei-47 */
+import cp, util.
+main ?=>
+    Name = ["Frau Maier","Herr Maier","Lisa Maier", "Paul Maier", "Frau Müller","Herr Müller","Jana Müller", "Ralf Müller"], 
+    FMa=1, HMa=2, LMa=3, PMa=4, FMu=5, HMu=6, JMu=7, RMu=8, N=8,
+    M = new_array(N,N), M :: 0..1, % M[Z,S]=1  <=> Z hat S überrascht
+    Mt = M.transpose(),            % Mt[Z,S]=1 <=> S hat Z überrascht
+    % Jeder hat mindestens einen anderen Teilnehmer überrascht und wurde von mindestens einem überrascht:
+    foreach( L in M.rows() ++ M.columns()) sum(L) #> 0 end,
+    % Kein Teilnehmer wurde von einem Teilnehmer überrascht wurde, den er selbst überrascht hatte:
+    foreach(Z in 1..N, S in 1..N) M[Z,S] #= 1 #=> M[S,Z] #= 0 end,
+    foreach(I in 1..N)
+        M[I,I] #= 0, % keiner hat sich selbst überrascht
+        % Genau die Teilnehmer, die Herr Müller überrascht hat, haben Lisa Maier überrascht:
+        M[HMu,I] #= 1 #<=> M[I,LMa] #= 1,
+        % Alle Teilnehmer, die Lisa Maier überrascht haben, haben auch Paul Maier überrascht:
+        M[I,LMa] #= 1 #=> M[I,PMa] #= 1
+    end,
+    % Frau Maier hat nicht sowohl Herrn Müller als auch Jana Müller überrascht:
+    M[FMa,HMu] #= 0 #\/ M[FMa,JMu],
+    % Lisa Maier und Ralf Müller haben genau gleich viele Teilnehmer überrascht:
+    sum(M[LMa]) #= sum(M[RMu]),
+    % Die Anzahl der Teilnehmer, von denen Frau Maier überrascht wurde, entspricht der Anzahl der Teilnehmer, die von Herrn Maier überrascht wurden:
+    sum(Mt[FMa]) #= sum(M[HMa]),
+    % Frau Müller wurde von mehr Teilnehmern überrascht als ihre Tochter:
+    sum(Mt[FMu]) #> sum(Mt[JMu]),
+    % Beide haben je genau eine Person überrascht:
+    sum(M[FMu]) #= 1, sum(M[JMu]) #= 1,
+    % Alle Teilnehmer, die Frau Maier überrascht hat, haben jemanden überrascht, der Frau Maier überrascht hat:
+    foreach(I in 1..N)  M[FMa,I] #= 1 #=> sum([M[I,J] * M[J,FMa] : J in 1..N]) #> 0 end,
+    % Herr und Frau Maier zusammen haben jeden der anderen sechs Teilnehmer genau einmal überrascht:
+    foreach(I in 3..N) M[HMa,I] #= 1 #\/ M[FMa,I] #= 1 end,
+    % Frau Müller wurde von keiner Frau überrascht:
+    foreach(I in 1..2..7) M[I,FMu] #= 0 end,
+    % Ralf Müller wurde nur einmal überrascht, und zwar von einem Mann:
+    sum(Mt[RMu]) #= 1, X :: 2..2..8, matrix_element(M, X, RMu, 1),
+    % Paul Maier hat keine Frauen überrascht:
+    sum([M[PMa,I] : I in 1..2..7]) #= 0,
+    % Herr Maier wurde von keinem anderen Maier überrascht:
+    sum([M[I,HMa] : I in [1,3,4]]) #= 0,
+    solve(vars(M) ++ [X]),
+    foreach(Z in 1..N)
+        printf("%s überraschte ", Name[Z]),
+        foreach(S in 1..N, M[Z,S]=1) printf("%s, ", Name[S]) end, nl
+    end, nl, fail.
+/* 
+Frau Maier überraschte Lisa Maier, Paul Maier, Jana Müller.
+Herr Maier überraschte Frau Maier, Frau Müller, Herr Müller, Ralf Müller.
+Lisa Maier überraschte Paul Maier, Herr Müller.
+Paul Maier überraschte Herr Müller.
+Frau Müller überraschte Frau Maier. 
+Herr Müller überraschte Frau Maier. 
+Jana Müller überraschte Herr Maier. 
+Ralf Müller überraschte Frau Maier, Frau Müller. 
+CPU time 0.003 seconds, no more solutions, korrekt */

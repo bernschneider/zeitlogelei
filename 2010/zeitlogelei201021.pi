@@ -1,0 +1,23 @@
+/* Zeit Logelei 2010/21 Familie Schütterbach macht in Wagadonien Urlaub
+https://www.zeit.de/2010/21/Spiele-Logelei-21 */
+import cp, util.
+main ?=>
+    Digit = [A,B,C,D,E,F,G,H], [A,B,C,E,F] :: 1..9, [D,G,H] :: 0..9, 
+    all_different(Digit),
+    Kurs :: 1..10000, % Umrechnungsfaktor EUR -> WGL mal 1000
+    foreach((EUR,WGL) in [
+        $(B, A),             % b EUR = a WGL; 
+        $(A, 10*C+D),        % a EUR = cd WGL; 
+        $(E, 10*F+E),        % e EUR = fe WGL; 
+        $(10*F+G, 10*E+H)])  % fg EUR = eh WGL
+            Kurs * EUR #= 1000 * WGL
+    end,
+    solve([Kurs] ++ Digit),
+    printf("%3.3f%n", Kurs//1000),
+    foreach(I in 1..len(Digit))
+        printf("%c = %d, ", chr(64+I), Digit[I])
+    end,
+    nl, fail.
+/* 3.000
+A = 9, B = 3, C = 2, D = 7, E = 5, F = 1, G = 8, H = 4
+CPU time 0.001 seconds, no more solutions, korrekt */

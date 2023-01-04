@@ -1,0 +1,98 @@
+/* Zeit Logelei 2010/28
+https://www.zeit.de/2010/28/Spiele-Logelei-28 */
+import sat, util, matrix. % matrix ist speziell für diese Logelei erstellt
+main => % <> = Fenster, 1=frei, 0=blockiert
+    C = {"11<><>0000000000000000000", % 2 zusätzliche Leerspalten rechts und unten
+         "1111110000000000000000000", 
+         "1111110000000000000000000",
+         "1111110000000000000000000",
+         "1111110000000000000000000",
+         "1111111<><>1<>1<><>000000",
+         "1111111111111111111000000",
+         "1111111111111111111<>1^00",
+         "1111111111111111111111v00",
+         "^111111111111111111111100",
+         "v111111111111111111111100",
+         "^111111111110101111111100",
+         "v111111111111001111111100",
+         "^111111111111111111111100",
+         "v111111111111111111111100",
+         "1111111111111111111111100",
+         "111111111<><><><>111<>100",
+         "1111111^00000000000000000",
+         "1111111v00000000000000000",
+         "11<><>1100000000000000000",
+         "1100001100000000000000000",
+         "0000000000000000000000000",
+         "0000000000000000000000000"}, NZ = len(C) - 2, NS = len(C[1]) - 2,
+    M = new_array(NZ+2,NS+2), M :: 0..27,
+    foreach(Z in 1..NZ+2, S in 1..NS+2)
+        if C[Z,S] = '0' then M[Z,S] #= 0 else M[Z,S] #> 0 end
+    end,
+    generate(Klein, Gross, GrossV, _Bad_kl, Bad_gr),
+    Idx = new_list(26), Idx :: 1..8, % Drehvarianten
+    DZ = new_list(26), DZ :: 0..NZ-1, % Translation des I.ten Raums
+    DS = new_list(26), DS :: 0..NS-1,
+    foreach(I in 1..5) % Kleines Zimmer + kleines Bad
+        count(I, vars(M), 13), count(13+I, vars(M), 4), 
+        foreach(J in 1..8) % Constraint nur, wenn Idx[I] #= J!
+            ZNZ = len(Klein[J]), ZNS = len(Klein[J,1]), 
+            foreach(DZI in 0..NZ-3, DSI in 0..NS-3, Z in 1..ZNZ, S in 1..ZNS, Klein[J,Z,S]=1) 
+                (Idx[I] #= J #/\ DZ[I] #= DZI #/\ DS[I] #= DSI) #=> M[DZI+Z,DSI+S] #= I
+            end
+        end,
+        % Badezimmer 2x2:
+        foreach(DZI in 0..NZ-2, DSI in 0..NS-2, Z in 1..2, S in 1..2) 
+            (DZ[13+I] #= DZI #/\ DS[13+I] #= DSI) #=> M[DZI+Z,DSI+S] #= 1
+        end
+    end,
+    foreach(I in 6..13) % Großes Zimmer + großes Bad (I=13: Variante des großen Zimmers)
+        count(I, vars(M), cond(I<13,20,21)), count(13+I, vars(M), 6), 
+        if I < 13 then Idx[I] :: 1..2 else Idx[I] :: 1..4 end,
+        foreach(J in 1..cond(I<13,2,4)) % Constraint nur, wenn Idx[I] #= J!
+            if I < 13 then ZNZ = len(Gross[J]),  ZNS = len(Gross[J,1])
+                      else ZNZ = len(GrossV[J]), ZNS = len(GrossV[J,1])
+            end, 
+            foreach(DZI in 0..NZ-4, DSI in 0..NS-4, Z in 1..ZNZ, S in 1..ZNS, cond(I<13,Gross[J,Z,S],GrossV[J,Z,S])=1) 
+                (Idx[I] #= J #/\ DZ[I] #= DZI #/\ DS[I] #= DSI) #=> M[DZI+Z,DSI+S] #= I
+            end
+        end,
+        % Badezimmer 2x3:
+        foreach(J in 1..2) % Constraint nur, wenn Idx[I] #= J!
+            ZNZ = len(Bad_gr[J]), ZNS = len(Bad_gr[J,1]), 
+            foreach(DZI in 0..NZ-1, DSI in 0..NS-1, Z in 1..ZNZ, S in 1..ZNS) 
+                (Idx[13+I] #= J #/\ DZ[13+I] #= DZI #/\ DS[13+I] #= DSI) #=> M[DZI+Z,DSI+S] #= 1
+            end
+        end
+    end,
+    % Der Flur hängt zusammen mit dem Treppenhaus (I=27):
+    Dist = new_array(NZ,NS), DistVars = vars(Dist), MaxDist = 30, Dist :: 0..MaxDist,
+    Dist[12,14] #= 0,
+    foreach(Z in 1..NZ, S in 1..NS, (Z,S)!=(12,14))
+   	  	 M[Z,S] #= 27 #=> Dist[Z,S] #= 1 + min([ Dist[Z1,S1]*(27#=M[Z1,S1])+MaxDist*(27#!=M[Z1,S1])
+   	  	 : (Z1,S1) in [(Z-1,S),(Z,S-1),(Z,S+1),(Z+1,S)], Z1 >= 1, Z1 =< NZ, S1 >= 1, S1 =< NS])
+    end,
+    foreach(I in 1..13) 
+        connected(M,27,I),  % der Flur hängt mit allen Zimmmern zusammemn
+        connected(M,I,13+I) % alle Zimmer hängen mit ihren Badezimmern zusammmen
+    end,
+    % Fenster:
+    foreach(I in 1..13) 
+        Fcnt #= sum([(M[Z,S] #= I) : Z in 1..NZ, S in 1..NS, (C[Z,S]='<';C[Z,S]='^')]),
+        Fcnt #= sum([(M[Z,S] #= I) : Z in 1..NZ, S in 1..NS, (C[Z,S]='>';C[Z,S]='v')]),
+        if I =< 5 then Fnct #= 1 else Fnct #= 2 end
+    end,
+    solve(vars(M) ++ DZ ++ DS ++ Idx ++ DistVars),
+    Chr = " ABCDEFGHIJKLMabcdefghijklm_",
+    foreach(Z in 1..NZ)
+        foreach(S in 1..NS)
+		    printf("%c|", Chr[1 + M[Z,S]]) 
+    	end, nl
+    end.
+/* Stack overflow in "vars_set 0" after 26 garbage collections and 3 stack expansions.
+2nd try: Not terminating after running 3h 30m */
+connected(M,R1,R2) =>
+    NZ = len(M) - 2, NS = len(M[1]) - 2,
+    [Z1,Z2] :: 1..NZ, [S1,S2] :: 1..NS, DZ #= abs(Z2 - Z1), DS #= abs(S2 - S1),
+    [DZ,DS] :: [0,1], DZ + DS #= 1,
+    matrix_element(M, Z1, S1, R1), matrix_element(M, Z2, S2, R2). 

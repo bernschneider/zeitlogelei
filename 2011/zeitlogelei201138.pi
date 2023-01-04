@@ -1,0 +1,34 @@
+/* Zeit Logelei 2011/38 Professor Knusi in Ususien
+Wusus, Hufus, Gutus und Murus haben 
+ein Modellbauflugzeug, ein Modellmotorboot, ein Modell-Ufo und ein Modellmotorrad gebaut. 
+Jedes der vier Fahrzeuge hat eine andere Farbe, nämlich Rot, Gelb, Weiß und Grün. 
+Knusi: Du weißt doch, dass es in Ususien Usus ist zu lügen! */
+import cp.
+main ?=>
+  W=1, H=2, G=3, M=4, NameP = ["Wusus", "Hufus", "Gutus", "Murus"],
+  F=1, B=2, U=3, M=4, NameM = ["Flugzeug", "Boot", "Ufo", "Motorrad"],
+  W=1, R=2, G=3, N=4, NameF = ["weiß", "rot", "gelb", "grün"],
+  Modell = new_list(4), Modell :: 1..4, assignment(Modell, RModell),
+  Farbe = new_list(4),  Farbe  :: 1..4, assignment(Farbe, RFarbe),
+  element(RModell[B], Farbe, F1), F1 #!= W, % Hufus: Das Boot ist weiß.
+  Farbe[M] #!= R, % Murus: Ich habe ein rotes Modell gebaut.
+  Farbe[G] #!= W, % Gutus: Ich habe ein weißes Modell gebaut.
+  F1 #!= G, % Gutus: Das Boot ist gelb.
+  Modell[M] #!= U, % Murus: Ich habe ein Ufo gebaut.
+  element(RModell[M], Farbe, F2), F2 #!= G, % Gutus: Das Motorrad ist gelb.
+  F2 #!= W, % Hufus: Das Motorrad ist weiß.
+  Farbe[W] #!= W, % Wusus: Ich habe ein weißes Modell gebaut.
+  Modell[W] #!= F, % Wusus: Ich habe ein Flugzeug gebaut.
+  Farbe[M] #!= G, % Murus: Ich habe ein gelbes Modell gebaut.
+  Modell[W] #!= B, % Wusus: Ich habe ein Boot gebaut.
+  element(RModell[F], Farbe, F3), F3 #!= W, % Hufus: Das Flugzeug ist weiß.
+  solve(Modell ++ RModell ++ Farbe ++ RFarbe),
+  foreach(I in 1..4)
+    printf("%s hat ein %ses %s gebaut.%n", NameP[I], NameF[Farbe[I]], NameM[Modell[I]])
+  end, nl, fail.
+/*
+Wusus hat ein rotes Motorrad gebaut.
+Hufus hat ein weißes Ufo gebaut.
+Gutus hat ein gelbes Flugzeug gebaut.
+Murus hat ein grünes Boot gebaut.
+CPU time 0.001 seconds, no more solutions, korrekt */

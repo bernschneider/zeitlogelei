@@ -1,0 +1,32 @@
+/* Zeit Logelei 2010/29 Bei Tanja ist deren Cousine aus Australien zu Besuch
+https://www.zeit.de/2010/29/Spiele-Logelei-29 */
+import cp.
+main1 ?=>
+    Vars = [T, C, T3, C3], Vars :: 3..75, % Tanja, Cousine
+    % T -> C: "Wenn ich fünf Jahre älter wäre und du fünf Jahre jünger, wäre ich doppelt so alt wie du.":
+    T + 5 #= 2 * (C - 5),
+    % Drei Jahre später:
+    T3 #= T + 3, C3 #= C + 3,
+    % C -> T: "Wenn ich fünf Jahre älter wäre und du fünf Jahre jünger, wäre ich doppelt so alt wie du."
+    C3 + 5 #= 2 * (T3 - 5),
+    solve(Vars),
+    printf("Tanja ist jetzt %d, ihre Cousine %d Jahre alt.%n", T3, C3),
+    fail.
+    /* Tanja ist jetzt 16, ihre Cousine 17 Jahre alt.
+    CPU time 0.0 seconds, no more solutions, korrekt */
+main2 ?=>
+    Vars = [A, F, M], Vars :: 3..75, % Anton, Fritz, Martin
+    % A -> F: 
+    (M - Delta1) #= 2 * (A - Delta2), % Als Martin doppelt so alt war wie ich war ..
+    Delta2 #= F - A,   % .. als du so alt warst, wie ich jetzt bin ..
+    F - Delta1 #= M, % .. warst du so alt, wie Martin jetzt ist.
+    % F -> A:
+    Delta3 #= A - (F - Delta4),  % Als du so alt warst, wie ich war, ..
+    M - Delta4 #= 2 * (A - Delta4), % .. als Martin doppelt so alt war wie du ..
+    F - Delta3 + 2 #= M - Delta3 + A - Delta3, % .. war ich zwei Jahre jünger als Martin und du zusammen.
+    sum(Vars) #= 67, % M: "Zusammen sind wir 67 Jahre alt."
+    solve(Vars),
+    printf("Anton ist %d, Fritz %d, Martin %d Jahre alt.%n", A, F, M),
+    fail.
+    /* Anton ist 17, Fritz 32, Martin 18 Jahre alt.
+    CPU time 0.004 seconds, no more solutions, korrekt */

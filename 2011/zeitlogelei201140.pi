@@ -1,0 +1,54 @@
+/* Zeit Logelei 2011/40 Bei Tims Party werden die zwölf Gäste eingeteilt: 
+https://www.zeit.de/2011/40/Spiele-Logelei-40 */
+import sat.
+main ?=>
+    NameP = ["Alex", "Bob", "Carl", "Don", "Erna", "Fred", "Gabi", "Hans", "Ina", "Jan", "Ko", "Lena"],
+    A=1, B=2, C=3, D=4, E=5, F=6, G=7, H=8, I=9, J=10, K=11, L=12,
+    % Je drei sind Wahrsager, Falschsager, Abwechsler und Dummschwätzer:
+    NameG = ["Wahrsager", "Falschsager", "Abwechsler", "Dummschwätzer"],
+    Ws=1, Fs=2, Aw=3, Ds=4, 
+    Gr = new_list(12), Gr :: 1..4, foreach(G1 in 1..4) count(G1, Gr, 3) end,
+    % Gr = [Aw,Ds,Aw,Ws, Ws,Ds,Ws,Fs, Fs,Aw,Ds,Fs],
+    Cnt = [1 : _ in 1..12], % Lfd. Nr. der Aussage
+    Wahr = new_array(12,3), Wahr :: 0..1, % Ist die 1., 2. bzw. 3. Aussage von P wahr?
+    foreach(P in 1 ..12)
+        Gr[P] #= Fs #=> sum(Wahr[P]) #= 0,
+        Gr[P] #= Aw #=> (Wahr[P,1] #!= Wahr[P,2] #/\ Wahr[P,2] #!= Wahr[P,3]),
+        Gr[P] #= Ws #=> sum(Wahr[P]) #= 3
+    end,
+    foreach((P1,P2,G2) in [  
+        (H,I,Aw), % Hans: Ina ist Abwechsler.
+        (K,C,Aw), % Ko: Carl ist Abwechsler.
+        (B,I,Ds), % Bob: Ina ist Dummschwätzer.
+        (F,E,Ws), % Fred: Erna ist Wahrsager.
+        (G,A,Aw), % Gabi: Alex ist Abwechsler.
+        (K,J,Ws), % Ko: Jan ist Wahrsager.
+        (H,I,Ws), % Hans: Ina ist Wahrsager.
+        (C,H,Ws), % Carl: Hans ist Wahrsager.
+        (B,L,Fs), % Bob: Lena ist Falschsager.
+        (C,D,Ws), % Carl: Don ist Wahrsager.
+        (I,F,Ws), % Ina: Fred ist Wahrsager.
+        (J,A,Ws), % Jan: Alex ist Wahrsager.
+        (F,I,Fs), % Fred: Ina ist Falschsager.
+        (A,C,Aw), % Alex: Carl ist Abwechsler.
+        (B,A,Aw), % Bob: Alex ist Abwechsler.
+        (A,B,Aw), % Alex: Bob ist Abwechsler.
+        (G,L,Fs), % Gabi: Lena ist Falschsager.
+        (K,J,Aw), % Ko: Jan ist Abwechsler.
+        (L,I,Ws), % Lena: Ina ist Wahrsager.
+        (F,B,Fs), % Fred: Bob ist Falschsager.
+        (D,G,Ws), % Don: Gabi ist Wahrsager.
+        (C,I,Ds)])% Carl: Ina ist Dummschwätzer.
+            Wahr[P1,Cnt[P1]] #= (Gr[P2] #= G2),
+            Cnt[P1] := Cnt[P1] + 1
+    end,
+    solve(vars(Wahr) ++ Gr),
+    foreach(G1 in 1..4)
+        printf("%w sind %s%n", [NameP[P] : P in 1..12, Gr[P]=G1], NameG[G1])
+    end.
+/* 
+[Don,Erna,Gabi] sind Wahrsager
+[Hans,Ina,Lena] sind Falschsager
+[Alex,Carl,Jan] sind Abwechsler
+[Bob,Fred,Ko] sind Dummschwätzer
+CPU time 0.008 seconds, korrekt */

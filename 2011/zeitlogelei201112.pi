@@ -1,0 +1,44 @@
+/* Zeit Logelei 2011/12 Monika war im Zoo und ist besonders von den fünf unterschiedlich großen Affen begeistert
+Jeder der Affen saß auf einem eigenen, unterschiedlich großen Baum und hatte eine unterschiedlich große Banane in der Hand.
+https://www.zeit.de/2011/12/Spiele-Logelei-122 */
+import cp.
+main ?=>
+    NAffe = ["Monika","Nadine","Sandra", "Rolf","Thomas"],
+    _M=1, N=2, S=3, R=4, T=5,
+    Affe =   new_list(5), Affe :: 1..5, assignment(Affe,RAffe), 
+    Baum =   new_list(5), Baum :: 1..5, assignment(Baum,RBaum), 
+    Banane = new_list(5), Baum :: 1..5, assignment(Banane,RBanane),
+    % Thomas saß auf einem kleineren Baum als der Affe mit der zweitkleinsten Banane, ..
+    Ban2 #= RBanane[2], element(Ban2,Baum,Baum2),  Baum[T] #< Baum2,
+    % .. welcher kleiner war als der Affe auf dem zweitkleinsten Baum:
+    element(Ban2,Affe,Aff2), element(RBaum[2],Affe,Aff3), Aff2 #< Aff3,
+    % Der Affe mit der zweitgrößten Banane saß nicht auf einem kleineren Baum als Rolf:
+    element(RBanane[4],Baum,Baum4), Baum4 #>= Baum[R],  
+    % Der wiederum hatte eine kleinere Banane als Nadine:
+    Banane[R] #< Banane[N],
+    % Der Affe mit der mittleren Banane war nicht kleiner als Nadine:
+    element(RBanane[3],Affe,Affe5), Affe5 #>= Affe[N],
+    % Der Affe auf dem größten Baum war ein Männchen:
+    RBaum[5] #>= 4,
+    % Sandra saß auf einem kleineren Baum als der zweitkleinste Affe:
+    element(RAffe[2],Baum,Baum6),  Baum[S] #< Baum6,
+    % Der Affe auf dem zweitkleinsten Baum war kleiner als der mit der größten Banane ..
+    element(RBaum[2],Affe,Affe7), element(RBanane[5],Affe,Affe8), Affe7 #< Affe8,
+    % .. und saß auf einem kleineren Baum als der größte Affe:
+    element(RAffe[5],Baum,Baum9), 2 #< Baum9,    
+    % Der wiederum hatte eine kleinere Banane als der Affe auf dem Baum mit der mittleren Größe:
+    element(RAffe[5],Banane,Ban10), element(RBaum[3],Banane,Ban11), Ban10 #< Ban11,    
+    solve(Affe ++ RAffe ++ Baum ++ RBaum ++ Banane ++ RBanane),
+    Rel = ["kleinste","zweitkleinste","mittlere","zweitgrößte","größte"],
+    Ranking = [(Affe[I],I,Banane[I],Baum[I]) : I in 1..5].sort(),
+    foreach((Aff,I,Ban,Bau) in Ranking)
+        printf("Der %s Affe ist %s, mit der %sn Banane auf dem %sn Baum.%n", 
+                Rel[Aff], NAffe[I], Rel[Ban], Rel[Bau])
+    end.
+/*
+Der kleinste Affe ist Monika, mit der zweitkleinsten Banane auf dem zweitgrößten Baum.
+Der zweitkleinste Affe ist Thomas, mit der kleinsten Banane auf dem zweitkleinsten Baum.
+Der mittlere Affe ist Nadine, mit der größten Banane auf dem mittleren Baum.
+Der zweitgrößte Affe ist Sandra, mit der mittleren Banane auf dem kleinsten Baum.
+Der größte Affe ist Rolf, mit der zweitgrößten Banane auf dem größten Baum.
+CPU time 0.003 seconds. */

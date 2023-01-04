@@ -1,0 +1,23 @@
+/* Zeit Logelei 2011/44 Professor Knusi auf Forschungsreise in Growufien
+eder Einwohner ist entweder Beramier oder Asbire. 
+https://www.zeit.de/2011/14/Spiele-Logelei-14 */
+import sat, util.
+main ?=>
+    B=0, A=1, % Die Beramier lügen immer, und die Asbiren sagen immer die Wahrheit
+    Einw = [S,T,U,V,W,X,Y,Z], Einw :: [A,B],
+    foreach((P0,P1,G1,P2,G2) in [  
+        (Z,W,A,S,A), % Zususs: "Wenn Weruss Asbire ist, ist auch Sefuss Asbire."
+        (Y,S,A,U,A), % Yabuss: "Wenn Sefuss Asbire ist, ist auch Uruss Asbire."
+        (W,T,A,X,A), % Weruss: "Wenn Toruss Asbire ist, ist auch Xofuss Asbire."
+        (V,W,A,T,B), % Vidibuss: "Wenn Weruss Asbire ist, ist Toruss Beramier."
+        (U,X,A,V,A), % Uruss: "Wenn Xofuss Asbire ist, ist auch Vidibuss Asbire."
+        (T,Z,A,Y,A), % Toruss: "Wenn Zususs Asbire ist, ist auch Yabuss Asbire."
+        (S,U,A,T,B)])% Sefuss: "Wenn Uruss Asbire ist, ist Toruss Beramier."
+            P0 #= (P1 #= G1 #=> P2 #= G2)
+    end,
+    solve(Einw), Chr = "STUVWXYZ",
+    foreach(I in 1..8, Einw[I]=B) printf("%c ", Chr[I]) end,
+    println("sind Beramier, der Rest Asbiren."),
+    nl, fail.
+/* S W X sind Beramier, der Rest Asbiren.
+CPU time 0.001 seconds, no more solutions, korrekt */

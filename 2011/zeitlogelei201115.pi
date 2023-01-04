@@ -1,0 +1,29 @@
+/* Zeit Logelei Nr. 2011/15 Rundreise auf der Insel Ööd
+https://www.zeit.de/2011/15/Spiele-Logelei-15 */
+import cp.
+main ?=>
+    Aah=1, Aix=2, Bal=3, Che=4, Coq=5, Eeg=6, Foo=7, Jog=8, Kif=9, Lur=10, 
+    Onx=11, Pin=12, Qwo=13, Sol=14, Tel=15, Tur=16, Vla=17, Ziz=18, Max = 18,
+    Name = ["Aah", "Aix", "Bal", "Che", "Coq", "Eeg", "Foo", "Jog", "Kif", "Lur", 
+            "Onx", "Pin", "Qwo", "Sol", "Tel", "Tur", "Vla", "Ziz"],
+    Ls = [[Coq,Jog,Foo,Kif,Aix,Tur,Bal,Lur,Onx,Vla,Qwo,Eeg,Coq],
+          [Vla,Aah,Tel,Che,Kif], Aah,Ziz,Tel,Tur,Aix], [Lur,Pin,Bal],
+          [Eeg,Aah,Sol,Onx], [Jog,Tel,Sol], [Tel,Pin], [Jog,Che,Tur,Bal]],
+    Street = [{Weg[Von],Weg[Von+1]} : Weg in Ls, Von in 1..len(Weg)-1] 
+          ++ [{Weg[Von],Weg[Von-1]} : Weg in Ls, Von in 2..len(Weg)],
+        %  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26
+    Way = [M, P, B, K, L, G, N, V, H, _, _, V, H, M, D, B, M, _, X, _, _, P, E, _, F, M],
+    Way :: 1..Max, 
+    all_different([M, P, B, K, L, G, N, V, H, D, X, E, F]), % das ist ein Code!
+    neu(Way,10), neu(Way,11), alt(Way,18), alt(Way,24), 
+    foreach(I in 1..len(Way)-1) table_in({Way[I],Way[I+1]}, Street) end,
+    solve(Way),
+    foreach(I in 1..len(Way)) printf("%s > ", Name[Way[I]]) end,
+    nl, fail.
+/* Tel > Sol > Aah > Eeg > Coq > Jog > Foo > Kif > Che > Tur > Aix > Kif > Che 
+ > Tel > Ziz > Aah > Tel > Tur > Bal > Lur > Onx > Sol > Onx > Lur > Pin > Tel
+CPU time 0.008 seconds, no more solutions, korrekt */
+neu(Way,Idx) =>
+    foreach(I in 1..Idx-1) Way[I] #!= Way[Idx] end.
+alt(Way,Idx) =>
+    Alt :: 1..Idx-1, element(Alt, Way, Way[Idx]).

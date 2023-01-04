@@ -1,0 +1,32 @@
+/* Zeit Logelei Nr. 2011/45 Eine subtraktive Musimetik
+Notation (Notenlinien von unten nach oben 1..5; das tiefe C liegt auf Linie 0)
+Note C auf Linie 0, D unter 1, E auf 1, F unter 2, G auf 2, A unter 3, H auf 3
+Note C unter 4,     D auf 4 usw. */
+import cp, util.
+
+main =>
+    subtract(["DECAFF", "FGAEFC", "FGEEDC"]). /*
+ 927544
+-465247
+ ------
+ 462297
+CPU time 0.012 seconds, korrekt */
+subtract(L) => % 1 - 2 = 3
+   Letter = keys(new_set(flatten(L))), % verwendete Buchstaben
+   Digit = new_list(len(Letter)), Digit :: 0..9, % eine Ziffer je Buchstabe
+   all_different(Digit),
+   Num = new_array(len(L)), % numerische Repräsentation der Elemente von L
+   foreach(I in 1..len(L))
+       S = [Digit[find_first_of(Letter, C)] : C in L[I]], % Convert Letter C -> Digit
+       to_num(S, Num[I]), S[1] #!= 0
+   end,
+   Num[1] - Num[2] #= Num[3],
+   solve(Digit ++ Num),
+   printf(" %6d%n", Num[1]),
+   printf("-%6d%n", Num[2]),
+   printf(" ------%n"),
+   printf(" %6d%n%n", Num[3]).
+
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).

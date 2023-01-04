@@ -1,0 +1,34 @@
+/* Zeit Logelei 2011/03 Dreieck aus Billardkugelen
+https://www.zeit.de/2011/03/Spiele-Logelei-03 */
+import sat.
+main ?=> 
+    M = [[1],
+         [_,_],
+         [_,_,6],
+         [_,_,_,_],
+         [_,_,1,7,9],
+         [_,_,_,_,2,_],
+         [6,_,_,_,_,1,_],
+         [_,_,_,_,_,6,_,_],
+         [_,_,_,6,_,_,_,9,_]],
+    N = len(M), M :: 1..9,
+    foreach(Row in M) all_different(Row) end,
+    foreach(Z in 1..N-1, S in 1..Z) 
+        M[Z,S] #= M[Z+1,S] + M[Z+1,S+1] #\/ M[Z,S] #= abs(M[Z+1,S] - M[Z+1,S+1])
+    end,
+    solve(vars(M)),
+    foreach(Z in 1..N)
+       print([' ' : _ in 1..N-Z+1]),
+       foreach(S in 1..Z) printf("%d ", M[Z,S]) end, nl
+    end. %, nl, fail.
+/*
+         1 
+        3 2 
+       1 4 6 
+      5 4 8 2 
+     8 3 1 7 9 
+    1 9 6 5 2 7 
+   6 5 4 2 3 1 8 
+  2 4 9 5 3 6 7 1 
+ 5 7 3 6 1 4 2 9 8 
+CPU time 1.257 seconds korrekt */

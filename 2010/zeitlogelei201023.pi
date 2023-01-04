@@ -1,0 +1,28 @@
+/* Zeit Logelei 2010/23 Toronga-Muscheln
+https://www.zeit.de/2010/23/Spiele-Logelei-23 */
+import sat.
+main ?=>
+    N = 4, % maximale Zahl der Generationen
+    NC = [5,9], % Number of children
+    % Zahl der Muscheln von Stamm 1..2 (1=Töchter, 2=Söhne) in Generation 1..N
+    X = new_array(2,N), X :: 1..10000, X[1,1] #= X[2,1], 
+    Tempel = new_array(2,N), Tempel :: 0..1000, Tempel[1,1] #= 0, Tempel[2,1] #= 0,
+    foreach(K in 1..2, G in 1..N-1)
+        X[K,G+1]      #=                     X[K,G] div NC[K],
+        Tempel[K,G+1] #= (NC[K] ** (G-1)) * (X[K,G] mod NC[K])
+    end,
+    % Nach J Generationen hat jeder Nachkomme soviele Muscheln wie sein Tempel:
+    J = new_list(2), J :: 1..N, 
+    foreach(K in 1..2)
+        Sum #= sum([Tempel[K,I]*(I #=< J[K]) : I in 2..N]), 
+        element(J[K], X[K], Sum) % Sum #= X[K,J[K]],
+    end,
+    solve(vars(X) ++ vars(Tempel) ++ J),
+    printf("Der König hatte %d Muscheln und vererbte jedem Kind %d.%n",  2 * X[1,1], X[1,1]),
+    printf("Die %d. Tochtergeneration und der Rosentempel hatten %d Muscheln.%n",  J[1], X[1,J[1]]),
+    printf("Die %d. Sohngeneration und der Tulpentempel hatten %d Muscheln.%n",  J[2], X[2,J[2]]),
+    nl, fail.
+/* Der König hatte 10332 Muscheln und vererbte jedem Kind 5166.
+Die 4. Tochtergeneration und der Rosentempel hatten 41 Muscheln.
+Die 3. Sohngeneration und der Tulpentempel hatten 63 Muscheln.
+CPU time 1.076 seconds, no more solutions, korrekt */

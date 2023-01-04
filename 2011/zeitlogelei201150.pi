@@ -1,0 +1,28 @@
+/* Zeit Logelei 2011/50 Professor Schlackenhof 
+Der Automat macht drei Voraussagen, von denen eine wahr ist und zwei falsch sind. 
+https://www.zeit.de/2011/50/Spiele-Logelei-50 */
+import cp.
+main ?=>
+    Name = ["Fernglas", "Kreide", "Schutzbrille", "Sextanten", "Zirkel", "Mantel",
+            "Abakus", "Taschentuch", "Lupe", "Pipette", "Zollstock",  "Bleistift"],
+    L = [Fe,Kr,Sc,Se,Zi,Ma,Ab,Ta,Lu,Pi,Zo,Bl], L :: 0..1, % 1 = kommt mit
+    N = len(L),
+    foreach((X,Y,Z) in [
+        (Fe,Kr,Sc), % 1. Das Fernglas, Kreide und die Schutzbrille. 
+        (Se,Zi,Ma), % 2. Den Sextanten, den Zirkel und den Mantel. 
+        (Ab,Ta,Zi), % 3. Den Abakus, das Taschentuch und den Zirkel. 
+        (Lu,Pi,Kr), % 4. Die Lupe, eine Pipette und Kreide. 
+        (Zi,Lu,Zo), % 5. Den Zirkel, die Lupe und den Zollstock. 
+        (Ta,Fe,Ma), % 6. Das Taschentuch, das Fernglas und den Mantel. 
+        (Sc,Pi,Kr), % 7. Die Schutzbrille, eine Pipette und Kreide. 
+        (Ab,Ma,Bl), % 8. Den Abakus, den Mantel und einen Bleistift. 
+        (Zo,Bl,Se)])% 9. Den Zollstock, einen Bleistift und den Sextanten.
+            X + Y + Z #= 1
+    end,
+    solve(L),
+    foreach(I in 1..N, L[I]=1) 
+        printf("%s ", Name[I])
+    end,
+    nl, fail.
+/* Fernglas Zirkel Pipette Bleistift 
+CPU time 0.001 seconds, no more solutions, korrekt */

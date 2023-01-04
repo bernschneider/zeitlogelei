@@ -1,0 +1,36 @@
+/* Zeit Logelei 2011/46 Die  Wetschraten haben je nach Stammeszugehörigkeit unterschiedliche Tätigkeiten
+https://www.zeit.de/2011/46/Spiele-Logelei-46 */
+import sat.
+main ?=>
+    NameS = ["Bonaden", "Dingalfen", "Gelumben", "Quebrasen", "Sironen", "Tenuden", "Yenöggen"],
+    Bi=1, Di=2, Ge=3, Qu=4, Si=5, Te=6, Ye=7, 
+    NameP = ["formüsche Bimbonen", "apröschen Darfengen", "hopieren Magraten", "sefannen Natiden", 
+             "mufinsen Rodengen", "guläfen Selumben", "kalschuten Zolgöven"],
+    Bo=1, Da=2, Ma=3, Na=4, Ro=5, Se=6, Zo=7,
+    N=7, T = new_list(N), T :: 1..N, all_different(T), % Tätigkeit von S ist P 
+    foreach((S1,W1,P1,S2,W2,P2) in [  
+        (Ye,0,Zo,Bo,1,Ro), % Wenn Yenöggen nicht Zolgöven kalschuten, mufinsen Bonaden Rodengen.
+        (Di,1,Na,Te,1,Da), % Wenn Dingalfen Natiden sefannen, apröschen Tenuden Darfengen.
+        (Qu,1,Da,Ye,1,Bi), % Wenn Quebrasen Darfengen apröschen, formüschen Yenöggen Bimbonen.
+        (Si,0,Da,Ge,0,Da), % Wenn Sironen nicht Darfengen apröschen, apröschen Gelumben keine Darfengen.
+        (Si,0,Se,Bo,1,Bi), % Wenn Sironen nicht Selumben guläfen, formüschen Bonaden Bimbonen.
+        (Ye,1,Zo,Te,1,Bi), % Wenn Yenöggen Zolgöven kalschuten, formüschen Tenuden Bimbonen.
+        (Te,0,Ma,Bo,1,Bi), % Wenn Tenuden nicht Magraten hopieren, formüschen Bonaden Bimbonen.
+        (Ye,1,Da,Te,0,Ma), % Wenn Yenöggen Darfengen apröschen, hopieren Tenuden keine Magraten.
+        (Ye,0,Ma,Di,0,Da)])% Wenn Yenöggen nicht Magraten hopieren, apröschen Dingalfen keine Darfengen.
+            W1 #= (T[S1] #= P1) #=> W2 #= (T[S2] #= P2)
+    end,
+    solve(T),
+    foreach(I in 1..N)
+        printf("%s %s%n", NameS[I], NameP[T[I]])
+    end,
+    nl, fail.
+/* 
+Bonaden mufinsen Rodengen
+Dingalfen kalschuten Zolgöven
+Gelumben sefannen Natiden
+Quebrasen apröschen Darfengen
+Sironen guläfen Selumben
+Tenuden hopieren Magraten
+Yenöggen formüsche Bimbonen
+CPU time 0.005 seconds, no more solutions, korrekt */

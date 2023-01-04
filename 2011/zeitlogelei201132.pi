@@ -1,0 +1,40 @@
+/* Zeit Logelei 2011/32 Der Landwirt Kühn hat beschlossen, einen seiner Äcker an befreundete Familien zu verpachten
+Inzwischen hat er elf Interessenten gefunden und deshalb den Acker, der direkt neben dem Haus beginnt, in elf gleich große Streifen aufgeteilt. 
+https://www.zeit.de/2011/32/Spiele-Logelei-32 */
+import cp.
+main ?=>
+    L = [A, B, C, D, E, F, G, H, I, J, K], N = len(L), 
+    L :: 1..N, all_different(L), % "Beetnummern"
+    % Allen Familien kann ich es nicht recht machen, denkt Herr Kühn, aber allen außer einer, das geht! 
+    OK = new_list(N), OK :: 0..1, sum(OK) #= N - 1, % 1 = das geht
+    % Antons möchten ihr Beet nicht neben Gunthers haben:
+    OK[1] #= (abs(A - G) #> 1),
+    % Baldeschweilers wollen gar mindestens sechs Beete zwischen sich und Dompfaffs haben:
+    OK[2] #= (abs(B - D) #> 6), 
+    % Carstens wollen keines der beiden Beete am Rand:
+    OK[3] #= (C #!= 1 #/\ C #!= N),
+    % Dompfaffs wollen näher am Haus sein als Gunthers:
+    OK[4] #= (D #< G), 
+    % Echtmanns wollen ihr Beet neben Familie Habakuk haben:
+    OK[5] #= (abs(E - H) #= 1), 
+    % Försters wollen neben Dompfaffs sein:
+    OK[6] #= (abs(F - D) #= 1), 
+    % Gunthers wollen näher am Haus als Försters sein: 
+    OK[7] #= (G #< F), 
+    % Habakuks wollen ein Beet neben Baldeschweilers:
+    OK[8] #= (abs(H - B) #= 1), 
+    % die Familie Ihringer will mindestens fünf Beete zwischen ihrem Beet und dem von Carstens haben:
+    OK[9] #= (abs(I - C) #> 5), 
+    % Jakobs wollen ein Beet neben Dompfaffs:
+    OK[10] #= (abs(J - D) #= 1), 
+    % Familie Kurz versteht sich mit Familie Carstens überhaupt nicht.
+    % Zwischen den Beeten dieser beiden Familien sollen nach dem Willen von Familie Kurz mindestens acht andere Beete liegen:
+    OK[11] #= (abs(K - C) #> 8), 
+    solve(OK ++ L), % println(L).
+    Ranking = [(L[X],X) : X in 1..N].sort(),
+    println(Ranking),
+    foreach((_,X) in Ranking)
+        printf("%c ", chr(64+X))
+    end, nl, fail.
+/* K D J I G F E H B C A 
+CPU time 0.002 seconds, no more solutions, korrekt */
