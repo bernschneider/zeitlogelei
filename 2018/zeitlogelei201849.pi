@@ -1,0 +1,48 @@
+/* ZEIT Logelei 2018/49 Zahlenrätsel 
+https://www.zeit.de/2018/49/spiele-logelei-49 */
+import cp.
+
+neib(1, X, Y) =>  % 1 = weißer Kreis: Differenz = 1
+	1 #= abs(X - Y).
+	
+neib(2, X, Y) =>  % 2 = schwarzer Kreis: Quotient = 3
+	(3 * X #= Y; 3 * Y #= X).
+	
+neib(0, X, Y) =>  % 0 = kein Kreis: weder (1) noch (2)
+	1 #!= abs(X - Y), 3 * X #!= Y, 3 * Y #!= X.
+	
+main =>
+   % Tragen Sie Zahlen von 1 bis 6 so in das Diagramm ein,..
+   N = 6, M = new_array(N,N), M :: 1..N,
+   % .. sodass jede Zahl in jeder Zeile und jeder Spalte genau einmal vorkommt:
+   foreach(Z in 1..N) all_different( [M[Z,S] : S in 1..N] ) end,
+   foreach(S in 1..N) all_different( [M[Z,S] : Z in 1..N] ) end,
+   W = 1, B = 2,       % 1 = weißer, 2 = schwarzer Kreis
+   HN = {{0,0,W,B,0},  % horizontale Nachbarn
+   		 {0,B,0,W,0},
+   		 {0,W,B,0,0},
+   		 {0,W,W,B,W},
+   		 {W,B,0,W,0},
+   		 {0,B,W,B,0}},
+   foreach(Z in 1..N, S in 1..N-1) neib(HN[Z,S], M[Z,S], M[Z,S+1]) end,
+   VN = {{W,W,0,W,0,B}, % vertikale Nachbarn (zeilenweise)
+   		 {0,0,0,0,W,W},
+   		 {B,W,W,B,0,B},
+   		 {W,0,0,W,B,W},
+   		 {0,0,W,0,0,W}},
+   foreach(Z in 1..N-1, S in 1..N) neib(VN[Z,S], M[Z,S], M[Z+1,S]) end,
+   solve_all(M) = Sols, 
+   println(number_solutions = len(Sols)), 
+   solve(M),
+   foreach(Z in 1..N) 
+      foreach(S in 1..N) printf(" %i", M[Z,S]) end, nl
+   end.
+/* number_solutions = 1
+ 5 2 4 3 1 6
+ 6 3 1 4 5 2
+ 3 5 6 2 4 1
+ 1 4 5 6 2 3
+ 2 1 3 5 6 4
+ 4 6 2 1 3 5
+CPU time 0.004 seconds. 
+Zeilenweise 524316, 631452, 356241, 145623, 213564, 462135 korrekt */

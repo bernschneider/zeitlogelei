@@ -1,0 +1,51 @@
+/* Zeit Logelei 2019/11 (nach Janko.at Pfeilzahlen) */
+import cp.
+main =>
+   Cnt = {{4,_,_,_},
+          {1,_,_,3},
+          {_,_,0,5},
+          {2,2,_,2}},
+   foreach(Z in 1..4, S in 1..4, (Z,S)!=(3,3)) Cnt[Z,S] #> 0 end,
+   N = len(Cnt) + 2, % wir ergänzen Felder für die Gesichter am Rand 
+   Hor = new_array(N,N), Ver = new_array(N,N), % - = Horizontales, | = vertikales Gesicht  
+   D1  = new_array(N,N), D2  = new_array(N,N), % \ = Diagonale1, / = Diagonale2
+   Vars = Hor ++ Ver ++ D1 ++ D2, Vars :: 0..1, % auf die Pfeilrichtung kommt es nicht an!
+   % Wo dürfen keine orthogonalen Gesichter stehen?
+   foreach(I in 1..N) Hor[1,I] #= 0, Hor[N,I] #= 0, Ver[I,1] #= 0, Ver[I,N] #= 0 end,
+   % Wo dürfen keine diagonalen Gesichter stehen?
+   D1[1,1] #= 0, D1[1,N-1] #= 0, D1[1,N] #= 0, D1[2,N] #= 0, D1[N-1,1] #= 0, D1[N,1] #= 0, D1[N,2] #= 0, D1[N,N] #= 0, 
+   D2[1,1] #= 0, D2[1,2] #= 0, D2[1,N] #= 0, D2[2,1] #= 0, D2[N-1,N] #= 0, D2[N,1] #= 0, D2[N,N-1] #= 0, D2[N,N] #= 0, 
+   % An jedem Randfeld muss genau ein  Gesicht stehen:
+   foreach(I in 2..N-1)
+   		Hor[1,I] + Ver[1,I] + D1[1,I] + D2[1,I] #= 1,   % oben
+   		Hor[N,I] + Ver[N,I] + D1[N,I] + D2[N,I] #= 1,   % unten
+   		Hor[I,1] + Ver[I,1] + D1[I,1] + D2[I,1] #= 1,   % links
+   		Hor[I,N] + Ver[I,N] + D1[I,N] + D2[I,N] #= 1 	% rechts
+   end,    
+   foreach(Z in 2..N-1, S in 2..N-1)
+   		Hor[Z,S] #= 0, Ver[Z,S] #= 0, D1[Z,S] #= 0, D2[Z,S] #= 0, % keine Gesichter in der Mitte
+   		% Zähle die Gesichter, die auf Z|S zeigen:
+   		Cnt[Z-1,S-1] #= sum([D1[Z1,S1] * (Z-S #= Z1-S1) + D2[Z1,S1] * (Z+S #= Z1+S1) +
+   		    				 Hor[Z1,S1] * (Z #= Z1) + Ver[Z1,S1] * (S #= S1) : Z1 in 1..N, S1 in 1..N]) 
+   end,
+   solve_all(vars(Cnt) ++ Vars) = Sols, println(numbersols=len(Sols)),
+   solve([ff,down],Vars), 
+   foreach(I in 1..N, J in 1..N)
+        if 	   Hor[I,J]= 1 then C = '-'  elseif Ver[I,J]= 1 then C = '|'
+      	elseif D1[I,J] = 1 then C = '\\' elseif D2[I,J] = 1 then C = '/'
+      	elseif (I>1 && I<N && J>1 && J<N) then C = chr(ord('0')+Cnt[I-1,J-1])
+      	else C = ' '
+      end,
+      printf("%c ", C),
+      if J = N then nl end
+   end.
+/* numbersols = 1
+  \ | \ |   
+- 4 5 4 6 - 
+/ 1 2 2 3 \ 
+\ 3 1 0 5 \ 
+/ 2 2 1 2 \ 
+  | / \ |   
+CPU time 0.016 seconds 
+Die Gesichter schauen im Uhrzeigersinn, beginnend oben links, in folgende Himmelsrichtungen: 
+SO, S, SO, S, W, NW, NW, NW, N, NW, NO, N, NO, SO, NO, O korrekt */

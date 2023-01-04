@@ -1,0 +1,106 @@
+/* Zeit Logelei 2019/52 Kreuzzahlen */
+import cp, util.
+main ?=>
+   LM = {{a,b,c,d,e,f},
+		 {g,x,x,h,x,x},
+	     {i,x,j,x,k,x},
+	     {l,x,x,m,x,n},
+	     {o,x,x,x,x,x},
+	     {p,x,q,x,x,x}}, get_global_map().put(lm,LM),       
+   WLetter := [a,c,g,h,i,k,l,m,o,p,q], get_global_map().put(wl,WLetter), % alle Buchstaben mit waagrechter Bedingung
+   SLetter := [a,b,c,d,e,f,j,m,n,o], get_global_map().put(sl,SLetter), % alle Buchstaben mit senkrechter Bedingung
+   N = len(LM), ZAHL = 10, QSUM = 1, FWD = 1, REV = 0, % cond arbeitet nicht mit Bool!
+   M = new_array(N,N), MVars = array_matrix_to_list(M), MVars :: 0..9,
+   Primes = primes(99), Even = [0,2,4,6,8],
+   PS = [X*X : E in 1..9, Z in 0..9, X = E*100+Z*10+E], % Quadrate von 3-stelligen Palindromen
+   % Alle waagerechten Zahlen haben die Quersumme C senkrecht
+   senkrecht(M,c,ZAHL,FWD,Cs),
+   foreach (Letter in WLetter) waagrecht(M,Letter,QSUM,FWD,Cs) end,
+   % Senkrecht: a,b,c,d,e,f,j,m,n,o
+   senkrecht(M,a,ZAHL,FWD,As), waagrecht(M,p,ZAHL,FWD,Pw), senkrecht(M,o,ZAHL,FWD,Os), 
+   As #= (Pw + Os)**2, % As: Quadrat der Summe von P waagerecht und O senkrecht
+   senkrecht(M,b,ZAHL,FWD,Bs), waagrecht(M,o,ZAHL,FWD,Ow), 
+   Bs #= Es - Ow, % Bs: E senkrecht minus O waagerecht
+   senkrecht(M,c,ZAHL,REV,RCs), 
+   RCs :: Primes, % Cs: Der Rückwert ist eine Primzahl
+   senkrecht(M,d,ZAHL,FWD,Ds), waagrecht(M,p,ZAHL,REV,RPw), 
+   multiple(Ds,RPw), % Ds: Vielfaches des Rückwerts von P waagerecht
+   senkrecht(M,e,ZAHL,FWD,Es), Es :: PS, % ES: Quadrat eines Palindroms
+   M[3,6] :: Even, % Fs: Gerade 
+   LJs = [M[Z,3] : Z in 3..6], palindrom(LJs), % Js: Palindrom
+   LMs = [M[Z,4] : Z in 4..6], palindrom(LMs), % Ms: Palindrom
+   M[4,6] * M[5,6] * M[6,6] #= Cs, % Ns: Das Querprodukt ist C senkrecht
+   senkrecht(M,o,ZAHL,FWD,Os), Os :: Primes, % Os: Primzahl
+   solve(MVars),
+   foreach(I in 1..N) 
+      foreach(J in 1..N) printf("%d ", M[I,J]) end, nl
+   end,
+   nl,
+   fail.
+/*
+9 7 1 5 9 1 
+2 8 6 8 7 1 
+1 6 7 2 8 8 
+6 9 1 7 1 8 
+1 9 1 1 2 2 
+7 9 7 7 1 1 no more solutions - korrekt CPU time 0.031 seconds 
+Waagerecht:A 97 C 1591 G 286 H 871 I 1672 K 88 L 691 M 718 O 191122 P 79 Q 7711 – 
+Senkrecht: A 9216 B 786999 C 16 D 582 E 978121 F 118 J 7117 M 717 N 821 O 17 */
+
+multiple(X,A) => % X ist Vielfaches von A
+   X mod A #= 0.
+   
+square(X) =>
+   Max = fd_max(X), 
+   Tmp :: 0..Max,
+   X #= Tmp*Tmp.
+
+palindrom(L) =>
+    N = len(L),
+    foreach(I in 1..N//2) L[I] #= L[N + 1 - I] end.
+
+waagrecht(M,Letter,Base,Fwd,X) => % Base = 10/1 (1 = Quersumme), Fwd = FWD/REV (REV = Rückwert)
+		LM = get_global_map().get(lm), WLetter = get_global_map().get(wl),
+		N = len(LM), Row := 0, Col := 0, Len := 0,
+		foreach(R in 1..N)
+			foreach(C in 1..N)
+				if LM[R,C] = Letter then Row := R, Col := C end
+			end,
+			if Len == 0, Row  > 0 then 
+				foreach(Cn in Col+1..N)
+					if Len == 0, membchk(LM[R,Cn],WLetter) then Len := Cn - Col end
+				end,
+				if Len = 0 then Len := N+1-Col end 
+		    end 
+		end,
+	    Tmp = new_list(Len), Tmp :: 0..9,
+   		to_num(Tmp, Base, Fwd, X),
+   		foreach(I in 0..Len-1)
+     		 M[Row,Col+I] #= Tmp[I+1]
+   		end,
+		M[Row,Col] #!= 0.	
+
+senkrecht(M,Letter,Base,Fwd,X) => % Base = 10/1 (1 = Quersumme), Fwd = FWD/REV (REV = Rückwert)
+		LM = get_global_map().get(lm), SLetter = get_global_map().get(sl),        
+		N = len(LM), Row := 0, Col := 0, Len := 0,
+		foreach(C in 1..N)
+			foreach(R in 1..N)
+				if LM[R,C] = Letter then Row := R, Col := C end
+			end,
+			if Len == 0, Col > 0 then 
+				foreach(Rn in Row+1..N)
+					if Len == 0, membchk(LM[Rn,C],SLetter) then Len := Rn - Row end
+				end,
+				if Len = 0 then Len := N+1-Row end
+			end 
+		end,
+   		Tmp = new_list(Len), Tmp :: 0..9,
+   		to_num(Tmp, Base, Fwd, X),
+   		foreach(I in 0..Len-1)
+      		M[Row+I,Col] #= Tmp[I+1]
+   		end,
+		M[Row,Col] #!= 0.	
+   
+to_num(List, Base, Fwd, Num) => % Num = Wert der Liste
+        Len = length(List), 
+        Num #= cond(Fwd, sum([List[I]*Base**(Len-I) : I in 1..Len]), sum([List[I]*Base**(I-1) : I in 1..Len])).

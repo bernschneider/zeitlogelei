@@ -1,0 +1,35 @@
+/* Zeit Logelei 2018/13
+http://www.zeit.de/2018/15/spiele-logelei-15 */
+import cp. 
+
+main =>  
+    Vars = [Ab,Ah,Ar,Au, Bb,Bh,Br,Bf, Ab1,Ah1,Af1, Bb2,Bh2,Bu2, Ab3,Ah3, Bb4,Bh4,Bu4], Vars :: 1..100, % b=Breite, h=Höhe, f=Fläche, u=Umfang, 1,2,3,4=Ausagen/Zeitpunkte
+    Ab #= Ah * Ar, Bb #= Bh * Br, Ab1 #= Ab1 * Ar, Bb2 #= Bh2 * Br, Ah3 #= Ab3 * Ar, Bb4 #= Bh4 * Br,
+    flaeche(Bb,Bh,Bf), flaeche(Ah1,Ab1,Af1),
+    umfang(Ab,Ah,Au), umfang(Bb2,Bh2,Bu2), umfang(Bb4,Bh4,Bu4), 
+    % Rechteck A zu Rechteck B: "Als ich so hoch war, wie du jetzt bist, war mein Flächeninhalt gerade mal ein Drittel von deinem jetzigen." 
+    Ah1 #= Bh, Af1 * 3 #= Bf,             
+    % Rechteck B zu Rechteck A: "Wenn ich so breit sein werde, wie du jetzt bist, wird mein Umfang genau 12 cm kleiner sein als deiner jetzt." 
+    Bb2 #= Ab, Bu2 + 12 #= Au,
+    % Rechteck A zu Rechteck B: "Als ich so breit war, wie du jetzt bist, war ich 4 cm höher, als du jetzt bist." 
+    Ab3 #= Bb, Ah3 #= 4 + Bh,                  % Ah3 = 4 + 2
+    % Rechteck B zu Rechteck A: "Wenn ich so hoch sein werde, wie du jetzt bist, wird mein Umfang doppelt so groß sein, wie deiner jetzt ist."  */
+    Bu3 #= 2 * Au,
+    solve(Vars),
+    println(Vars),
+    printf("Seitenverhältnisse: A=%d:1, B=%d:1%n", Ar, Br),
+    printf("Af1 = %d * %d, Af1 * 3 = %d * %d%n", Bh*Ab//Ah,Bh, Bb,Bh),
+    printf("Bu2 = 2 * (%d + %d), Bu2 + 12 = 2 * (%d + %d)%n", Ab,Ab*Bh//Bb, Ab,Ah),
+    printf("Ah3 = %d * %d / %d, Ah3 = 4 + %d%n", Bb,Ah,Ab, Bh),
+    printf("Bu4 = 2 * (%d + %d), Bu4 = 2 * 2 * (%d + %d)%n", Ah*Bb//Bh,Ah, Ab,Ah).
+    /* Ab,Ah,Ar,Au, Bb,Bh,Br,Bf, Ab1,Ah1,Af1, Bb2,Bh2,Bu2, Ab3,Ah3, Bb4,Bh4,Bu4]
+       [9, 9, 1,36,  6, 2, 3,12,   2,  2,  4,   9,  3, 24,   6,  6,   3,  1,  8]
+Seitenverhältnisse: A=1:1, B=3:1
+Af1 = 2 * 2, Af1 * 3 = 6 * 2
+Bu2 = 2 * (9 + 3), Bu2 + 12 = 2 * (9 + 9)
+Ah3 = 6 * 9 / 9, Ah3 = 4 + 2
+Bu4 = 2 * (27 + 9), Bu4 = 2 * 2 * (9 + 9)
+CPU time 0.0  seconds. korrekt!
+ZEIT: Rechteck A ist 9 cm hoch und 9 cm breit, und Rechteck B ist 2 cm hoch und 6 cm breit */
+flaeche(H,B,F) => F #= H * B.
+umfang(H,B,U)  => U #= 2 * (H + B).

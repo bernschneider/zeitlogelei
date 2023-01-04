@@ -1,0 +1,40 @@
+/* Zeit Logelei 2019/21
+https://www.zeit.de/2019/21/spiele-logelei-21 
+Es gibt die Zahlen 2, 3, 5 und 8. Jede der Zahlen ist unterschiedlich lang (1 m, 2 m, 3 m, 4 m), 
+unterschiedlich breit (0,5 m, 1 m, 1,5 m, 2 m) und unterschiedlich schwer (100 kg, 200 kg, 300 kg, 400 kg). */
+import cp.
+main =>
+  Z2=1, Z3=2, Z5=3, Z8=4,  
+  L = new_list(4), assignment(L, Lrev), L :: 1..4, % 1 m, 2 m, 3 m, 4 m
+  B = new_list(4), assignment(B, Brev), B :: 1..4, % 0,5 m, 1 m, 1,5 m, 2 m
+  G = new_list(4), assignment(G, Grev), G :: 1..4, % 100 kg, 200 kg, 300 kg, 400 kg
+  % Die 1 m lange Zahl ist schwerer als die 0,5 m breite Zahl:
+  element(Lrev[1], G, G1m), element(Brev[1], G, G05m), G1m #> G05m,   
+  % Die 300 kg schwere Zahl ist länger als die 2:
+  element(Grev[3], L, L300kg), L300kg #> L[Z2],   
+  % Die 1,5 m breite Zahl ist größer als die 4 m lange:
+  Brev[3] #> Lrev[4],   
+  % Die 3 ist breiter als die 100 kg schwere Zahl:
+  element(Grev[1], B, B100kg), B[Z3] #> B100kg,   
+  % Die 0,5 m breite Zahl ist größer als die 200 kg schwere Zahl:
+  Brev[1] #> Grev[2],  
+  % Die 5 ist schwerer als die 1 m breite Zahl:
+  element(Brev[2], G, G1mb), G[Z5] #> G1mb,
+  % Die 100 kg schwere Zahl ist breiter als die 8:
+  B100kg #> B[Z8],   
+  Vars = L ++ Lrev ++ B ++ Brev ++ G ++ Grev ++ [G1m, G05m, L300kg, B100kg, G1mb],
+  solve_all(Vars) = Sols, println(sols=len(Sols)),
+  solve(Vars),
+  Zahl = [2,3,5,8],
+  Laenge = ["1 m", "2 m", "3 m", "4 m"], 
+  Breite = ["0,5 m", "1,0 m", "1,5 m", "2,0 m"],
+  Gewicht = ["100 kg", "200 kg", "300 kg", "400 kg"],
+  foreach(I in 1..4)
+      printf("Die %d ist %s breit, %s lang und %s schwer.%n", Zahl[I], Breite[B[I]], Laenge[L[I]], Gewicht[G[I]])
+  end.
+/*
+sols = 1
+Die 2 ist 1,0 m breit, 2 m lang und 100 kg schwer.
+Die 3 ist 2,0 m breit, 4 m lang und 200 kg schwer.
+Die 5 ist 1,5 m breit, 1 m lang und 400 kg schwer.
+Die 8 ist 0,5 m breit, 3 m lang und 300 kg schwer -> korrekt */

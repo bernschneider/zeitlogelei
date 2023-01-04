@@ -1,0 +1,63 @@
+/* Zeit Loegelei 2018/29 nach Janko Corral
+https://www.zeit.de/2018/29/spiele-logelei-29 */
+import sat.
+import util.
+main =>		 
+  Cnt = {{2,0,3,0,0,0, 0,0},
+         {0,0,0,0,0,7, 0,0},
+         {0,2,0,0,3,0, 0,0},
+         {0,0,0,0,0,0, 0,0},
+         {0,4,0,6,0,2, 0,0},
+         {0,0,0,0,0,0, 5,0},
+         {0,0,5,0,0,0, 0,3},
+         {3,0,0,0,0,0,10,0}}, N = len(Cnt),
+    M = new_array(N,N), M :: 0..1, % Ungeschwärzt <=> M=1
+    % Anzahl der 1er Left bzw. Right   bzw. Up			   bzw. Down
+    L = new_array(N,N), R = new_array(N,N), U = new_array(N,N), D = new_array(N,N),
+    L :: 0..N,			R :: 0..N,			U :: 0..N,			D :: 0..N,			
+    % Berechne L, R, U und D (das Zahlenfeld selbst zählt immer mit!)
+    foreach(Z in 1..N)
+    	L[Z,1] #= M[Z,1],
+    	foreach(S in 2..N)   L[Z,S] #= (L[Z,S-1] + 1) * M[Z,S] end,
+    	R[Z,N] #= M[Z,N],
+    	foreach(S in 1..N-1) R[Z,S] #= (R[Z,S+1] + 1) * M[Z,S] end
+    end,
+    foreach(S in 1..N)
+    	U[1,S] #= M[1,S],
+    	foreach(Z in 2..N)   U[Z,S] #= (U[Z-1,S] + 1) * M[Z,S] end,
+    	D[N,S] #= M[N,S],
+    	foreach(Z in 1..N-1) D[Z,S] #= (D[Z+1,S] + 1) * M[Z,S] end
+    end,
+	foreach(Z in 1..N, S in 1..N, Cnt[Z,S] > 0)
+		M[Z,S] #= 1, % Zahlenfelder werden nicht geschwärzt
+		Cnt[Z,S] #= L[Z,S] + R[Z,S] + U[Z,S] + D[Z,S] - 3 % die Anzahl der 1er ist vorgegeben (die Mitte dürfen wir nur 1x zählen)
+    end,
+  % Die ungeschwärzten Felder bilden einen zusammenhängenden Bereich:
+  Anker = (5,4), M[Anker[1],Anker[2]] #= 1, % (ein Zahlenfeld etwa in der Mitte)   
+  MaxDist = N * N // 2, 
+  Dist = new_array(N,N), Dist :: 0..MaxDist, 
+  Dist[Anker[1],Anker[2]] #= 0, 
+  foreach(Z in 1..N, S in 1..N, (Z,S) != Anker)
+   	M[Z,S] #= 1  #=> Dist[Z,S] #= 1 + min([ Dist[Z1,S1] : (Z1,S1) in [(Z-1,S),(Z,S-1),(Z,S+1),(Z+1,S)], Z1 >= 1, Z1 =< N, S1 >= 1, S1 =< N ]), 
+   	M[Z,S] #= 0 #=> Dist[Z,S] #= MaxDist 
+  end,
+  % Alle geschwärzten Felder sind orthogonal mit dem Rand verbunden:
+  M[6,5] #= 0,  M[4,5] #= 0, % magic
+  % (Man könnte auch einen 0er-Rand um M herum legen und verlangen, dass die geschwärzten Felder ebenfalls zusammenhängen)
+  Vars = vars(M) ++ vars(L) ++ vars(R) ++ vars(U) ++ vars(D) ++ vars(Dist),
+  solve_all(Vars) = Sols, println(loesungen=len(Sols)), % loesungen = 1
+  solve(Vars),  
+  foreach(Z in 1..N, S in 1..N)
+	  if Cnt[Z,S]>0 then printf("%2d|",Cnt[Z,S]) elseif M[Z,S]=1 then print("  |") else printf(" X|") end,
+    if S = N then nl end
+  end.
+/*
+ 2| X| 3|  | X|  |  |  |
+  |  |  |  |  | 7| X|  |
+ X| 2| X|  | 3| X| X|  |
+ X| X| X| X| X| X|  |  |
+ X| 4|  | 6| X| 2|  | X|
+  |  |  |  | X| X| 5| X|
+  | X| 5|  | X| X|  | 3|
+ 3| X|  |  |  |  |10|  |
+CPU time 0.342 seconds. korrekt */    

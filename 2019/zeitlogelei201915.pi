@@ -1,0 +1,50 @@
+/* Zeit Logelei 2019/15 nach Janko Slitherlink
+https://www.zeit.de/2019/15/spiele-logelei-15 */
+import sat.
+main =>
+  Cnt ={{2,0,0,0,1,0,0},
+		    {0,2,0,3,0,2,0},
+		    {0,0,0,0,2,0,3},
+		    {1,0,0,0,0,2,0},
+		    {0,2,0,0,0,0,0},
+		    {0,4,3,0,0,2,0},
+		    {2,0,0,4,0,0,2}},
+  N = len(Cnt), N1 = N + 1, N2 = N + 2, 
+  M = new_array(N,N), M :: 0..1, % M bezeichnet die Felder X im Inneren des Rundwegs
+  M2 = new_array(N2,N2),         % M2 legt einen 0er Rand darum herum:
+  foreach(Z in 1..N2) M2[Z,1] #= 0, M2[Z,N2] #= 0 end, % Erste und letzte Spalte 0er
+  foreach(S in 1..N2) M2[1,S] #= 0, M2[N2,S] #= 0 end, % Erste und letzte Zeile 0er
+  foreach(Z in 1..N, S in 1..N) M2[1+Z,1+S] #= M[Z,S] end,
+  K = new_array(N1,N1), K :: 0..1, % gehört die Kreuzung zum Rundweg?
+	foreach(Z in 1..N1, S in 1..N1)  % 1, 2 oder 3 X´e liegen um die Kreuzung herum:
+        K[Z,S] #= ((M2[Z,S] + M2[Z,S+1] + M2[Z+1,S] + M2[Z+1,S+1]) mod 4 #> 0)
+  end,
+  % Die Zahlen in den Blocks geben an, wie viele der benachbarten Kreuzungen benutzt werden:
+	foreach(Z in 1..N, S in 1..N, Cnt[Z,S]>0)
+        Cnt[Z,S] #= K[Z,S] + K[Z,S+1] + K[Z+1,S] + K[Z+1,S+1] 
+  end,
+  % Der Rundweg durchläuft keinen Rasterpunkt mehrfach:
+	foreach(Z in 1..N-1, S in 1..N-1)
+		(M[Z,S] #= 1 #/\ M[Z+1,S+1] #= 1) #=> (M[Z,S+1] #= 1 #\/ M[Z+1,S] #= 1),
+		(M[Z,S+1] #= 1 #/\ M[Z+1,S] #= 1) #=> (M[Z,S] #= 1 #\/ M[Z+1,S+1] #= 1)
+  end,
+  % Das Innere bildet einen zusammenhängenden Bereich:
+  Anker = (6,2), M[Anker[1],Anker[2]] #= 1, % (ein inneres Feld etwa in der Mitte)   
+  MaxDist = N * N // 2, Dist = new_array(N,N), Dist :: 0..MaxDist, Dist[Anker[1],Anker[2]] #= 0, 
+  foreach(Z in 1..N, S in 1..N, (Z,S) != Anker)
+   	  M[Z,S] #= 1 #=> Dist[Z,S] #= 1 + min([ Dist[Z1,S1] : (Z1,S1) in [(Z-1,S),(Z,S-1),(Z,S+1),(Z+1,S)], Z1 >= 1, Z1 =< N, S1 >= 1, S1 =< N ]), 
+   		M[Z,S] #= 0 #=> Dist[Z,S] #= MaxDist 
+  end,
+  solve(vars(M2) ++ vars(K) ++ vars(Dist)),
+  foreach(Z in 1..N, S in 1..N)
+		printf("%c|", cond(M[Z,S]=1, 'X', ' ')), if S = N then nl end
+  end.
+/* 
+  | X| X|  |  |  |  |
+  | X| X| X|  |  |  |
+  | X| X| X| X| X|  |
+  |  |  | X| X| X| X|
+  |  |  |  | X| X|  |
+  | X|  |  | X| X|  |
+  | X| X| X| X| X|  |
+CPU time 2.272 seconds. korrekt! */

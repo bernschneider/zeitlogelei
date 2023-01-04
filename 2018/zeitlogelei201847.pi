@@ -1,0 +1,28 @@
+/* Zeit Logelei 2018/47 */
+import cp.
+
+/* 1. Xaver, Ygor und Zora: Wie alt sind die drei? */ 
+main1 =>
+    D = [X, Y, Z], D :: 1..100,
+    Y - (X-Y) #= Z,   % Xaver zu Ygor: "Als ich so alt war, wie du jetzt bist, (vor X-Y Jahren) warst du so alt, wie Zora jetzt ist." 
+    Y+3 + Z+3 #= X,   % Ygor zu Zora: "In drei Jahren werden wir beide zusammen so alt sein, wie Xaver jetzt ist." 
+    X + Y + Z #= 108, % Zora zu den anderen beiden: "Zusammen sind wir 108 Jahre alt."
+   solve_all(D) = Sols, println(Sols). % [[57,36,15]] korrekt
+/* 
+2. Wie alt sind Anton, Berta und Carla, wenn ihre Aussagen stimmen? Und welche Probleme hat Doris mit der Aussage von Carla? */
+main2 =>
+    H = [A, B, C, DeltaA, DeltaC], H :: 1..100,
+    % Anton: "Zu dem Zeitpunkt, als ich drei Jahre jünger war, als ihr beide zu dem Zeitpunkt zusammen wart, .."
+    A-DeltaA + 3 #= B-DeltaA + C-DeltaA, % das war vor <DeltaA> Jahren
+    B-DeltaA #= 2 * (C-DeltaA),          % ".. war Berta doppelt so alt wie Carla."
+    % Berta: "Zusammen sind wir drei 42 Jahre alt." 
+    A + B + C #= 42,
+    % Carla: "Zu dem Zeitpunkt, als ich drei Jahre älter war, als ihr beide zu dem Zeitpunkt zusammen wart, .."
+    C-DeltaC #= 3 + A-DeltaC + B-DeltaC, % das war vor <DeltaC> Jahren
+    A-DeltaC #= 2 * (B-DeltaC),          % ".. war Anton doppelt so alt wie Berta."
+    solve_all(H) = Sols, println(Sols).
+/*   A  B  C  DA DC
+   [[13,15,14,13,17]] korrekt
+Vor 13 Jahren war Anton  0 Jahre alt, also 3 Jahre jünger als Berta und Carla zusammen (Berta war 2,  Carla 1).
+Vor 17 Jahren war Carla -3 Jahre alt, also 3 Jahre älter  als Anton und Berta zusammen (Anton war -4, Berta  -2)
+Doris zu Carla: "Das ist doch Unsinn, was du da erzählst." Stimmt: Wer rechnet mit negativem Alter? */

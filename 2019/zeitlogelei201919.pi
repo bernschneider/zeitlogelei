@@ -1,0 +1,45 @@
+/* Zeit Loegelei 19/2019 (nach Janko Yukari Uzu)
+https://www.zeit.de/2019/19/spiele-logelei-19 */
+import sat, util.
+main =>	
+    So = 1, Mo = 2, St = 3, % Sonne Mond Sterne
+    M = {{ _, _, _, _, _, _, _},
+         { _, _, _,St, _, _, _},
+         { _, _, _, _, _, _, _},
+         { _,St, _, _, _, _, _},
+         {So, _, _, _, _, _, _},
+         { _, _, _, _, _,Mo, _},
+         { _, _, _, _, _, _, _}},
+    N = len(M), M :: [0,So,Mo,St], % 0 = leer
+    Spiral = new_array(N,N), foreach(Z in 1..N, S in 1..N) Spiral[Z,S] := 0 end, % merke dir, wo du schon warst
+    % Berechne K, die Liste der Koordinaten des Spiralwegs:
+    Z := 1, S := 0, DZ := 0, DS := 1, Krev := [],
+    while ((Z,S)!=(4,4)) % Mitte der Spirale
+        while (0<Z+DZ, Z+DZ=<N, 0<S+DS, S+DS=<N, Spiral[Z+DZ,S+DS]=0)
+            Z := Z+DZ, S := S+DS, Krev := [(Z,S)|Krev], Spiral[Z,S] := 1 
+        end, DZ0 := DZ , DZ := DS, DS := -DZ0 % biege rechts ab
+    end, K = Krev.reverse(),
+    L = new_array(N*N), L :: [So,Mo,St], % letzter Himmelskörper
+    L[1] #= St, % fange mit der Sonne an!
+    foreach(I in 1..N*N-1)
+        (Z2,S2) = K[I+1], % Koordinaten des nächsten Felds auf dem Spiralweg
+        % Der L-Wert bleibt gleich und das M-Feld leer -oder- der L-Wert steigt und wird im M-Feld angezeigt:  
+        (L[I+1] #= L[I] #/\ M[Z2,S2] #= 0) #\/ (L[I+1] #= (L[I] mod 3) + 1 #/\ M[Z2,S2] #= L[I+1])
+    end, 
+    % In jeder Zeile und jeder Spalte sollte es auch je genau einmal Sonne, Mond und Sterne geben:
+    foreach(X in M.rows(),    V in 1..3) exactly(1, X, V) end,
+    foreach(X in M.columns(), V in 1..3) exactly(1, X, V) end,
+    Vars = vars(M) ++ L, println(sols=len(solve_all(Vars))),
+    solve(Vars), Chr = " oc*", % o=Sonne c=Mond *=Sterne
+    foreach(Z3 in 1..N)
+        foreach(S3 in 1..N) printf("%c|", Chr[1+M[Z3,S3]]) end, nl
+    end.
+/* sols = 1
+ | | |o|c|*| |
+c| | |*| | |o|
+ | |o|c|*| | |
+ |*| | | |o|c|
+o|c| | | | |*|
+ |o|*| | |c| |
+*| |c| |o| | |
+CPU time 0.061 seconds korrekt */

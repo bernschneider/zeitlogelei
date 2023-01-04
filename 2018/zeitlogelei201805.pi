@@ -1,0 +1,62 @@
+/* Zeit Logelei 2018/05 */
+import cp, util.
+
+main =>
+   Max = 6, % Ziffern von 0..6
+   SigZ = [ [21], [0,3], [7,0,11], [0,4], [6,6], [21] ], % Zeilensignatur, 0 = ?
+   SigS = [ [0], [5,1,4], [15,1], [0], [4,3], [0], [2,1], [0,0,0], [0,0] ], % Spaltensignatur
+   NZ = len(SigZ),
+   NS = len(SigS),
+   Board = new_array(NZ+1,NS+1), Board[NZ+1,NS+1] #= 0,	% End-0er angefügt für die Blockbildung
+   foreach(Z in 1..NZ) Board[Z,NS+1] #= 0 end, 
+   foreach(S in 1..NS) Board[NZ+1,S] #= 0 end,  
+   Boardvars = array_matrix_to_list(Board), Boardvars :: 0..Max,  
+   foreach(Row in rows(Board)) all_different_except_0(Row) end,
+   foreach(Col in columns(Board)) all_different_except_0(Col) end,
+   foreach(Z in 1..NZ) signature(NS, Max, L, SigZ[Z]), L #= [Board[Z,S] : S in 1..NS+1] end,
+   foreach(S in 1..NS) signature(NZ, Max, L, SigS[S]), L #= [Board[Z,S] : Z in 1..NZ+1] end,
+   Idx = new_list(2+1), % nötig, weil sonst die 5. Zeile nicht ge-solved wird!
+   signature1(NS, Max, L, SigZ[5], Idx), L #= [Board[5,S] : S in 1..NS+1],
+   solve([ff,down], Boardvars ++ Idx ++ L), print_board(NZ, NS, Board).
+ /*	 
+ 0 0 0 1 4 5 2 6 3
+ 0 5 6 4 0 3 0 0 0
+ 0 0 4 3 0 1 0 5 6
+ 0 1 5 2 0 4 0 0 0
+ 0 0 0 6 0 2 1 3 0
+ 2 4 1 5 3 6 0 0 0 CPU time 809.156 seconds. korrekt
+Die Nachricht lautet "EIS" (Schwarzfelder) */
+
+signature(N, Max, L, Sig) =>     % berechnet L aus Sig! Kein solve(Idx) nötig!
+	L = new_list(N+1), L :: 0..Max, L[N+1] #= 0,
+	Len = len(Sig), Idx = new_list(Len+1), Idx :: 0..N+1,       % Indices der End-0er
+	foreach(J in 1..Len)
+    	I0 #= Idx[J], I1 #= Idx[J+1], I0 #< I1, I1 #> 1,
+    	element(I1,L,0),     	% I1 zeigt auf eine 0
+    	sum([ L[I] * (I0 #< I) * (I #< I1) : I in 1..N]) #= S,  % berechne die Teilsumme S
+    	S #> 0, if Sig[J] > 0 then S #= Sig[J] end				% S>0 und ggfs. die Zahl in der Signatur!
+    end, 
+    % Vor dem ersten Index stehen nur 0er:
+    foreach(I in 1..N) (Idx[1] #< I) #\/ (L[I] #= 0) end,
+    % 0er hinter Nicht-0ern müssen ein Index sein (dürfen nicht sonstwo stehen): > 1 5 >0 0 0 3 4 >0
+    foreach(I in 2..N+1) (L[I] #= 0  #/\ L[I-1] #> 0) #=> sum([(Idx[J] #= I) : J in 1..Len+1]) #> 0 end.
+
+signature1(N, Max, L, Sig, Idx) =>     % berechnet L aus Sig! Kein solve(Idx) nötig!
+    L = new_list(N+1), L :: 0..Max, L[N+1] #= 0,
+    Len = len(Sig), Idx :: 0..N+1,       % Indices der End-0er
+    foreach(J in 1..Len)
+            I0 #= Idx[J], I1 #= Idx[J+1], I0 #< I1, I1 #> 1,
+            element(I1,L,0),     	% I1 zeigt auf eine 0
+            sum([ L[I] * (I0 #< I) * (I #< I1) : I in 1..N]) #= S,  % berechne die Teilsumme S
+            S #> 0, if Sig[J] > 0 then S #= Sig[J] end				% S>0 und ggfs. die Zahl in der Signatur!
+    end, 
+    % Vor dem ersten Index stehen nur 0er:
+    foreach(I in 1..N) (Idx[1] #< I) #\/ (L[I] #= 0) end,
+    % 0er hinter Nicht-0ern müssen ein Index sein (dürfen nicht sonstwo stehen): > 1 5 >0 0 0 3 4 >0
+    foreach(I in 2..N+1) (L[I] #= 0  #/\ L[I-1] #> 0) #=> sum([(Idx[J] #= I) : J in 1..Len+1]) #> 0 end.
+   
+print_board(NZ, NS, Board) =>
+   foreach(I in 1..NZ, J in 1..NS)
+      printf(" %1d", Board[I,J]),
+      if J = NS then nl end
+   end.

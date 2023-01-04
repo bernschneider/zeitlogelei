@@ -1,0 +1,21 @@
+/* Zeit Logelei 2018/03 Professor Knusi */
+import cp.
+
+main =>
+	Hella = [T,U,V,W,X,Y,Z],
+	Hella :: 0..1,        % 1 = sagt die Wahrheit
+	Z #= (Y #= (X #= W)), % Zella: "Yella würde sagen, dass Xella sagen würde, dass Wella die Wahrheit sagt." 
+    Y #= (W #= (U #= Z)), % Yella: "Wella würde sagen, dass Uella sagen würde, dass Zella die Wahrheit sagt."
+    X #= (T #= (Y #= V)), % Xella: "Tella würde sagen, dass Yella sagen würde, dass Vella die Wahrheit sagt."
+    W #= (U #= (T #= Y)), % Wella: "Uella würde sagen, dass Tella sagen würde, dass Yella die Wahrheit sagt."
+    V #= (T #= (Z #= U)), % Vella: "Tella würde sagen, dass Zella sagen würde, dass Uella die Wahrheit sagt."
+    /* Zu Professor Knusi sagt der Polizist: "Wenn Sie mich fragen würden, 
+    würde ich Ihnen sagen, dass genau vier von dieser Gruppe lügen!" */
+    sum(Hella) + 4 #= Hella.len(),
+ 	solve_all(Hella) = Sols,
+	foreach(Sol in Sols) println(Sol) end.
+/* T,U,V,W,X,Y,Z
+  [1,0,0,0,0,1,1] 
+d.h. U - X lügen, der Rest sagen die Wahrheit 
+Die Wahrheit sagen Zella, Yella und Tella. Ob der Polizist lügt, kann man nicht herausfinden */
+	

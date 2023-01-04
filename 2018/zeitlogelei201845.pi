@@ -1,0 +1,56 @@
+/* Zeit Logelei 2018/45 nach
+Janko Slitherlink http://www.janko.at/Raetsel/Slitherlink/054.a.htm
+Ansatz wie bei Corral (Inneres = 1, Äusseres = 0, beide hängen jeweils zusammen). */
+import sat.
+main =>
+    Cnt = {{-1, 3, 1, 3,-1,-1},
+		   {-1, 2,-1, 1,-1, 1},
+		   { 2,-1,-1, 1,-1,-1},
+		   { 2, 1, 2,-1,-1, 2},
+		   { 3, 2, 1, 0,-1,-1}}, 
+    NZ = len(Cnt), NS = len(Cnt[1]), NZ2 = NZ + 2, NS2 = NS + 2,
+    M = new_array(NZ,NS), M :: 0..1, % M bezeichnet die Felder im Inneren des Rundwegs
+    M2 = new_array(NZ2,NS2),         % M2 legt einen 0er Rand um M herum:
+    foreach(Z in 1..NZ2) M2[Z,1] #= 0, M2[Z,NS2] #= 0 end, % Erste und letzte Spalte 0er
+    foreach(S in 1..NS2) M2[1,S] #= 0, M2[NZ2,S] #= 0 end, % Erste und letzte Zeile 0er
+    foreach(Z in 1..NZ, S in 1..NS) M2[1+Z,1+S] #= M[Z,S] end,
+    foreach(R in 2..NZ+1, C in 2..NS+1, Cnt[R-1,C-1]>=0)
+      % Die Zahlen außerhalb des Rundwegs geben an, wie viele der benachbarten Kanten für den Weg verwendet werden:
+	  % Alle Zahlen, die sich im Inneren des Rundwegs befinden, sind falsch:
+      M2[R,C] #^ (Cnt[R-1,C-1] #= sum([ (M2[R,C] #!= M2[R1,C1]) : (R1,C1) in [(R-1,C), (R,C-1), (R,C+1), (R+1,C)] ]))
+    end,
+    % Der Rundweg durchläuft keinen Rasterpunkt mehrfach:
+	foreach(Z in 1..NZ-1, S in 1..NS-1)
+		(M[Z,S] #= 1 #/\ M[Z+1,S+1] #= 1) #=> (M[Z,S+1] #= 1 #\/ M[Z+1,S] #= 1),
+		(M[Z,S+1] #= 1 #/\ M[Z+1,S] #= 1) #=> (M[Z,S] #= 1 #\/ M[Z+1,S+1] #= 1)
+    end,
+    % Das Innere bildet einen zusammenhängenden Bereich:
+    Anker = (2,3), M[Anker[1],Anker[2]] #= 1, % (ein inneres Feld etwa in der Mitte)   
+    MaxDist = NZ * NS // 2, 
+    Dist = new_array(NZ,NS), Dist :: 0..MaxDist, 
+    Dist[Anker[1],Anker[2]] #= 0, 
+    foreach(Z in 1..NZ, S in 1..NS, (Z,S) != Anker)
+   	  	 M[Z,S] #= 1 #=> Dist[Z,S] #= 1 + min([ Dist[Z1,S1] : (Z1,S1) in [(Z-1,S),(Z,S-1),(Z,S+1),(Z+1,S)], Z1 >= 1, Z1 =< NZ, S1 >= 1, S1 =< NS ]), 
+   		 M[Z,S] #= 0 #=> Dist[Z,S] #= MaxDist 
+    end,
+    /*% Das Äußere hängt ebenfalls zusammen (ohne diese Bedingung gibt es evt. weiße Inseln und damit keinen einzigen Rundweg um die 1er herum):
+    Dist2 = new_array(N2,N2), Dist2 :: 0..MaxDist, 
+    M2[1,1] #= 0, Dist2[1,1] #= 0, % ein Punkt auf dem 0er-Rahmen
+    foreach(Z in 1..N2, S in 1..N2, (Z,S) != (1,1))
+   	  	 M2[Z,S] #= 0 #=> Dist2[Z,S] #= 1 + min([ Dist2[Z1,S1] : (Z1,S1) in [(Z-1,S),(Z,S-1),(Z,S+1),(Z+1,S)], Z1 >= 1, Z1 =< N2, S1 >= 1, S1 =< N2 ]), 
+   		 M2[Z,S] #= 1 #=> Dist2[Z,S] #= MaxDist 
+    end,*/
+    solve(vars(M) ++ vars(Dist)), % ++ vars(Dist2)),  
+    foreach(Z in 1..NZ, S in 1..NS)
+		if M[Z,S]=1 then print(" X|") 
+        elseif Cnt[Z,S]>=0 then printf(" %d|", Cnt[Z,S]) 
+        else printf("  |") end,
+    	if S = NS then nl end
+    end.
+/*
+ X| X| X| 3| X|  |
+  | 2| X| X| X| X|
+ X|  |  | 1|  | X|
+ X| X| 2|  | X| X|
+ X| X| X| X| X| X|
+CPU time 0.16 seconds. korrekt */

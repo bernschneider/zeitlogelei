@@ -1,0 +1,32 @@
+/* Zeit Logelei 2019/05 Wer meditiert wo und wie? */
+import cp.
+main =>
+    Martin = 1, Michael = 2, Maria = 3, Monika = 4,     Name = ["Martin", "Michael", "Maria", "Monika"], 
+    LiegeM = 1, GluecksM = 2, GehM = 3, StilleM = 4,    Mstr = ["LiegeM", "GluecksM", "GehM", "StilleM"],
+    Schlafzimmer = 1, MediDojo = 2, Wald = 3, Park = 4, Ostr = ["Schlafzimmer", "MediDojo", "Wald", "Park"],
+    M = new_list(4), M :: 1..4, assignment(M,Mrev), % Art der Meditation
+    O = new_list(4), O :: 1..4, assignment(O,Orev), % Ort der Meditation
+    M[Martin] #!= LiegeM, % Martin: Von einer Liege-Meditation habe ich noch nicht gehört:
+    Mrev[LiegeM] #= Orev[Schlafzimmer], % aber es ist ja irgendwie logisch, dass man so was im Schlafzimmer macht
+    O[Michael] #= MediDojo,  % Michael: "Ich meditiere im Medi-Dojo:
+    M[Michael] #!= GluecksM, % Eine Glücks-Meditation führe ich dort allerdings nicht durch."
+    M[Maria] #!= GehM, % Maria: "Eine Geh-Meditation wäre nichts für mich, ich muss beruflich schon so viel laufen."
+    O[Monika] #= Wald, % Monika: "Ich meditiere am liebsten im Wald."
+    M[Martin] #!= StilleM, % Martin: "Eine Meditation der Stille wäre nichts für mich. Dafür bin ich viel zu zappelig."
+    Mrev[GluecksM] #!= Orev[Park], % Ben: "Und vorhin sagtet ihr noch, dass die Glücks-Meditation nicht im Park stattfindet
+    solve_all(M ++ O) = Sols, 
+    foreach(Sol in Sols) println(Sol) end,
+    solve(M ++ O),
+    foreach(I in 1..4)
+        printf("%s macht %s im %s%n", Name[I], Mstr[M[I]], Ostr[O[I]])
+    end.
+/*
+[3,4,1,2,4,2,1,3]
+Martin macht GehM im Park
+Michael macht StilleM im MediDojo
+Maria macht LiegeM im Schlafzimmer
+Monika macht GluecksM im Wald, korrekt:
+ZEIT: "Monika meditiert im Wald über Glück, 
+Maria führt im Schlafzimmer eine Liege-Meditation durch, 
+Michael meditiert im Medi-Dojo, und zwar eine Meditation der Stille, und 
+Martin praktiziert eine Geh-Meditation im Park" */

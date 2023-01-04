@@ -1,0 +1,40 @@
+/* Zeit Logelei 2018/07 Im Zoo
+Wer mag welches Tier, welches Essen und hat vor welchem Tier Angst? */
+import cp.
+
+main =>
+	A=1, M=2, T=3, % Alina, Monika und Tanja sind heute im Zoo. 
+    % Alle drei haben ein anderes Lieblingstier (Affe, Erdmännchen und Giraffe): 
+    Lieblingstier = new_list(3), Lieblingstier :: 1..3, assignment(Lieblingstier, LieblingstierRev), A=1, E=2, G=3,
+    % ... und ein Tier, vor dem sie Angst haben (Leopard, Löwe, Schlange):
+    Angsttier     = new_list(3), Angsttier     :: 1..3, assignment(Angsttier, AngsttierRev),         Leo=1, Loe=2, Sch=3,
+    % Zudem freut sich jedes der Mädchen auf ein anderes Produkt am Kiosk (Eis, Kakao, Pommes):
+    Produkt       = new_list(3), Produkt  :: 1..3,      assignment(Produkt, ProduktRev),             Eis=1, Kakao=2, Pommes=3,
+    Produkt[T]             #!= Pommes,  % Tanja freut sich nicht auf die Pommes
+    Lieblingstier[A]       #!= G,       % Alina freut sich nicht auf die Giraffen 
+    Angsttier[M]           #!= Loe,     % Die Löwen machen Monika keine Angst 
+    ProduktRev[Kakao]      #=  MfK,     % Das Mädchen, das sich auf den Kakao freut, ..
+        MfK #!= T,                      % .. ist weder Tanja ..
+        MfK #!= AngsttierRev[Leo],      % .. noch das Mädchen, das Angst vor dem Leoparden hat
+    element(LieblingstierRev[E], Angsttier, At), % Das Mädchen, das sich auf die Erdmännchen freut, .. 
+        At #!= Sch,                     % .. hat keine Angst vor Schlangen
+    element(LieblingstierRev[A], Produkt, Pr), % Das Mädchen, das sich auf die Affen freut, ..
+        Pr #!= Eis,                    % .. ist nicht wild auf ein Eis
+        Pr #!= Kakao,                  % .. mag keinen Kakao
+    Angsttier[A]            #!= Loe,    % Alina hat keine Angst vor den Löwen 
+    solve(Lieblingstier ++ LieblingstierRev ++ Angsttier ++ AngsttierRev ++ Produkt ++ ProduktRev),
+    Name = ["Alina", "Monika", "Tanja"], 
+    Nlt  = ["Affe", "Erdmän.", "Giraffe"],
+    Nat  = ["Leopard ", "Löwe    ", "Schlange"],
+    Npr  = ["Eis", "Kakao", "Pommes"],
+    foreach(I in 1..3)
+        printf("%s:\t%s\t%s %s%n", Name[I], Nlt[Lieblingstier[I]], Nat[Angsttier[I]], Npr[Produkt[I]])
+    end.
+/*
+Alina:  Affe    Leopard  Pommes
+Monika: Giraffe Schlange Kakao
+Tanja:  Erdmän. Löwe     Eis   -> korrekt:
+Alina mag Affen und Pommes und hat Angst vor den Leoparden. 
+Monika mag Giraffen und Kakao und hat Angst vor Schlangen, und 
+Tanja mag Erdmännchen und Eis und hat Angst vor den Löwen */
+	

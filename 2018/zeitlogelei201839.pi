@@ -1,0 +1,31 @@
+/* Zeit Logelei 2018/39 */
+import cp.
+
+main =>
+   A = 0, B = 1, % die Klassen
+   Vars = [Ah,Ba,Bo,El,Lu,Mo,Ul,Yi], Vars :: [A,B], 
+   Ss = ["Ah","Ba","Bo","El","Lu","Mo","Ul","Yi"], % die Schüler
+   sum(Vars) #= 4, % in jede Klasse kommen vier Schüler
+   Wishes = [WAh,WBa,WBo,WEl,WLu,WMo,WUl,WYi], Wishes :: 0..1, % 1=Wunsch wird erfüllt
+   sum(Wishes) #= 7, % alle Wünsche bis auf einen können erfüllt werden
+   WAh #= (Yi #=  Mo #=> Ah #=  Yi),
+   WBa #= (Ba #=  Bo #=> Ah #=  Ba),
+   WEl #= (Ul #=  El #/\ Ah #=  El),
+   WUl #= (Ul #=  Ba #\/ Lu #!= Ba),
+   WYi #= (Mo #=  A  #=> Yi #!= Bo),
+   WLu #= (Yi #=  Mo #\/ Ah #=  Lu),
+   WBo #= (Bo #!= Lu #\/ Ul #!= El),
+   WMo #= (Mo #=  Ah #\/ Mo #=  B),
+   solve_all(Vars ++ Wishes)=Sols, println(loesungen=len(Sols)),
+   Vars ++ Wishes = Sols[1],
+   foreach(S in 1..8) 
+		if Vars[S]=A then printf("%s ",Ss[S]) end
+   end, println("kommen in die A, die Anderen in die B."),
+   foreach(S in 1..8) 
+		if Wishes[S]=0 then printf("Der Wunsch von %s kann nicht erfuellt werden.", Ss[S]) end
+   end.
+/* loesungen = 1
+Ba El Lu Ul kommen in die A, die Anderen in die B.
+Der Wunsch von El kann nicht erfuellt werden. 
+ZEIT: Lu, Ba, El und Ul sind in der Klasse A, und 
+      Ah, Yi, Mo und Bo sind in der Klasse B korrekt! */

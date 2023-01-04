@@ -1,0 +1,36 @@
+/* Zeit Logelei 2019/17
+https://www.zeit.de/2019/17/spiele-logelei-17 
+Professor Knusi ist zu Besuch in Zugnu. Dort gibt es Bra. Die sagen immer die Wahrheit. Die Bro hingegen lügen immer. 
+Und es gibt die Bru, die irgendwas sagen, was mal wahr und mal falsch sein kann. Knusi unterhält sich mit neun Zugnusen, 
+von denen er weiß, dass je drei davon Bra, Bro und Bru sind. Auf die Frage, wer Bra, Bro oder Bru ist, erhält er folgende Aussagen. 
+Welcher Zugnuse ist jetzt was? */
+import cp.
+main =>
+  Bra=1, Bro=2, Bru=3,
+  ZB = [Za, Ze, Zo, Ba, Be, Bo, Ka, Ke, Ko], ZB :: [Bra, Bro, Bru],
+  count(Bra, ZB, 3), count(Bro, ZB, 3), count(Bru, ZB, 3), 
+  L = [(Za, Ze, Zo, Bru), % Zalulu: "Zelala und Zolili sind Bru." 
+    (Ze, Ba, Bo, Bra),  % Zelala: "Bagugu und Bogigi sind Bra." 
+    (Zo, Bo, Ko, Bro),  % Zolili: "Bogigi und Kodidi sind Bro." 
+    (Ba, Ke, Ka, Bru),  % Bagugu: "Kedada und Kadudu sind Bru." 
+    (Be, Za, Ba, Bra),  % Begaga: "Zalulu und Bagugu sind Bra."   
+    (Bo, Zo, Ze, Bro),  % Bogigi: "Zolili und Zelala sind Bro." 
+    (Ka, Be, Ke, Bro),  % Kadudu: "Begaga und Kedada sind Bro." 
+    (Ke, Ko, Be, Bru),  % Kedada: "Kodidi und Begaga sind Bru." 
+    (Ko, Be, Bo, Bro)], % Kodidi: "Begaga und Bogigi sind Bro." 
+  foreach((A,B,C,V) in L)
+       A #= Bra #=> (B #= V #/\ C #= V),
+       A #= Bro #=> (B #!= V #\/ C #!= V)
+  end,  
+  % solve_all(ZB) = Sols, % [[1,3,3,3,2,2,1,2,1]]
+  solve(ZB),
+  Name = ["Za", "Ze", "Zo", "Ba", "Be", "Bo", "Ka", "Ke", "Ko"], 
+  Gruppe = ["Bra", "Bro", "Bru"],
+  foreach(G in [Bra, Bro, Bru])
+      foreach(I in 1..9, ZB[I]=G) printf("%s ", Name[I]) end,
+      printf("sind %s%n", Gruppe[G])
+  end.
+/*
+Za Ka Ko sind Bra m.a.W. "Zalulu, Kadudu und Kodidi sind Bra,"
+Be Bo Ke sind Bro m.a.W. "Begaga, Bogigi und Kedada sind Bro,"
+Ze Zo Ba sind Bru        "und die anderen drei sind Bru" */

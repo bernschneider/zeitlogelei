@@ -1,0 +1,36 @@
+/* Zeit Logelei 2018/21
+https://www.zeit.de/2018/21/spiele-logelei-21 */
+import cp, util. 
+main => 
+   Geb = {{1,1,6,7, 7,12},
+          {2,2,6,8, 8,12},
+          {2,3,8,8, 8,10},
+          {3,3,9,9,10,10},
+          {4,4,4,9,10,11},
+          {5,5,9,9,11,11}}, Gmax = 12, N = len(Geb), 
+   % In jeder Zeile und jeder Spalte muss jede der Zahlen von 1 bis 6 genau einmal vorkommen:
+   M = new_array(N,N), M :: 1..N,
+   foreach(L in M.rows())    all_different(L) end,
+   foreach(L in M.columns()) all_different(L) end,
+   % Die kleinen Zahlen in den Gebieten geben das Ergebnis an, das man erhält, 
+   % wenn man eine der vier Grundrechenarten auf die Zahlen in dem Gebiet anwendet:
+   % Geb= 1  2  3 4  5 6  7  8  9 10 11 12
+   Res = {5,16,13,9,18,5,30,36,20,18, 4,10},
+   Op = new_array(Gmax), Op :: 1..2, % 1=+, 2=*
+   foreach(G in 1.. Gmax)
+        L = [M[Z,S] : Z in 1..N, S in 1..N, Geb[Z,S]=G],
+        ((Op[G] #= 1, Res[G] #= sum(L)); (Op[G] #= 2, Res[G] #= prod(L)))
+   end,
+   solve(M), OpChr = "+*",
+   foreach(Z in 1..N, S in 1..N) 
+          printf("%d(%2d%c)|", M[Z,S], Res[Geb[Z,S]], OpChr[Op[Geb[Z,S]]]),
+          if S=N then nl end
+   end.
+/* 
+3( 5+)|2( 5+)|1( 5*)|6(30*)|5(30*)|4(10+)|
+1(16*)|4(16*)|5( 5*)|2(36*)|3(36*)|6(10+)|
+4(16*)|6(13+)|2(36*)|3(36*)|1(36*)|5(18+)|
+2(13+)|5(13+)|6(20+)|1(20+)|4(18+)|3(18+)|
+5( 9+)|1( 9+)|3( 9+)|4(20+)|6(18+)|2( 4*)|
+6(18*)|3(18*)|4(20+)|5(20+)|2( 4*)|1( 4*)|
+CPU time 0.01 seconds. */

@@ -1,0 +1,25 @@
+/* Zeit Logelei 2019/49 Proffessor Knusi */
+import cp.
+
+main ?=>
+  L = 0, W = 1, % L = lügt, W = sagt die Wahrheit
+  P = new_list(10), P :: [L, W],
+  Cnt #= 10 - sum(P),                  % Anzahl der Lügner
+  P[1] #= (Cnt #>= 3),                 % Einar:  "Mindestens drei von uns lügen immer." 
+  P[2] #= (Cnt #>= 7),                 % Zweini: "Mindestens sieben von uns lügen immer." 
+  P[3] #= (Cnt #>= 5),                 % Dreio:  "Mindestens fünf von uns lügen immer."
+  P[4] #= (Cnt #>= 4),                 % Viri:   "Mindestens vier von uns lügen immer." 
+  P[5] #= (Cnt #>= 6),                 % Fuffi:  "Mindestens sechs von uns lügen immer." 
+  P[6] #= (P[8]  #= W #\/ P[9]  #= W), % Secco:  "Mindestens einer von Achtu und Nüni sagt die Wahrheit." 
+  P[7] #= (P[6]  #= L #\/ P[10] #= L), % Sepi:   "Mindestens einer von Secco und Zää lügt."
+  P[8] #= (P[10] #= W #\/ P[9]  #= L), % Achtu:  "Zää sagt die Wahrheit oder Nüni lügt oder beides."
+  solve([Cnt|P]),
+  println(cnt=Cnt), Chr = "LW",
+  println("1 2 3 4 5 6 7 8 9 10"),
+  foreach(I in 1..10) printf("%c ", Chr[1+P[I]]) end,
+  fail.
+  /* cnt = 4
+1 2 3 4 5 6 7 8 9 10
+W L L W L W L W W W korrekt:
+Zweini, Dreio, Fuffi und Sepi haben gelogen, die anderen haben die Wahrheit gesagt 
+no more solutions */

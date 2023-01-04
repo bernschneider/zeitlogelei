@@ -1,0 +1,23 @@
+/* Zeit Logelei 2019/13 
+Bei einer Hochzeit sitzen sieben der Gäste an einem Tisch und sinnieren über ihre Altersverteilung */
+import cp.
+main =>
+    L = [A,B,C,D,E,F,G], L :: 1..100,
+    % Ajolanda: "Wenn ich so alt bin, wie Carla jetzt ist, ist Benedikt so alt, wie Daniela jetzt ist."
+    C #> A, B + (C-A) #= D,
+    % Benedikt: "Wenn ich so alt bin, wie Esther jetzt ist, wird Ferdinand doppelt so alt sein, wie Carla jetzt ist."
+    E #> B, F + (E-B) #= 2 * C,
+    % Carla: "Wenn ich so alt bin, wie Esther jetzt ist, wird Geraldine doppelt so alt sein, wie Benedikt dann sein wird."
+    E #> C, G + (E-C) #= 2 * (B + (E-C)),
+    % Daniela: "Wenn ich so alt bin, wie Geraldine jetzt ist, wird Ajolanda doppelt so alt sein, wie sie jetzt ist."
+    G #> D, A + (G-D) #= 2 * A,
+    % Esther: "Zusammen sind wir derzeit 160 Jahre alt."
+    sum(L) #= 160,
+    % Ferdinand: "Als ich so alt war, wie Daniela jetzt ist, war Geraldine drei Jahre jünger, als Ajolanda und Benedikt jetzt zusammen sind."
+    F #> D, G - (F-D) #= A + B - 3,
+    % Geraldine: "Wenn ich so alt sein werde, wie Esther jetzt ist, ist Ferdinand so alt, wie Carla jetzt ist."
+    E #> G, F + (E-G) #= C,
+    solve_all(L) = Sols, println(Sols). %
+/* A  B  C  D  E  F  G 
+[[27, 5,28, 6,51,10,33] 
+Ajolanda ist 27, Benedikt 5, Carla 28, Daniela 6, Esther 51, Ferdinand 10 und Geraldine 33 */

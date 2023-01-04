@@ -1,0 +1,71 @@
+/* Zeit Logelei 2019/45 */
+import cp, util.
+
+main =>
+    % WIND + WOLKE = DUNKEL:
+    add(["WIND", "WOLKE", "DUNKEL"]),
+    % TIEF * HOCH = HAUSHOHE, T * HOCH = HSIFI usw.:
+    mult(["TIEF", "HOCH", "HSIFI", "FUSEH", "AICCF", "TSFE", "HAUSHOHE"]).
+/*
+  9261
+ 97584
+------
+106845 korrekt
+
+9682 * 4514
+-----------
+40626
+ 27084
+  36112
+    9028
+-----------
+43704548 korrekt */
+
+add(L) =>
+   Letter = keys(new_set(flatten(L))), % verwendete Buchstaben
+   Digit = new_list(len(Letter)), Digit :: 0..9, % eine Ziffer je Buchstabe
+   all_different(Digit),
+   N = len(L), % Anzahl der N, im Beispiel = 3
+   LenZeile = max([len(L[I]) : I in 1..N]), % maximale Länge der N, im Beispiel = 6
+   Num = new_array(N), % numerische Repräsentation der Elemente von L
+   foreach(I in 1..N)
+       S = [Digit[find_first_of(Letter, C)] : C in L[I]], % Convert Letter C -> Digit
+       to_num(S, Num[I]), S[1] #!= 0
+   end,
+   sum(Num[1..N-1]) #= Num[N], % Gleichung (im Beispiel WIND + WOLKE = DUNKEL)
+   solve(Digit ++ Num),
+   foreach(I in 1..N)
+       foreach(_ in 1..LenZeile-len(L[I])) print(' ') end, % Indent
+       println(Num[I]),
+       if I = N-1 then foreach(_ in 1..LenZeile) print('-') end, nl end % Trennstrich
+   end, nl.
+
+mult(L) =>
+   Letter = keys(new_set(flatten(L))), % verwendete Buchstaben
+   Digit = new_list(len(Letter)), Digit :: 0..9, % eine Ziffer je Buchstabe
+   all_different(Digit),
+   N = len(L[1]), % Anzahl der Teilrechnungen, im Beispiel = 4
+   LenZeile = max([len(L[2+I]) : I in 1..N]), % maximale Länge der Zeilen, im Beispiel = 5
+   Num = new_array(len(L)), % numerische Repräsentation der Elemente von L
+   foreach(I in 1..len(L))
+       S = [Digit[find_first_of(Letter, C)] : C in L[I]], % Convert Letter C -> Digit
+       to_num(S, Num[I]), S[1] #!= 0
+   end,
+   Num[1] * Num[2] #= Num[len(L)], % Hauptgleichung (im 1. Beispiel MICH * KANN = FACHMANN)
+   L1 = L[1],
+   foreach(I in 1..N) % zeilenweise Teilrechnung:
+       Digit[find_first_of(Letter, L1[I])] * Num[2] #= Num[2+I]
+   end,
+   solve(Digit ++ Num),
+   printf("%d * %d%n", Num[1], Num[2]),
+   printf("-----------%n"),
+   foreach(I in 1..N)
+       foreach(_ in 2..I+LenZeile-len(L[2+I])) print(' ') end, % Indent
+       println(Num[2+I])
+   end,
+   printf("-----------%n"),
+   printf("%d%n%n", Num[len(L)]).
+
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).

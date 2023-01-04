@@ -1,0 +1,53 @@
+/* Zeit Logelei 2019/03 nach Janko yagit8.pi
+https://www.zeit.de/2019/03/spiele-logelei-03 */
+import sat.
+main =>		 
+    A= {{0,0,0,x,b,0,0}, % x = rechts unten steht ein Punkt
+		{0,b,x,r,x,0,0},
+		{0,x,0,r,0,r,b},
+		{r,x,r,x,r,x,0},
+		{x,0,b,0,0,0,0},
+		{b,0,x,0,x,b,0},
+		{0,r,0,0,b,0,0}},
+	N = len(A), 
+	Gmax = 9, % magic
+	Geb = new_array(N,N), Geb :: 1..Gmax,
+    % Die Zäune dürfen sich kreuzen (Cnt=4), aber nicht an einem Pfosten; T-Kreuzungen sind verboten (Cnt=3):
+	foreach(Z in 1..N-1, S in 1..N-1, A[Z,S] = x)
+        nvalue(Cnt,[Geb[Z+DZ,S+DS] : DZ in 0..1, DS in 0..1]), Cnt #< 3
+    end,
+	% Gebietsgrenzen beginnen am Rand und dürfen nur an Punkten abbiegen:
+	foreach(Z in 1..N-1, S in 1..N-1, A[Z,S] != x)
+		(Geb[Z,S] #= Geb[Z+1,S]) #<=> (Geb[Z,S+1] #= Geb[Z+1,S+1]),
+		(Geb[Z,S] #= Geb[Z,S+1]) #<=> (Geb[Z+1,S] #= Geb[Z+1,S+1])		
+	end,	
+    % Alle Gebiete müssen einen einzigen orthogonal zusammenhängenden Bereich Bereich bilden.
+    Root = new_array(N,N), Root :: 0..1,
+    foreach(Z1 in 1..N, S1 in 1..N, Z2 in 1..N, S2 in 1..N, (Z1,S1)!=(Z2,S2))
+        (Root[Z1,S1] #= 1 #/\ Root[Z2,S2] #= 1) #=> Geb[Z1,S1] #!= Geb[Z2,S2]
+    end,
+    Dist = new_array(N,N), DistVars = vars(Dist), MaxDist = N * N // 2, Dist :: 0..MaxDist,
+    foreach(Z in 1..N, S in 1..N)
+         Root[Z,S] #= 1 #=> Dist[Z,S] #= 0,
+   	  	 Root[Z,S] #= 0 #=> Dist[Z,S] #= 1 + min([ Dist[Z1,S1]*(Geb[Z,S]#=Geb[Z1,S1])+MaxDist*(Geb[Z,S]#!=Geb[Z1,S1])
+   	  	 : (Z1,S1) in [(Z-1,S),(Z,S-1),(Z,S+1),(Z+1,S)], Z1 >= 1, Z1 =< N, S1 >= 1, S1 =< N])
+    end,
+    % Jeder so abgeteilte Bereich darf dann nur noch Murmeln einer Farbe enthalten, ..
+    foreach(Z1 in 1..N, S1 in 1..N, Z2 in 1..N, S2 in 1..N, A[Z1,S1]=b, A[Z2,S2]=r)
+        Geb[Z1,S1] #!= Geb[Z2,S2]
+    end,
+    % und er muss Murmeln enthalten:
+    nvalue(Gmax, [Geb[Z,S] : Z in 1..N, S in 1..N, (A[Z,S]=b;A[Z,S]=r)]),
+    solve(vars(Geb) ++ DistVars),
+    foreach(Z in 1..N, S in 1..N)
+		printf("%c", chr(64+Geb[Z,S])), print(cond(A[Z,S] = 0, " ", A[Z,S])), print("|"),
+    	if S = N then nl end
+    end.
+/* Gmax = 9:
+E |E |B |Bx|Gb|I |F |
+E |Eb|Bx|Br|Gx|I |F |
+E |Ex|B |Dr|I |Ir|Fb|
+Br|Bx|Br|Dx|Ir|Ix|F |
+Cx|C |Cb|I |I |I |I |
+Cb|H |Hx|A |Ax|Ab|A |
+C |Hr|H |A |Ab|A |A | CPU time 34.54 seconds korrekt! */    

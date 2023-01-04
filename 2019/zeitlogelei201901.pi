@@ -1,0 +1,30 @@
+/* Zeit Logelei 2019/01 
+Wo liegt die Altersschwelle? 
+Und was kann Professor Knusi sonst noch aus den Aussagen schließen?*/
+import cp, ordset.
+
+main =>
+    L = [A,B,C,D,E,Limit], L :: 0..99, % Alter der Einwohner A,B,C,D,E
+    A #=< Limit #<=> B #> 15,  % Aru: "Beru ist älter als 15." 
+    B #=< Limit #<=> C #> 13,  % Beru: "Ceru ist älter als 13." 
+    C #=< Limit #<=> D #< 17,  % Ceru: "Deru ist jünger als 17."  
+    D #=< Limit #<=> E #!= 12, % Deru: "Eru ist nicht 12." 
+    E #=< Limit #<=> A #> 16,  % Eru: "Aru ist älter als 16." 
+    A #=< Limit #<=> D #> 11,  % Aru: "Deru ist älter als 11." 
+    B #=< Limit #<=> E #< 15,  % Beru: "Eru ist jünger als 15." 
+    C #=< Limit #<=> A #= 14,  % Ceru: "Aru ist 14."  
+    D #=< Limit #<=> B #= 15,  % Deru: "Beru ist 15." 
+    E #=< Limit #<=> C #< 13,  % Eru: "Ceru ist jünger als 13." 
+    solve_all(L) = Sols, 
+    printf("Die Altersgrenze ist %w.%n", new_ordset([Sol[6] : Sol in Sols])),
+    foreach(I in 1..5) printf("%c ist %w Jahre alt.%n", chr(64+I), new_ordset([Sol[I] : Sol in Sols])) end.
+/*
+Die Altersgrenze ist [13].
+A ist [14] Jahre alt.
+B ist [15] Jahre alt.
+C ist [13] Jahre alt.
+D ist [0,1,2,3,4,5,6,7,8,9,10,11] Jahre alt. -> 11 Jahre oder jünger
+E ist [15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,
+       46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,
+       76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99] Jahre alt. 
+       --> 15 Jahre oder älter ; korrekt */

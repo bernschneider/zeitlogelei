@@ -1,0 +1,74 @@
+/* Zeit Logelei 2018/09 Rundweg 
+http://www.zeit.de/2018/09/spiele-logelei-09 */
+import util,cp.
+
+main => 
+   Cnt = {{0,2,0,0,0,0,0},
+          {0,0,0,0,1,0,0},
+          {0,2,1,0,0,0,0},
+          {0,2,2,0,5,2,3},
+          {0,0,2,0,0,0,0},
+          {0,5,0,0,0,1,0},
+          {0,0,0,4,0,0,0}},
+   % Drückt man die Waben platt, erhält man bis zu 14 horizontale Linien je Zeile:
+   H = {{0,0,0,_,_,_,_,_,_,_,_,0,0,0},
+        {0,0,_,_,_,_,_,_,_,_,_,_,0,0},
+        {0,_,_,_,_,_,_,_,_,_,_,_,_,0},
+        {_,_,_,_,_,_,_,_,_,_,_,_,_,_},
+        {_,_,_,_,_,_,_,_,_,_,_,_,_,_},
+        {0,_,_,_,_,_,_,_,_,_,_,_,_,0},
+        {0,0,_,_,_,_,_,_,_,_,_,_,0,0},
+        {0,0,0,_,_,_,_,_,_,_,_,0,0,0}}, H :: 0..1,
+   % Je Zeile gibt es maximal 8 vertikale Linien:
+   V = {{0,_,_,_,_,_,0,0},
+        {0,_,_,_,_,_,_,0},
+        {_,_,_,_,_,_,_,0},
+        {_,_,_,_,_,_,_,_},
+        {_,_,_,_,_,_,_,0},
+        {0,_,_,_,_,_,_,0},
+        {0,_,_,_,_,_,0,0}}, V :: 0..1,
+   % Es ist ein Rundweg, d.h. in jedem Punkt enden 0 oder 2 Strassen:
+   foreach(Z in 1..8, S in 1..15)
+       Xcnt #= sum([H[Z,S1] : S1 in [S-1,S], 0<S1, S1<=14])
+             + sum([V[Z1,(S+1) div 2] : Z1 in [Z-1+(Z+S) mod 2], 0<Z1, Z1<=7]), % | darüber oder darunter
+       Xcnt :: [0,2]
+   end,
+   % Die Zahlen geben an, wieviele Strassen am jeweiligen Block vorbeiführen:
+   foreach(Z in 1..7, S in 1..7, Cnt[Z,S]>0)
+       Cnt[Z,S] #= sum([H[Z1,S1] : Z1 in [Z,Z+1], S1 in [Z mod 2 +2*S-1,Z mod 2 +2*S], S1<=14])
+                 + sum([V[Z,S1] : S1 in [S,S+1]])
+   end,
+   Vars = vars(H) ++ vars(V),
+   solve(Vars),
+   Char = "\\/", % richte die plattgedrückten Waben wieder auf
+   foreach(Z in 1..8) 
+      foreach(S in 1..14)
+           print(' '), % darüber oder darunter kann ein | stehen
+           if H[Z,S]=1 then print(Char[(Z+S) mod 2 + 1]) else print(' ') end % (alternierend)
+      end, nl,
+      if Z<8 then % zeichne die sekrechten Strassen:
+          if Z mod 2 = 1 then print('  ') end, % in jeder 2. Zeile ist der 1. | ein wenig verschoben
+          foreach(S in 1..8)
+                if V[Z,S]=1 then print('| ') else print('  ') end,
+                if (S<8, Cnt[Z,S]>0) then printf("%d ",Cnt[Z,S]) else print('  ') end
+          end, nl,
+      end
+   end.
+/*
+               / \ / \      
+        2     |       |           
+     / \ / \   \       \    
+    |       |   | 1     |       
+     \       \ /         \  
+      | 2   1             |       
+       \         / \       \
+      2 | 2     | 5 | 2   3 |   
+         \       \   \     /
+          | 2     |   |   |       
+     / \   \     /     \ /  
+    | 5 |   |   |     1         
+     \   \ /     \          
+      |         4 |               
+       \ / \ / \ /          
+
+CPU time 0.003 seconds. */

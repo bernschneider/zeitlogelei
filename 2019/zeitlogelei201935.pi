@@ -1,0 +1,18 @@
+/* ZEIT Logelei 2019/35 PHIL ist ein HELD ... */
+import cp.
+main =>
+    % Die Buchstaben P, H, I und L sind in verschiedenen Säcken.
+    % Sagen wir, H ist in Sack 1, I in Sack 2, P in Sack 3, L in Sack 4:
+    %       A B C D E F G H I J K L M N O P
+    Sack = [_,_,_,_,_,_,_,1,2,_,_,4,_,_,_,3], Sack :: 1..4,
+    global_cardinality(Sack, $[1-4,2-4,3-4,4-4]), % in jedem Sack sind 4 Buchstaben
+    foreach(W in ["HELD", "JOCH", "CHEF", "AMOK", "BLEI", "HELM", "PFAD", "FOND"])
+         all_different([Sack[ord(C)-64] : C in W])
+    end,
+    solve(Sack), println(Sack).
+    %  A B C D E F G H I J K L M N O P
+    % [1,1,2,2,3,4,3,1,2,4,4,4,2,1,3,3] korrekt!
+    /* Sack 1: A, B, H und N
+       Sack 2: C, D, I und M
+       Sack 3: E, G, O und P
+       Sack 4: F, J, K und L */

@@ -1,0 +1,65 @@
+/* Zeit Logelei 2019/47 */
+import sat, util.
+main =>
+    Cnt = [1, 2, 3, 4, 5, 4, 2], % Größe der ersten 7 weißen Gebiete
+    M =               {{_,1,_,_,_,_,_,_,_,_},
+    		{0,_,_,_,_,_,_,_,_,_}, % 0 magic! (hätte auch links oben sein können)
+    		{_,_,_,2,_,_,_,_,_,_},
+    		{_,_,_,_,_,_,_,_,_,_},
+    		{_,_,_,_,3,_,_,_,_,_},
+    		{_,_,_,_,_,_,_,_,_,_},
+    		{_,_,_,_,4,_,5,_,_,_},
+    		{_,_,_,_,_,_,_,_,_,_},
+    		{6,_,_,_,_,_,_,7,_,_},
+    		{_,_,_,_,_,_,_,_,_,_}}, 
+    N = len(M), Gmax = 8, Mlist = array_matrix_to_list(M), Mlist :: 0..Gmax,
+    % Schwärzen Sie von jedem Feld die linke, rechte, obere oder untere Hälfte:
+    foreach(Z in 1..2..N, S in 1..2..N)
+        M[Z,S] #= 0 #^ M[Z+1,S+1] #= 0, M[Z,S+1] #= 0 #^ M[Z+1,S] #= 0
+    end,
+    % Alle weißen Viertelfelder müssen mit dem Rand verbunden sein:
+    foreach(G in 1..Gmax)
+        0 #< sum([(M[1,I] #= G)+(M[N,I] #= G)+(M[I,1] #= G)+(M[I,N] #= G) : I in 1..N])
+    end,
+    % Gebiete müssen i.A. einen orthogonal zusammenhängenden Bereich Bereich bilden:
+    Dist = new_array(N,N), DistVars = vars(Dist), MaxDist = N * N // 2, Dist :: 0..MaxDist,
+    foreach(Z in 1..N, S in 1..N, var(M[Z,S]))
+   	  	M[Z,S] #< 8 #=> % das Gebiet 8 muss nicht zusammenhängen
+        Dist[Z,S] #= 1 + min([ Dist[Z1,S1]*(M[Z,S]#=M[Z1,S1])+MaxDist*(M[Z,S]#!=M[Z1,S1])
+   	  	 : (Z1,S1) in [(Z-1,S),(Z,S-1),(Z,S+1),(Z+1,S)], Z1 >= 1, Z1 =< N, S1 >= 1, S1 =< N])
+    end,
+    % Die Zahlenfelder geben an, aus wie vielen Feldhälften der weiße Bereich besteht, in dem sie sich befinden:
+    foreach(Z in 1..N, S in 1..N, ground(M[Z,S]))
+        Dist[Z,S] #= 0, V = M[Z,S], if 0 < V, V < 8 then count(V, Mlist, 2 * Cnt[V]) end
+    end,
+    % Die Schwarzfelder dürfen keinen 2 x 2-Block aus Viertelfeldern komplett füllen:
+    foreach(Z in 1..2..N-1, S in 2..2..N-1)
+        4 #> (M[Z,S] #= 0)+(M[Z,S+1] #= 0)+(M[Z+1,S] #= 0)+(M[Z+1,S+1] #= 0)
+    end,
+    % Weiße Gebiete grenzen nicht aneinander:
+    foreach(Z in 1..N, S in 1..N-1) M[Z,S] #= M[Z,S+1] #\/ M[Z,S] #= 0 #\/ M[Z,S+1] #= 0 end,
+    foreach(Z in 1..N-1, S in 1..N) M[Z,S] #= M[Z+1,S] #\/ M[Z,S] #= 0 #\/ M[Z+1,S] #= 0 end,
+    % 8er-Felder müssen am Rand liegen:
+    foreach(Z in 2..N-1, S in 2..N-1) M[Z,S] #< 8 end,
+    solve(Mlist ++ DistVars),
+    foreach(Z in 1..N, S in 1..N)                    % Gebiet 8 v
+        if M[Z,S]=0 then print(".") elseif M[Z,S]=8 then print("*") else printf("%d", Cnt[M[Z,S]]) end,
+        if S mod 2 = 0, S < N then print('|') end,
+    	if S = N then nl, if Z mod 2 = 0, Z < N then println("--------------") end end
+    end.
+/*
+11|.2|.3|.5|55
+..|.2|.3|.5|..
+--------------
+*.|22|.3|.5|.*
+*.|..|.3|.5|.*
+--------------
+..|4.|33|.5|.*
+44|4.|..|.5|.*
+--------------
+4.|..|4.|55|.*
+4.|44|4.|..|.*
+--------------
+4.|4.|44|.2|..
+4.|4.|..|.2|22
+CPU time 13.823 seconds sieht gut aus! */    

@@ -1,0 +1,43 @@
+/* Zeit Logelei 2019/09 */
+import cp.
+
+go1 =>
+   Vars = [A,R,B,E,I,T,N],
+   Vars :: 0..9,
+   all_different(Vars),
+   to_num([A,R,B,E,I,T], ARBEIT), to_num([R,E,N,T,E], RENTE),      
+   A #!= 0, R #!= 0, 
+   ARBEIT - RENTE #= RENTE,
+   solve(Vars),
+   printf("%d\n", ARBEIT), 
+   printf("-%d\n", RENTE), 
+   print("------\n"),
+   printf(" %d", RENTE). 
+/*
+193652
+-96826
+------
+ 96826  */
+   
+go2 =>
+  Vars = [K,U,R,Z,G,T,E,N],
+   Vars :: 0..9,
+   all_different(Vars),
+   to_num([K,U,R,Z], KURZ), to_num([G,U,T], GUT), to_num([R,E,N,T,E], RENTE),      
+   K #!= 0, G #!= 0, R #!= 0, 
+   KURZ + GUT #= RENTE,
+   solve(Vars),
+   printf("%5d\n", KURZ), 
+   printf("%5d\n", GUT), 
+   print("------\n"),
+   printf("%5d", RENTE). 
+/*
+ 9612
+  768
+------
+10380 */
+
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).
+

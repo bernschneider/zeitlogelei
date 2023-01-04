@@ -1,0 +1,24 @@
+/* Zeit Logelei 2019/25 */
+import cp.
+main => 
+   LNum = new_list(6), % "Ich habe mir eine sechsstellige Zahl ausgedacht", erklärt Hans. 
+   LNum :: 1..9,       % "Die Zahl enthält keine 0. 
+   Numbers = [Num, Rev, Sum, Diff], Numbers :: 100000..999999,
+   to_num(LNum, Num),  % .. die Zahl als Zahl
+   to_num(LNum.reverse(), Rev), % Rückwert dieser Zahl als Zahl
+   Rev #< Num,                  % dieser Rückwert ist kleiner als die ursprüngliche Zahl. 
+   % Die Summe und die Differenz dieser beiden Zahlen: 
+   LSum  = new_list(6), LSum  :: 0..9, to_num(LSum,  Sum),  Sum #=  Num + Rev, 
+   LDiff = new_list(6), LDiff :: 0..9, to_num(LDiff, Diff), Diff #= Num - Rev, 
+   LSum[1] #> 0, LDiff[1] #> 0, % auch diese beiden sind sechsstellige Zahlen
+   all_different(LSum), all_different(LDiff), % weder in der Summe noch in der Differenz kommt eine Ziffer doppelt vor
+   solve_all(LNum ++ LSum ++ LDiff ++ Numbers) = Sols, println(len(Sols)), % 332
+   solve([$min(Num)], LNum ++ LSum ++ LDiff ++ Numbers), % meine Zahl ist die kleinste, auf die das zutrifft
+   println(Num),  % 252941 korrekt!
+   println(Rev),  % 149252
+   println(Sum),  % 402193
+   println(Diff). % 103689 CPU time 0.311 seconds.
+   
+to_num(List, Zahl) => % Zahl = Wert der Liste        
+    Len = len(List), 
+    Zahl #= sum([List[I]*10**(Len-I) : I in 1..Len]).

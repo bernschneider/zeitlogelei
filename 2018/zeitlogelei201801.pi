@@ -1,0 +1,136 @@
+/* Zeit Logelei 2018/ 01 
+   Kreuzzahlen */
+import cp.
+import util.
+main =>
+   LM = {{a,b,c,d,e,f},
+		 {g,x,h,x,x,x},
+	     {i,j,x,k,x,l},
+	     {m,x,n,o,x,x},
+	     {p,x,x,x,q,r},
+	     {s,x,t,x,x,x}}, get_global_map().put(lm,LM),       
+   WLetter := [a,e,g,h,i,k,m,o,p,q,s,t], get_global_map().put(wl,WLetter), % alle Buchstaben mit waagrechter Bedingung
+   SLetter := [a,b,c,d,e,f,i,j,l,n,o,p,q,r], get_global_map().put(sl,SLetter), % alle Buchstaben mit senkrechter Bedingung
+   N = 6, ZAHL = 10, QSUM = 1, FWD = 1, REV = 0, % cond arbeitet nicht mit Bool!
+   M = new_array(N,N),
+   MVars = array_matrix_to_list(M),
+   MVars :: 0..9,
+   % Waagrecht:
+   waagrecht(M,a,ZAHL,FWD,Aw), palindrom([M[1,J] : J in 1..4]),
+   waagrecht(M,e,ZAHL,FWD,Ew), is_prime(Ew),
+   waagrecht(M,e,ZAHL,REV,REw), % s.u.
+   waagrecht(M,g,ZAHL,FWD,Gw), is_prime(Gw), 
+   waagrecht(M,h,ZAHL,FWD,Hw), Hw #= Es - Aw,
+   waagrecht(M,i,ZAHL,FWD,Iw), Iw #= ROs + RNs,
+   waagrecht(M,k,ZAHL,FWD,Kw), multiple(Kw, Fs),
+   waagrecht(M,m,ZAHL,FWD,Mw), square(Mw),
+   waagrecht(M,o,ZAHL,REV,ROw), ROw #= Kw + RLs,
+   waagrecht(M,p,ZAHL,FWD,Pw), multiple(Pw, Qw),
+   waagrecht(M,q,ZAHL,FWD,Qw), is_prime(Qw),
+   waagrecht(M,s,ZAHL,FWD,Sw), is_prime(Sw),
+   waagrecht(M,t,ZAHL,FWD,Tw), Tw #= Ds * As,     
+   % Senkrecht:
+   senkrecht(M,a,ZAHL,FWD,As), is_prime(As),
+   senkrecht(M,b,ZAHL,FWD,Bs), is_prime(Bs),
+   senkrecht(M,c,ZAHL,FWD,Cs), square(Cs),
+   senkrecht(M,d,ZAHL,FWD,Ds), % s.o. 
+   senkrecht(M,d,QSUM,FWD,QDs), QDs #= REw,
+   senkrecht(M,e,ZAHL,FWD,Es), Es #= 2 * Ls ** 2,
+   senkrecht(M,f,ZAHL,FWD,Fs), is_prime(Fs),
+   senkrecht(M,f,ZAHL,FWD,Hs), is_prime(Hs),
+   senkrecht(M,i,ZAHL,FWD,Is), is_prime(Is),
+   senkrecht(M,j,ZAHL,FWD,Js), Js #= Pw - Tw,
+   senkrecht(M,l,ZAHL,FWD,Ls), is_prime(Ls),
+   senkrecht(M,l,ZAHL,REV,RLs), % s.o.
+   senkrecht(M,n,ZAHL,FWD,Ns), Ns #= prod([M[5,J] : J in 1..4]),
+   senkrecht(M,n,ZAHL,REV,RNs), % s.o.
+   senkrecht(M,o,ZAHL,FWD,Os), square(Os),
+   senkrecht(M,o,ZAHL,REV,ROs), % s.o.
+   senkrecht(M,p,ZAHL,FWD,Ps), is_prime(Ps),
+   senkrecht(M,q,ZAHL,FWD,Qs), is_prime(Qs),
+   senkrecht(M,r,ZAHL,FWD,Rs), is_prime(Rs),
+   Vars = MVars,
+   solve(Vars),
+   foreach(I in 1..N) 
+      foreach(J in 1..N) 
+           printf("%d ", M[I,J])
+      end,
+      nl
+   end,
+   nl.
+/*
+1 7 7 1 4 1
+3 1 2 6 4 7
+3 5 9 7 1 4
+1 2 1 8 8 7
+7 4 1 4 1 1
+1 3 2 1 7 1
+CPU time 0.037 seconds. 
+Waagerecht: A 1771 E 41 G 31 H 2647 I 359 K 714 M 121 O 887 P 7414 Q 11 S 13 T 2171 korrekt!
+Senkrecht:  A 13 B 71 C 729 D 167 E 4418 F 17 I 31 J 5243 L 47 N 112 O 841 P 71 Q 17 R 11 */
+
+multiple(X,A) => % X ist Vielfaches von A
+   X mod A #= 0.
+   
+is_prime(X) =>
+   Max = fd_max(X),
+   foreach(I in 2..Max // 2)
+      I #!= X #=> X mod I #> 0
+   end.
+
+square(X) =>
+   Max = fd_max(X), 
+   Tmp :: 0..Max,
+   X #= Tmp*Tmp.
+
+palindrom(L) =>
+    N = len(L),
+    foreach(I in 1..N//2)
+        L[I] #= L[N + 1 - I]
+    end.
+
+waagrecht(M,Letter,Base,Fwd,X) => % Base = 10/1 (1 = Quersumme), Fwd = FWD/REV (REV = Rückwert)
+		LM = get_global_map().get(lm), WLetter = get_global_map().get(wl),
+		N = len(LM), Row := 0, Col := 0, Len := 0,
+		foreach(R in 1..N)
+			foreach(C in 1..N)
+				if LM[R,C] = Letter then Row := R, Col := C end
+			end,
+			if Len == 0, Row  > 0 then 
+				foreach(Cn in Col+1..N)
+					if Len == 0, membchk(LM[R,Cn],WLetter) then Len := Cn - Col end
+				end,
+				if Len = 0 then Len := N+1-Col end 
+		    end 
+		end,
+	    Tmp = new_list(Len), Tmp :: 0..9,
+   		to_num(Tmp, Base, Fwd, X),
+   		foreach(I in 0..Len-1)
+     		 M[Row,Col+I] #= Tmp[I+1]
+   		end,
+		M[Row,Col] #!= 0.	
+
+senkrecht(M,Letter,Base,Fwd,X) => % Base = 10/1 (1 = Quersumme), Fwd = FWD/REV (REV = Rückwert)
+		LM = get_global_map().get(lm), SLetter = get_global_map().get(sl),        
+		N = len(LM), Row := 0, Col := 0, Len := 0,
+		foreach(C in 1..N)
+			foreach(R in 1..N)
+				if LM[R,C] = Letter then Row := R, Col := C end
+			end,
+			if Len == 0, Col > 0 then 
+				foreach(Rn in Row+1..N)
+					if Len == 0, membchk(LM[Rn,C],SLetter) then Len := Rn - Row end
+				end,
+				if Len = 0 then Len := N+1-Row end
+			end 
+		end,
+   		Tmp = new_list(Len), Tmp :: 0..9,
+   		to_num(Tmp, Base, Fwd, X),
+   		foreach(I in 0..Len-1)
+      		M[Row+I,Col] #= Tmp[I+1]
+   		end,
+		M[Row,Col] #!= 0.	
+   
+to_num(List, Base, Fwd, Num) => % Num = Wert der Liste
+        Len = length(List), 
+        Num #= cond(Fwd, sum([List[I]*Base**(Len-I) : I in 1..Len]), sum([List[I]*Base**(I-1) : I in 1..Len])).

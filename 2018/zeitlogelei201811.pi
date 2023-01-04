@@ -1,0 +1,48 @@
+/* Zeit Logelei 2018/11 */
+import cp.
+
+go1 =>
+   Vars = [F,L,U,O,R,C,H,S,T],
+   Vars :: 0..9,
+   all_different(Vars),
+   to_num([F,L,U,O,R], FLUOR), to_num([C,H,L,O,R], CHLOR), to_num([S,O,F,O,R,T], SOFORT),      
+   F #!= 0, C #!= 0, S #!= 0,
+   FLUOR + CHLOR #= SOFORT,
+   solve(Vars),
+   printf(" %d\n",FLUOR), 
+   printf(" %d\n",CHLOR), 
+   print("------\n"),
+   print(SOFORT). 
+/*
+ 82475
+ 96275
+------
+178750 */
+   
+go2 =>
+   Vars = [I,O,D,B,R,M,C,H,L,A],
+   Vars :: 0..9,
+   all_different(Vars),
+   to_num([I,O,D], IOD), to_num([B,R,O,M], BROM), to_num([C,H,L,O,R,I,D], CHLORID), 
+   to_num([R,C,R,C,H], RCRCH), to_num([C,A,R,M,I], CARMI),         
+   I#!= 0, B #!= 0, C #!= 0, 
+   I * BROM #= RCRCH, O * BROM #= CARMI, IOD * BROM #= CHLORID,
+   solve(Vars),
+   printf("%d * %d\n",IOD, BROM), 
+   print("----------\n"),
+   printf("%d\n",RCRCH), 
+   printf(" %d\n",CARMI), 
+   print("-------\n"),
+   print(CHLORID). 
+/*
+790 * 6493
+----------
+45451
+ 58437
+-------
+5129470 */
+
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).
+

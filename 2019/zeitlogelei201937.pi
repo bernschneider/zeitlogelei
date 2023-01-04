@@ -1,0 +1,36 @@
+/* Zeit Logelei 2019/37 Susi weiß alles
+https://www.zeit.de/2019/37/spiele-logelei-37 */
+import cp.
+main =>
+  A=1, B=2, C=3, D=4, E=5, % Anton, Bill, Cunni, Don und Ellen sind fünf Freunde
+  P=1, I=2, K=3, S=4, M=5, % Polnisch, Ivrit, Koreanisch, Swahili und Maori sind fünf Sprachen
+  M=5, B=2, T=3, U=4, H=1, % Maigrün, Blaze-Orange, Tizianrot, Umbra und Han-Blau sind fünf Farben
+  Sprache = new_list(5), assignment(Sprache, SpracheRev), Sprache :: 1..5,
+  Farbe =   new_list(5), assignment(Farbe, FarbeRev),     Farbe :: 1..5,
+  Farbe[E] #= U, % Umbra ist die Lieblingsfarbe von Ellen
+  FarbeRev[H] #!= SpracheRev[K], % Han-Blau passt nicht zu Koreanisch
+  Farbe[B] #!= T, % Bill mag kein Tizianrot
+  FarbeRev[H] #!= SpracheRev[S], % Swahili lernt weder der, der Han-Blau mag, 
+  FarbeRev[T] #!= SpracheRev[S], % ... noch der, der Tizianrot liebt
+  Farbe[D] #!= B, % Blaze-Orange ist nicht die Farbe von Don
+  Farbe[A] #!= T, % Tizianrot ist nicht die Farbe von Anton
+  Sprache[D] #= S, % Don spricht Swahili
+  Sprache[C] #!= K, % Cunni spricht kein Koreanisch
+  Sprache[A] #= P, % Anton lernt Polnisch, 
+  Farbe[A] #!= H, % ... mag aber kein Han-Blau
+  FarbeRev[H] #!= SpracheRev[I], % Han-Blau ist nicht die Lieblingsfarbe von dem, der Ivrit lernt
+  Vars = Sprache ++ SpracheRev ++ Farbe ++ FarbeRev,
+  solve_all(Vars) = Sols, println(sols=len(Sols)),
+  solve(Vars),
+  Person = ["Anton", "Bill", "Cunni", "Don", "Ellen"], 
+  Sp = ["Polnisch", "Ivrit", "Koreanisch", "Swahili", "Maori"],
+  Fb = ["Han-Blau", "Blaze-Orange", "Tizianrot", "Umbra", "Maigrün"],
+  foreach(J in 1..5)
+      printf("%s lernt %s und liebt %s.%n", Person[J], Sp[Sprache[J]], Fb[Farbe[J]])
+  end.
+/* sols = 1
+Anton lernt Polnisch und liebt Blaze-Orange.
+Bill lernt Maori und liebt Han-Blau.
+Cunni lernt Ivrit und liebt Tizianrot.
+Don lernt Swahili und liebt Maigrün.
+Ellen lernt Koreanisch und liebt Umbra. KORREKT! */

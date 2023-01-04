@@ -1,0 +1,44 @@
+/* Zeit Logelei 2018/31 Alphametik */
+import cp.
+
+go1 =>
+   Vars = [B,A,U,M,S,C,H,Y,O,L],
+   Vars :: 0..9,
+   all_different(Vars),
+   to_num([B,A,U,M], BAUM), to_num([B,U,S,C,H], BUSCH), to_num([S,Y,M,B,O,L], SYMBOL),       
+   B #!= 0, S #!= 0, 
+   BAUM + BUSCH #= SYMBOL,
+   % solve_all(Vars) = Sols, println(Sols),
+   solve(Vars),
+   printf("  %d\n",BAUM), 
+   printf(" %d\n",BUSCH), 
+   print("------\n"),
+   print(SYMBOL). 
+/*
+  9754
+ 95182
+------
+104936 korrekt */
+   
+go2 =>
+   Vars = [V,E,R,S,L,Y,M,B,O],
+   Vars :: 0..9,
+   all_different(Vars),
+   to_num([V,E,R,S,E], VERSE), to_num([S,E,E,L,E], SEELE), to_num([S,Y,M,B,O,L], SYMBOL),       
+   V #!= 0, S #!= 0, 
+   VERSE + SEELE #= SYMBOL,
+   solve(Vars),
+   printf(" %d\n",VERSE), 
+   printf(" %d\n",SEELE), 
+   print("------\n"),
+   print(SYMBOL).
+/*
+ 86916
+ 16626
+------
+103542 korrekt */
+
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).
+

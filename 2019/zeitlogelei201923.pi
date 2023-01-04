@@ -1,0 +1,58 @@
+/* Zeit Logelei 23/2019 (nach Janko Rekuto)
+https://www.zeit.de/2019/23/spiele-logelei-23 */
+import sat.
+main => 
+   F = {{ 0, 0, 0, 0, 0, 0, 0, 0},
+		  { 0, 0, 0, 0,12, 0, 0, 0},
+		  { 0, 0, 0,12, 8, 0, 0, 0},
+		  {10, 8, 0, 0, 0, 0, 8, 6},
+		  { 6, 0, 0, 0, 0, 0, 0,10},
+		  { 0, 0,14, 0, 0, 0, 0, 0},
+		  { 0, 0,10,12, 0, 0, 0, 0},
+		  { 0, 0, 0, 0, 0, 0, 0, 0}},
+   NR = len(F), NC = len(F[1]), 
+   Uf = [{R,C,F[R,C]} : R in 1..NR, C in 1..NC, F[R,C]  > 0], 
+   N = len(Uf), 
+   R0 = new_array(N), R0 :: 1..NR, C0 = new_array(N), C0 :: 1..NC, 
+   R1 = new_array(N), R1 :: 1..NR, C1 = new_array(N), C1 :: 1..NC, 
+   % Rechtecke überschneiden sich nicht:
+   Rd = new_array(N), Rd :: 1..NR, Cd = new_array(N), Cd :: 1..NC,
+   foreach(I in 1..N)
+   		Rd[I] #= R1[I]-R0[I]+1,
+   		Cd[I] #= C1[I]-C0[I]+1
+   end,
+   Rects = [[R0[I], C0[I], Rd[I], Cd[I]]: I in 1..N], 
+   diffn(Rects),
+   % Rechteck I hat Umfang Uf[I]:
+   foreach(I in 1..N)
+   	    R1[I] #>= R0[I], C1[I] #>= C0[I], 
+   		2 * ((R1[I] - R0[I] + 1) + (C1[I] - C0[I] + 1)) #= Uf[I,3]	
+   end,
+   % Erzeuge Matrix mit den lfd. Nummern der Rechtecke:
+   M = new_array(NR,NC), M :: 1..N,
+   foreach(R in 1..NR, C in 1..NC, I in 1..N)
+   		(R0[I] #=< R #/\ R #=< R1[I] #/\ C0[I] #=< C #/\ C #=< C1[I])  #<=> M[R,C] #= I
+   end,
+   % Die vorgegebenen Positionen der Rechtecke stimmen:
+   foreach(I in 1..N)
+   		{R,C,_} = Uf[I],
+   		M[R,C] #= I
+   end,
+   Vars = R0 ++ R1 ++ C0 ++ C1 ++ M,
+   solve(Vars),
+   foreach(R in 1..NR)
+   		foreach(C in 1..NC)
+   			printf("%2d", M[R,C]),
+   			if F[R,C] > 0 then printf("(%2d)|", F[R,C]) else print("    |") end
+   		end, nl
+   end.
+/*
+ 4    | 2    | 2    | 2    | 1    | 1    | 1    | 1    |
+ 4    | 2    | 2    | 2    | 1(12)| 1    | 1    | 1    |
+ 4    | 2    | 2    | 2(12)| 3( 8)| 3    | 3    | 7    |
+ 4(10)| 5( 8)|10    |10    |10    |10    | 6( 8)| 7( 6)|
+ 8( 6)| 5    |10    |10    |10    |10    | 6    | 9(10)|
+ 8    | 5    |10(14)|10    |10    |10    | 6    | 9    |
+11    |11    |11(10)|12(12)|12    |12    |12    | 9    |
+11    |11    |11    |12    |12    |12    |12    | 9    |
+CPU time 0.787 seconds korrekt */

@@ -1,0 +1,37 @@
+/* Zeit Logelei 2019/43 Kreuzzahlen */
+import cp.
+aufgabe1 =>
+    % A B
+    % C
+    M = new_array(2,2), M :: 1..9,
+    Primes = primes(99), Squares = [I*I : I in 1..9], Cubes = [I*I*I : I in 1..4], 
+    Even = [0,2,4,6,8], Odd = [1,3,5,7,9],
+    % Waagrecht:
+    Aw #= M[1,1]*10 + M[1,2], Aw :: Cubes  #<=> M[1,2] :: Even, % Aw Kubikzahl
+    Cw #= M[2,1]*10 + M[2,2], Cw :: Primes #<=> M[2,2] :: Even, % Cw Primzahl
+    % Senkrecht:
+    M[1,1] #!= M[2,1] #<=> M[2,1] :: Even, % As kein Palindrom
+    Bs #= M[1,2]*10 + M[2,2], Bs :: Squares  #<=> M[2,2] :: Odd, % Bs keine Quadratzahl
+    Sols = solve_all(M), println(sols=len(Sols)),
+    solve(M),
+    printf("%d %d%n%d %d", M[1,1], M[1,2], M[2,1], M[2,2]).
+/* sols = 1
+6 4 
+4 9 korrekt */
+aufgabe2 =>
+    % D E
+    % F
+    M = new_array(2,2), M :: 1..9,
+    Primes = primes(99), Squares = [I*I : I in 1..9], Cubes = [I*I*I : I in 1..4], 
+    % Waagrecht:
+    Dw #= M[1,1]*10 + M[1,2], Dw :: Squares #^ Dw :: Cubes, % Dw Quadratzahl 
+    Fw #= M[2,1]*10 + M[2,2], Fw :: Primes  #^ Fw :: Cubes, % Fw Primzahl
+    % Senkrecht:
+    Ds #= M[1,1]*10 + M[2,1], M[1,1] * M[2,1] #= 24 #^ Ds :: Cubes, % Das Querprodukt von DS ist 24
+    Es #= M[1,2]*10 + M[2,2], M[1,2] #= M[2,2]      #^ Es :: Cubes, % Es Palindrom
+    Sols = solve_all(M), println(sols=len(Sols)),
+    solve(M),
+    printf("%d %d%n%d %d", M[1,1], M[1,2], M[2,1], M[2,2]).
+/* sols = 1
+8 1 
+3 1 korrekt */

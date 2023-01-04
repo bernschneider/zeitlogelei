@@ -1,0 +1,21 @@
+/* Zeit Logelei 2018/27 */
+import cp.
+
+main =>
+    K = [H,M,F,J],     K :: 0..7,       % Kinder H,M,F,J
+    D = [D1,D2,D3,D4], D :: 0..20,  % Zeitdifferenzen D1..D4 ("in D1 Jahren..")
+    % Hanna zu Mert: "Wenn ich so alt sein werde, wie du in 2 Jahren bist, wirst du doppelt so alt sein, wie Jonny vor einem Jahr war."
+    H + D1 #= M + 2, M + D1 #= 2 * (J - 1),
+    % Mert zu Hanna: "Wenn Finni so alt sein wird wie Jonny und ich jetzt zusammen sind, wirst du doppelt so alt sein, wie Jonny jetzt ist."
+    F + D2 #= J + M, H + D2 #= 2 * J,
+    % Finni zu Jonny: "Als du so alt warst, wie ich vor einem Jahr war, war Mert so alt, wie Hanna vor einem Jahr war."
+    J - D3 #= F - 1, M - D3 #= H - 1,
+    % Jonny zu Finni: "Wenn du so alt bist, wie Hanna, Mert und ich jetzt zusammen sind, wirst du dreimal so alt sein, wie Mert jetzt ist."
+    F + D4 #= H + M + J, F + D4 #= 3 * M,
+    solve_all(K ++ D) = Sols, println(Sols).
+/*  [[4,4,4,4,2,4,1,8]] - korrekt 
+Alle sind 4 Jahre alt:
+In 2 Jahren ist H so alt wie M, nämlich 6 Jahre = doppelt soviel wie J vor 1 Jahr!
+In 4 Jahren ist F=8=J+M und H doppelt so alt wie J jetzt!
+Vor 1 Jahr war J 3 Jahre alt, somit so alt wie F vor 1 Jahr; damals war M=3, also so alt wie H vor 1 Jahr!
+In 8 Jahren ist F 12 Jahre alt, somit so alte wie H+M+J jetzt sind; dann ist F 3x so alt wie M jetzt! */

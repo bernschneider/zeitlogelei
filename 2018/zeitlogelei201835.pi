@@ -1,0 +1,36 @@
+/* Zeit Logelei 2018/35 
+Professor Knusi ist zu Besuch in Zulu-Bulu. 
+Dort gibt es Zulus, die immer die Wahrheit sagen, 
+und Bulus, die immer lügen. 
+Auf die Frage, wer Zulu und wer Bulu ist, erhält er folgende Antworten:
+Achtullu sitzt nur da und grinst Knusi an. Können Sie aus den Antworten schließen, wer von den neun nun Zulu und wer Bulu ist? */
+import cp.
+
+main => % P0=Nullu, P1= Einsu usw.
+    ZB = [P0,P1,P2,P3,P4,P5,P6,P7,P8], ZB :: 0..1, 	1 = Zulu, 0 = Bulu,
+    % Nullu: "Wenn Achtullu ein Zulu ist, dann ist Zwullu ein Bulu.":
+    P0 #<=> ((P8 #= Zulu) #=> (P2 #= Bulu)),
+    % Einsu: "Wenn Sibullu ein Zulu ist, dann ist Drullu ein Bulu.":
+    P1 #<=> ((P7 #= Zulu) #=> (P3 #= Bulu)),
+    % Zwullu: "Wenn Drullu ein Zulu ist, dann ist Einsu ein Bulu.":
+    P2 #<=> ((P3 #= Zulu) #=> (P1 #= Bulu)),
+    % Drullu: "Wenn Achtullu ein Zulu ist, dann ist Sibullu ein Bulu.":
+    P3 #<=> ((P8 #= Zulu) #=> (P7 #= Bulu)),
+    % Virullu: "Wenn Nullu ein Zulu ist, dann ist Seksullu ein Bulu.":
+    P4 #<=> ((P0 #= Zulu) #=> (P6 #= Bulu)),
+    % Fnüllu: "Wenn Achtullu ein Zulu ist, dann ist Einsu ein Bulu."
+    P5 #<=> ((P8 #= Zulu) #=> (P1 #= Bulu)),
+    % Seksullu: "Wenn Fnüllu ein Zulu ist, dann ist Nullu ein Bulu."
+    P6 #<=> ((P5 #= Zulu) #=> (P0 #= Bulu)),
+    % Sibullu: "Wenn Zwullu ein Zulu ist, dann ist Drullu ein Bulu.":
+    P7 #<=> ((P2 #= Zulu) #=> (P3 #= Bulu)),
+    solve_all(ZB) = Sols, println(Sols),
+    solve(ZB),
+    foreach(I in 0..8)
+        if ZB[1+I]=Bulu then printf("P%d ",I) end
+    end,
+    print("ist Bulu, der Rest ist Zulu.").
+/*  P0 1 2 3 4 5 6 7 8
+   [[0,1,1,0,1,0,1,1,1]]
+P0 P3 P5 ist Bulu, der Rest ist Zulu. korrekt:
+Nullu, Drullu und Fnüllus sind Bulus, alle anderen Zulus */

@@ -1,0 +1,52 @@
+/* Zeit Logelei 2019/39 (nachJanko Zeltlager)
+https://www.zeit.de/2019/39/spiele-logelei-39 */
+import cp, util.
+main =>	
+    V = -1, % Feld ist nicht erlaubt
+    B = {{V,V,1,0,V, V,V,V,V,V}, % 1=Baum
+		 {0,0,0,1,0, 1,V,V,1,0},
+		 {0,0,0,0,0, 0,0,1,0,1},
+		 {1,0,0,0,0, 0,0,0,0,0},
+		 {0,0,1,1,0, 1,0,0,0,V},
+		 {0,0,0,0,0, 0,0,1,0,V},
+		 {V,0,0,0,0, 0,1,0,0,V},
+		 {V,0,1,V,V, 0,0,V,V,V}},
+    MaxX = len(B), % Zeilenzahl
+    MaxY = len(B[1]), % Spaltenzahl
+	BL := [], % Erzeuge eine Liste mit den Baum-Koordinaten:
+	foreach(X in 1..MaxX, Y in 1..MaxY, B[X,Y]=1)
+	   BL := [(X,Y)|BL]
+	end, 
+	Max = len(BL),
+    ZX = new_list(Max), ZX :: 1..MaxX, % X-Koordinaten der Zelte
+    ZY = new_list(Max), ZY :: 1..MaxY, % Y-Koordinaten der Zelte
+    Zelte = zip(ZX,ZY), % println(zelte=Zelte),
+	foreach(I in 1.. Max)
+		  (X,Y) = BL[I], IX #= ZX[I], IY #= ZY[I],
+		  abs(X-IX) + abs(Y-IY) #= 1, % zu jedem Baum ist genau ein Zelt orthogonal benachbart
+          matrix_element(B, IX, IY, NotV), NotV #!= V % das Zelt steht nicht auf einem V-Feld!
+	end,
+	% Je zwei Zelte sind weder orthogonal noch diagonal benachbart:
+	foreach(I in 1..Max-1, J in I+1..Max)
+		IX #= ZX[I], IY #= ZY[I], JX #= ZX[J], JY #= ZY[J],
+		abs(IX-JX) #> 1 #\/ abs(IY-JY) #> 1
+    end,
+    solve_all(ZX ++ ZY) = Sols, println(sols=len(Sols)),
+    solve(ZX ++ ZY),
+    foreach(Z in 1..MaxX, S in 1..MaxY)
+		if B[Z,S]==1 then print("B|")
+        elseif B[Z,S]==V then print("-|") 
+		elseif membchk({Z,S},Zelte) then print("Z|") 
+		else print(" |") 
+		end,
+    	if S = MaxY then nl end
+    end, nl.
+/* sols = 1
+-|-|B|Z|-|-|-|-|-|-|
+ | | |B| |B|-|-|B|Z|
+Z| | |Z| |Z| |B| |B|
+B| | | | | | |Z| |Z|
+ |Z|B|B| |B| | | |-|
+ | | |Z| |Z| |B|Z|-|
+-| | | | | |B| | |-|
+-|Z|B|-|-| |Z|-|-|-| CPU time 0.026 seconds */    

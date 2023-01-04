@@ -1,0 +1,32 @@
+/* Zeit Logelei 2018/19
+Wer maximal drei Beine hat, lügt immer, alle anderen sagen die Wahrheit.
+Knusi schickt eine E-Mail an sechs Einwohner und fragt, wer denn nun wie viele Beine habe. 
+Wer hat wie viele Beine? */
+import cp.
+
+go =>
+    Beine = [Blq,Ffg,Grk,Mff,Zlp,Zsz], Beine :: 0..10, 	% Zahl der Beine, keine Lösung für 1..1000!
+    % Zlp: "Grk und Mff haben eine unterschiedliche Anzahl an Beinen."
+    (Zlp #> 3) #= (Grk #!= Mff),
+    % Grk: "Ffg und Zsz haben gleich viele Beine." 
+    (Grk #> 3) #= (Ffg #= Zsz),
+    % Zsz: "Mff hat acht Beine." 
+    (Zsz #> 3) #= (Mff #= 8),
+    % Blq: "Grk hat weniger Beine als Mff." 
+    (Blq #> 3) #= (Grk #< Mff),
+    % Grk: "Zsz hat fünf Beine." 
+    (Grk #> 3) #= (Zsz #= 5),
+    % Ffg: "Zlp hat doppelt so viele Beine wie Blq." 
+    (Ffg #> 3) #= (Zlp #= 2 * Blq),
+    % Blq: "Zusammen haben wir sechs weniger als 17 Beine." 
+    (Blq #> 3) #= (sum(Beine) #< 17),
+    % Zlp: "Grk hat vier Beine." 
+    (Zlp #> 3) #= (Grk #= 4),
+    % Zsz: "Zlp hat weniger als drei Beine." 
+    (Zsz #> 3) #= (Zlp #< 3),
+    % Grk: "Zlp hat gleich viele Beine wie Blq."
+    (Grk #> 3) #= (Zlp #= Blq),
+    solve_all(Beine) = Sols, println(Sols).
+    % Blq,Ffg,Grk,Mff,Zlp,Zsz
+    %[[0,  5,  8,  8,  0,  5]], also Blq und Zlp lügen
+    % Zsz und Ffg haben 5 Beine, Grk und Mff haben 8 Beine, und Zlp und Blq haben gar keine Beine

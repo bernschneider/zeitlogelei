@@ -1,0 +1,34 @@
+/* ZEIT Logelei 2019/41 Jolanda feiert */
+import cp.
+maxdist(Pz, X, Y, Dmax) =>
+    D #= abs(Pz[X] - Pz[Y]),
+    D #=< Dmax #\/ 8-Dmax #=< D.
+
+mindist(Pz, X, Y, Dmax) =>
+    D #= abs(Pz[X] - Pz[Y]), 
+    D #>= Dmax, D #=< 8-Dmax.
+
+main =>
+    Jo=1, An=2, Fr=3, Ti=4, To=5, Sa=6, Th=7, Le=8,
+    Maenner = [Fr, To, Th],
+    Platz = new_list(8), Platz :: 1..8, Platz[Jo] #= 1, % Person -> Platz
+    assignment(Person,Platz), % Platz -> Person
+    mindist(Platz, Fr, An, 2), % Anna: "Frank hat so spitze Ellenbogen, der soll nicht neben mir sitzen." 
+    mindist(Platz, Ti, To, 2),  % Frank: "Wenn Tina und Torsten nebeneinandersitzen, dann lachen die zu laut." 
+    % Sabine: "Da ich schon lange Single bin, möchte ich neben zwei Männern sitzen.":
+    PSl #= (Platz[Sa] mod 8) + 1, element(PSl, Person, Links),  Links :: Maenner,
+    PSr #= Platz[Sa] - 1,         element(PSr, Person, Rechts), Rechts :: Maenner,
+    Platz[Th] #= 2 #\/ Platz[Th] #= 8, % Thomas: "Ich möchte mal wieder neben dir, Jolanda, sitzen." 
+    Platz[Ti] + 1 #= Platz[Fr] #\/ Platz[Ti] - 1 #= Platz[Le], % Tina: "Ich möchte links von mir Frank sitzen haben, dann kann ich dessen Ohrring gebührend bewundern, oder rechts von mir Lena, die hat so ein tolles Tattoo auf ihrem linken Arm." 
+    maxdist(Platz, To, Ti, 2), % Torsten: "Ich möchte mit Tina reden können. Tina soll also neben mir sitzen, oder zumindest soll nur eine Person zwischen uns sitzen."
+    mindist(Platz, Le, An, 3),  % Lena: "Damit ich Annas Parfum nicht riechen muss, sollen mindestens zwei Personen zwischen uns sitzen." */
+    solve(Platz ++ Person),
+    Name = ["Jola", "Anna", "Frank", "Tina", "Tors", "Sabi", "Thom", "Lena"],
+    foreach(Line in [[0,1,2,0], [8,0,0,3], [7,0,0,4], [0,6,5,0]])
+        foreach(P in Line) printf("%s ", cond(P=0, "    ", Name[Person[P]])) end, nl
+    end.
+/* ZEIT: Im Uhrzeigersinn: Jolanda, Thomas, Sabine, Torsten, Anna, Tina, Frank, Lena
+     Jola Thom      
+Lena           Sabi 
+Frank          Tors 
+     Tina Anna        korrekt! */
