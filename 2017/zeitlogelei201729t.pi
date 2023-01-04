@@ -1,0 +1,26 @@
+% Zeit Logelei 2017/29
+
+import cp, util.
+main =>
+	%     1 2 3 4 5 6 7 8 9 10 Wieviele sagen die Wahrheit?
+	C = {{0,0,0,0,1,0,0,0,0,0}, % A
+	     {1,1,1,1,1,0,1,1,1,1}, % B
+	     {0,0,1,1,1,1,1,1,1,1}, % Zehx
+	     {0,0,0,0,0,0,0,1,1,1}, % D
+	     {0,0,0,0,0,0,0,0,0,1}, % E
+	     {1,1,1,1,0,0,0,0,0,0}, % F
+	     {1,0,0,0,0,0,0,0,0,0}, % G
+	     {1,1,1,1,1,1,0,0,0,0}, % H
+	     {1,1,1,1,1,1,1,1,1,1}, % I
+	     {0,0,0,0,1,1,1,1,1,1}},% J
+	W = new_list(12), W :: 0..1, % 1 = sagt die Wahrheit
+	Cr #= sum(W),
+	foreach(P in 1..len(C))
+		matrix_element(C, P, Cr, W[P])
+	end,
+	solve(W),
+	print(W).
+    /* [0,0,1,0,0,0,0,1,1,1,1,1] korrekt!
+    Es sind 12 Leute in der Gruppe. Zehx, Hax, Ichs, Jotsch und die beiden, 
+    die sich nicht geäußert haben, sagen die Wahrheit. Alle anderen lügen */
+	

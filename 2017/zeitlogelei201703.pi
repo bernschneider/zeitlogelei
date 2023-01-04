@@ -1,0 +1,61 @@
+/* Zeit Logelei 2017/ 03  */
+import sat. % muss sat sein, da cp zu lang dauert!
+main => go.
+
+go =>  
+   % Einzelsteine bekommen eine 0, die übrigen Steine eindeutige Nummmern:
+   Stein = {{ 0, 0, 1, 0, 2, 3, 3, 3},
+    	    { 0, 0, 1, 0, 2, 0, 0, 0},
+    	    { 4, 4, 4, 5, 0, 0, 6, 6},
+    	    { 7, 0, 8, 5, 9,10,14,14},
+    	    { 7,12, 8, 0, 9,10, 0, 0},
+    	    { 0,12, 0,13,13,11,11, 0},
+    	    {15,15, 0,16, 0,17, 0, 0},
+    	    { 0, 0, 0,16,16,17,18,18}},
+   N = 8, T = N * N // 4, % Es gibt T = 64 / 4 = 16 Tetrominos
+   M = new_array(N,N), Mvars = vars(M), Mvars :: 1..T, 
+   M[1,1] #= 1, M[1,8] #= 2, M[8,1] #= 15, M[8,8] #= 16, % bit of symmetry breaking, can be omitted
+   % Liegen zwei Nachbarn auf dem gleichen Stein, dann gehören sie zum gleichen Tetromino:
+   foreach(Z in 1..N, S in 1..N-1, Stein[Z,S] > 0, Stein[Z,S] = Stein[Z,S+1])
+   		M[Z,S] #= M[Z,S+1]
+   end,
+   foreach(Z in 1..N-1, S in 1..N, Stein[Z,S] > 0, Stein[Z,S] = Stein[Z+1,S])
+   		M[Z,S] #= M[Z+1,S]
+   end,
+   % Tetromino-Erkennung 1: Jedes Tetromino kommt 4x vor
+   foreach(F in 1..T)
+   		4 #= sum([(M[Z,S]#=F) : Z in 1..N, S in 1..N])
+   end,
+   % Tetromino-Erkennung 2: jeder hat einen Nachbarn
+   foreach(Z in 1..N, S in 1..N)
+   		0 #< sum([(M[Z1,S1] #= M[Z,S]): {Z1,S1} in [{Z-1,S},{Z,S-1},{Z,S+1},{Z+1,S}], Z1 > 0, Z1 =< N, S1 > 0, S1 =< N])
+   end,
+   % Tetromino-Erkennung 3: jeder 2er hat einen 3. Nachbarn
+   foreach(Z in 1..N, S in 1..N-1)
+   		M[Z,S] #= M[Z,S+1] #=> % horizontaler 2er
+   		0 #< sum([(M[Z1,S1] #= M[Z,S]): {Z1,S1} in [{Z-1,S},{Z-1,S+1},{Z,S-1},{Z,S+2},{Z+1,S},{Z+1,S+1}], Z1 > 0, Z1 =< N, S1 > 0, S1 =< N])
+   end,
+   foreach(Z in 1..N-1, S in 1..N)
+   		M[Z,S] #= M[Z+1,S] #=> % vertikaler 2er
+   		0 #< sum([(M[Z1,S1] #= M[Z,S]): {Z1,S1} in [{Z-1,S},{Z,S-1},{Z,S+1},{Z+1,S-1},{Z+1,S+1},{Z+2,S}], Z1 > 0, Z1 =< N, S1 > 0, S1 =< N])
+   end, 
+   % Das reicht: der 4. Stein dieses Tetrominos kann kein Einzelfeld sein, hängt also automatisch an den ersten drei Feldern
+   Vars = vars(M),
+   solve(Vars),
+   Color = "ABCDEFGHIJKLMNOP",
+   foreach(Z in 1..N) 
+      foreach(S in 1..N) 
+		   printf("%c ",Color[M[Z,S]])
+	  end, nl
+   end.
+/* 
+A A K K L B B B 
+A A K K L L L B 
+D D D E F I M M 
+G D E E F I M M 
+G G E F F I I J 
+O G C N N N N J 
+O O C H H P J J 
+O C C H H P P P 
+
+CPU time 4.267 seconds.	korrekt! */   

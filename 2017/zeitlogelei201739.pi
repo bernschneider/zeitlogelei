@@ -1,0 +1,77 @@
+/* Zeit Logelei 2017/39
+Vorlage: Janko Nurikabe
+Constraint connected: Jede Farbe hat einen Ankerpunkt mit Distanz 0.
+Von dort lassen sich alle Punkte dieser Farbe erreichen. Je Schritt erhöht sich die Distanz um 1.
+Farbe 1 -> Dist[1,R,C] 
+Farbe 2 -> Dist[2,R,C] usw. 
+*/
+import util.
+import sat. 
+
+go => 
+    M   = {{ _, _, _, _, _, _, _,  _,30},
+   		   { _, _, _, _, _, _, _,  _, _},	
+   		   { _, _, _, _, _, _, _, 20, _},	
+   		   { _, _, _, _, _,21, _,  _,40},	
+   		   { _, _, _, _, _, 0,22,  _, _},		% 0er Anker - hier muss Wasser die 2er-Inseln trennen!	
+   		   {60, _, _, _, _, _, _,  _, _},	
+   		   { _, _, _, _, _, _, _,  _, _},	
+   		   { _, _,61, _, _, _, _,140, _},	
+   		   { _, _, _, _, _, _, _,  _, _}},
+   N = len(M), MVars = array_matrix_to_list(M),
+   Colors = [0, 20,21,22, 30, 40, 60,61, 140], M :: Colors, % Wasser = 0, Insel != 0
+   % Eine Farbe F > 0 gibt es F // 10 mal:
+   foreach(F in Colors, F > 0)
+   		F // 10 #= sum([(M[Z,S]#=F): Z in 1..N, S in 1..N])
+   end, 
+   % Die Inseln dürfen einander nicht orthogonal berühren:
+   foreach(Z in 1..N, S in 1..N-1)
+   		(M[Z,S] #> 0 #/\ M[Z,S+1] #> 0) #=> M[Z,S] #= M[Z,S+1]
+   end, 
+   foreach(Z in 1..N-1, S in 1..N)
+   		(M[Z,S] #> 0 #/\ M[Z+1,S] #> 0) #=> M[Z,S] #= M[Z+1,S]
+   end, 
+   % Das Wasser darf nirgendwo eine Fläche der Größe 2x2 überdecken:
+   foreach(Z in 1..N-1, S in 1..N-1)
+   		sum([(M[Z1,S1] #= 0) : {Z1,S1} in [{Z,S},{Z,S+1}, {Z+1,S}, {Z+1,S+1}]]) #< 4
+   end,
+   % Alle Farben hängen zusammmen:
+   Dist = new_array(len(Colors), N, N), 
+   MaxDist = N * N // 2,
+   DistVars = vars(Dist), DistVars :: 0..MaxDist,
+   foreach(F in 1..len(Colors), R in 1..N, C in 1..N)
+	 if (ground(M[R,C]), M[R,C] = Colors[F]) then   
+	     Dist[F,R,C] #= 0 % Ankerpunkt
+	 else
+   	  	 M[R,C] #= Colors[F] #=> Dist[F,R,C] #= 1 +
+   	  	 min([ Dist[F,R1,C1] : (R1,C1) in [(R-1,C),(R,C-1),(R,C+1),(R+1,C)], R1 >= 1, R1 =< N, C1 >= 1, C1 =< N ]), 
+   		 M[R,C] #!= Colors[F] #=> Dist[F,R,C] #= MaxDist 
+     end
+   end,
+   solve(MVars ++ DistVars),
+   foreach(R in 1..N) 
+      foreach(C in 1..N) 
+		   if M[R,C] > 0 then printf("%2d|", M[R,C] // 10) else print(" ≈|") end
+	  end, nl
+   end.
+/*
+ 6| ≈| ≈| ≈| ≈| ≈| 3| 3| 3|
+ 6| ≈|14|14|14| ≈| ≈| ≈| ≈|
+ 6| ≈|14| ≈| ≈| ≈| 2| 2| ≈|
+ 6| ≈|14| ≈| 2| 2| ≈| ≈| 4|
+ 6| ≈|14| ≈| ≈| ≈| 2| ≈| 4|
+ 6| ≈|14|14|14| ≈| 2| ≈| 4|
+ ≈| ≈| ≈| ≈|14| ≈| ≈| ≈| 4|
+ 6| 6| 6| ≈|14|14|14|14| ≈|
+ 6| 6| 6| ≈| ≈| ≈| ≈| ≈| ≈|
+
+CPU time 10.464 seconds. korrekt!
+X#####XXX, 
+X#XXX####, 
+X#X###XX#, 
+X#X#XX##X, 
+X#X###X#X, 
+X#XXX#X#X, 
+####X###X, 
+XXX#XXXX#, 
+XXX###### laut ZEIT */   

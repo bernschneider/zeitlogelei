@@ -1,0 +1,61 @@
+/* Zeit Logelei 2016/44 */
+import util.
+import sat. 
+
+main => go.
+
+go =>  % 6 x 6
+   N = 6, R = 1, G = 2, B = 3, E = 4, % Rot Grün Blau gElb
+   M = new_array(N,N),
+   % Die Farben werden in 9 4er-Gruppen gemalt (9 * 4 = 6 * 6)
+   % Rot muss offensichtlich 3x vorkommen, die anderen Farben je 2x:
+   Fn = [10*R+1, 10*R+2, 10*R+3, 10*G+1, 10*G+2, 10*B+1, 10*B+2, 10*E+1, 10*E+2], 
+   MVars = array_matrix_to_list(M), MVars :: Fn, 
+   M[6,1] div 10 #= R, M[6,2] div 10 #= R, % die Mehrheiten der letzten Zeile sind nur so möglich
+   M[6,5] div 10 #= G, M[6,6] div 10 #= G, 
+   % Jede "Farbe" kommt 4x vor:
+   foreach(F in Fn)
+   		sum([(M[Z,S]#=F) : Z in 1..N, S in 1..N]) #= 4
+   end,
+   Mehrheit = { {R,G,0,G,R},
+    			{0,B,E,E,0},
+    			{0,0,0,0,0},
+    			{E,0,0,0,B},
+    			{0,0,G,0,0} },    			 
+   foreach(Z in 1..N-1, S in 1..N-1)
+   		Mehrheit[Z,S] #= Mf,
+   		if Mf > 0 then 
+   			% Die Mehrheitsfarbe kommt mindestens 2x vor:
+   			sum([(M[Z1,S1] div 10 #= Mf): Z1 in [Z,Z+1], Z1 > 0, Z1 =< N, S1 in [S,S+1], S1 > 0, S1 =< N]) #> 1,
+ 			% ... alle anderen Farben höchstens 1x:
+ 			foreach(F in Fn, F div 10 != Mf)
+   				sum([(M[Z1,S1] #= F): Z1 in [Z,Z+1], Z1 > 0, Z1 =< N, S1 in [S,S+1], S1 > 0, S1 =< N]) #=< 1			
+   			end
+ 		end
+   end,
+   % Berechne Nb, die Zahl der Nachbarn gleicher Farbe: 
+   Nb = new_array(N,N), Nb :: 0..3,
+   foreach(Z in 1..N, S in 1..N)
+   		F #= M[Z,S],
+   		Nb[Z,S] #= sum([(M[Z1,S1] #= F): {Z1,S1} in [{Z-1,S},{Z,S-1},{Z,S+1},{Z+1,S}], Z1 > 0, Z1 =< N, S1 > 0, S1 =< N])
+   end,
+   % Zusammenhängend (Spezial-Trick): 2er-Gruppen haben je 1 Nachbar, 2 2er-Gruppen in der Summe also 4 Nachbarn
+   % Constraint: Für jede Farbe ist die Summe der Zahl der Nachbarn größer als 4
+   foreach(F in Fn)
+   		sum([Nb[Z,S] * (M[Z,S]#=F): Z in 1..N, S in 1..N]) #> 4
+   end,
+   solve(MVars),
+   Code = "RGBE",
+   foreach(Z in 1..N) 
+      foreach(S in 1..N) 
+		   printf("%c ",Code[M[Z,S] div 10])
+	  end, nl
+   end.
+	/* Rot Grün Blau gElb:
+	R R G G G R 
+	R B G E R R 
+	R B B E E R 
+	E E B E B B 
+	R E E G B B 
+	R R R G G G 
+	CPU time 4.247 seconds. korrekt!*/   

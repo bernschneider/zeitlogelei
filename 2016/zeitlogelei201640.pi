@@ -1,0 +1,70 @@
+/* Zeit Logelei 2016/40 Labyrinth */
+import util, sat.
+main => 
+   Max :: 15..50,
+   Nr= {{ 0,12, 0, 0, 0,13, 0,14, 0,15, 0},
+  		  {11, 0, 0, 0, 4, 0,13, 0, 0, 0,15},
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0,14, 0},
+        { 5, 0, 0, 0, 0, 0, 3, 0,10, 0, 0},
+        { 0, 0, 0, 6, 0, 0, 0, 9, 0,14, 0},
+        { 7, 0, 0, 0, 7, 0, 0, 0,10, 0,14},
+        { 0, 8, 0, 8, 0, 0, 0,11, 0,13, 0},
+        { 0, 0, 4, 0, 0, 0, 0, 0,12, 0,13},
+        { 0, 1, 0, 0, 0, 2, 0, 3, 0, 0, 0},
+        { 0, 0, 0, 0, 0, 0, 4, 0,11, 0,12}, 
+        { 0, 6, 0, 2, 0, 0, 0, 0, 0, 0, 0}}, N = len(Nr),
+   M = new_array(N,N), M :: 0..15,
+   foreach(R in 1..N, C in 1..N)
+      M[R,C] #=< Max,
+      if (R + C) mod 2 = 0 then M[R,C] #= 0 end
+   end,
+   Rs = new_array(50), Rs :: 1..N, Cs = new_array(50), Cs :: 1..N, Vals = new_array(50), Vals :: 0..15, 
+   MVars = array_matrix_to_list(M) ++  Rs ++ Cs ++ Vals,
+   Rs[1]  #= 9,  Cs[1] #= 2,  Vals[1]  #= 1, 
+   element(Max, Rs, 2), element(Max, Cs, 11), element(Max, Vals, 15), 
+   foreach(Step in 1..50)
+         R #= Rs[Step], C #= Cs[Step], matrix_element(M,R,C,V), V #= Vals[Step],
+         Step #> Max #=> (R0 #= 1 #/\ C0 #= 1 #/\ R1 #= 1 #/\ C1 #= 1 #/\ Vals[Step] #= 0)
+   end,
+   foreach(Step in 1..49)
+         R0 #= Rs[Step], C0 #= Cs[Step], R1 #= Rs[Step+1], C1 #= Cs[Step+1],
+   		% erlaubter Schritt:
+         Step #>= Max #\/
+		   ( R0 mod 2 #= 1 #/\ R0 #= R1 #/\ abs(C1-C0) #= 2 ) #\/ % waagrecht	
+   		( R0 mod 2 #= 0 #/\ C0 #= C1 #/\ abs(R1-R0) #= 2 ) #\/ % senkrecht
+   		( abs(C1-C0) #= 1 #/\ abs(R1-R0) #= 1 ),			   % diagonal
+         if Step < 49 then
+            R2 #= Rs[Step+2], C2 #= Cs[Step+2],
+            Step #< Max-1 #=> (R0 #!= R2 #\/ C2 #!= C0), % nicht rückwärts laufen	
+            (Step #< Max-1 #/\ R0 mod 2 #= 0 #/\ C0 #!= C1 #/\ R0 #!= R1) #=> (C1 #< C0 #<=> C2 #< C0), % wenn diagonal, ..
+            (Step #< Max-1 #/\ C0 mod 2 #= 0 #/\ C0 #!= C1 #/\ R0 #!= R1) #=> (R1 #< R0 #<=> R2 #< R0)  % .. dann in der gleichen Richtung weiter
+         end,	
+   		% Vals sind aufsteigend:
+         V0 #= Vals[Step], V1 #= Vals[Step+1], V0 + Delta #= V1,
+         matrix_element(Nr,R1,C1,VNr),
+         Step #< Max #=> Delta :: 0..1, 
+         Step #< Max #=> (VNr #> 0 #<=> Delta #= 1),
+         Step #< Max #=> (Delta #= 1 #<=> V1 #= VNr)
+   end,
+   count(0, array_matrix_to_list(M), Zeros), % setze nicht benötige Werte auf 0!
+   solve([$max(Zeros)], [Max|MVars]), println(max=Max), % solve([$min(Max), $max(Zeros)], 
+   % foreach(Step in 1..Max) printf("%d %d %d%n", Rs[Step], Cs[Step], M[Rs[Step], Cs[Step]]) end,
+   foreach(R in 1..N)
+      	foreach(C in 1..N) 
+           Inc = cond(Nr[R,C]>0, '*', ' '), if M[R,C]>0 then printf("%2i%c",M[R,C], Inc) 
+           elseif R mod 2 = 0, C mod 2 = 0 then print(" []") else print("   ") end
+	    end, nl
+	end.
+/* max = 35
+          4                      
+    [] 4  [] 4* []    []    []15*
+    4     8     3                
+ 5* [] 8  [] 8  [] 3* []    []14 
+    5     6*    8     9*         
+    [] 8  [] 7* [] 2  []10* []14*
+          8*   11    11*         
+    []    []11  [] 2  []    []13*
+    1*    1     2*               
+    []    []11  []    []    []12*
+               11    11    11     
+CPU time 63.51 seconds korrekt */   

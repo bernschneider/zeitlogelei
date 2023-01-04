@@ -1,0 +1,35 @@
+/* Zeit Logelei 2017/37 */
+import cp. 
+main =>
+	Anna = 1, Sebastian = 2, Marie = 3, Hartmut = 4,
+	Trompete = 1, Geige = 2, Gitarre = 3, Harfe = 4,     % sortiert nach Zahl der Saiten!
+	Dresden = 1, Hannover = 2, Ulm = 3, Wesel = 4,
+	Instrument = new_list(4), Instrument :: 1..4,        all_different(Instrument), assignment(Instrument, Spieler),
+	Ort = new_list(4),        Ort :: 1..4,               all_different(Ort),        assignment(Ort, Musiker_aus), 
+	Alter = new_list(4),      Alter :: [27, 36, 38, 45], all_different(Alter),
+
+	Instrument[Sebastian] #!= Trompete, 				 % Sebastian spielt nicht Trompete
+	Alter[Anna] #!= 36,  								 % Anna-Maria ist weder 36,
+	Ort[Anna] #!= Dresden,								 % .. noch wohnt sie in Dresden.
+	Instrument[Anna] #> InstrumentHannover, 			 % Ihr Instrument hat mehr Saiten als das Instrument des Musikers aus Hannover
+	element(Musiker_aus[Hannover], Instrument, InstrumentHannover), 
+	Alter[Marie] #= 38, Instrument[Marie] #!= Trompete,  % Marie-Luise, 38, spielt nicht Trompete
+	element(Musiker_aus[Ulm], Instrument, Harfe), 		 % Der Musiker aus Ulm spielt Harfe
+	Musiker_aus[Wesel] #!= Hartmut,  					 % bei dem Musiker aus Wesel handelt es sich nicht um Hartmut
+	AlterWesel #= AlterGitarrist - 9,					 % der Musiker aus Wesel ist 9 Jahre jünger als der, der Gitarre spielt
+	element(Musiker_aus[Wesel], Alter, AlterWesel), element(Spieler[Gitarre], Alter, AlterGitarrist),
+
+	Vars = Instrument ++ Ort ++ Alter ++ Musiker_aus ++ Spieler,
+	solve_all(Vars) = Sols,								 % nur eine Lösung :-)
+	println(Sols),
+	solve(Vars),
+	_Name       =  ["Anna:    ", "Sebastian:", "Marie:   ", "Hartmut: "],
+	_Instrument = ["Trompete", "Geige   ", "Gitarre ", "Harfe   "],
+	_Ort        = ["Dresden", "Hannover", "Ulm", "Wesel"],
+	foreach(I in 1..4) printf("%s\t%s\t%d\t%s\n", _Name[I], _Instrument[Instrument[I]], Alter[I], _Ort[Ort[I]]) end.
+/*
+Anna:    	Geige   	27	Wesel
+Sebastian:	Gitarre 	36	Dresden
+Marie:   	Harfe   	38	Ulm
+Hartmut: 	Trompete	45	Hannover
+CPU time 0.0 seconds. korrekt! */

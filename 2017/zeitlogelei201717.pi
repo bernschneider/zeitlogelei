@@ -1,0 +1,48 @@
+/* Zeit Logelei 2017/17
+Die Zilsianerinnen Evelyn, Ulrike und Nadine mögen unterschiedliche Zahlen und Farben. 
+Jede mag genau eine der Zahlen 1, 2, 3 sowie genau eine der Farben Pink, Beige, Purpur, 
+aber jeweils die anderen Zahlen und Farben nicht. 
+In Zilsianien ist es üblich, dass man entweder immer lügt oder immer die Wahrheit sagt. 
+Wer mag welche Farbe und welche Zahl? Und wer lügt und wer nicht? */
+import cp.
+
+go =>
+   Ws = [WE, WU, WN], Ws :: 0..1, 	% 1 = sagt die Wahrheit - jeweils für Evelyn, Ulrike, Nadine
+   Ns = [NE, NU, NN], Ns :: 1..3, 	% Number Evelyn, Number Ulrike, Number Nadine
+   Cs = [CE,  _, CN], Cs :: 1..3,   % Color Evelyn, Color Ulrike, Color Nadine
+   assignment(Ns, Nr), assignment(Cs, Cr),  
+   Vars = Ws ++ Ns ++ Cs ++ Nr ++ Cr, Pink=1, Beige=2, Purpur=3,
+                                                       									 % Prüfe das Ergebnis:
+   % Evelyn: "Wenn die von uns, die die 3 mag, Purpur nicht mag, mag Nadine die 2 nicht.": NE=3,CE=Pink,NN=1 -> WE=1
+   element(Nr[3], Cs, C3), 
+   WE #= ( C3 #!= Purpur #=> NN #!= 2 ),  
+   
+   % Ulrike: "Wenn Evelyn keine 1 mag, mag ich die 2.":                                    NE=3, NU=2 -> WU=1
+   WU #= ( NE #!= 1 #=> NU #= 2 ),
+   
+   % Nadine: "Wenn die von uns, die Pink mag, auch die 3 mag, mag Evelyn Beige.":          CE=Pink, NE=3, CE=Pink -> WN=0
+   element(Cr[Pink], Ns, NPink), 
+   WN #= ( NPink #= 3 #=> CE #= Beige ),
+   
+   % Evelyn: "Wenn Ulrike die 2 mag, mag Nadine kein Purpur.":                             NU=2, CN=Beige -> WE=1
+   WE #= ( NU #= 2 #=> CN #!= Purpur ),
+   
+   % Ulrike: "Wenn Evelyn Purpur mag, mag sie die 1 nicht.":                               CE=Pink, NE=3 -> WU=1
+   WU #= ( CE #= Purpur #=> NE #!= 1 ),
+   
+   % Nadine: "Wenn Evelyn keine 2 mag, mag ich Purpur."                                    NE=3, CN=Beige -> WN=0
+   WN #= ( NE #!= 2 #=> CN #= Purpur ),
+   
+   solve(Vars),
+   print("W: "), println(Ws),
+   print("N: "), println(Ns),
+   print("C: "), print(Cs), Color = [pink, beige, purpur], foreach(I in 1..3) printf("%w,", Color[Cs[I]]) end, nl.
+/*  E U N (E_velyn, U_lrike, N_adine)
+W: [1,1,0] -> WE=1, WU=1, WN=0 -> Nadine lügt, die beiden anderen sagen die Wahrheit
+N: [3,2,1] -> NE=3, NU=2, NN=1
+C: [1,3,2]pink,purpur,beige -> CE=Pink, CU=Purpur, CN=Beige -> korrekt:
+"Evelyn sagt die Wahrheit, mag die 3 und Pink, Ulrike sagt die Wahrheit, mag die 2 und Purpur, Nadine lügt und mag die 1 und Beige"
+... und ist eindeutig:
+   solve_all(Vars) = Sols,
+   print(len(Sols)). % -> 1
+*/

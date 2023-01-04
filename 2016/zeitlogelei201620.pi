@@ -1,0 +1,61 @@
+/*
+Zeit Logelei 2016/20
+Pyramidoku
+*/
+import util.
+import cp.
+
+main => go.
+
+go =>  
+   M   = new_array(9,9),
+   M :: 0..9,
+   foreach(R in 1..9, C in 1..9)
+   		if C=<R then M[R,C] #> 0 else M[R,C] #=0 end % fill right triangle with zeros
+   end,
+   foreach(Row in M.rows())
+   		all_different_except_0(Row)  % row
+   end,
+   foreach(Col in M.columns())
+   		all_different_except_0(Col) % top-right to bottom-left diagonal
+   end,
+   foreach(I in 1..8)
+   		all_different([ M[R,R-I+1] : R in I..9 ]) % top-left to bottom-right diagonal
+   end,
+   Sum = {{13},
+   		  {15},
+   		  {0,7,0,16},
+   		  {0,0,13},
+   		  {23,24,0,0,0,0,7},
+   		  {21,0,0,0,10,0,0,15},
+   		  {0,0,0,0,0,0,0,23},
+   		  {0,0,20,0,0,0,0,0,13,0,0,0,0,24,19}},
+   % Sum hat abwechselnd zwei Arten von Kreuzungen (oben 1 Feld/ unten 2 oder umgekehrt):
+   foreach(R in 1..len(Sum), I in 1..len(Sum[R]), Sum[R,I] > 0) 
+			C = I div 2,
+			if I mod 2 == 0 then					 % I gerade:   C | C+1	
+				Sum[R,I] #= M[R,C] + M[R,C+1] + M[R+1,C+1]    %     C+1
+				
+			else								   % I ungerade:    C+1
+				Sum[R,I] #= M[R,C+1] + M[R+1,C+1] + M[R+1,C+2]  % C+1|C+2
+			end
+   end,
+   solve(M),
+   foreach(R in 1..9) 
+      print(new_list(10-R,' ')), % produce leading blanks
+      foreach(C in 1..R) 
+		   printf("%d ",M[R,C])
+	  end, nl
+   end.
+/*
+         1 
+        9 3 
+       4 2 8 
+      2 1 6 5 
+     8 7 5 1 6 
+    6 9 1 2 4 7 
+   7 8 3 6 9 5 4 
+  3 5 2 4 8 6 7 9 
+ 5 6 9 7 1 4 3 8 2 
+Zeilenweise: 1, 93, 428, 2165, 87516, 691247, 7836954, 35248679, 569714382
+*/   

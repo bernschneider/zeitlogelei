@@ -1,0 +1,47 @@
+/* Zeit Logelei 2017/15 */
+import sat.
+main =>
+   Anz = 6, % Anzahl der Quadrate / Magic!
+   Hash = {{0,0,0,0,0, 0,0,1},
+   		   {0,0,0,0,8, 0,0,0},
+   		   {0,0,0,0,0, 0,0,0},
+   		   {0,0,0,0,0, 0,0,0},
+   		   {0,0,0,0,0,15,0,0},
+   		   {0,0,0,0,0, 0,0,0},
+   		   {0,0,0,8,6, 9,0,0},
+   		   {0,0,0,0,0, 0,0,0}}, N = len(Hash),
+   % Beschreibe die Quadrate durch ihre Eck-Koordinaten:
+   ZO  = new_array(Anz), % Zeile oben
+   SL  = new_array(Anz), % Spalte links
+   Len = new_array(Anz), % Seitenlänge
+   Vars = ZO ++ SL ++ Len, Vars :: 1..N+1, 
+   increasing(SL), % symmetry breaking
+   % Hash = Summe der Seitenlängen aller Quadrate, in denen sich Hash befindet:
+   foreach(Z in 1..N, S in 1..N, Hash[Z,S] > 0)
+   		Hash[Z,S] #= sum([ Len[Q] * (ZO[Q]#=<Z) * (Z#<ZO[Q]+Len[Q]) * (SL[Q]#=<S) * (S#<SL[Q]+Len[Q]) : Q in 1..Anz])
+   end,
+   % Keine Quadrate haben gemeinsame Ecken oder Kanten:
+   foreach(Q1 in 1..Anz, Q2 in 1..Anz, Q1!=Q2)
+   		(ZO[Q1] #= ZO[Q2] #\/ ZO[Q1]+Len[Q1] #= ZO[Q2]+Len[Q2]) % Quadrate auf gleicher Höhe überschneiden sich nicht:
+   			#=> (SL[Q1]+Len[Q1] #< SL[Q2] #\/ SL[Q2]+Len[Q2] #< SL[Q1]), 
+   		(SL[Q1] #= SL[Q2] #\/ SL[Q1]+Len[Q1] #= SL[Q2]+Len[Q2]) % Quadrate auf gleicher Breite überschneiden sich nicht:
+   			#=> (ZO[Q1]+Len[Q1] #< ZO[Q2] #\/ ZO[Q2]+Len[Q2] #< ZO[Q1])  
+   end,
+   solve(Vars),
+   foreach(Z in 1..N)
+   		foreach(S in 1..N)
+   			foreach(Q in 1..Anz)
+   				if ZO[Q] =< Z && Z < ZO[Q]+Len[Q] && SL[Q] =< S && S < SL[Q]+Len[Q] then print(Len[Q]) else print('.') end
+   			end, print('|')
+   		end, nl
+   end.
+/* (1. Stelle = Länge 1. Quadrat, 2. Stelle = Länge 2. Quadrat usw.)
+6.....|6.....|6.....|6.....|6.....|6.....|......|.....1|
+6.....|6.....|6.....|6..2..|6..2..|6.....|......|......|
+6.....|66....|66....|66.2..|66.2..|66....|.6....|......|
+6.....|66....|66....|66....|66....|66....|.6....|......|
+6.....|66....|66....|66....|66....|66..3.|.6..3.|....3.|
+6.....|66....|662...|662...|66....|66..3.|.6..3.|....3.|
+......|.6....|.62...|.62...|.6....|.6..3.|.6..3.|....3.|
+......|.6....|.6....|.6....|.6....|.6....|.6....|......|
+CPU time 2.078 seconds. korrekt! */

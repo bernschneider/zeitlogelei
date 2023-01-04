@@ -1,0 +1,128 @@
+/* Zeit Logelei 2017/ 31 
+   Hinweis: Andere Kreuzzahlrätsel werden gelöst, indem man die Zeilen 11-18 und 24-53 anpasst 
+   Die Startkoordinaten und Längen der Zahlen müssen nicht angegeben werden. Sie werden in waagrecht(..) bzw. senkrecht(...) aus den Buchstaben berechnet 
+   Für die Längenberechnung wird mit membchk nach dem nächsten Buchstaben in der Zeile bzw. Spalte gesucht, für den eine Cons-Regel existiert */
+import cp.
+import util.
+main => go.
+
+go =>
+   LM = {{a,b,c,d,e,f},
+		 {g,x,x,x,x,x},
+	     {h,x,i,j,k,x},
+	     {l,x,m,x,n,o},
+	     {p,x,q,r,x,x},
+	     {s,x,x,t,x,x}}, get_global_map().put(lm,LM),       
+   WLetter := [a,d,g,h,i,k,l,m,n,p,s,t], get_global_map().put(wl,WLetter), % alle Buchstaben mit waagrechter Bedingung
+   SLetter := [a,b,c,d,e,f,i,j,l,o,q,r], get_global_map().put(sl,SLetter), % alle Buchstaben mit senkrechter Bedingung
+   N = 6, ZAHL = 10, QSUM = 1, FWD = 1, % REV = 0, % cond arbeitet nicht mit Bool!
+   M = new_array(N,N),
+   MVars = array_matrix_to_list(M),
+   MVars :: 0..9,
+   % Waagrecht:
+   waagrecht(M,a,ZAHL,FWD,Aw), square(Aw),
+   waagrecht(M,d,ZAHL,FWD,Dw), square(Dw),
+   waagrecht(M,g,ZAHL,FWD,Gw), square(Gw), 
+   waagrecht(M,h,ZAHL,FWD,Hw), square(Hw),
+   waagrecht(M,i,ZAHL,FWD,Iw), square(Iw),
+   waagrecht(M,k,ZAHL,FWD,Kw), square(Kw),
+   waagrecht(M,l,ZAHL,FWD,Lw), square(Lw),
+   waagrecht(M,m,ZAHL,FWD,Mw), square(Mw),
+   waagrecht(M,n,ZAHL,FWD,Nw), square(Nw),
+   waagrecht(M,p,ZAHL,FWD,Pw), square(Pw),
+   waagrecht(M,s,ZAHL,FWD,Sw), square(Sw),
+   waagrecht(M,t,ZAHL,FWD,Tw), square(Tw),     
+   % Senkrecht:
+   senkrecht(M,a,ZAHL,FWD,As), multiple(Iw,As),
+   senkrecht(M,b,ZAHL,FWD,Bs), Bs #= Es + Gw,
+   senkrecht(M,c,QSUM,FWD,Is),
+   senkrecht(M,d,ZAHL,FWD,Ds), is_prime(Ds),
+   senkrecht(M,e,ZAHL,FWD,Es), Es #= Pw + Gw,
+   senkrecht(M,f,ZAHL,FWD,Fs), multiple(Rs,Fs),
+   senkrecht(M,i,ZAHL,FWD,Is), multiple(2,Is), % ist gerade
+   senkrecht(M,j,ZAHL,FWD,Js), Js #= Iw + Nw,
+   senkrecht(M,l,ZAHL,FWD,Ls), multiple(Is,Ls),
+   M[4,6] #= M[6,6], 			% Os ist palindrom
+   senkrecht(M,q,ZAHL,FWD,Qs), is_prime(Qs),
+   senkrecht(M,r,ZAHL,FWD,Rs), is_prime(Rs),
+   Vars = MVars,
+   solve(Vars),
+   foreach(I in 1..N) 
+      foreach(J in 1..N) 
+           printf("%d ", M[I,J])
+      end,
+      nl
+   end,
+   nl.
+   /*
+1 4 4 2 2 5 
+1 4 8 9 9 6 
+2 5 1 6 6 4 
+6 4 2 5 4 9 
+1 4 7 4 5 6 
+2 8 9 7 2 9 
+CPU time 0.03 seconds. korrekt!
+Waagerecht: A 144 D 225 G 148996 H 25 I 16 K 64 L 64 M 25 N 49 P 147456 S 289 T 729
+Senkrecht: A 112 B 445448 C 48 D 29 E 296452 F 564 I 12 J 65 L 612 O 969 Q 79 R 47 */
+
+multiple(A,X) => % X ist Vielfaches von A
+   X mod A #= 0.
+   
+is_prime(X) =>
+   Max = fd_max(X),
+   foreach(I in 2..Max // 2)
+      I #!= X #=> X mod I #> 0
+   end.
+
+square(X) => 	      % so klappt´s!
+   SQ = [I*I : I in 1..1000],
+   element(_,SQ,X).
+   /*Max = fd_max(X), % so funktioniert es leider nicht!
+   Tmp :: 0..Max,
+   X #= Tmp*Tmp.*/
+
+waagrecht(M,Letter,Base,Fwd,X) => % Base = 10/1 (1 = Quersumme), Fwd = FWD/REV (REV = Rückwert)
+		LM = get_global_map().get(lm), WLetter = get_global_map().get(wl),
+		N = len(LM), Row := 0, Col := 0, Len := 0,
+		foreach(R in 1..N)
+			foreach(C in 1..N)
+				if LM[R,C] = Letter then Row := R, Col := C end
+			end,
+			if Len == 0, Row  > 0 then 
+				foreach(Cn in Col+1..N)
+					if Len == 0, membchk(LM[R,Cn],WLetter) then Len := Cn - Col end
+				end,
+				if Len = 0 then Len := N+1-Col end 
+		    end 
+		end,
+	    Tmp = new_list(Len), Tmp :: 0..9,
+   		to_num(Tmp, Base, Fwd, X),
+   		foreach(I in 0..Len-1)
+     		 M[Row,Col+I] #= Tmp[I+1]
+   		end,
+		M[Row,Col] #!= 0.	
+
+senkrecht(M,Letter,Base,Fwd,X) => % Base = 10/1 (1 = Quersumme), Fwd = FWD/REV (REV = Rückwert)
+		LM = get_global_map().get(lm), SLetter = get_global_map().get(sl),        
+		N = len(LM), Row := 0, Col := 0, Len := 0,
+		foreach(C in 1..N)
+			foreach(R in 1..N)
+				if LM[R,C] = Letter then Row := R, Col := C end
+			end,
+			if Len == 0, Col > 0 then 
+				foreach(Rn in Row+1..N)
+					if Len == 0, membchk(LM[Rn,C],SLetter) then Len := Rn - Row end
+				end,
+				if Len = 0 then Len := N+1-Row end
+			end 
+		end,
+   		Tmp = new_list(Len), Tmp :: 0..9,
+   		to_num(Tmp, Base, Fwd, X),
+   		foreach(I in 0..Len-1)
+      		M[Row+I,Col] #= Tmp[I+1]
+   		end,
+		M[Row,Col] #!= 0.	
+   
+to_num(List, Base, Fwd, Num) => % Num = Wert der Liste
+        Len = length(List), 
+        Num #= cond(Fwd, sum([List[I]*Base**(Len-I) : I in 1..Len]), sum([List[I]*Base**(I-1) : I in 1..Len])).

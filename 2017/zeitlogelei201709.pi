@@ -1,0 +1,41 @@
+/* Zeit Logelei 2017/09 */
+import cp.
+main =>
+   M = new_array(5,2), An = 1, Aus = 2, % je zwei Zeitpunkte für die 5 Kerzen (An, Aus)
+   Ro=1, Gr=2, Bl=3, We=4, Ge=5,  Max = 2 * 5, 
+   M :: 1..Max, 
+   all_different(vars(M)),
+   foreach(F in 1..5)
+   		M[F,An] #=< 5, % erst alle Kerzen an
+   		M[F,Aus] #> 5  % ... dann aus
+   end,
+   
+   % Tim: "Ich möchte, dass die rote Kerze brennt, wenn die grüne nicht an ist." 
+   % Damit es eine Lösung gibt, verstehen wir das so: 
+   % "Die rote Kerze brennt noch, wenn die grüne ausgepustet wird":
+   M[Gr,Aus] #< M[Ro,Aus],
+   % Ina: "Die blaue Kerze sollte eine der ersten beiden sein, die angezündet werden." 
+   sum([(M[F,An] #< M[Bl,An]) : F in 1..5, F != Bl]) #=< 1,
+   % Mia: "Ich möchte, dass neben der weißen immer noch mindestens eine andere Kerze an ist, wenn sie brennt." 
+   foreach(T in 1..Max)
+   		(M[We,An] #=< T #/\ T #< M[We,Aus]) #=>  sum([(M[F,An] #=< T #/\ T #< M[F,Aus]) : F in 1..5, F != We]) #> 0
+   end,
+   % Mark: "Die gelbe Kerze sollte vor der blauen angezündet als auch ausgepustet werden."  
+   M[Ge,An] #< M[Bl,An], M[Ge,Aus] #< M[Bl,Aus], 
+   % Nina: "Die rote Kerze soll länger an sein als die grüne." 
+   M[Ro,Aus] - M[Ro,An] #> M[Gr,Aus] - M[Gr,An],
+   % Pia: "Rot sollte vor Weiß ausgepustet werden." 
+   M[Ro,Aus] #< M[We,Aus],
+   % Miriam: "Grün sollte vor Weiß und vor Rot angezündet werden." 
+   M[Gr,An] #< M[We,An],  M[Gr,An] #< M[Ro,An], 
+   solve_all(M) = Sols,
+   println("  Rot   Grün  Blau  Weiss  Gelb"), 
+   foreach(Sol in Sols)
+   		println(Sol)
+   end.
+   /* Je Farbe Zeitpunkt {an,aus}: 
+     Rot   Grün  Blau  Weiss  Gelb
+   {{4,8},{3,6},{2,10},{5,9},{1,7}} korrekt
+   ZEIT: Angezündet werden die Kerzen in der Reihenfolge Gelb, Blau, Grün, Rot, Weiß. 
+	     Ausgepustet in der Reihenfolge Grün, Gelb, Rot, Weiß, Blau */
+

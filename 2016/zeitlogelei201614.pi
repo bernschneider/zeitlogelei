@@ -1,0 +1,23 @@
+/* Zeit Logelei 2016/14 */
+import cp.
+
+main =>
+   LN = new_list(6), LN :: 0..9,
+   to_num(LN, N),
+   N mod 4 	#=  0,
+   N mod 7 	#=  0,
+   N mod 11 #!= 0,
+   LN.reverse() #= LNrev,
+   to_num(LNrev, Nrev),      
+   Nrev mod 4 #= 0,
+   sum(LN) #= 32,
+   foreach(I in 0..9)
+   		exactly(0,LN,I);
+   		exactly(2,LN,I)
+   end,
+   solve(LN),
+   print(N). % 673736
+
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).

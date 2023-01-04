@@ -1,0 +1,35 @@
+/* Zeit Logelei 2017/21 Zahlenrätsel */
+import sat.
+
+/* 1. Diana zu Peter: "Ich hab mir eine Zahl ausgedacht: Die Zahl ist ungerade, und wenn 
+man von der Zahl 5 abzieht, das Ergebnis quadriert und wieder 3 dazuzählt, kommt wieder 
+genau meine Zahl raus!" Können Sie Peter helfen? */
+go1 =>		 
+  	Z :: 1..100,
+  	Z mod 2 #= 1,
+    (Z - 5) ** 2 + 3 #= Z,
+    solve([Z]),
+    println(Z). % 7 korrekt!
+
+/* 2. Andi: "Ich hab mir zwei Zahlen ausgedacht, für die gilt, dass das Produkt der beiden 
+Zahlen gleich der Summe der beiden Zahlen ist." 
+Pia: "2 und 2?" Andi: "Nein, keine ganzen Zahlen, und übrigens, die Differenz der beiden 
+Zahlen ist auch gleich dem Quotienten." 
+Pia: "Hmm. Da hab ich aber jetzt zwei Möglichkeiten, wie ich den Quotienten bilden kann. 
+Ich meine, teile ich die erste Zahl durch die zweite oder die zweite durch die erste?" 
+Andi: "Das kannst du selbst herausfinden. Noch ein anderer Tipp: 
+Die Zahlen sind beide positiv." Wie lauten sie? */
+go2 =>
+	N = -6.0 - 4 * sqrt(2), println(N),       % stellt (2) sicher - ermittelt als Lösung einer quadratischen Gleichung
+	A = 2 * N / (N + 2), B = 2 * N / (N - 2), % stellt (1) sicher für alle N (Beweis durch Umformung)
+	printf("A = %f B = %f%n", A,B),
+	printf("A*B = %f A+B = %f%n", A * B, A + B), % (1) A * B = A + B
+	printf("B/A = %f A-B = %f%n", B / A, A - B). % (2) B / A = A - B
+/*
+N = -11.65685424949238
+A = 2.414214 B = 1.707107
+A*B = 4.121320 A+B = 4.121320
+B/A = 0.707107 A-B = 0.707107
+korrekt: "1 plus Wurzel aus 2 und 1 plus Wurzel aus 1/2"
+ergibt    2.414213562373095   und 1.707106781186547
+*/

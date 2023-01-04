@@ -1,0 +1,34 @@
+/* Zeit Logelei 2016/08 */
+import util, cp.
+main =>
+   N = 6, Max = 4,   % 6 Zeilen x 6 Spalten, Ziffern von 0..4
+   SigZ = [1, 9, 4, 6, 0, 0], % Zeilensignatur
+   SigS = [0, 1, 9, 4, 6, 0], % Spaltensignatur
+   Board = new_array(N, N), Board.vars() :: 0..Max, Board[5, 6] #= 4, 
+   cool(N, Board, SigZ),
+   cool(N, Board.columns(), SigS),
+   solve(Board.vars()), print_board(N, Board).
+   /* 	4 2 X 1 X 3
+ 		1 X 4 3 2 X
+ 		X 1 3 X 4 2
+ 		3 X 2 4 X 1
+ 		2 3 X X 1 4
+ 		X 4 1 2 3 X  solved in 0.047 seconds korrekt!
+	ZEIT: 42#1#3, 1#432#, #13#42, 3#24#1, 23##14, #4123# */
+
+cool(N, Board, Sigs) =>
+   foreach(Z in 1..N)	
+   		L #= Board[Z], all_different_except_0(L), at_most(2, L, 0),
+		if Sigs[Z] > 0 then 
+			[Idx1, Idx2] :: 1..N,  Idx1 #< Idx2,  % Indices der 0er sind aufsteigend
+			element(Idx1, L, 0), element(Idx2, L, 0), % zeigen auf die 0
+    		sum([L[I] * (Idx1 #< I) * (I #< Idx2) : I in 1..N]) #= Sigs[Z]  % Summe zwischen den Blöcken
+		end 
+   end.	
+ 		
+print_board(N, Board) =>
+   foreach(I in 1..N, J in 1..N)
+      	 X = Board[I,J],
+      	 if X==0 then print(" X") else printf(" %1d", X) end,
+	     if J == N then nl end
+   end.

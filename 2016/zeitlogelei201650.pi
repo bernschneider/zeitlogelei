@@ -1,0 +1,25 @@
+/* Zeit Logelei 2016/50 Zahlenschloss
+*/
+import cp.
+main =>		 
+    Ns = new_list(8), Ns :: 1..9,
+    % In der gesuchten Zahl kommt jede Ziffer entweder mehrfach oder gar nicht vor:
+    foreach(Digit in 1..9)
+    	exactly(Cnt, Ns, Digit),
+    	Cnt #!= 1
+    end,
+	% Es stehen nie zwei gleiche Ziffern direkt hintereinander:
+    foreach(J in 1..7)
+    	Ns[J] #!= Ns[J+1]
+    end,
+    to_num(Ns, N), N mod 55 #= 0, N mod 25 #!= 0,
+    sum(Ns) #= 23,
+    
+    solve_all(Ns) = Sols,  
+    println(Sols).
+    /* [[2,5,2,5,1,2,1,5]] 
+    ZEIT: Tanja hat die Zahl 25251215 eingestellt */
+    
+    to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).

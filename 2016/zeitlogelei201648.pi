@@ -1,0 +1,28 @@
+/* Zeit Logelei 2016/48 Mobile 
+       |
+   *---*----*
+   |        |
+ *-*-*  *---*-*
+ |   |  |   | |
+ C   |  D   F E
+     | 
+   *-*--*
+   |    |
+   A    B
+*/
+import cp.
+main =>		 
+    W = [A, B, C, D, E, F], % weights
+	W :: [67, 134, 201, 268, 335, 402],
+	all_different(W),
+	3 * (A + B + C) #= 4 * (D + E + F),
+	1 * C #= 1 * (A + B),
+	1 * A #= 2 * B,
+	3 * D #= 1 * E,
+    solve_all(W) = Sols,  
+    println(Sols).
+    /*
+       A   B   C   D   E   F
+    [[268,134,402, 67,201,335]] 
+    korrekt!
+    */

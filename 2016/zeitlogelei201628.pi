@@ -1,0 +1,61 @@
+% ZEIT Logelei 2016/28
+import util.
+import cp.
+
+main => go.
+
+neib(1, X, Y) =>  % 1 = White circle 
+	1 #= abs(X - Y).
+	
+neib(2, X, Y) =>  % 2 = Black circle
+	2 * X #= Y #\/ 2 * Y #= X.
+	
+neib(0, X, Y) =>  % 0 = no circle
+	1 #!= abs(X - Y) #/\ 2 * X #!= Y #/\ 2 * Y #!= X.
+	
+go =>
+   N = 6, 
+   M = new_array(N,N),
+   MVars = array_matrix_to_list(M),
+   MVars :: 1..N,
+   foreach(Z in 1..N) 
+   		all_different( [M[Z,S] : S in 1..N] )
+   end,
+   foreach(S in 1..N) 
+   		all_different( [M[Z,S] : Z in 1..N] )
+   end,
+   W = 1, B = 2, % White circle = 1, Black circle = 2, no circle = 0
+   HN = {{B,0,B,0,0}, % Horizontal Neighbours
+   		 {0,B,0,0,B},
+   		 {B,W,B,W,W},
+   		 {W,0,0,W,0},
+   		 {B,0,W,W,B},
+   		 {0,W,0,W,0}},
+   foreach(Z in 1..N, S in 1..N-1)
+   		neib(HN[Z,S], M[Z,S], M[Z,S+1])
+   end,
+   VN = {{0,B,0,0,0,0}, % Vertical Neighbours (row-wise)
+   		 {0,W,B,0,W,B},
+   		 {0,0,0,B,0,0},
+   		 {B,0,0,0,0,B},
+   		 {0,0,W,0,B,0}},
+   foreach(Z in 1..N-1, S in 1..N)
+   		neib(VN[Z,S], M[Z,S], M[Z+1,S])
+   end,
+   solve_all(MVars) = Sols, 
+   println(number_solutions = len(Sols)), 
+   solve(MVars),
+   foreach(Z in 1..N) 
+      foreach(S in 1..N) 
+           printf(" %i", M[Z,S])
+	  end, nl
+   end.
+/* number_solutions = 1
+ 3 6 2 4 1 5
+ 5 3 6 1 4 2
+ 1 2 3 6 5 4
+ 4 5 1 3 2 6
+ 2 1 4 5 6 3
+ 6 4 5 2 3 1
+ ZEIT: 362415, 536142, 123654, 451326, 214563, 645231
+*/

@@ -1,0 +1,20 @@
+/* Zeit Logelei 2017/ 33 */
+import sat.
+
+go =>
+   N = 8, 							 % Die Zahl ist achtstellig ..
+   L = new_list(N),
+   L :: 0..9, 						 % .. mit Ziffern von 0 bis 9 an jeder Stelle.
+   to_num(L, Val),
+   Val mod 2  #= 1, Val mod 3  #= 1, % Wenn man sie durch 2 oder durch 3 teilt, bleibt ein Rest von 1 übrig
+   Val mod 11 #= 8, Val mod 13 #= 8, % wenn man sie durch 11 oder 13 teilt, ist der Rest 8.
+   sum(L) #= prod(L),  				 % Die Quersumme ist gleich dem Querprodukt.
+   solve_all(L) = Sols,
+   print(Sols).
+   /* [[1,8,1,2,1,1,1,1]]
+      CPU time 0.929 seconds. 
+      ZEIT: 18121111 */
+   
+to_num(List, Num) => % Num = Wert der Liste
+        Len = length(List), 
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).

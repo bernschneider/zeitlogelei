@@ -1,0 +1,48 @@
+/* Zeit Logelei 2017/11 
+Zahlenrätsel */
+import cp, util.
+
+go =>
+   N = 7, Max = 6,   % 7 Zeilen x 7 Spalten, Ziffern von 0..6
+   SigZ = [ [16,4], [17,4], [5,13], [10,2], [9,12], [10,5], [2,14] ], % Zeilensignatur, 0 = ?
+   SigS = [ [10,8], [12,5], [9,11], [12,4], [2,19], [5,10], [5,5,6]], % Spaltensignatur
+   Board = new_array(N+1,N+1), Board[N+1,N+1] #= 0,	% End-0er angefügt für die Blockbildung
+   foreach(I in 1..N) Board[I,N+1] #= 0, Board[N+1,I] #= 0 end,  
+   Boardvars = array_matrix_to_list(Board), Boardvars :: 0..Max,  
+   foreach(Row in rows(Board)) all_different_except_0(Row) end,
+   foreach(Col in columns(Board)) all_different_except_0(Col) end,
+   foreach(Z in 1..N)   signature(N, Max, L, SigZ[Z]), L #= [Board[Z,S] : S in 1..N+1] end,
+   foreach(S in 1..N-1) signature(N, Max, L, SigS[S]), L #= [Board[Z,S] : Z in 1..N+1] end,
+   solve([ff,down], Boardvars), print_board(N, Board),
+   solve_all([ff,down], Boardvars) = Sols, print(numbersols = len(Sols)).
+/*	
+ 0 6 5 3 2 0 4
+ 6 5 4 2 0 3 1
+ 4 1 0 6 5 2 0
+ 0 0 3 1 6 0 2
+ 1 2 6 0 4 5 3
+ 5 3 2 0 1 4 0
+ 2 0 0 4 3 1 6
+numbersols = 1
+CPU time 0.881 seconds. 
+#6532#4, 6542#31, 41#652#, ##316#2, 126#453, 532#14#, 2##4316 */
+
+signature(N, Max, L, Sig) =>     % berechnet L aus Sig! Kein solve(Idx) nötig!
+	L = new_list(N+1), L :: 0..Max, L[N+1] #= 0,
+	Len = len(Sig), Idx = new_list(Len+1), Idx :: 0..N+1,       % Indices der End-0er
+	foreach(J in 1..Len)
+    	I0 #= Idx[J], I1 #= Idx[J+1], I0 #< I1, I1 #> 1,
+    	element(I1,L,0),        								% I1 zeigt auf eine 0
+    	sum([ L[I] * (I0 #< I) * (I #< I1) : I in 1..N]) #= S,  % berechne die Teilsumme S
+    	S #> 0, if Sig[J] > 0 then S #= Sig[J] end				% S>0 und ggfs. die Zahl in der Signatur!
+    end,
+    % Vor dem ersten Index stehen nur 0er:
+    foreach(I in 1..N) (Idx[1] #< I) #\/ (L[I] #= 0) end,
+    % 0er hinter Nicht-0ern müssen ein Index sein (dürfen nicht sonstwo stehen): > 1 5 >0 0 0 3 4 >0
+    foreach(I in 2..N+1) (L[I] #= 0  #/\ L[I-1] #> 0) #=> sum([(Idx[J] #= I) : J in 1..Len+1]) #> 0 end.
+    
+print_board(N, Board) =>
+   foreach(I in 1..N, J in 1..N)
+      printf(" %1d", Board[I,J]),
+      if J = N then nl end
+   end.

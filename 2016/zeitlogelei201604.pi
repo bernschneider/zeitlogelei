@@ -1,0 +1,67 @@
+/* Zeit Logelei 2016/04 
+Tragen Sie in jede Zeile und jede Spalte die sieben Töne der jeweiligen Tonleiter ein. 
+Zur Erinnerung noch mal die Töne der jeweiligen Tonleitern:
+C-Dur: C, D, E, F, G, A, H;
+D-Dur: D, E, Fis, G, A, H, Cis;
+E-Dur: E, Fis, Gis, A, H, Cis, Dis;
+F-Dur: F, G, A, B, C, D, E;
+G-Dur: G, A, H, C, D, E, Fis;
+A-Dur: A, H, Cis, D, E, Fis, Gis;
+H-Dur: H, Cis, Dis, E, Fis, Gis, Ais
+Zu beachten ist noch, dass bei temperierter Stimmung die Töne Ais und B gleich klingen. */
+import cp.
+import util.
+main => go.
+go =>
+   A=1, B=2, C=3, Cis=4, D=5, Dis=6, E=7, F=8, Fis=9, G=10, Gis=11, H=12,
+   M = {{G,_,_,_,_,  _,  _  },
+    	{_,_,_,A,_,  _,  _  },
+    	{_,_,_,_,H,  _,  Cis},
+    	{_,E,_,_,_,  _,  _  },
+    	{_,_,E,_,_,  H,  _  },
+    	{_,_,_,_,_,  Cis,_  },
+    	{_,_,_,_,Fis,_,  _  }},
+   TL =[[C, D, E, F, G, A, H],
+        [D, E, Fis, G, A, H, Cis],
+        [E, Fis, Gis, A, H, Cis, Dis],
+        [F, G, A, B, C, D, E],
+        [G, A, H, C, D, E, Fis],
+        [A, H, Cis, D, E, Fis, Gis],
+        [H, Cis, Dis, E, Fis, Gis, B]],
+   MVars = array_matrix_to_list(M),
+   foreach(Z in 1..7)
+   		Zeile = [M[Z,S] : S in 1..7],
+   		Zeile :: TL[Z],
+   		all_different(Zeile)
+   end,
+   foreach(S in 1..7)
+   		Spalte = [M[Z,S] : Z in 1..7],
+   		Spalte :: TL[S],
+   		all_different(Spalte)
+   end,
+   solve(MVars),
+   Name = ["A  ", "B  ", "C  ", "Cis", "D  ", "Dis", "E  ", "F  ", "Fis", "G  ", "Gis", "H  "],
+   foreach(Z in 1..7) 
+      foreach(S in 1..7) 
+           printf("%s ", Name[M[Z,S]])
+      end,
+      nl
+   end,
+   solve_all(MVars) = Sols,
+   print(numberOfSols=len(Sols)).
+   /*
+   	G   D   H   F   C   A   E   
+	D   G   Cis A   E   Fis H   
+	A   Fis Dis E   H   Gis Cis 
+	F   E   A   C   G   D   B   
+	C   A   E   G   D   H   Fis 
+	E   H   Fis D   A   Cis Gis 
+	H   Cis Gis B   Fis E   Dis korrekt!
+Laut ZEIT: G, D, H, F, C, A, E; 
+	D, G, Cis, A, E, Fis, H; 
+	A, Fis, Dis, E, H, Gis, Cis; 
+	F, E, A, C, G, D, Ais/B; 
+	C, A, E, G, D, H, Fis; 
+	E, H, Fis, D, A, Cis, Gis; 
+	H, Cis, Gis, Ais/B, Fis, E, Dis
+	*/

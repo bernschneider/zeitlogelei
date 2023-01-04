@@ -1,0 +1,45 @@
+/* Zeit Logelei 2016/02
+Leni: "Peer würde sagen, dass Linus lügt."
+Peer: "Moni würde sagen, dass Hubert die Wahrheit sagt."
+Linus: "Hubert würde sagen, dass Peer lügt."
+Moni: "Ninie würde sagen, dass Felix die Wahrheit sagt."
+Hubert: "Lina würde sagen, dass Ninie lügt."
+Max: "Felix würde sagen, dass Sina die Wahrheit sagt."
+Felix: "Linus würde sagen, dass Lina lügt."
+Sina: "Leni würde sagen, dass Max die Wahrheit sagt."
+Lina: "Peer würde sagen, dass Moni lügt."
+Ninie: "Hubert würde sagen, dass Max die Wahrheit sagt." */
+import cp.
+main =>
+    Luegt = 0, SagtDieWahrheit = 1,
+    W = [Leni,Peer,Linus,Moni,Hubert,Max,Felix,Sina,Lina,Ninie], 
+    W :: [0,1], 
+    Leni #= (Peer #= ( Linus #= Luegt)),
+    Peer #= (Moni #= ( Hubert #= SagtDieWahrheit)),
+	Linus #= (Hubert #= ( Peer #= Luegt)),
+	Moni #= (Ninie #= ( Felix #= SagtDieWahrheit)),
+	Hubert #= (Lina #= ( Ninie #= Luegt)),
+	Max #= (Felix #= ( Sina #= SagtDieWahrheit)),
+	Felix #= (Linus #= ( Lina #= Luegt)),
+	Sina #= (Leni #= ( Max #= SagtDieWahrheit)),
+	Lina #= (Peer #= ( Moni #= Luegt)),
+	Ninie #= (Hubert #= ( Max #= SagtDieWahrheit)),
+    solve(W),
+    S = [leni,peer,linus,moni,hubert,max,felix,sina,lina,ninie],
+    foreach(I in 1..len(W))
+    	printf("%w %s%n",S[I], cond(W[I]=1,"sagt die Wahrheit","lügt"))
+    end, nl,
+    solve_all(W) = Sols,
+    printf("%d Lösung",len(Sols)).
+/* ZEIT: Leni, Moni, Hubert, Max und Felix lügen, die anderen sagen die Wahrheit
+leni lügt
+peer sagt die Wahrheit
+linus sagt die Wahrheit
+moni lügt
+hubert lügt
+max lügt
+felix lügt
+sina sagt die Wahrheit
+lina sagt die Wahrheit
+ninie sagt die Wahrheit
+1 Lösung, korrekt! */

@@ -1,0 +1,21 @@
+/* Zeit Logelei 2017/05 */
+import cp.
+
+go =>
+   Vars = [G,E,H,D,U,R,C,I,K,T],
+   Vars :: 0..9,
+   all_different(Vars),
+   to_num([G,E,H], GEH), to_num([D,U,R,C,H], DURCH), to_num([D,I,C,K,I,C,H,T], DICKICHT),      
+   G #!= 0, D #!= 0, 
+   GEH * DURCH #= DICKICHT,
+   solve_all(Vars) = Sols, println(len(Sols)),
+   solve(Vars),
+   printf("%d * %d = %d\n",GEH, DURCH, DICKICHT).
+/* 1
+567 * 18237 = 10340379 
+CPU time 0.037 seconds. korrekt! */
+
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).
+

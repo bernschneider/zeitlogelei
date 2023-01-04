@@ -1,0 +1,27 @@
+/* Zeit Logelei 2016/10 
+Anna rechnet eine Weile. Dann sagt sie plötzlich zu ihrer älteren Schwester Beatrix: 
+"Vor drei Jahren warst du doppelt so alt, wie ich damals war." 
+Die Oma (mütterlicherseits) der beiden ist gerade dabei, das Mittagessen zu kochen, und schaut kurz aus der Küche: 
+"In 15 Jahren seid ihr zwei zusammen genauso alt, wie ich jetzt bin!" 
+Da will die Uroma mithalten und sagt zu Beatrix: "Letztes Jahr war ich elfmal so alt, wie du damals warst!" – 
+"Aber Omi, das stimmt doch gar nicht", entrüstet sich da Beatrix. 
+"Du meinst vermutlich, dass du letztes Jahr elfmal so alt warst, wie ich vorletztes Jahr war!" – 
+"Wie doch die Zeit vergeht ...", seufzt da die Uroma. 
+Und die Mutter der beiden zur Uroma: "Ach Oma, in drei Jahren wirst du schon dreimal so alt sein, wie ich dann sein werde!"
+Wie alt sind die fünf, wenn man davon ausgeht, dass niemand über 100 ist? */
+import cp.
+go =>
+   [Anna, Beatrix, Mama, Oma, Uroma] :: 3..100,
+   2 * (Anna - 3) #= Beatrix - 3,
+   Anna + 15 + Beatrix + 15 #= Oma,
+   Uroma - 1 #= 11 * (Beatrix - 2),
+   Uroma + 3 #= 3 * (Mama + 3),
+   printf("Anna ist %d%nBeatrix ist %d%nMama ist %d%nOma ist %d%nUroma ist %d%n", Anna, Beatrix, Mama, Oma, Uroma).
+/*	Anna ist 6
+	Beatrix ist 9
+	Mama ist 24
+	Oma ist 45
+	Uroma ist 78
+	ZEIT: Sie sind 6, 9, 24, 45 und 78 Jahre alt
+*/
+   

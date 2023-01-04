@@ -1,0 +1,20 @@
+/* Zeit Logelei 2016 / 38
+AAL: 9 Euro, AFFE: 18 Euro, ELEFANT: 40 Euro, ENTE: 29 Euro, 
+RABE: 22 Euro, RATTE: 31 Euro, TARANTEL: 45 Euro, ZEBRA: 23 Euro */
+import cp. 
+go => 
+	Vars = [A,B,E,F,L,N,R,T,Z],
+	Vars :: 1..9, all_different(Vars),
+	
+	A+A+L 			#= 9,
+	A+F+F+E 		#= 18,
+	E+L+E+F+A+N+T 	#= 40, 
+	E+N+T+E 		#= 29, 
+	R+A+B+E 		#= 22, 
+	R+A+T+T+E 		#= 31, 
+	T+A+R+A+N+T+E+L #= 45, 
+	Z+E+B+R+A 		#= 23,
+	
+	solve_all(Vars) = Sols, %  [A,B,E,F,L,N,R,T,Z]
+	print(Sols).            % [[2,3,8,4,5,7,9,6,1]]
+	% A=2, B=3, E=8, F=4, L=5, N=7, R=9, T=6, Z=1

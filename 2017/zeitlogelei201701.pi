@@ -1,0 +1,36 @@
+/* Zeit Logelei 2017/01 Prof. Knusi
+Alala: "Balala und Calala gehören zur gleichen Gruppe." 
+Balala: "Alala und Falala gehören zu unterschiedlichen Gruppen." 
+Calala: "Elala und Halala gehören zur gleichen Gruppe." 
+Dalala: "Calala und Galala gehören zu unterschiedlichen Gruppen." 
+Elala: "Ilala und Alala gehören zur gleichen Gruppe." 
+Falala: "Dalala und Jalala gehören zu unterschiedlichen Gruppen." 
+Galala: "Halala und Balala gehören zur gleichen Gruppe." 
+Halala: "Calala und Falala gehören zu unterschiedlichen Gruppen." 
+Ilala: "Elala und Balala gehören zur gleichen Gruppe." 
+Jalala: "Dalala und Ilala gehören zu unterschiedlichen Gruppen." 
+Wer gehört zu welcher Gruppe? */
+
+import cp.
+
+main => go.
+
+go =>
+	Pers = [A,B,C,D,E,F,G,H,I,J], Pers :: [0, 1],
+	
+	A #= (B #=  C),
+	B #= (A #!= F),
+	C #= (E #=  H),
+	D #= (C #!= G),
+	E #= (I #=  A),
+	F #= (D #!= J),
+	G #= (H #=  B),
+	H #= (C #!= F),
+	I #= (E #=  B),
+	J #= (D #!= I),
+
+	solve_all(Pers) = Sols,
+	print(Sols).
+
+/* [A,B,C,D,E,F,G,H,I,J]
+  [[0,0,1,1,1,0,0,1,0,1]] korrekt! */   

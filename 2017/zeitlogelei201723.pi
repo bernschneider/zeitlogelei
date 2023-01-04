@@ -1,0 +1,65 @@
+/* Zeit Logelei 2017/23 In der Forschungsstation Lo Gilla wurde eine Sternenkarte berechnet */
+import cp.
+main =>
+    InputM = {{ x, x, x, x, x, x, x,lu},
+         	  { x, x,ru, x, x, x, x, x},
+         	  { x, x, x,r_,ro, x, x, x},
+         	  { x, x, x,o_, x, x, x, x},
+         	  {ro, x, x,lo, x, x,o_,l_},
+         	  { x, x, x,lo, x,l_, x, x},
+         	  { x,o_, x, x, x, x, x, x},
+         	  { x, x,r_, x, x, x, x, x}},
+    NR = InputM.length, NC = InputM[1].length,
+    SubM = new_array(NR,NC), Vars = vars(SubM), Vars :: [0,1],
+    sum(Vars) #= 15, % 15 Sterne
+    foreach(I in 1..NR, J in 1..NC)
+    	Arrow := InputM[I,J], 				 % Jeder Pfeil zeigt auf mindestens einen Stern:
+    	(Arrow = r_ -> sum([SubM[I,C] :     C in J+1..NC])            #>= 1; true),
+   	    (Arrow = l_ -> sum([SubM[I,C] :     C in 1..J-1])             #>= 1; true),
+    	(Arrow = o_ -> sum([SubM[R,J] :     R in 1..I-1])             #>= 1; true),
+    	(Arrow = u_ -> sum([SubM[R,J] :     R in I+1..NR])            #>= 1; true),
+    	(Arrow = ru -> sum([SubM[I+D,J+D] : D in 1..NR-I, J+D =< NC]) #>= 1; true),
+    	(Arrow = ro -> sum([SubM[I-D,J+D] : D in 1..I-1,  J+D =< NC]) #>= 1; true),
+    	(Arrow = lu -> sum([SubM[I+D,J-D] : D in 1..NR-I, J-D > 0])   #>= 1; true),
+    	(Arrow = lo -> sum([SubM[I-D,J-D] : D in 1..I-1,  J-D > 0])   #>= 1; true)
+    end,
+    % Auf jeden Stern zeigt mindestens ein Pfeil, d.h. dort worauf kein Pfeil zeigt, darf kein Stern sein:
+    foreach(I in 1..NR, J in 1..NC, sum([1 : C in J+1..NC,            InputM[I,C]     = l_]) = 0, % kein Linkspfeil zeigt auf I|J
+    								sum([1 : C in 1..J-1,             InputM[I,C]     = r_]) = 0, % kein Rechtspfeil
+    								sum([1 : R in 1..I-1,             InputM[R,J]     = u_]) = 0, % kein Pfeil nach unten
+    								sum([1 : R in I+1..NR,            InputM[R,J]     = o_]) = 0, % kein Pfeil nach oben
+    								sum([1 : D in 1..NR-I, J+D =< NC, InputM[I+D,J+D] = lo]) = 0, % kein Pfeil nach links oben
+    								sum([1 : D in 1..I-1,  J+D =< NC, InputM[I-D,J+D] = lu]) = 0, % kein Pfeil nach links unten
+    								sum([1 : D in 1..NR-I, J-D > 0,   InputM[I+D,J-D] = ro]) = 0, % kein Pfeil nach rechts oben
+    								sum([1 : D in 1..I-1,  J-D > 0,   InputM[I-D,J-D] = ru]) = 0) % kein Pfeil nach rechts unten
+    	SubM[I,J] #= 0		
+	end,
+    foreach(I in 1..NR, J in 1..NC, InputM[I,J] !== x) % Sterne können sich niemals in Pfeilfeldern befinden:
+        SubM[I,J] #= 0
+    end,
+    % Sterne können sich niemals in zu anderen Sternen benachbarten Feldern befinden, auch nicht in diagonal benachbarten:
+    foreach(R in 1..NR-1, C in 1..NC-1)
+    	 SubM[R,C] + SubM[R,C+1] + SubM[R+1,C] + SubM[R+1,C+1] #< 2
+    end,
+    solve(Vars), % = Sols, print(len(Sols)). % 1
+    write_matrix(InputM,SubM,NR,NC).
+/*
+  | *|  |  |  |  | *|lu|
+  |  |ru| *|  |  |  |  |
+ *|  |  |r_|ro| *|  | *|
+  |  | *|o_|  |  |  |  |
+ro|  |  |lo| *|  |o_|l_|
+ *|  | *|lo|  |l_| *|  |
+  |o_|  |  |  |  |  |  |
+ *|  |r_| *|  | *|  | *|
+
+CPU time 0.004 seconds. korrekt */
+                
+% write the matrix in the better format
+write_matrix(InputM,M,NR,NC) =>
+	Sym = " *",
+    foreach(I in 1..NR, J in 1..NC)
+    	if InputM[I,J] != x then printf("%w|", InputM[I,J]) else printf(" %c|", Sym[1+M[I,J]]) end,
+        (J==NC->nl;true)
+    end,
+    nl,nl.

@@ -1,0 +1,30 @@
+/* Zeit Logelei 2016/42 Prof. Knusi
+Josbaan: "Gorbaen würde Ihnen sagen, dass die Antwort 41 lautet." 
+Gorbaen: "Fibbaan würde Ihnen sagen, dass die Antwort 42 lautet." 
+Fibbaan: "Hunbain würde Ihnen sagen, dass die Antwort 43 lautet." 
+Hunbain: "Badbaon würde Ihnen sagen, dass die Antwort nicht 41 lautet." 
+Badbaon: "Sombaar würde Ihnen sagen, dass die Antwort nicht 42 lautet." 
+Sombaar: "Gorbaen würde Ihnen sagen, dass die Antwort 43 lautet." 
+Wie lautet, nach Ansicht der Experten, die Antwort? */
+import util,cp.
+
+main => go.
+
+go =>
+	L :: 41..43,
+	P = [B,F,G,H,J,S], P :: [0, 1],
+	
+	J #= (G #= (L #=  41)),
+	G #= (F #= (L #=  42)),
+	F #= (H #= (L #=  43)),
+	H #= (B #= (L #!= 41)),
+	B #= (S #= (L #!= 42)),
+	S #= (G #= (L #=  43)),
+
+	solve_all([L | P]) = Sols,
+	print(Sols).
+/*
+[[41,0,0,1,1,1,0],[41,1,1,0,0,0,1]]
+Die Experten meinen, dass 41 die Antwort ist. Welcher Gruppe die Experten zuzurechnen sind, ist nicht eindeutig. 
+Es ist nur klar, dass Josbaan, Gorbaen und Hunbain zu der einen, die anderen drei zur anderen Gruppe gehören.
+*/   

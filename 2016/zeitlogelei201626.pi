@@ -1,0 +1,40 @@
+/*
+Zeit Logelei 2016/26
+*/
+main => time(go1), time(go2), time(go3).
+
+go1 =>  
+   S1 = "25+5//3", S2 = "825", 
+   foreach(A in 1..3 ++ 5..6, B in 1..3) % keine Ziffer zwischen 2 Operatoren wegnehmen!
+   		A1 = eval(S1,A), 
+   		A2 = eval(S2,B), 
+   		if A1 = A2 then drucke(A,B,A1) end
+   end. 
+	/* Entfernt man links das 3. und rechts das 2. Symbol, ergibt sich 85 */   
+
+go2 =>
+	S1 = "6*1+1", S2 = "201+3*17-5",
+	foreach(A in [2,4], B in 1..4 ++ 6..9) % keine Ziffer zwischen 2 Operatoren wegnehmen, kein Operator am Ende!
+   		A1 = eval(S1,A), 
+   		A2 = eval(S2,B), 
+   		if A1 = A2 then drucke(A,B,A1) end
+   end. 
+	/* Entfernt man links das 4. und rechts das 3. Symbol, ergibt sich 66. */   
+	
+go3 =>
+	S1 = "3*7*5*9*3", S2 = "85491//2-3",
+	foreach(A in [2,4,6,8], B in 1..7 ++ 9..9) % keine Ziffer zwischen 2 Operatoren wegnehmen, kein Operator am Ende!
+   		A1 = eval(S1,A), 
+   		A2 = eval(S2,B), 
+   		if A1 = A2 then drucke(A,B,A1) end
+   end. 
+   /* Entfernt man links das 6. und rechts das 9. Symbol, ergibt sich 3717.
+	  alle korrekt lt. ZEIT */
+	
+eval(S,X) = Res =>
+	L = [S[I] : I in 1..len(S), I != X ],  
+	T = parse_term(L),
+	Res = cond(number(T), T, apply(T)).
+	
+drucke(A,B,A1) =>
+	printf("Entfernt man links das %d. und rechts das %d. Symbol, ergibt sich %d.%n", A,B,A1).

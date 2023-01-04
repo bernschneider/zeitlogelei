@@ -1,0 +1,54 @@
+/* Zeit Logelei 2016/16 (nach Janko Fillomino)
+https://www.zeit.de/2016/16/spiele-logelei-16 
+Variante mit Gmax Gebieten G der Größe Cnt[G]
+Braucht leider 50% länger :-( */
+import sat, util. 
+main =>
+   C = {{1,0,0,3,3,0,0,1,0,0},
+        {0,0,3,0,0,2,0,0,3,1},
+        {0,0,0,0,2,0,3,0,0,0},
+        {0,4,0,5,7,3,0,4,0,2},
+        {0,0,0,3,0,0,0,3,0,0},
+        {0,0,0,0,0,0,0,0,1,0}}, 
+   NZ = len(C), NS = len(C[1]), 
+   M = new_array(NZ,NS), 
+   MVars = array_matrix_to_list(M),
+   Gmax = 20, M :: 1..Gmax, % Magic: Es reichen 20 Farben
+   Cnt = new_list(Gmax), Cnt :: 1..9, sum(Cnt) #= NZ * NS,
+   foreach(Z in 1..NZ, S in 1..NS, C[Z,S]>0) element(M[Z,S], Cnt, C[Z,S]) end,
+   % Eine Farbe F gibt es Cnt[F] mal:
+   foreach(G in 1..Gmax) count(G, MVars, Cnt[G]) end,
+   % Zwei verschiedene Gebiete der gleichen Größe dürfen nicht orthogonal (wohl aber diagonal) benachbart sein:
+   foreach(Z in 1..NZ, S in 1..NS-1)
+        element(M[Z,S], Cnt, V0), element(M[Z,S+1], Cnt, V1), 
+   	    V0 #= V1 #=> M[Z,S] #= M[Z,S+1]
+   end, 
+   foreach(Z in 1..NZ-1, S in 1..NS)
+        element(M[Z,S], Cnt, V0), element(M[Z+1,S], Cnt, V1), 
+   	    V0 #= V1 #=> M[Z,S] #= M[Z+1,S]
+   end, 
+   Root = new_array(NZ,NS), Root :: 0..1,
+   foreach(Z1 in 1..NZ, S1 in 1..NS, Z2 in 1..NZ, S2 in 1..NS, (Z1,S1)!=(Z2,S2))
+        (Root[Z1,S1] #= 1 #/\ Root[Z2,S2] #= 1) #=> M[Z1,S1] #!= M[Z2,S2]
+   end,
+   % Alle Gebiete müssen einen einzigen orthogonal zusammenhängenden Bereich Bereich bilden:
+   Dist = new_array(NZ,NS), DistVars = vars(Dist), MaxDist = 10, Dist :: 0..MaxDist,
+   foreach(Z in 1..NZ, S in 1..NS)
+         Root[Z,S] #= 1 #=> Dist[Z,S] #= 0,
+   	  	 Root[Z,S] #= 0 #=> Dist[Z,S] #= 1 + min([ Dist[Z1,S1]*(M[Z,S]#=M[Z1,S1])+MaxDist*(M[Z,S]#!=M[Z1,S1])
+   	  	 : (Z1,S1) in [(Z-1,S),(Z,S-1),(Z,S+1),(Z+1,S)], Z1 >= 1, Z1 =< NZ, S1 >= 1, S1 =< NS])
+   end,
+   solve(MVars ++ Cnt ++ DistVars ++ vars(Root)),
+   foreach(Z in 1..NZ) 
+      foreach(S in 1..NS) 
+		   printf("%2d|", Cnt[M[Z,S]])
+	  end, nl
+   end.
+/* 
+ 1| 2| 2| 3| 3| 2| 9| 1| 3| 3|
+ 3| 3| 3| 1| 3| 2| 9| 9| 3| 1|
+ 5| 5| 5| 2| 2| 3| 3| 9| 9| 2|
+ 4| 4| 5| 5| 7| 3| 4| 4| 9| 2|
+ 4| 3| 3| 3| 7| 4| 4| 3| 9| 9|
+ 4| 7| 7| 7| 7| 7| 3| 3| 1| 9|
+CPU time 1284.58 seconds korrekt */

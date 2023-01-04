@@ -1,0 +1,90 @@
+/* Zeit Logelei 2016/36
+https://www.zeit.de/2016/36/spiele-logelei-36 */
+import sat, util, matrixL. % matrixL wurde für diese Logelei erstellt (nach matrix.pi)
+main =>
+    Gmax = 6, % magic Anzahl der Bankgruppen zu je 5 Feldern (Pentominos)
+    % Pfeile: l = 1, r = 2, h = 4, t = 8,  
+    C = {{ 0, 0, 2, 0, 0, 0,  0, 0, 0, 0, 0, 0},
+         {10, 0, 0, 0, 0, 0,  0, 0, 8, 0, 0, 8},
+         { 0, 0, 0, 0, 0, 0,  7, 0, 0, 0, 0, 0},
+         { 0, 0, 8, 0, 0, 0,  0,13, 0, 0, 0, 0},
+         { 0, 0, 0, 0, 0, 0,  0, 0, 2, 0, 0, 0},
+         { 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0},
+         { 2, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0}}, NZ = len(C), NS = len(C[1]), Nmax = max(NZ,NS),
+    M = new_array(NZ+4,NS+4), Mvars = array_matrix_to_list(M), 
+    Data = [(Z,S,C[Z,S],[_,_,_,_],_) : Z in 1..NZ, S in 1..NS, C[Z,S]>0],
+    foreach( (Z,S,Pf,Delta,Min) in Data)
+        M[Z,S] #= 0,
+        % Die Distanzen zur nächsten Bank je Richtung:
+        [Dl,Dr,Dh,Dt] = Delta, [Dh,Dt] :: 0..NZ-1, [Dl,Dr] :: 0..NS-1,
+        dist(Dl, [M[Z,S1] : S1 in S-1..-1..1]), 
+        dist(Dr, [M[Z,S1] : S1 in S+1..NS]), 
+        dist(Dh, [M[Z1,S] : Z1 in Z-1..-1..1]), 
+        dist(Dt, [M[Z1,S] : Z1 in Z+1..NZ]),
+        % Die kleinste Distanz:
+        Min #= min([ D*(D #> 0) + Nmax*(D #= 0) : D in Delta]),
+        foreach(Dir in 1..4) 
+            if Pf /\ 2**(Dir-1) > 0 % Was bedeutet ein Pfeil in Richtun Dir?
+                then Delta[Dir] #= Min                     % dort ist ein Minimum 
+                else Delta[Dir] #> Min #\/ Delta[Dir] #= 0 % dort ist kein Minimum
+            end
+        end
+    end,
+    % Alle möglichen Pentominos erzeugen, per Idx auswählen und in M eintragen:
+    foreach(Z in 1..NZ+4, S in NS+1..NS+4) M[Z,S] #= 0 end, % füge rechts Nullen an
+    foreach(Z in NZ+1..NZ+4, S in 1..NS+4) M[Z,S] #= 0 end, % füge unten Nullen an
+    erzeuge(P),  Np = len(P), Mvars :: 0..Np, % P[1] = X-Pentomino, dann kommen P[2] = I, P[3] = Z, P[4..] = TWUVLNYFP (aus Modul matrixL)
+    % foreach(L in P) foreach(Mat in L) matprint(Mat) end, println("---") end,
+    Idx = new_list(Np), Idx :: 0..8, % X hat 1 Drehvariante, I und Z jeweils 2, der Rest 4:
+    Idx[1] #=< 1, Idx[2] #=< 2, Idx[3..7] :: 0..4, count(0, Idx, Np - Gmax), 
+    foreach(I in 1..Np) 
+        count(I, Mvars, Cnt), 
+        Idx[I] #= 0 #=> Cnt #= 0,
+        Idx[I] #> 0 #=> Cnt #= 5 
+    end,
+    DZ = new_list(Np), DZ :: 0..NZ-1, % Translation des I.ten Pentominos
+    DS = new_list(Np), DS :: 0..NS-1,
+    foreach(I in 1..Np) Idx[I] #= 0 #=> (DZ[I] #= 0 #/\ DS[I] #= 0) end,
+    foreach(I in 1..Np, J in 1..len(P[I]) ) % Constraint nur, wenn Idx[I] #= J!
+        PNZ = len(P[I,J]), PNS = len(P[I,J,1]), 
+        % Achtung: matrix_element terminiert nicht! Deshalb DZI und DSI eingeführt:
+        foreach(DZI in 0..NZ-1, DSI in 0..NS-1, Z in 1..PNZ, S in 1..PNS, P[I,J,Z,S]=1) 
+            (Idx[I] #= J #/\ DZ[I] #= DZI #/\ DS[I] #= DSI) #=> M[DZI+Z,DSI+S] #= I
+        end
+    end,
+    % no touch:
+    foreach(Z in 1..NZ-1, S in 1..NS-1)
+        (M[Z,S] #> 0 #/\ M[Z,S+1] #> 0) #=> M[Z,S] #= M[Z,S+1],
+        (M[Z,S] #> 0 #/\ M[Z+1,S] #> 0) #=> M[Z,S] #= M[Z+1,S],
+        (M[Z,S] #> 0 #/\ M[Z+1,S+1] #> 0) #=> M[Z,S] #= M[Z+1,S+1],
+        (M[Z+1,S] #> 0 #/\ M[Z,S+1] #> 0) #=> M[Z+1,S] #= M[Z,S+1]    
+    end,
+    solve(Mvars ++ DZ ++ DS ++ Idx ++ vars(Data)),
+    Chr = " XIZTWUVLNYFP",
+    foreach(Z in 1..NZ)
+        foreach(S in 1..NS)
+		    printf("%s%c|", pf2str(C[Z,S]), Chr[1+M[Z,S]]) 
+    	end, nl
+    end.
+/*
+     |     | >   |    I|    I|    I|    I|    I|     |     |     |     |
+ > v |    N|     |     |     |     |     |     |   v |     |     |   v |
+    N|    N|     |    Z|    Z|     |<>^  |     |    L|    L|    L|    L|
+    N|     |   v |     |    Z|     |     |< ^v |     |     |     |    L|
+    N|     |    T|     |    Z|    Z|     |     | >   |    V|     |     |
+     |     |    T|     |     |     |     |     |     |    V|     |     |
+ >   |    T|    T|    T|     |     |     |    V|    V|    V|     |     |
+CPU time 12.781 seconds korrekt */
+dist(D, L) => % D = Distanz zur nächsten Bank
+    K = len(L), D :: 0..K,
+    % D = 0 heißt, es gibt keine Bank in L:
+    count(0,L,Nullen), Xcnt #= K - Nullen, Xcnt #= 0 #<=> D #= 0,
+    foreach(I in 1..K)
+        I #< D #=> L[I] #= 0,
+        I #= D #=> L[I] #> 0
+    end.
+
+pf2str(Pf) = Str1 => % (für den Printout verwendet)
+    Str = "    ", Chr = "<>^v",
+    foreach(Dir in 1..4, Pf /\ 2**(Dir-1) > 0) Str[Dir] := Chr[Dir] end,
+    Str1 = Str.

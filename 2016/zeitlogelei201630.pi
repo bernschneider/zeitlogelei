@@ -1,0 +1,51 @@
+/*
+Zeit Logelei 2016/30
+Andol zur Vase: "Banna von Blech lügt." 
+Banna von Blech: "Hilla von Hinnen lügt." 
+Caro die Herzige: "Gusta zur Blume sagt die Wahrheit." 
+Dörte zu Lillingen: "Banna von Blech lügt." 
+Erol der Neche: "Janna die Jüngste lügt." 
+Fush van Hush: "Caro die Herzige lügt." 
+Gusta zur Blume: "Irna für Wort lügt." 
+Hilla von Hinnen: "Fush van Hush lügt." 
+Irna für Wort: "Erol der Neche sagt die Wahrheit." 
+Janna die Jüngste: "Irna für Wort würde sagen, dass die Mehrheit von uns lügt."
+*/
+import cp.
+
+main => go.
+
+go =>
+    Luegt = 0, SagtDieWahrheit = 1,
+    W = [Andol,Banna,Caro,Doerte,Erol,Fush,Gusta,Hilla,Irna,Janna], 
+    W :: [0,1], 
+    Andol  #= (Banna #= Luegt),
+    Banna  #= (Hilla #= Luegt),
+    Caro   #= (Gusta #= SagtDieWahrheit),
+    Doerte #= (Banna #= Luegt),
+    Erol   #= (Janna #= Luegt),
+    Fush   #= (Caro  #= Luegt),
+    Gusta  #= (Irna  #= Luegt),
+    Hilla  #= (Fush  #= Luegt),
+    Irna   #= (Erol  #= SagtDieWahrheit),
+	Janna  #= (Irna  #= (sum(W) #< 5)),	
+    solve_all(W) = Sols,
+    printf("%d Lösung(en)%n",len(Sols)),
+    solve(W),
+    S = ["Andol","Banna","Caro","Dörte","Erol","Fush","Gusta","Hilla","Irna","Janna"],
+    foreach(I in 1..len(W))
+    	printf("%w %s%n",S[I], cond(W[I]=1,"sagt die Wahrheit","lügt"))
+    end, nl.
+/*
+1 Lösung(en)
+Andol sagt die Wahrheit
+Banna lügt
+Caro sagt die Wahrheit
+Dörte sagt die Wahrheit
+Erol lügt
+Fush lügt
+Gusta sagt die Wahrheit
+Hilla sagt die Wahrheit
+Irna lügt
+Janna sagt die Wahrheit
+*/   

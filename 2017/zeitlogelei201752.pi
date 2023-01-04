@@ -1,0 +1,37 @@
+/* Zeit Logelei 2017/52
+http://www.zeit.de/2017/52/spiele-logelei-52 */
+import cp.
+
+go1 =>
+   Vars = [A,D,V,E,N,T,R,Z,P],
+   Vars :: 0..9, all_different(Vars),
+   to_num([A,D,V,E,N,T], ADVENT), to_num([R,E,Z,E,P,T], REZEPT), 
+   2 * ADVENT #= REZEPT,
+   solve_all(Vars) = Sols, println(Sols),
+   solve(Vars), myprint(ADVENT, ADVENT, REZEPT).
+/* [[1,4,7,9,8,0,2,5,6]]
+147980
+147980
+------
+295960 korrekt */
+   
+go2 =>
+        Vars = [A,D,V,E,N,T,B,U,R],
+        Vars :: 0..9, all_different(Vars),
+        to_num([A,D,V,E,N,T], ADVENT), to_num([B,U,T,T,E,R], BUTTER), 
+        2 * ADVENT #= BUTTER,
+        solve_all(Vars) = Sols, println(Sols),
+        solve(Vars), myprint(ADVENT, ADVENT, BUTTER).
+/* [[4,7,8,3,1,6,9,5,2]]
+478316
+478316
+------
+956632 korrekt */     
+
+to_num(List, Num) => 
+        List[1] #!= 0,
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).
+
+myprint(A,B,C) =>
+        println(A), println(B), println("------"), println(C). 

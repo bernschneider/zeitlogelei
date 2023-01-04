@@ -1,0 +1,39 @@
+/* Zeit Logelei 2016 / 46 */
+import cp.
+
+go1 =>
+   Vars = [J,A,C,K,E,H,O,S,F,R],
+   Vars :: 0..9,
+   all_different(Vars),
+   to_num([J,A,C,K,E], JACKE), to_num([H,O,S,E], HOSE), to_num([F,R,O,S,C,H], FROSCH),          
+   J #!= 0, H #!= 0, F #!= 0,
+   JACKE + HOSE #= FROSCH,
+   solve(Vars),
+   printf("%6d\n",JACKE), 
+   printf("%6d\n",HOSE), 
+   print("------\n"),
+   print(FROSCH).
+   /*
+	98253
+     6473
+   ------
+   104726
+   */
+
+go2 =>
+   Vars = [J,A,C,K,E,H,O,S,L,Z],
+   Vars :: 0..9,
+   all_different(Vars),
+   to_num([J,A,C,K,E], JACKE), to_num([H,O,S,E], HOSE), to_num([H,O,L,Z,K,O,H,L,E], HOLZKOHLE),      
+   J #!= 0, H #!= 0, 
+   JACKE * HOSE #= HOLZKOHLE,
+   % solve_all(Vars) = Sols, print(Sols). --> [[9,8,7,0,5,3,1,6,2,4]]
+   solve(Vars),
+   printf("%d * %d = %d\n", JACKE, HOSE, HOLZKOHLE).
+   /* 98705 * 3165 = 312401325 */
+
+
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).
+

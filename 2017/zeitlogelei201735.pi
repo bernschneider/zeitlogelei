@@ -1,0 +1,77 @@
+/* Zeit Logelei 201735 */
+import util.
+import sat. % sic!
+main =>
+   N = 8, Max = 6, Ps = 0..72, % 8 Zeilen x 8 Spalten, Ziffern von 0..6, Ps = kumulierte Produkte
+   SigZ = [ [3,48,5], [2,20,3], [8,18], [1,72,10], [20,6], [5,6,24], [3,2,24], [6,20,2] ], % Zeilensignatur
+   SigS = [ [24,5,6], [2,12], [8,15], [4,6,30], [30,24,1], [3,2,24], [5,12,4], [15,48]], % Spaltensignatur
+   Board = new_array(N, N),
+   MVars = array_matrix_to_list(Board),
+   MVars :: 0..Max,  
+   foreach(Row in rows(Board))    all_different_except_0(Row) end,
+   foreach(Col in columns(Board)) all_different_except_0(Col) end,
+   CumZ = new_array(N,N+1),   % zeilenweise kumulierte Produkte, rechts 0 als Begrenzung
+   CumZvars = vars(CumZ), CumZvars :: Ps,
+   foreach(Z in 1..N)
+        CumZ[Z,1] #= Board[Z,1], CumZ[Z,N+1] #= 0,
+		foreach(S in 2..N)
+			Board[Z,S] #> 0 #=> CumZ[Z,S] #= max(1,CumZ[Z,S-1]) * Board[Z,S], % kumulieren!
+			Board[Z,S] #= 0 #=> CumZ[Z,S] #= 0  % bei 0 zurücksetzen!
+		end
+   end,
+   foreach(Z in 1.. N) signature(N, Ps, [CumZ[Z,S] : S in 1..N+1], SigZ[Z]) end, % die Zeilensignatur stimmt!
+   CumS = new_array(N+1,N),   % spaltenweise kumulierte Produkte (analog zu oben, unten eine 0 extra)
+   CumSvars = vars(CumS), CumSvars :: Ps,
+   foreach(S in 1..N)
+        CumS[1,S] #= Board[1,S], CumS[N+1,S] #= 0,
+		foreach(Z in 2..N)
+			Board[Z,S] #> 0 #=> CumS[Z,S] #= max(1,CumS[Z-1,S]) * Board[Z,S],
+			Board[Z,S] #= 0 #=> CumS[Z,S] #= 0
+		end
+   end,
+   foreach(S in 1.. N) signature(N, Ps, [CumS[Z,S] : Z in 1..N+1], SigS[S]) end, % die Spaltensignatur stimmt!
+   solve(MVars ++ CumZvars ++ CumSvars),
+   print_board(Board).
+   /* 	
+ 3 0 2 4 6 0 5 0
+ 2 0 4 1 5 0 0 3
+ 4 2 0 0 0 3 6 1
+ 1 0 3 6 4 0 2 5
+ 0 4 5 0 3 2 0 0
+ 5 1 0 3 2 0 4 6
+ 0 3 0 2 0 6 1 4
+ 6 0 0 5 1 4 0 2
+
+CPU time 2.81 seconds. korrekt!
+3#246#5#,
+2#415##3, 
+42###361, 
+1#364#25, 
+#45#32##, 
+51#32#46, 
+#3#2#614, 
+6##514#2 */
+
+signature(N, Ps, L, Sig) =>
+	L = new_list(N+1), L :: Ps, L[N+1] #= 0,
+	Len = len(Sig),
+    Idx = new_list(Len), Idx :: 2..N+1,  % Indices der folgenden 0er (N+1 heißt "Rand")
+    foreach(J in 1..Len-1)
+    	Idx[J] #< Idx[J+1]               % ... sind aufsteigend
+	end,
+	foreach(J in 1..Len)
+    	I1 #= Idx[J], I11 #= I1-1, 
+	    element(I1,L,0),                 % I1 zeigt auf die 0
+    	element(I11,L,Sig[J])			 % I1-1 zeigt auf das jeweilige Produkt in der Signatur
+    end.
+    
+print_board(Board) =>
+   N = Board.length,
+   foreach(I in 1..N)
+      foreach(J in 1..N)
+         X = Board[I,J],
+         printf(" %1d", X)
+      end,
+      nl
+   end,
+   nl.

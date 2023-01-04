@@ -1,0 +1,20 @@
+/* Zeit Logelei 2017/43 Wer sagt die Wahrheit? */
+import cp.
+
+main =>
+	W = [A,B,C,D,E,F,G,H,I,J,K,L,M,N], 
+	W :: 0..1,           % 1 = sagt die Wahrheit
+	Cr #= sum(W),        % Wieviele sagen die Wahrheit?
+	foreach((X,Y,Z) in [(A,B,C), (B,C,D), (C,D,E), (D,E,F), (E,F,G), (F,G,H),
+						(G,H,I), (H,I,J), (I,J,K), (J,K,L), (K,L,M), (L,M,N)])
+		X #= (Y #= (Z #= 0))
+	end,
+	M #= (Cr #!= 8),
+	N #= (Cr #!= 7),	
+	solve_all([Cr|W]) = Sols,
+	foreach(Sol in Sols)
+		println(Sol)
+	end.
+    /* Cr A B C D E F G H I J K L M N
+	  [10,1,1,0,1,1,0,1,1,0,1,1,0,1,1] korrekt!
+	Es lügen Ycala, Yfula, Yila und Yla. Die anderen sagen die Wahrheit */

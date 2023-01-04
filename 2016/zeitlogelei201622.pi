@@ -1,0 +1,39 @@
+/*
+Zeit Logelei 2016/22
+Zoobesuch
+*/
+import cp.
+
+main => time(go).
+
+go =>  
+   Animal = [affe, elefant, giraffe, loewe, nashorn, pinguin, robbe, spielplatz, tapir],  
+   Vars   = [A,E,G,L,N,P,R,S,T], % Lfd. Nr. im Rundgang
+   Vars :: 1..9, all_different(Vars), 
+   E #< N, % Elefant vor Nashorn
+   R #< T, % usw.
+   L #< E,
+   abs(P - R ) #= 1, % nacheinander
+   abs(N - E ) #= 1,
+   abs(A - G ) #> 1, % nicht nacheinander
+   abs(T - P ) #> 1,
+   S #< P,
+   (A #= 3; N #= 3; L #= 3),
+   % println(solve_all(Vars)), % 42 solutions without $max!
+   solve([$max(S)], Vars), % Spielplatz möglichst spät
+   assignment(Vars, Res),  % Res zeigt die Tiere sortiert nach lfd. Nr. im Rundgang
+   foreach(I in 1..9) 
+      println(Animal[Res[I]])
+   end.
+/*
+giraffe
+loewe
+affe
+elefant
+nashorn
+spielplatz
+pinguin
+robbe
+tapir
+Diese Reihenfolge erfüllt alle Wünsche: Giraffen, Löwen, Affen, Elefanten, Nashorn, Spielplatz, Pinguine, Robben, Tapire
+*/   

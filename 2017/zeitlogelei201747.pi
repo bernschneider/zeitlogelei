@@ -1,0 +1,38 @@
+/* Zeit Logelei 2017/47
+1. Drei Damen unterschiedlichen Alters sitzen in der Straßenbahn und unterhalten sich. Wie alt sind die drei? */
+import cp.
+
+main1 =>
+    D = new_array(3), D :: 0..120,
+    all_different(D),
+    % Die erste sagt zur zweiten: "Dein Alter ist ja genau das Quadrat von meinem Alter." 
+    D[1] ** 2 #= D[2], 
+    % Daraufhin diese zur dritten: "In drei Jahren bin ich gerade mal halb so alt, wie du jetzt bist!"
+    (D[2] + 3) * 2 #= D[3], 
+    % "In drei Jahren", ruft die erste begeistert der dritten zu, "wird dein Alter genau das Quadrat von meinem Alter sein!"
+    (D[1] + 3) ** 2 #= D[3] + 3, 
+    solve_all(D) = Sols, println(Sols). % [{6,36,78}] ZEIT: Die drei Damen sind 6, 36 und 78 Jahre alt
+
+/* Daneben sitzen drei Herren, die sich ebenfalls unterhalten. */
+main =>
+    H = new_array(3), H :: 1..100,    
+    % Der erste: "Wenn ich so alt bin, wie ihr beiden jetzt zusammen seid, wirst du", damit zeigt er auf den zweiten, 
+    % "doppelt so alt sein, wie ich jetzt bin:"
+    Delta1 #= H[2] + H[3] - H[1],
+    H[1] * 2 #= H[2] + Delta1,
+    % Der daraufhin: "Und wenn ich so alt bin, wie ihr beiden zusammen jetzt seid, wirst du", er zeigt auf den dritten, 
+    % "doppelt so alt sein, wie ich jetzt bin:
+    Delta2 #= H[1] + H[3] - H[2],
+    H[2] * 2 #= H[3] + Delta2,
+    solve_all(H) = Sols, 
+    % Das ist ja lustig!", bemerkt da die Jüngste vom Nachbarsitz. Warum? 
+    foreach(Sol in Sols) println(Sol) end. 
+/* {1,1,1}
+{2,2,2}
+{3,3,3}
+{4,4,4}
+{5,5,5}
+{6,6,6}
+{7,7,7}
+{8,8,8}
+{9,9,9} usw. ZEIT: Die drei Herren sind alle gleich alt */

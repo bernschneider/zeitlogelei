@@ -1,0 +1,50 @@
+/* Zeit Logelei 2017/45 Schach */
+import sat.
+main =>
+    N=8, % Schachbrett
+    K=1, D=2, T=3, L=4, Sp=5, % König, Dame, Turm, Läufer, Springer
+	M = new_array(N,N), Mvars = vars(M), M :: 0..Sp,
+	% Ich hatte je eine der fünf Figuren auf das Schachbrett gestellt:
+    foreach(F in 1..Sp) exactly(1, Mvars, F) end,
+    Three = {{0,0,0,0,0,0,0,0},
+             {0,0,1,0,0,0,0,0},
+             {0,0,0,0,0,0,0,0},
+             {0,0,0,0,0,0,0,0},
+             {0,0,0,0,0,1,0,0},
+             {0,0,1,0,0,0,1,0},
+             {0,0,0,0,0,0,0,0},
+             {0,0,0,0,0,1,0,0}},
+    foreach(Z in 1..N, S in 1..N)
+        AK  #= sum([(M[Z1,S1] #= K) : Z1 in Z-1..Z+1, S1 in S-1..S+1, 0<Z1, Z1=<N, 0<S1, S1=<N, {Z1,S1}!={Z,S} ]), % vom König bedroht
+        AD  #= sum([(M[Z1,S1] #= D) : Z1 in 1..N, S1 in 1..N, 0<Z1, Z1=<N, 0<S1, S1=<N, {Z1,S1}!={Z,S},
+                                      (Z1=Z || S1=S || Z1+S1=Z+S || Z1-S1=Z-S)]), % von der Dame bedroht        
+        AT  #= sum([(M[Z1,S1] #= T) : Z1 in 1..N, S1 in 1..N, 0<Z1, Z1=<N, 0<S1, S1=<N, {Z1,S1}!={Z,S},
+                                      (Z1=Z || S1=S)]),                           % vom Turm bedroht
+        AL  #= sum([(M[Z1,S1] #= L) : Z1 in 1..N, S1 in 1..N, 0<Z1, Z1=<N, 0<S1, S1=<N, {Z1,S1}!={Z,S},
+                                      (Z1+S1=Z+S || Z1-S1=Z-S) ]),                % vom Läufer bedroht
+        ASp #= sum([(M[Z1,S1] #= Sp) : {Z1,S1} in [{Z-2,S-1}, {Z-2,S+1}, {Z-1,S-2}, {Z-1,S+2}, {Z+1,S-2}, {Z+1,S+2}, {Z+2,S-1}, {Z+2,S+1}],
+                                       0<Z1, Z1=<N, 0<S1, S1=<N ]),               % vom Springer bedroht
+        Angriffe #= AK + AD + AT + AL + ASp,
+        % Ich hatte die Figuren so auf das Schachbrett gestellt, dass keine eine andere angreift:
+        M[Z,S] #> 0 #=> Angriffe #= 0,
+        % Dann habe ich auf dem Brett leere Felder markiert, die von genau drei Figuren angegriffen wurden:
+        if Three[Z,S] = 1 then Angriffe #= 3 end
+    end,
+    solve_all(M) = Sols, println(len(Sols)), % 1
+    solve(M),
+    Code = " KDTLS",
+    foreach(Z in 1..N, S in 1..N)
+        if Three[Z,S]=1 then print("*|") else printf("%c|", Code[1+M[Z,S]]) end,
+        if S=N then nl end
+    end.
+/*
+ | | | | | | | |
+ | |*| | |T| | |
+ | | | | | | | |
+ | | | |L| | | |
+ | | | |S|*| | |
+ | |*| | | |*| |
+ | | | | | |K| |
+ | |D| | |*| | |
+König auf g2, Dame auf c1, Turm auf f7, Läufer auf e5 und Springer auf e4
+korretk! CPU time 2.422 seconds.  */

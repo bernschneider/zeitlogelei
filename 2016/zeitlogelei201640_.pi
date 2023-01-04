@@ -1,0 +1,75 @@
+/* Zeit Logelei 2016/40 Labyrinth mit subcircuit */
+import util, sat.
+idx(N,Z,S) = (Z-1) * N + S. % deterministisch
+z(N,I) = (I-1) div N + 1.   % deterministisch
+s(N,I) = (I-1) mod N + 1.   % deterministisch
+zs(N,I,Z,S) => I #= (Z-1) * N + S. % Z #= (I-1) div N + 1, S #= (I-1) mod N + 1. % Constraint! (s. Z. 29)
+main => 
+   Nr= {{ 0,12, 0, 0, 0,13, 0,14, 0,15, 0},
+  		{11, 0, 0, 0, 4, 0,13, 0, 0, 0,15},
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0,14, 0},
+        { 5, 0, 0, 0, 0, 0, 3, 0,10, 0, 0},
+        { 0, 0, 0, 6, 0, 0, 0, 9, 0,14, 0},
+        { 7, 0, 0, 0, 7, 0, 0, 0,10, 0,14},
+        { 0, 8, 0, 8, 0, 0, 0,11, 0,13, 0},
+        { 0, 0, 4, 0, 0, 0, 0, 0,12, 0,13},
+        { 0, 1, 0, 0, 0, 2, 0, 3, 0, 0, 0},
+        { 0, 0, 0, 0, 0, 0, 4, 0,11, 0,12}, 
+        { 0, 6, 0, 2, 0, 0, 0, 0, 0, 0, 0}}, N = len(Nr), Leer = 16,
+   M = new_array(N,N), M :: 0..Leer, MVars = vars(M),
+   M[N-1,1] #= 0  #\/ M[N,2] #= 0,
+   M[1,N-1] #= 15 #\/ M[2,N] #= 15,
+   Nf = new_array(N,N), Nf :: 1..N*N, NfVars = vars(Nf), assignment(NfVars, VgVars), % Nf = Nachfolger, Vg = Vorgänger
+   foreach(Z in 1..N, S in 1..N, (Z + S) mod 2 = 0)
+      M[Z,S] #= Leer, 
+      Nf[Z,S] #= (Z-1) * N + S
+   end,
+   foreach(Z1 in 1..N, S1 in 1..N, (Z1 + S1) mod 2 = 1)
+        X1 = idx(N,Z1,S1), % berechne Startindex
+        X0 #= VgVars[X1], zs(N, X0, Z0, S0), % Vg-index X0 und die Vg-Koordinaten Z0|S0
+        X2 #= Nf[Z1,S1], zs(N, X2, Z2, S2), % Nf-index X2 und die Nf-Koordinaten Z2|S2
+        X1 #= X2 #<=> M[Z1,S1] #= Leer,
+        if (Z1,S1)!=(1,N-1), (Z1,S1)!=(2,N) then % vor dem Ausgang rechts oben gilt:
+		    X1 #= X2 #\/                                           % leer
+            ( Z1 mod 2 #= 1 #/\ Z1 #= Z2 #/\ abs(S2-S1) #= 2 ) #\/ % waagrecht	
+   		    ( Z1 mod 2 #= 0 #/\ S1 #= S2 #/\ abs(Z2-Z1) #= 2 ) #\/ % senkrecht
+   		    ( abs(S2 - S1) #= 1 #/\ abs(Z2 - Z1) #= 1 ),			   % diagonal
+            if (Z1,S1)!=(N-1,1), (Z1,S1)!=(N,2) then % nach dem Eingang gilt:
+                (Z0 mod 2 #= 0 #/\ S0 #!= S1 #/\ Z0 #!= Z1) #=> (S1 #< S0 #<=> S2 #< S0),
+                (S0 mod 2 #= 0 #/\ S0 #!= S1 #/\ Z0 #!= Z1) #=> (Z1 #< Z0 #<=> Z2 #< Z0)
+            end,
+   		    % Vals sind aufsteigend:
+            V1 #= M[Z1,S1], matrix_element(M,Z2,S2,V2), V1 + Delta #= V2,
+            matrix_element(Nr, Z2, S2, VNr),
+            Delta :: 0..1, 
+            X1 #!= X2 #=> (VNr #> 0 #<=> Delta #= 1),
+            X1 #!= X2 #=> (Delta #= 1 #<=> V2 #= VNr)
+        else
+            X1 #= X2 #\/ (Z2 #= N-1 #/\ S2 #= 1) #\/ (Z2 #= N #/\ S2 #= 2)
+        end
+   end,
+   subcircuit(NfVars), % Beachte: Elemente, die nicht zum Circuit gehören, zeigen auf sich selbst
+   % count(0, array_matrix_to_list(M), Zeros), % setze nicht benötige Werte auf 0!
+   solve(NfVars ++ VgVars ++ MVars), % olve([$max(Zeros)], MVars), solve([$min(Max), $max(Zeros)], 
+   foreach(Z in 1..N)
+        foreach(S in 1..N)
+            Inc = cond(Nr[Z,S]>0, '*', ' '), 
+            if Nf[Z,S]!=idx(N,Z,S) then printf("%2i%c", M[Z,S], Inc) 
+            elseif Z mod 2 = 0, S mod 2 = 0 then print(" []") 
+            else print("   ") end
+    	end, nl
+    end.
+/* programm not terminating
+Es sollte dies herauskommen: max = 35
+          4                      
+    [] 4  [] 4* []    []    []15*
+    4     8     3                
+ 5* [] 8  [] 8  [] 3* []    []14 
+    5     6*    8     9*         
+    [] 8  [] 7* [] 2  []10* []14*
+          8*   11    11*         
+    []    []11  [] 2  []    []13*
+    1*    1     2*               
+    []    []11  []    []    []12*
+               11    11    11     
+CPU time 63.51 seconds korrekt */   

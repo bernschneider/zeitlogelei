@@ -1,0 +1,44 @@
+/* Zeit Logelei 2016 / 34  */
+import cp.
+
+go1 =>
+   % Laura: "Finja ist doppelt so alt wie Marja und ich zusammen." 
+   % Finja: "Laura ist halb so alt wie Marja und ich zusammen." Wie alt ist Marja? 
+   Vars = [Laura, Finja, Marja],
+   Vars :: 0..99,
+   Finja #= 2 * (Marja + Laura),
+   Laura * 2 #= Marja + Finja,
+   solve_all(Vars) = Sols,
+   print("Ergebnis: "),
+   print(Sols).
+   % [[0,0,0],[1,2,0],[2,4,0],[3,6,0],[4,8,0],[5,10,0],[6,12,0],[7,14,0],[8,16,0],[9,18,0],[10,20,0],[11,22,0],[12,24,0],[13,26,0],[14,28,0],[15,30,0],[16,32,0],[17,34,0],[18,36,0],[19,38,0],[20,40,0],[21,42,0],[22,44,0],[23,46,0],[24,48,0],[25,50,0],[26,52,0],[27,54,0],[28,56,0],[29,58,0],[30,60,0],[31,62,0],[32,64,0],[33,66,0],[34,68,0],[35,70,0],[36,72,0],[37,74,0],[38,76,0],[39,78,0],[40,80,0],[41,82,0],[42,84,0],[43,86,0],[44,88,0],[45,90,0],[46,92,0],[47,94,0],[48,96,0],[49,98,0]]
+   % In allen Fällen ist Marja 0 Jahre alt
+go2 =>
+	Vars = [Re, Th, Ro],
+	Vars :: -100..100, % Zehnteljahre 
+	% Renate zu Theodor und Roswita: "Vor einem Jahr war ich so alt, wie ihr beide jetzt zusammen seid." 
+	Re - 10 #= Th + Ro,
+	% Theodor: "Vor zwei Jahren wart ihr beide zusammen doppelt so alt, wie ich jetzt bin." 
+	2 * Th #= Re - 20 + Ro - 20,
+	% Roswita: "In zwei Jahren werdet ihr beide zusammen dreimal so alt sein, wie ich jetzt bin." 
+	3 * Ro #= Th + 20 + Re + 20, 
+	solve(Vars),
+    printf("Re = %2.1f, Th = %2.1f, Ro = %2.1f", Re/10, Th/10, Ro/10).
+    % Re = -0.5, Th = -2.0, Ro = 0.5
+go3 =>
+	/* Thomas zu Beate: "Wenn ich doppelt so alt bin, wie du warst, als ich halb so alt war, 
+	wie du jetzt bist, wirst du genau vier Jahre älter sein, als ich jetzt bin." */
+	Vars = [B, T], Vars :: 1..199, % Einheiten = Halbjahre 
+	B #= 2 * (T + Delta1), % Delta1 #= B / 2 - T,
+	B1 #= B + Delta1,
+	2 * B1 #= T + Delta2,
+	B + Delta2 #= 4*2 + T, 
+	/* Beate: "Wenn ich dreimal so alt bin, wie du warst, als ich halb so alt war, wie du bist, 
+	wirst du genau vier Jahre älter sein, als ich jetzt bin." */
+	T #= 2 * (B + Delta3), % Delta3 #= T / 2 - B, 
+	T3 #= T + Delta3,    
+	3 * T3 #= B + Delta4,
+	T + Delta4 #= 4*2 + B,  
+	solve(Vars ++ [B1, Delta1, Delta2, Delta3, Delta4, T3]),
+	print([B//2, T//2]).
+	% [19,18]

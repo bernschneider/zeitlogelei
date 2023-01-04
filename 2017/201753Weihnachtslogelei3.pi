@@ -1,0 +1,51 @@
+/* Weihnachtslogelei 24.12.2017 */
+import cp.
+main =>		 
+    N = 13,
+    Alex=1, Daniel=2, Fabian=3, Jan=4, Max=5, Philipp=6, Tim=7, Eugenie=8, Maria=9, Marie=10, Michelle=11, Sarah=12, Sophie=13,
+    Namen = ["Alex", "Daniel", "Fabian", "Jan", "Max", "Philipp", "Tim", "Eugenie", "Maria", "Marie", "Michelle", "Sarah", "Sophie"],
+    Schaukelpferd1=1, Schaukelpferd2=2, Puppe1=3, Puppe2=4, Dampfmaschine=5, Whisky=6, Lexikon=7, Pullover=8, Kleid=9, Modellbaukasten=10, MP3_Spieler=11, Mantel=12, Geld=13,
+    Geschenke = ["Schaukelpferd", "Schaukelpferd", "Puppe", "Puppe", "Dampfmaschine", "Whisky", "Lexikon", "Pullover", "Kleid", "Modellbauk.", "MP3_Spieler", "Mantel", "Geld"],
+    Nr = new_list(N), Nr :: 1..9,
+    G =  new_list(N), G :: Schaukelpferd1..Geld, all_different(G), assignment(G, G2K),
+    F #= [sum([(Nr[K] #= I) : K in 1..N]) : I in 1..9],
+    foreach(I in 1..9, I!=5) F[I] #< F[5] end, % 6
+    F[4] #= F[5] - 1, F[6] #= F[5] - 1, 
+    sum([(Nr[K] #= Nr[Maria] - 1) : K in Alex..Fabian]) #> 2 #\/ sum([(Nr[K] #= Nr[Maria] + 1) : K in Alex..Fabian]) #> 2, % 1
+    Nr[Eugenie] #= 8, % 2
+    G2K[Whisky] #= Oldest, element(Oldest, Nr, 9), % 3*
+    foreach(I in 1..9) F[I] #= 2 #=> sum([(Nr[K] #= I) : K in Eugenie..Sophie]) #= 2 end, % 4
+    element(G2K[MP3_Spieler], Nr, 5), % 5
+    G[Fabian] #= Geld, % 7: Fabian wird in wenigen Tagen 18
+    Nr[Fabian] #< 9,
+    Nr[Jan] #= 1, G[Jan] #= Dampfmaschine, % 8
+    G[Sophie] #= Schaukelpferd1, % 9
+    Nr[Marie] #= Nr[Sophie] + 1, Nr[Michelle] #= Nr[Sophie] + 1, 
+    KP1 #= G2K[Puppe1], NSminus1 #= Nr[Sophie] - 1, element(KP1, Nr, NSminus1), % Nr[KP1] #= Nr[Sophie] - 1,
+    KP2 #= G2K[Puppe2], NSplus1 #=  Nr[Sophie] + 1, element(KP2, Nr, NSplus1),  % Nr[KP2] #= Nr[Sophie] + 1,
+    KP1 #= Tim #\/ KP2 #= Tim, % 10
+    G[Philipp] #= Schaukelpferd2,
+    KPu #= G2K[Pullover], KLx #= G2K[Lexikon], element(KPu, Nr, NX), element(KLx, Nr, NX), % Nr[KPu] #= Nr[KLx], % 11
+    KKl #= G2K[Kleid], element(KKl, Nr, NKl), element(KP1, Nr, NP1), element(KP2, Nr, NP2), NKl #= NP1 #\/ NKl #= NP2, % Nr[KKl] #= Nr[KP1] #\/ Nr[KKl] #= Nr[KP2], % 12
+    KMo #= G2K[Modellbaukasten], element(KMo, Nr, NMo), abs(NMo - Nr[Michelle]) #= 1, % abs(Nr[KMo] - Nr[Michelle]) #= 1, % 13
+    G2K[Kleid] #>= Eugenie, % das Kleid geht an ein Mädchen
+    % G[Eugenie] #!= Mantel, -> no!
+    solve_all(Nr ++ G ++ G2K ++ [KP1, KP2, KPu, KKl, KMo, NSminus1, NSplus1, NX, NKl, NP1, NP2]) = Sols, println(loesungszahl=len(Sols)), % 72
+    solve(Nr ++ G ++ G2K ++ [KP1, KP2, KPu, KKl, KMo, NSminus1, NSplus1, NX, NKl, NP1, NP2]),
+    printf("%w bekommt den Mantel\n", Namen[G2K[Mantel]]), % Eugenie bekommt den Mantel
+    foreach(I in 1..9)
+        printf("Haus Nr. %d: ", I),
+        foreach(K in 1..N, Nr[K]=I)
+            printf("%s\t= %s,\t", Namen[K], Geschenke[G[K]])
+        end, nl
+   end. 
+/* Eugenie bekommt den Mantel
+Haus Nr. 1: Jan     = Dampfmaschine
+Haus Nr. 2:
+Haus Nr. 3:
+Haus Nr. 4: Max     = Puppe,       Philipp = Schaukelpferd, Maria    = Kleid
+Haus Nr. 5: Alex    = Modellbauk., Daniel  = MP3_Spieler,   Fabian   = Geld,    Sophie = Schaukelpferd
+Haus Nr. 6: Tim     = Puppe,       Marie   = Lexikon,       Michelle = Pullover
+Haus Nr. 7:
+Haus Nr. 8: Eugenie = Mantel
+Haus Nr. 9: Sarah   = Whisky */

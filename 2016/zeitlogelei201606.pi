@@ -1,0 +1,59 @@
+/* Zeit Logelei 2016/06 */
+import cp.
+
+go1 =>
+   Vars = [A,F,I,L,N,O,R,S,T,U],
+   Vars :: 0..9,
+   all_different(Vars),
+   to_num([N,O,R], NOR), to_num([T,A,R,I,F], TARIF),      
+   N #!= 0, T #!= 0, L #!= 0,
+   to_num([L,A,S,T,A,U,T,O],LASTAUTO),
+   NOR * TARIF #= LASTAUTO,
+   solve(Vars),
+   prettyprint(NOR,TARIF,LASTAUTO,N,O,R),
+   print(len(solve_all(Vars))). % = 1
+/* 
+586 * 71623
+-----------
+358115
+ 572984
+  429738
+--------
+41971078
+1 korrekt */
+   
+go2 =>
+   Vars = [A,B,E,F,G,I,N,O,R,T],
+   Vars :: 0..9,
+   all_different(Vars),
+   to_num([N,O,R], NOR), to_num([T,A,R,I,F], TARIF),      
+   N #!= 0, T #!= 0, G #!= 0,
+   to_num([G,E,T,R,I,E,B,E], GETRIEBE),
+   NOR * TARIF #= GETRIEBE,
+   solve(Vars),
+   prettyprint(NOR,TARIF,GETRIEBE,N,O,R),
+   print(len(solve_all(Vars))). % = 1
+/* 
+892 * 61237
+-----------
+489896
+ 551133
+  122474
+--------
+54623404
+1 korrekt */
+
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).
+        
+prettyprint(X,Y,XY,X1,X2,X3) => % X1 X2 X3 sind die drei Digits von X
+   printf("%d * %d\n", X, Y),
+   printf("-----------\n"),
+   printf("%d\n",X1 * Y),
+   printf(" %d\n",X2 * Y),
+   printf("  %d\n",X3 * Y),
+   printf("--------\n"),
+   printf("%d\n", XY).
+
+

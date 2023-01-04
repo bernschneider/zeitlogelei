@@ -1,0 +1,56 @@
+/* Zeit Logelei 2017/25
+http://www.zeit.de/2017/25/spiele-logelei-25 */
+import cp.
+
+go1 =>
+   Vars = [B,L,A,U,I,R,N],
+   Vars :: 0..9,
+   all_different(Vars),
+   to_num([B,L,A,U], BLAU), to_num([L,I,L,A], LILA), 
+   to_num([B,R,A,U,N], BRAUN),      
+   B #!= 0, L #!= 0, 
+   BLAU + LILA #= BRAUN,
+   solve(Vars),
+   printf(" %d\n",BLAU), 
+   printf(" %d\n",LILA), 
+   print("------\n"),
+   print(BRAUN). 
+/*
+ 1842
+ 8584
+------
+10426 korrekt */
+   
+go2 =>
+   Vars = [R,O,T,G,E,L,B,S,A],
+   Vars :: 0..9,
+   all_different(Vars),
+   to_num([R,O,T], ROT), to_num([G,E,L,B], GELB),  
+   to_num([R,O,S,A,R,O,T], ROSAROT), 
+   R #!= 0, G #!= 0, 
+   ROT * GELB #= ROSAROT,
+   solve(Vars),
+   println("[R,O,T,G,E,L,B,S,A]"),
+   println(Vars),
+   printf("%d * %d\n",ROT, GELB),
+   println("----------"),
+   printf("%d%n", R * GELB),
+   printf(" %d%n", O * GELB),
+   printf("  %d%n", T * GELB),
+   println("----------"),
+   printf("%d%n", ROSAROT).
+/*
+[R,O,T,G,E,L,B,S,A]
+[2,7,5,9,8,4,1,0,6]
+275 * 9841
+----------
+19682
+ 68887
+  49205
+----------
+2706275 korrekt!*/
+
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).
+

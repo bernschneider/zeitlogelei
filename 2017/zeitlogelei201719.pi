@@ -1,0 +1,52 @@
+/* Zeit Logelei 2017/19 Tag der Drei */
+import cp.
+import util.
+main =>		 
+  	Uniq = {{0,0,0,0,0,0,1,0,1},
+  		    {0,1,1,1,1,0,0,0,0},	
+  		    {0,1,0,0,1,0,0,0,0},	
+  		    {0,1,0,0,1,0,0,0,0},	
+  		    {0,1,1,1,1,0,0,0,0},	
+  		    {0,0,0,0,0,0,0,0,0},	
+  		    {0,0,0,0,0,0,1,1,0},	
+  		    {0,0,0,0,0,0,1,1,0},	
+  		    {1,0,1,0,0,0,0,0,0}},  
+  	R = 1, G = 2, B = 3,
+  	M =   {{_,_,_,_,_,_,_,_,_},
+  		   {_,B,_,_,_,_,R,B,_},	
+  		   {_,_,_,_,_,_,_,_,_},	
+  		   {_,_,_,_,G,_,_,_,_},	
+  		   {_,_,_,R,_,_,_,_,_},	
+  		   {_,_,_,_,_,R,_,_,_},	
+  		   {_,R,_,_,_,_,_,_,R},	
+  		   {_,R,_,_,_,_,_,B,_},	
+  		   {_,_,_,_,_,_,B,_,_}},  
+    N = len(M), MVars = vars(M), MVars :: [R,G,B],
+    % In jeder Zeile und jeder Spalte soll jede der drei Farben Rot, Blau und Grün genau dreimal vorkommen:
+    foreach(Row in M.rows())
+      	global_cardinality(Row.to_list(), $[1-3, 2-3, 3-3]) 
+    end,
+    foreach(Col in M.columns())
+      	global_cardinality(Col.to_list(), $[1-3, 2-3, 3-3]) 
+    end,
+    % Uniq=1 <-> Kein orthogonal benachbartes Feld hat die gleiche Farbe:
+    foreach(Z in 1..N, S in 1..N)
+      	Uniq[Z,S] #= 1 #<=> sum([(M[Z1,S1] #= M[Z,S]): {Z1,S1} in [{Z-1,S},{Z,S-1},{Z,S+1},{Z+1,S}], 0<Z1, Z1=<N, 0<S1, S1=<N])#= 0
+    end,
+    solve(MVars), Color = "RGB",
+    foreach(Z in 1..N, S in 1..N)
+		printf("%c|", Color[M[Z,S]]),
+    	if S = N then nl end
+    end.
+/*
+G|G|B|B|R|R|G|B|R|
+G|B|G|R|G|R|R|B|B|
+R|G|R|B|R|B|B|G|G|
+R|B|R|B|G|B|G|R|G|
+R|G|B|R|B|G|G|R|B|
+B|B|G|G|G|R|R|R|B|
+B|R|R|G|B|G|B|G|R|
+B|R|G|G|B|G|R|B|R|
+G|R|B|R|R|B|B|G|G|
+
+CPU time 0.005 seconds. korrekt! */    
