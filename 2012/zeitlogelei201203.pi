@@ -1,0 +1,26 @@
+/* Zeit Logelei 2012/03 Alle Jungen sind unterschiedlich groß */
+import cp, util.
+main ?=>
+    S = [A,C,E,G,I,K,M,O,R,U], Name = "ACEGIKMORU",
+    N = len(S), S :: 1..N, all_different(S),
+    foreach((S1,S2,S3,S4) in [
+	   (I,E,M,C), % Wenn Ivan größer als Emil ist, ist Max größer als Conrad.
+	   (G,O,U,K), % Wenn Gustav größer als Ole ist, ist Ulf größer als Kevin.
+	   (C,G,R,O), % Wenn Conrad größer als Gustav ist, ist Ralf größer als Ole.
+	   (I,O,I,E), % Wenn Ivan größer als Ole ist, ist Ivan größer als Emil.
+	   (E,I,I,O), % Wenn Emil größer als Ivan ist, ist Ivan größer als Ole.
+	   (M,K,E,I), % Wenn Max größer als Kevin ist, ist Emil größer als Ivan.
+	   (I,R,C,O), % Wenn Ivan größer als Ralf ist, ist Conrad größer als Ole.
+	   (A,C,E,K), % Wenn Anton größer als Conrad ist, ist Emil größer als Kevin.
+	   (I,E,U,R), % Wenn Ivan größer als Emil ist, ist Ulf größer als Ralf.
+	   (I,K,C,U), % Wenn Ivan größer als Kevin ist, ist Conrad größer als Ulf.
+	   (E,C,A,I), % Wenn Emil größer als Conrad ist, ist Anton größer als Ivan.
+	   (K,M,A,C)])% Wenn Kevin größer als Max ist, ist Anton größer als Conrad   
+            S1 #> S2 #=> S3 #> S4
+    end,
+    solve(S),
+    Ranking = [(S[X], Name[X]) : X in 1..N].sort_down(),
+    foreach(X in 1..N) printf("%c > ", Ranking[X,2]) end,
+    fail.
+/* A > I > E > K > M > C > U > R > O > G
+CPU time 0.104 seconds, no more solutions, korrekt */

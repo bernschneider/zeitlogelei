@@ -1,0 +1,30 @@
+/* Zeit Logelei 2013/51 Professor Knusi in Sumbrasien */
+import cp, util.
+main ?=>
+    Fi = 1, Ol = 0, 
+    G = [U,V,E,N,R,X,Z,S,Q,Y,T,P,O,W], G :: [Fi,Ol], 
+    sum(G) #= 7, % in Sumbrasien gibt es 7 Fijanen und 7 Ollanen
+    foreach((A,B,C) in [(U,T,Q), % Unna: "Tina und Quna." 
+                        (V,P,Z), % Vauna: "Pena und Zetna." 
+                        (E,Z,Y), % Emma: "Zetna und Ypsna." 
+                        (N,Q,V), % Nina: "Quna und Vauna." 
+                        (R,Q,P), % eRna: "Quna und Pena." (eRna != Emma)
+                        (X,W,V), % Xina: "Wenna und Vauna." 
+                        (Z,W,U), % Zetna: "Wenna und Unna." 
+                        (S,P,E), % Sena: "Pena und Emma." 
+                        (Q,P,O), % Quna: "Pena und Onna." 
+                        (Y,Z,V), % Ypsna: "Zetna und Vauna." 
+                        (T,N,P), % Tina: "Nina und Pena." 
+                        (P,X,Q), % Pena: "Xina und Quna."
+                        (O,T,U)]) % Onna: "Tina und Unna."
+        % Die Fijanen haben immer eine andere Fijane genannt, möglicherweise aber auch zwei:
+        A #= Fi #=> (B #= Fi #\/ C #= Fi),
+        % Die Ollanen hingegen haben darauf geachtet, dass die beiden genannten Personen zur selben Gruppe gehören:
+        A #= Ol #=> B #= C
+    end,
+    W #= Fi, % wegen Zeile 22: Wenna hat nur eine Person genannt
+    solve(G), Name = ["U","V","E","N","R","X","Z","S","Q","Y","T","P","O","W"],
+    printf("%w sind Fijanen, der Rest Ollanen.%n", [Name[I] : I in 1..len(G), G[I]=Fi].sort()),
+    fail.
+/* N T U V W Y Z sind Fijanen, der Rest Ollanen.
+CPU time 0.001 seconds, no more solutions, korrekt */

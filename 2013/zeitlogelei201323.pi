@@ -1,0 +1,25 @@
+/* Zeit Logelei 2013/23 Socken sortieren */
+import cp.
+main ?=>
+    % Diese Socken könnten zusammengehören:
+    Kann = [(1,2),(1,4),(1,5), (2,3),(2,6),(2,7), (3,7), (4,8),(4,9), (5,6), (6,9),(6,10),
+            (7,11), (8,12), (9,13), (10,11),(10,14), (11,15), (12,13),(12,16), (13,14), 
+            (14,15), (15,18), (16,17),(16,18), (17,18)],
+    N = 18, P = new_list(N), P :: 1..N, % Partner
+    % Wer nicht in der Liste der Kann-Paare ist, gehört nicht zusammen:
+    foreach(I in 1..N-1, J in I+1..N, not membchk((I,J), Kann))
+        P[I] #!= J      
+    end,
+    foreach(I in 1..N)
+        P[I] #!= I,
+        foreach(J in 1..N) P[I] #= J #=> P[J] #= I end % Symmetrie der Partnerschaft
+    end,
+    % Ähnlichkeiten:
+    foreach( (A,B,C,D) in [(3,7,6,10),(2,7,10,14),(13,14,2,6),(17,18,4,9)])
+        P[C] #= D #=> P[A] #= B
+    end,
+    solve(P), 
+    foreach(I in 1..N, I < P[I]) printf("%d-%d|", I, P[I]) end, nl,
+    fail.
+/* 1-2|3-7|4-8|5-6|9-13|10-11|12-16|14-15|17-18|
+CPU time 0.003 seconds, korrekt, no more solutions */

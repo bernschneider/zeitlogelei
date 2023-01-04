@@ -1,0 +1,22 @@
+/* Zeit Logelei 2012/09 Bronx Flux musste auf Omega-Betauri notlanden und 
+benötigt zur Reparatur seines Raumschiffs ..
+https://www.zeit.de/2012/09/Spiele-Logelei-09 */
+import sat, util.
+
+main =>
+    % .. einen Schraubmodulator, einen Delta-Kompensator und zwei Nitrino-Röhren:
+    Preis = [BS, DK, NR, SM, WR], Preis :: 1..100,
+    % Eine Nitrino-Röhre, ein Wellenrektifikator und ein Brummschlauch kosten zusammen 16 Intergalaktische Taler: 
+    NR + WR + BS #= 16, 
+    % Für einen Taler mehr können Sie zwei Schraubmodulatoren, eine Nitrino-Röhre und einen Delta-Kompensator kaufen:
+    2 * SM + NR + DK #= 17, 
+    % Wenn Sie jedoch den Delta-Kompensator zusammen mit einer Nitrino-Röhre und zwei Wellenrektifikatoren kaufen möchten, 
+    % kostet Sie das 21 Intergalaktische Taler:
+    DK + NR + 2 * WR #= 21, 
+    % Fünf Wellenrektifikatoren, zwei Brummschläuche, zwei Schraubmodulatoren und ein Delta-Kompensator gibt es 
+    % für nur sagenhafte 52 Intergalaktische Taler:
+    5 * WR + 2 * BS + 2 * SM + DK #= 52, 
+    solve(Preis),
+    printf("Bronx bezahlt %d IT.%n", SM + DK + 2 * NR).
+/* Bronx bezahlt 18 IT. - korrekt
+Für die Preisliste gibt es 6 Lösungen, Bronx zahlt aber immer 18 IT */

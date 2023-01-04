@@ -1,0 +1,34 @@
+/* Zeit Logelei 2013/16 Tanzparty */
+import cp, util.
+main ?=>
+    A=1, B=2, C=3, D=4, Mann = [anton,bernd,carl,daniel],
+    E=1, F=2, G=3, H=4, Frau = [erna,frida,gina,hannah],
+    Runde = new_array(4,4), Runde :: 1..4, % R. Tanz, Partnerin von Mann M
+    foreach(R in 1..4) all_different(Runde[R]) end, % in jeder Runde jeweils verschiedene Partnerinnen
+    Partner = transpose(Runde),
+    foreach(M in 1..4) all_different(Partner[M]) end, % am Ende hat jeder Mann mit jeder Frau genau ein Mal getanzt
+    foreach((M1,F1,T1,M2,F2,T2) in 
+        [(A,E,1,C,G,3), % Wenn Anton mit Erna beim ersten Tanz getanzt hat, hat Carl mit Gina den dritten Tanz getanzt.
+         (B,F,3,C,H,2), % Wenn Bernd mit Frida beim dritten Tanz getanzt hat, hat Carl mit Hannah den zweiten Tanz getanzt. 
+         (C,H,4,B,E,2), % Wenn Carl mit Hannah beim vierten Tanz getanzt hat, hat Bernd mit Erna den zweiten Tanz getanzt. 
+         (C,H,2,A,E,1), % Wenn Carl mit Hannah beim zweiten Tanz getanzt hat, hat Anton mit Erna den ersten Tanz getanzt.   
+         (A,G,1,B,H,2), % Wenn Anton mit Gina beim ersten Tanz getanzt hat, hat Bernd mit Hannah den zweiten Tanz getanzt. 
+         (D,F,3,C,H,2), % Wenn Daniel mit Frida beim dritten Tanz getanzt hat, hat Carl mit Hannah den zweiten Tanz getanzt. 
+         (A,F,3,B,H,1), % Wenn Anton mit Frida beim dritten Tanz getanzt hat, hat Bernd mit Hannah den ersten Tanz getanzt. 
+         (C,F,3,A,E,1), % Wenn Carl mit Frida beim dritten Tanz getanzt hat, hat Anton mit Erna den ersten Tanz getanzt.
+         (A,E,1,B,F,4)])% Wenn Anton mit Erna beim ersten Tanz getanzt hat, hat Bernd mit Frida den vierten Tanz getanzt.
+        Runde[T1,M1] #= F1 #=> Runde[T2,M2] #= F2
+    end,
+    solve(vars(Runde) ++ vars(Partner)),
+    foreach(R in 1..4)
+        printf("Runde %d: ", R),
+        foreach(M in 1..4) printf("%w:%w, ", Mann[M], Frau[Runde[R,M]]) end, 
+        nl
+    end,
+    fail.
+/* 
+Runde 1: anton:erna, bernd:hannah, carl:frida, daniel:gina, 
+Runde 2: anton:frida, bernd:gina, carl:hannah, daniel:erna, 
+Runde 3: anton:hannah, bernd:erna, carl:gina, daniel:frida, 
+Runde 4: anton:gina, bernd:frida, carl:erna, daniel:hannah, 
+CPU time 0.001 seconds sieht gut aus */

@@ -1,0 +1,15 @@
+/* Zeit Logelei 2012/46 Die magische Spirale */
+import cp.
+main =>
+    N = 17, Sp = new_list(N), Sp :: 1..100, % blaue Spirale von außen nach innen
+    % Dabei müssen die Zahlen entlang der blauen Spirale immer größer werden:
+    increasing_strict(Sp),
+    % Sind zwei Kreise mit einem roten Stab verbunden, so muss die Zahl im Inneren ein Vielfaches der Zahl im äußeren Kreis sein:
+    foreach((X,Y) in [(X,X+8) : X in 1..8] ++ [(X,17) : X in [11,13,15]])
+        Sp[Y] mod Sp[X] #= 0
+    end,
+    Sum #= sum(Sp),         % die Summe aller Zahlen ..
+    solve([$min(Sum)], Sp), % .. muss minimal sein!
+    println(Sp). /* 
+[1,2,3,4,5,7,10,11,12,14,15,16,20,21,30,33,60]
+CPU time 0.719 seconds korrekt */

@@ -1,0 +1,10 @@
+/* Zeit Logelei 2012/45 In einer ägyptischen Grabkammer */
+import cp.
+main =>
+    Alter = [R,S,T], Alter :: 1..100, % Ramses, Sethos, Tuja
+    R + S #= T, % Ramses und Sethos sind zusammen so alt wie Tuja.
+    (S-R) + (T-R) #= 45, % Bei Ramses Geburt waren Sethos und Tuja zusammen 45 Jahre alt.
+    T + 3 #= 5 * (R + 3), % In drei Jahren wird Tuja 5-mal so alt sein wie Ramses.
+    solve(Alter),
+    printf("Ramses ist %d, Sethos %d und Tuja %d Jahre alt.", R,S,T). 
+    % Ramses ist 3, Sethos 24 und Tuja 27 Jahre alt.

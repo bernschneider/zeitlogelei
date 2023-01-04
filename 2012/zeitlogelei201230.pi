@@ -1,0 +1,48 @@
+/* Zeit Logelei 2012/30 Fünf Personen haben an einem IQ-Test teilgenommen
+https://www.zeit.de/2012/30/Spiele-Logelei-30 */
+import cp.
+main ?=>
+    Be=1, Ma=2, Le=3, Ri=4, Sa=5,
+    Name = ["Ben","Mark","Lena","Rita","Sarah"], N = len(Name),
+    % Die jüngste Person ist 29, die älteste 45 Jahre alt:
+    Alter = new_list(N), Alter :: 29..45, 
+    [Jung,Alt] :: 1..5, element(Jung,Alter,29), element(Alt,Alter,45),
+    foreach(I in 1..5) I #!= Alt #=> Alter[I] #< 45 end, 
+    RW = new_list(N), RW :: 1..300, % Rohwert
+    IQ = new_list(N), IQ :: 130..230, 
+    P0 :: 1..5, element(P0,IQ,130), % der kleinste IQ ist 130
+    IQ[Ri] #= 150, % Ritas IQ ist 150
+    % Rita hat 1/9 weniger Rohwert-Punkte erreicht als Sarah:
+    9 * RW[Ri] #= 8 * RW[Sa],
+    % .. und 1/7 weniger als Ben:
+    7 * RW[Ri] #= 6 * RW[Be],
+    % Sarah hat den gleichen IQ wie Ben und ist gleich alt wie Mark:
+    IQ[Sa] #= IQ[Be], Alter[Sa] #= Alter[Ma],
+    % Marks Rohwert ist gleich groß wie Lenas, aber 6 Punkte höher als Bens:
+    RW[Ma] #= RW[Le], RW[Ma] #= 6 + RW[Be],
+    % Lena ist 5 Jahre jünger als Sarah und hat beim Rohwert 14 Punkte mehr erreicht als Rita:
+    Alter[Le] + 5 #= Alter[Sa], RW[Le] #= 14 + RW[Ri],
+    % Ben ist 39 Jahre alt. Sein IQ ist 4 Punkte höher als der von Mark:
+    Alter[Be] #= 39, IQ[Be] #= 4 + IQ[Ma],
+    % Lenas IQ ist 70 Punkte größer als ihr Rohwert.
+    IQ[Le] #= 70 + RW[Le],
+    % Wie ist die lineare Gleichung für den IQ? 
+    [FA,FR,FG] :: 0..100,
+    foreach(I in 1..N)
+        IQ[I] #= FA * Alter[I] + FR * RW[I] + FG * (I #>= 3)
+    end,
+    solve(Alter ++ [Jung,Alt,P0] ++ RW ++ IQ ++ [FA,FR,FG]),
+    % printf("Alter = % w, RW = %w, IQ = %w%n", Alter, RW, IQ),
+    foreach(I in 1..N)
+        printf("%5s ist %d Jahre alt, RW = %d, IQ = %d%n", Name[I], Alter[I], RW[I], IQ[I])
+    end,
+    printf("Die Formel lautet: IQ = %d * Alter + %d * RW + %d * Frau", FA,FR,FG),
+    fail.
+/*
+  Ben ist 39 Jahre alt, RW = 56, IQ = 134
+ Mark ist 34 Jahre alt, RW = 62, IQ = 130
+ Lena ist 29 Jahre alt, RW = 62, IQ = 132
+ Rita ist 45 Jahre alt, RW = 48, IQ = 150
+Sarah ist 34 Jahre alt, RW = 54, IQ = 134
+Die Formel lautet: IQ = 2 * Alter + 1 * RW + 12 * Frau
+CPU time 0.001 seconds, no more solutions, korrekt */

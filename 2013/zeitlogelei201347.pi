@@ -1,0 +1,33 @@
+/* Zeit Logelei 2013/47 Französische Tiernamen
+https://www.zeit.de/2013/47/spiele-logelei-47 */
+import cp, util.
+
+main =>   % deutsch, französisch 
+  Words = [ ["AFFE", "SINGE"], 
+            ["ELEFANT", "ELEPHANT"],
+            ["GANS", "OIE"],
+            ["HAI", "REQUIN"],
+            ["IGEL", "HERISSON"],
+            ["KATZE", "CHAT"],
+            ["KUH", "VACHE"],
+            ["TAUBE", "PIGEON"],
+            ["ZEBRA", "ZEBRE"] ], Anz = len(Words),
+  Alphabet = sort(remove_dups(flatten(Words))), N = len(Alphabet),
+  % Natalie hat jedem Buchstaben eine Zahl zwischen 1 und 5 zugeordnet:
+  Z = new_list(N), Z :: 1..5, 
+  W = new_list(Anz), W :: 5..25, % Wert des Worts
+  foreach(I in 1..Anz)
+    [Dt,Fr] = Words[I],
+    W[I] #= sum([Z[find_first_of(Alphabet, C)] : C in Dt]), % gleicher Wortwert ..
+    W[I] #= sum([Z[find_first_of(Alphabet, C)] : C in Fr])  % .. in beiden Sprachen!
+  end,
+  all_different(W), % verschiedene Wortwerte für die neun Wörter
+  solve(Z ++ W),
+  println(W),
+  foreach(Letter in 1..N)
+      printf("%c = %d, ", Alphabet[Letter], Z[Letter])
+  end.
+/* [12,19,7,10,15,11,8,13,9]
+A = 1, B = 5, C = 1, E = 1, F = 5, G = 4, H = 4, I = 5, K = 3, L = 5, 
+N = 1, O = 1, P = 1, Q = 1, R = 1, S = 1, T = 5, U = 1, V = 1, Z = 1, 
+CPU time 0.009 seconds korrekt */

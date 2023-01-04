@@ -1,0 +1,27 @@
+/* Zeit Logelei 2013/20 Professor Knusi bei den Bonsai-Bäumchen-Züchtern */
+import cp.
+main ?=>
+    Vars = [Fin,Gar,Ner,Pab,Rug,Sel,Wil], N = len(Vars), Vars :: 1..N, % Größe
+    all_different(Vars), % alle unterschiedlich groß
+    sin(Wil #< Sel, Pab #> Ner, Fin #< Gar), 
+    sin(Sel #< Gar, Rug #< Pab, Ner #> Wil),
+    sin(Fin #< Rug, Wil #< Gar, Sel #< Pab),
+    sin(Wil #> Sel, Rug #< Pab, Fin #< Gar),
+    sin(Ner #> Fin, Wil #< Sel, Sel #> Fin),
+    sin(Wil #< Fin, Pab #> Sel, Gar #< Pab),
+    sin(Pab #> Ner, Sel #> Gar, Wil #< Rug),
+    sin(Rug #< Wil, Sel #< Gar, Ner #> Pab),
+    sin(Fin #< Pab, Sel #< Ner, Wil #> Gar),
+    sin(Ner #< Gar, Sel #< Fin, Fin #> Wil),
+    sin(Wil #< Ner, Fin #> Sel, Pab #> Gar),
+    sin(Ner #< Wil, Pab #> Ner, Ner #< Gar),
+    sin(Sel #> Pab, Pab #< Fin, Ner #> Rug),
+    solve(Vars),
+    Name = ["Fin","Gar","Ner","Pab","Rug","Sel","Wil"],
+    Ranking = [(Vars[I],Name[I]) : I in 1..N].sort(), 
+    println([S : (_,S) in Ranking]), fail. 
+/* [Ner,Gar,Fin,Rug,Pab,Sel,Wil] CPU time 0.017 seconds no more solutions korrekt */
+
+% Sin A val B dol C bedeutet, dass entweder die Aussage A wahr ist oder, 
+% wenn A nicht wahr ist, dann ist genau eine der beiden Aussagen B und C wahr":
+sin(A,B,C) => (B #= C) #=> A. %  (not A) => (B ^ C) umgedreht

@@ -1,0 +1,34 @@
+/* Zeit Logelei 2012/16 Farben-Formel-Metik */
+import sat, util.
+
+main =>
+   Farben = [Gr, Bl, Or],  % Grüne, Blau, Orange
+   Farben :: 0..9, all_different(Farben),
+   Formen = [Mo, Dr, Kr, Qu, Se], % Mond, Dreieck, Kreis, Quadrat, Sechseck
+   Farben :: 0..9, all_different(Formen), 
+   L = [ [Gr, _, _,Or, _, _], [ _,Mo, _, _,Dr,Mo],   % 1=Farbe1    2=Form1
+         [Gr, _, _,Or, _, _], [ _,Mo, _, _,Dr,Kr],   % 3=Farbe2    4=Form2
+         [ _,Bl,Gr,Gr,Or,Bl], [Kr,Dr,Qu, _,Se, _] ], % 5=Farbe1+2  6=Form1+2
+   Num = new_array(6), % numerische Repräsentation der Elemente von L
+   Num[1] + Num[3] #= Num[5], % Eine Farben-Formen-Metik besteht aus
+   Num[2] + Num[4] #= Num[6], % .. zwei separaten Metiken,
+   Num[5] #= Num[6],          % ..die aber dieselbe Summe haben
+   foreach(I in 1..6)
+       to_num(L[I], Num[I]), L[I] :: 0..9, L[I,1] #!= 0
+   end,
+   solve(Farben ++ Formen ++ Num),
+   foreach(I in 1..2..5) 
+       printf("%6d  %6d%n", Num[I], Num[I+1]),
+       if I=3 then println("------  ------") end
+   end.
+/*
+152033  221852
+199072  129253
+------  ------
+351105  351105
+CPU time 6.384 seconds, korrekt.
+(Es gibt zwar noch mehr Lösungen, aber bei allen ist die Summe dieselbe.) */
+
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).

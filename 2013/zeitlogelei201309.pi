@@ -1,0 +1,28 @@
+/* Zeit Logelei 2013/09 Die sechs platonischen Körper */
+import sat, util.
+main ?=>
+   Platon = ["TETRAEDER", "WUERFEL", "OKTAEDER", "DODEKAEDER", "IKOSAEDER", "KUGEL"],
+   Letter = "TEADFGIKLORSUW", Max = len(Letter), % verwendete Buchstaben
+   T = 1, E = 2, % wir arbeiten hier mit Indizes im String Letter
+   M = {{T,_,_,E},
+        {_,_,_,_},
+        {_,_,_,_},
+        {_,_,T,_}}, M :: 1..Max, 
+   foreach(W in Platon) %   v-- Index in Letter  --v
+        N = len(W), Word = [find_first_of(Letter, C) : C in W],
+        IZ = new_list(N), IS = new_list(N), IZ ++ IS :: 1..4,
+        foreach(J in 1..N) 
+            if J < N then abs(IZ[J] - IZ[J+1]) #=< 1, abs(IS[J] - IS[J+1]) #=< 1 end,
+            matrix_element(M, IZ[J], IS[J], Word[J])
+        end
+   end,
+   solve(M),
+   foreach(Z in 1..4)
+        foreach(S in 1..4) printf("%c|", Letter[M[Z,S]]) end, nl
+   end, fail.
+/* 
+T|F|L|E|
+R|E|U|G|
+D|A|K|W|
+S|O|T|I|
+CPU time 18.811 seconds no more solutions korrekt */

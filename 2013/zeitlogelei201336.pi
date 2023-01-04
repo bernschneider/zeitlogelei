@@ -1,0 +1,34 @@
+/* Zeit Logelei 2013/36
+https://www.zeit.de/2013/36/spiele-logelei-36
+Wer in Ubsien zu einem kleineren Einwohner spricht, muss immer die Wahrheit sagen, 
+wer zu einem größeren Einwohner spricht, muss immer lügen. 
+Und wenn beide gleich groß sind, so sagen sie ebenfalls immer die Wahrheit. */
+import cp.
+main =>  
+  B=1, C=2, F=3, H=4, J=5, L=6, S=7, U=8, Name = "BCFHJLSU", 
+  N = len(Name), Gr = new_list(N), Gr :: 1..N, % Größe
+  foreach((X,Y, Q,Rel,R) in [(U,S, B,kl,F),  % Umsel zu Sibie: "Bosel ist kleiner als Fauni."
+                             (J,F, U,gl,H),  % Jodel zu Fauni: "Umsel ist gleich groß wie Husti."
+                             (H,B, S,gr,C),  % Husti zu Bosel: "Sibie ist größer als Crusi."
+                             (S,C, F,gl,J),  % Sibie zu Crusi: "Fauni ist gleich groß wie Jodel."
+                             (L,U, H,kl,S),  % Lupfi zu Umsel: "Husti ist kleiner als Sibie."
+                             (F,L, C,gl,J),  % Fauni zu Lupfi: "Crusi ist gleich groß wie Jodel."
+                             (B,H, L,kl,S),  % Bosel zu Husti: "Lupfi ist kleiner als Sibie."
+                             (C,S, J,gr,L),  % Crusi zu Sibie: "Jodel ist größer als Lupfi."
+                             (H,U, F,gl,B),  % Husti zu Umsel: "Fauni ist gleich groß wie Bosel."
+                             (B,L, S,gr,J),  % Bosel zu Lupfi: "Sibie ist größer als Jodel."
+                             (B,F, U,gl,L) ])% Bosel zu Fauni: "Umsel ist gleich groß wie Lupfi."
+     if     Rel=kl then Gr[X] #>= Gr[Y] #<=> Gr[Q] #< Gr[R]
+     elseif Rel=gr then Gr[X] #>= Gr[Y] #<=> Gr[Q] #> Gr[R]
+                   else Gr[X] #>= Gr[Y] #<=> Gr[Q] #= Gr[R]
+     end
+  end,
+  solve(Gr), 
+  println("Einwohner nach Gruppen gleicher Größe aufsteigend:"),
+  foreach(G in 1..N)
+    Gruppe = [Name[I] : I in 1..N, Gr[I]=G],
+    if Gruppe!=[] then printf("Gruppe %d: %w%n", G, Gruppe) end
+  end. 
+/* Einwohner nach Gruppen gleicher Größe aufsteigend:
+Gruppe 1: BCFHJLU
+Gruppe 2: S                 korrekt */

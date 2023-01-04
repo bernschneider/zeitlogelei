@@ -1,0 +1,26 @@
+/* Zeit Logelei 2012/23 Professor Knusi in Bomurien 
+In Bomurien ist es üblich, dass man die Wahrheit sagt, wenn man kleiner ist, 
+als der, zu dem man spricht, und dass man lügt, wenn man größer ist
+https://www.zeit.de/2012/23/Spiele-Logelei-23 */
+import cp.
+main ?=>
+    L = [A, B, C, D, E, F, G], % Ranking
+    N = len(L), L :: 1..N, all_different(L), % alle unterschiedlich groß
+    foreach((X,Y,U,V) in [
+        (A,B,C,D), % Alfons von Zauri zu Belfons von Yari: "Celfons von Weri ist kleiner als Delfons von Vauri."
+        (B,C,D,E), % Belfons von Yari zu Celfons von Weri: "Delfons von Vauri ist kleiner als Elfons von Uri."
+        (C,D,E,F), % Celfons von Weri zu Delfons von Vauri: "Elfons von Uri ist kleiner als Falfons von Tauri."
+        (D,E,C,F), % Delfons von Vauri zu Elfons von Uri: "Celfons von Weri ist kleiner als Falfons von Tauri."
+        (E,F,G,A), % Elfons von Uri zu Falfons von Tauri: "Gelfons von Suri ist kleiner als Alfons von Zauri."
+        (G,A,B,E)]) % Gelfons von Suri zu Alfons von Zauri: "Belfons von Yari ist kleiner als Elfons von Uri."
+      X #< Y #<=> U #< V
+    end,
+    F #< G #=> A #< C, % Falfons von Tauri zu Gelfons von Suri: "Celfons von Suri ist doppelt so groß wie Alfons von Zauri."
+    solve(L),
+    Ranking = [(L[I],I) : I in 1..N].sort(),
+    foreach((_,I) in Ranking)
+        printf("%c < ", chr(64+I))
+    end,
+    fail.
+/* G < A < B < C < D < E < F 
+CPU time 0.003 seconds, no more solutions, korrekt */

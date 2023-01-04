@@ -1,0 +1,55 @@
+/*
+Zeit Logelei 2013/52 Geschenke
+*/
+
+import util.
+import cp.
+
+main => go.
+
+go =>
+ N = 9, 
+ Cnt = {{0,0,0,0,0,0,1,0,0},
+		{1,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0},
+		{0,0,0,3,0,0,0,0,0},
+		{0,0,0,0,0,0,3,0,0},
+		{0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,2,0,0}},
+   M = new_array(N,N),
+   MVars = array_matrix_to_list(M),
+   MVars :: 0..1,
+   foreach(Row in M.rows())
+   		sum(Row) #= 2
+   end,
+   foreach(Col in M.columns())
+   		sum(Col) #= 2
+   end,
+   foreach(R in 1..N, C in 1..N, Cnt[R,C] > 0)
+   		M[R,C] #= 0,
+   		sum([M[R1,C1] : R1 in R-1..R+1, C1 in C-1..C+1, R1>=1, R1=<N, C1>=1, C1=<N]) #= Cnt[R,C]
+   end,
+   foreach(R in 1..N-1, C in 1..N-1)
+   		M[R,C] + M[R+1,C] + M[R,C+1] + M[R+1,C+1] #=< 1
+   end,
+   solve([down], MVars),
+   foreach(R in 1..N) 
+      foreach(C in 1..N) 
+            printf("%2d", M[R,C] )
+	  end, nl
+   end.
+/*
+ 0 0 0 1 0 0 0 0 1
+ 0 1 0 0 0 0 1 0 0
+ 0 0 0 0 1 0 0 0 1
+ 1 0 1 0 0 0 0 0 0
+ 0 0 0 0 1 0 1 0 0
+ 1 0 1 0 0 0 0 0 0
+ 0 0 0 0 0 1 0 1 0
+ 0 1 0 1 0 0 0 0 0
+ 0 0 0 0 0 1 0 1 0
+Zeile 1: Spalte 4 und 9; Zeile 2: 2 und 7; Zeile 3: 5 und 9; Zeile 4: 1 und 3; 
+Zeile 5: 5 und 7; Zeile 6: 1 und 3; Zeile 7: 6 und 8; Zeile 8: 2 und 4; Zeile 9: 6 und 8
+*/   

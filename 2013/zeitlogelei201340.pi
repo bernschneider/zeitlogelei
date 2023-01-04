@@ -1,0 +1,45 @@
+/* Zeit Logelei 2013/40 Es sind Rechtecke mit Kantenlänge > 1 einzuzeichnen
+https://www.zeit.de/2013/40/spiele-logelei-40 */
+import sat, util.
+main =>
+    Scnt = [3,7,4,6,6,2,7,5,8,5], N = len(Scnt),
+    Zcnt = [7,7,7,4,4,6,2,8,6,2],
+    M = new_array(N,N), M :: 0..1,
+    % Die Rechecke sind wirklich Rechtecke und berühren sich weder ortho- noch diagonal:
+    foreach(Z in 1..N-1, S in 1..N-1)
+        (M[Z,S] #= 1 #/\ M[Z+1,S+1] #= 1) #<=> (M[Z,S+1] #= 1 #/\ M[Z+1,S] #= 1) 
+    end,
+    % Mindestbreite und -höhe der Rechecke ist 2:
+    foreach(Z in 1..N, S in 1..N-1) % X neben X hat ein X darüber oder darunter:
+        if     Z = 1 then (M[Z,S] #= 1 #/\ M[Z,S+1] #= 1) #=> M[Z+1,S] #= 1
+        elseif Z = N then (M[Z,S] #= 1 #/\ M[Z,S+1] #= 1) #=> M[Z-1,S] #= 1
+        else              (M[Z,S] #= 1 #/\ M[Z,S+1] #= 1) #=> (M[Z-1,S] #= 1 #\/ M[Z+1,S] #= 1)
+        end
+    end,
+    foreach(Z in 1..N-1, S in 1..N) % X über X hat ein X links oder rechts:
+        if     S = 1 then (M[Z,S] #= 1 #/\ M[Z+1,S] #= 1) #=> M[Z,S+1] #= 1
+        elseif S = N then (M[Z,S] #= 1 #/\ M[Z+1,S] #= 1) #=> M[Z,S-1] #= 1
+        else              (M[Z,S] #= 1 #/\ M[Z+1,S] #= 1) #=> (M[Z,S-1] #= 1 #\/ M[Z,S+1] #= 1)
+        end
+    end,
+    % Die Zahlen links und oben geben an, wie viele Felder des Diagramms in der entsprechenden Zeile bzw. Spalte von Pentominos bedeckt sind:
+    foreach({Cnt,L} in zip(Scnt,M.columns()) ++ zip(Zcnt,M.rows()))
+        Cnt #= sum(L)
+    end,
+    solve(M),
+    foreach(Z in 1..N)
+        foreach(S in 1..N)
+		    printf("%c|", cond(M[Z,S]=1, 'X', ' '))
+    	end, nl
+    end. /*
+ |X|X|X|X| |X|X|X| |
+ |X|X|X|X| |X|X|X| |
+ |X|X|X|X| |X|X|X| |
+ |X|X|X|X| | | | | |
+ | | | | | |X|X|X|X|
+X|X| | | | |X|X|X|X|
+X|X| | | | | | | | |
+X|X| |X|X|X|X| |X|X|
+ | | |X|X|X|X| |X|X|
+ | | | | | | | |X|X|
+CPU time 0.939 seconds korrekt */

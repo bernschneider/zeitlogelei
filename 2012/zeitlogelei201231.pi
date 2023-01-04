@@ -1,0 +1,28 @@
+/* Zeit Logelei 2012/31 Die Untrennbaren 8 ..
+.. haben sich eine siebenstellige Zahl für das Zahlenschloss ausgedacht
+https://www.zeit.de/2012/31/Spiele-Logelei-31 */
+import sat.
+main ?=>
+    L = new_list(7), to_num(L, N), 
+    L :: 1..9, % die Null kommt in der Zahl nicht vor
+    all_different(L), % alle Ziffern sind verschieden
+    N mod 3 #= 0, % die Zahl ist durch 3 teilbar
+    % Die Summe zweier aufeinanderfolgender Ziffern ist immer ungerade:
+    foreach(I in 1..6) 
+        (L[I] + L[I+1]) mod 2 #= 1 
+    end,
+    (N + 3) mod 11 #= 0, % Wenn ich die Zahl um 3 erhöhe, ist sie durch 11 teilbar.
+    (N - 1) mod 101 #= 0, % Wenn ich die Zahl um 1 verringere, ist sie durch 101 teilbar.
+    % Jede gerade Ziffer ist die Summe oder die Differenz der beiden Ziffern links und rechts daneben:
+    foreach(I in 2..6)
+        L[I] mod 2 #= 0 #=> 
+            (L[I] #= L[I-1] + L[I+1] #\/ L[I] #= abs(L[I+1] - L[I-1]))
+    end,
+    solve([N|L]),
+    println(N), 
+    fail.
+/* 1872945
+3.666 seconds, no more solutions, korrekt */
+to_num(List, Num) => % Num = Wert der Liste
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).

@@ -1,0 +1,28 @@
+/* Zeit Logelei 2013/31 In Paris wird demnächst die S-Bahn-Linie "RER G" eröffnet.
+https://www.zeit.de/2013/31/spiele-logelei-31 */
+import cp, util.
+main ?=>
+    Max = 126, % die reine Fahrtzeit zum anderen Endhalt ohne die Wartezeiten an den Zwischenhalten beträgt weniger als zwei Stunden
+    Stat = [BdB,C,CeL,GSL,PdC,PdT,Pn,RS], Stat :: 0..Max, % Abfahrtszeiten
+    PdT #= 0, % o.E. Startbahnhof
+    % Fahrzeit = Differenz der Abfahrtszeiten - Wartezeit am Ziel:
+    abs(GSL - BdB) - 1 #= 3 * (abs(RS - PdT) - 1), 
+    abs(Pn - PdT) - 1 #= abs(Pn - max(Stat)) - 1,
+    2 * (abs(C - GSL) - 1) #= abs(C - BdB) - 1,
+    abs(GSL - RS) - 1 #< abs(GSL - Pn) - 1,
+    abs(RS - PdC) - 1 #= abs(BdB - RS) - 1 + abs(PdC - CeL) - 1,
+    abs(C - GSL) - 1 #= abs(BdB - PdC) - 1,
+    % Timetable:
+    TT = new_list(8), TT :: 0..Max, increasing_strict(TT), % TT[8] = Ankunft Endstation + 1 Minute
+    TT[1] #= 0, TT[8] #= max(Stat),
+    foreach(I in 2..7) TT[I] #= min([ X * (X #> TT[I-1]) + 130 * (X #=< TT[I-1]) : X in Stat]) end,
+    F = new_list(7), F :: 2..Max, all_different(F), % Fahrzeit zwischen zwei Stationen + 1 (Wartezeit)
+    foreach(I in 1..7) F[I] #= TT[I+1] - TT[I] end,
+    solve(Stat ++ TT ++ F),
+    Name = ["BdB","C","CeL","GSL","PdC","PdT","Pn","RS"],
+    Res = [(Stat[I],Name[I]) : I in 1..8].sort(),
+    foreach(I in 1..7) printf("%s - %d - ", Res[I,2], F[I]-1) end, println(Res[8,2]),
+    fail.
+/* 
+PdT - 5 - C - 3 - RS - 24 - GSL - 25 - Pn - 1 - BdB - 28 - PdC - 29 - CeL
+CPU time 15.948 seconds, no more solutions, korrekt */

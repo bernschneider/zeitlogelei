@@ -1,0 +1,35 @@
+/* Zeit Logelei 2013/05 Professor Knusi in Sefernien */
+import cp, util.
+main ?=>
+    Fanore=1, Wahore=2, % Fanoren lügen immer, und Wahoren sagen immer die Wahrheit
+    % .. außer an sogenannten Wechseltagen, da ist es genau umgekehrt
+    Lawiner=3, % Und dann gibt es da noch die Lawiner, die sagen immer die Wahrheit
+    Sta = [fanor,wahor,lawiner],
+    M=1, R=2, F=3, G=4, D=5, J=6, H=7,  
+    Name = [michael,robert,felix,gustav,daniel,johannes,hubert],
+    [Heute, Morgen] :: 1..2, % 1 = Wechseltag
+    St = new_list(7), St :: 1..3, 
+    foreach((P1,Tag,P2,P3,Stamm) in 
+        [(M,Morgen,R,G,Fanore),  % Michael: "Morgen könnte Robert sagen, dass Gustav ein Fanore ist."
+         (D,Heute, J,H,Fanore),  % Daniel: "Heute könnte Johannes sagen, dass Hubert ein Fanore ist."
+         (R,Heute, J,H,Lawiner), % Robert: "Heute könnte Johannes sagen, dass Hubert ein Lawiner ist."
+         (F,Morgen,R,D,Lawiner), % Felix: "Morgen könnte Robert sagen, dass Daniel ein Lawiner ist."
+         (H,Heute, D,J,Wahore),  % Hubert: "Heute könnte Daniel sagen, dass Johannes ein Wahore ist."
+         (G,Morgen,M,J,Wahore),  % Gustav: "Morgen könnte Michael sagen, dass Johannes ein Wahore ist."
+         (J,Heute, R,H,Fanore)]) % Johannes: "Heute könnte Robert sagen, dass Hubert ein Fanore ist."
+      (St[P1] #= Heute #\/ St[P1] #= Lawiner) #= 
+            ( (St[P2] #= Tag #\/ St[P2] #= Lawiner) #= (St[P3] #= Stamm) )
+    end,
+    solve([Heute, Morgen] ++ St),
+    wtag(Heute,"Heute"), wtag(Morgen,"Morgen"),
+    foreach(Stamm in 2..3)
+        Liste = [Name[I] : I in 1..7, St[I]=Stamm], 
+        printf("%w %s %w.%n", Liste, cond(len(Liste)=1,"ist","sind"), Sta[Stamm])
+    end, println("Der Rest ist Fahore."),  
+    fail.
+/* Morgen ist Wechseltag.
+[hubert] ist wahor.
+[michael,johannes] sind lawiner.
+Der Rest ist Fahore.
+CPU time 0.003 seconds no more solutions korrekt */
+wtag(Tag,Str) => if Tag=1 then printf("%s ist Wechseltag.%n", Str) end.

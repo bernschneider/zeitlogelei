@@ -1,0 +1,34 @@
+/* Zeit Logelei 2012/05 Neele: "Ich habe mir eine vierstellige Zahl ausgedacht."
+https://www.zeit.de/2012/05/Spiele-Logelei-05 */
+import cp, util.
+
+main ?=>
+    % .. wenn ich meine Zahl rückwärts aufschreibe, dann ist sie genau 2/3 so groß:
+    Neele = new_list(4), Neele :: 1..9, to_num(Neele,NumN),
+    NeeleR = reverse(Neele), to_num(NeeleR,NumNR), 3 * NumNR #= 2 * NumN,
+    solve(Neele ++ NeeleR ++ [NumN,NumNR]),
+    % println(Neele), % [6,5,3,4]
+    % Maxim: "Ich habe mir eine andere vierstellige Zahl ausgedacht." 
+    Maxim = new_list(4), Maxim :: 1..9, to_num(Maxim,NumM), NumM #!= NumN,
+    % Sie besteht aus denselben Ziffern wie deine:
+    samedigits(Maxim,Neele),
+    % Und wenn ich 2/3 dieser Zahl ausrechne, dann besteht die so entstandene Zahl ebenfalls aus denselben Ziffern wie deine:
+    Num23 #= 2 * NumM // 3, Maxim23 = new_list(4), Maxim23 :: 0..9, 
+    to_num(Maxim23,Num23), samedigits(Maxim23,Neele),
+    % Britta, die zugehört hat: "Ich hab mir eine dreistellige Zahl ausgedacht, 
+    Britta = [B1,B2,B3], Britta :: 0..9, Britta[1] #> 0, to_num(Britta,NumB),
+    % und wenn ich die letzten beiden Ziffern vertausche, erhalte ich 3/5 von der ursprünglichen Zahl."
+    Britta35 = [B1,B3,B2], to_num(Britta35,NumB35),
+    5 * NumB35 #= 3 * NumB,
+    solve(Neele ++ NeeleR ++ Maxim ++ Maxim23 ++ Britta ++ Britta35 ++ [NumN,NumM,Num23,NumB,NumB35]),
+    printf("Neele = %d, Maxim = %d, Britta = %d%n", NumN, NumM, NumB),
+    fail. 
+/* Neele = 6534, Maxim = 5346, Britta = 180
+CPU time 0.004 seconds, no more solutions, korrekt */
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).
+
+samedigits(L1,L2) =>
+    foreach(C in L1) element(_, L2, C) end,
+    foreach(C in L2) element(_, L1, C) end.

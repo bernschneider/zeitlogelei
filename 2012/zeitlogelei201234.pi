@@ -1,0 +1,46 @@
+% ZEIT Logelei 2012/34 Diagramm mit schwarzen und weißen Kreisen
+import util, sat.
+
+neib(1, X, Y) => 1 #= abs(X - Y).           % 1 = weißer Kreis
+neib(2, X, Y) => 2 * X #= Y #\/ 2 * Y #= X. % 2 = schwarzer Kreis
+neib(0, X, Y) => 1 #!= abs(X - Y) #/\ 2 * X #!= Y #/\ 2 * Y #!= X. % 0 = kein Kreis
+	
+main ?=>
+   N = 9, M = new_array(N,N), MVars = array_matrix_to_list(M), MVars :: 1..N,
+   foreach(Z in 1..N) all_different( [M[Z,S] : S in 1..N] ) end,
+   foreach(S in 1..N) all_different( [M[Z,S] : Z in 1..N] )  end,
+   W = 1, B = 2, % 0 = kein Kreis
+   HN = {{0,0,0,0,0,W,W,0}, % Horizontal Neighbours
+   		 {W,W,0,B,B,B,W,0},
+   		 {0,0,0,0,W,B,B,0},
+   		 {0,W,0,0,W,0,0,0},
+   		 {B,B,0,0,0,0,B,W},
+   		 {0,B,W,W,0,0,W,0},
+   		 {0,0,B,0,B,0,0,0},
+         {0,W,W,0,W,W,0,0},
+         {0,0,W,0,0,0,0,W}},
+   foreach(Z in 1..N, S in 1..N-1) neib(HN[Z,S], M[Z,S], M[Z,S+1]) end,
+   VN = {{W,0,W,0,0,W,0,0,W}, % Vertical Neighbours (row-wise)
+   		 {0,W,0,0,W,B,B,W,B},
+   		 {0,0,0,0,0,0,0,B,W},
+   		 {0,B,0,0,0,W,0,0,0},
+   		 {W,W,0,0,0,0,W,0,0},
+   		 {0,0,0,0,0,0,0,W,W},
+   		 {0,0,W,B,W,0,0,0,0},
+   		 {0,0,0,0,W,0,0,0,0}},
+   foreach(Z in 1..N-1, S in 1..N) neib(VN[Z,S], M[Z,S], M[Z+1,S]) end,
+   solve(MVars),
+   foreach(Z in 1..N) 
+      foreach(S in 1..N) printf(" %i", M[Z,S]) end, nl
+   end, fail.
+/* 
+ 4 1 8 3 9 5 6 7 2
+ 5 6 7 1 2 4 8 9 3
+ 9 5 1 7 3 2 4 8 6
+ 3 8 9 2 5 6 1 4 7
+ 8 4 2 9 1 7 3 6 5
+ 7 3 6 5 4 9 2 1 8
+ 1 7 4 8 6 3 5 2 9
+ 6 2 3 4 7 8 9 5 1
+ 2 9 5 6 8 1 7 3 4
+CPU time 0.338 seconds, no more solutions, KORREKT */

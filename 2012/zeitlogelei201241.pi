@@ -1,0 +1,39 @@
+/* Zeit Logelei 2012/41 In Bendalusien gibt es vier Gruppen, die für sich festgelegt haben, 
+ob sie immer die Wahrheit sagen oder ob sie immer lügen müssen. */
+import cp, util.
+main ?=>
+    W=1, X=2, Y=3, Z=4, NameG = ["Worf", "Xaf", "Yerk", "Zurk"],
+    Wahr = new_list(4), Wahr :: 0..1, % 1 = sagt die Wahrheit 
+    A=1, B=2, C=3, D=4, E=5, F=6, NameP = ["Arpfel","Birne","Criwi","Drattel","Eri","Freige"], % Person
+    Gruppe = new_list(6), Gruppe :: 1..4,
+    foreach((P0,G1,W1) in [
+            (C,X,0), % Criwi: "Xafs lügen immer."
+            (F,W,1), % Freige: "Worfs sagen immer die Wahrheit."
+            (E,Z,0), % Eri: "Zurks lügen immer."
+            (A,Y,0)])% Arpfel: "Yerks lügen immer."
+        element(Gruppe[P0], Wahr, W0), W0 #= (Wahr[G1] #= W1)
+    end,
+    foreach((P0,P1,G1) in [
+            (D,A,W), % Drattel: "Arpfel ist ein Worf." 
+            (C,F,Z), % Criwi: "Freige ist eine Zurk." 
+            (F,C,W), % Freige: "Criwi ist eine Worf." 
+            (A,D,Z), % Arpfel: "Drattel ist ein Zurk." 
+            (B,E,Y), % Brirne: "Eri ist ein Yerk." 
+            (D,E,X), % Drattel: "Eri ist ein Xaf." 
+            (E,B,W), % Eri: "Brirne ist eine Worf."
+            (F,D,X)])% Freige: "Drattel ist ein Xaf."
+        element(Gruppe[P0], Wahr, W0), W0 #= (Gruppe[P1] #= G1)
+    end,
+    solve(Wahr ++ Gruppe),
+    foreach(G in 1..4,Wahr[G]=0) printf("%s ", NameG[G]) end, println("lügen."),
+    foreach(P in 1..6) printf("%s ist %s.%n", NameP[P], NameG[Gruppe[P]]) end,
+    fail.
+/* 
+Worf Zurk lügen.
+Arpfel ist Worf.
+Birne ist Worf.
+Criwi ist Zurk.
+Drattel ist Yerk.
+Eri ist Xaf.
+Freige ist Worf.
+CPU time 0.001 seconds, no more solutions, korrekt */

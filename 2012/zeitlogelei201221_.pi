@@ -1,0 +1,54 @@
+/* Zeit Logelei 2012/21 Die fünf Hexen Klarina, Konstanzia, Kremodora, Krudelia und Kunigundula benötigen jeweils noch zwei Zutaten für ihre neuen Zaubertränke
+https://www.zeit.de/2012/21/Spiele-Logelei-21 */
+import cp.
+main ?=>
+    %            1           2          3            4              5
+    NHexe = ["Klarina", "Krudelia","Kremodora", "Konstanzia", "Kunigundula"],
+    %BstH = [len(S) : S in NHexe], % Anzahl der Buchstaben
+    %           1        2         3          4           5           6            7           8             9            10
+    NZutat = ["Klee","Mangold","Marzipan","Rosmarin","Hausstaub","Morgentau","Juckpulver","Saharasand","Tigertränen","Spinnenbeine"], % println(NZutat),
+    Zutat = new_array(5,2), Zutat :: 1..10,
+    BstZ = [ord(S[1])-64 : S in NZutat], % Anfangsbuchtabe
+    %AnzBst = [len(S) : S in NZutat], % Anzahl der Buchstaben
+    %                 1         2         3          4        5
+    NKrankheit = ["Pocken", "Pickel", "Runzeln", "Buckel", "Warzen"],
+    Krankheit = new_list(5), Krankheit :: 1..5, assignment(Krankheit,_RKrankheit),
+    Hilft = new_list(10), Hilft :: 1..5, % Zutat -> Krankheit
+    foreach(I in 1..5) count(I, Hilft, 2) end,
+    foreach(I in 1..5, Z in 1..10)
+        Krankheit[I] #= Hilft[Z] #<=> (Zutat[I,1] #= Z #\/ Zutat[I,2] #= Z)
+    end, 
+     % In jeden Trank muss noch genau eine Zutat, die gleich viel Buchstaben hat wie der Name der Hexe, die ihn braut.
+    foreach(I in 1..5) 
+        Zutat[I,1] :: [J : J in 1..10, len(NHexe[I]) =  len(NZutat[J])], 
+        Zutat[I,2] :: [J : J in 1..10, len(NHexe[I]) != len(NZutat[J])] 
+    end,
+    % Wenn Hausstaub gegen Pocken hilft, hilft Klee gegen Runzeln, ..
+    Hilft[5] #= 1 #=> Hilft[1] #= 3,
+    % .. und sonst hilft Morgentau gegen Buckel:
+    Hilft[5] #!= 1 #=> Hilft[6] #= 4,
+    % Wenn Morgentau gegen Pickel hilft, benötigt Krudelia Klee:    
+    Hilft[6] #= 2 #=> Hilft[1] #= Krankheit[2],
+    % In den Trank gegen Warzen soll Marzipan:   
+    Hilft[3] #= 5,
+    % Rosmarin hilft weder gegen Pickel noch Runzeln
+    Hilft[4] #!= 2, Hilft[4] #!= 3,
+    % Gegen Buckel braucht man zwei Zutaten, die mit dem gleichen Buchstaben beginnen:
+    foreach(I in 1..9, J in I+1..10) (Hilft[I] #= 4 #/\ Hilft[J] #= 4) #=> BstZ[I] #= BstZ[J] end,
+    % Klarina braut einen Trank gegen Runzeln:
+    Krankheit[1] #= 3, 
+    % Kremodora benötigt keinen Hausstaub:
+    Krankheit[3] #!= Hilft[5], 
+    solve(Krankheit ++ vars(Zutat)),
+    foreach(I in 1..5)
+        printf("%ss Trank hift gegen %s. Er benötigt %s und %s.%n", 
+            NHexe[I], NKrankheit[Krankheit[I]], NZutat[Zutat[I,1]], NZutat[Zutat[I,2]])
+    end,
+    fail.
+/* 
+Klarinas Trank hift gegen Runzeln. Er benötigt Mangold und Klee.
+Krudelias Trank hift gegen Pocken. Er benötigt Rosmarin und Hausstaub.
+Kremodoras Trank hift gegen Warzen. Er benötigt Morgentau und Marzipan.
+Konstanzias Trank hift gegen Buckel. Er benötigt Saharasand und Spinnenbeine.
+Kunigundulas Trank hift gegen Pickel. Er benötigt Tigertränen und Juckpulver.
+no more solutions, korrekt */

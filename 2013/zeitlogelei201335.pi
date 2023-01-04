@@ -1,0 +1,95 @@
+/* Zeit Logelei 2013/35 (nach Janko Galaxien)
+https://www.zeit.de/2013/35/spiele-logelei-35 */
+import sat, util.
+main =>
+	Orig = {{g,0,f, 0,0,0, 0,0,g}, 
+			{0,0,0, 0,g,0, 0,0,0}, 
+			{0,0,0, 0,0,0, 0,0,0}, 
+			{f,0,0, 0,g,0, 0,0,0}, 
+			{0,0,0, 0,k,0, 0,0,0}, 
+			{0,0,0, 0,f,0, 0,0,0}, 
+			{0,0,0, 0,0,f, 0,0,0}, 
+			{0,0,0, 0,g,0, 0,0,0}, 
+			{g,0,0, 0,0,0, 0,0,g}}, N = len(Orig),
+    H = {{0,1,0,1,1,0,1,0}, % 0 = Felder Z|S und Z|S+1 hängen horizontal zusammen
+         {1,1,1,1,1,1,1,1},    
+         {1,1,1,1,0,0,0,1},    
+         {0,1,0,0,1,1,0,1},    
+         {1,1,1,0,0,1,0,1}, 
+         {1,0,1,1,1,1,1,1},
+         {1,1,1,1,1,1,1,1},
+         {1,0,1,1,1,1,1,1},
+         {0,0,1,0,1,0,0,1}}, 
+    V = {{0,1,0,1,0,1,0,1,1}, % 0 = Felder Z|S und Z+1|S hängen vertikal zusammen
+         {0,1,1,0,1,1,1,0,0},
+         {1,1,0,1,1,1,1,1,1},
+         {1,0,1,1,1,0,1,1,1},
+         {0,1,1,1,1,0,1,0,0},
+         {1,1,1,1,0,1,0,1,0},
+         {0,0,1,0,1,0,1,1,1},
+         {1,1,1,1,0,1,0,1,0}},	
+    Geb = [[ZR,SR,Orig[ZR,SR]] : ZR in 1..N, SR in 1..N, Orig[ZR,SR]!=0],
+    % Das Gebiet des Landes "Symmetrien" soll neu eingeteilt werden:
+	Gmax = len(Geb), M = new_array(N,N), MVars = vars(M), MVars :: 1..Gmax,
+    % Alle neuen Grenzen sollen entlang den gestrichelten Linien verlaufen:
+    foreach(Z in 1..N, S in 1..N-1,H[Z,S]=0) M[Z,S] #= M[Z,S+1] end, 
+    foreach(Z in 1..N-1, S in 1..N,V[Z,S]=0) M[Z,S] #= M[Z+1,S] end, 
+    % Alle Gebiete müssen einen einzigen orthogonal zusammenhängenden Bereich Bereich bilden:
+    Dist = new_array(N,N), DistVars = vars(Dist), MaxDist = N * N // 2, Dist :: 0..MaxDist,
+    foreach(G in 1..Gmax)
+    	[ZR,SR,O] = Geb[G], M[ZR,SR] #= G, Dist[ZR,SR] #= 0, % ZR|SR ist Root von G
+        if     O=g then spiegel(M,G) % die Gebiete von Grafen sind spiegelsymmetrisch
+        elseif O=f then dreh(M,G)    % die Gebiete von Fürsten hingegen drehsymmetrisch
+        elseif O=k then spiegel(M,G), dreh(M,G) % das Gebiet des Königs ist beides
+        end
+    end,
+    foreach(Z in 1..N, S in 1..N, Orig[Z,S]=0)
+   	  	 Dist[Z,S] #= 1 + min([ Dist[Z1,S1]*(M[Z,S]#=M[Z1,S1])+MaxDist*(M[Z,S]#!=M[Z1,S1])
+   	  	 : (Z1,S1) in [(Z-1,S),(Z,S-1),(Z,S+1),(Z+1,S)], Z1 >= 1, Z1 =< N, S1 >= 1, S1 =< N])
+    end,
+    solve(MVars ++ DistVars),
+    foreach(Z in 1..N, S in 1..N)
+		printf("%c|", chr(64 + M[Z,S])),
+    	if S = N then nl end
+    end.
+/* 
+A|A|B|B|D|D|D|C|C|
+A|B|B|G|D|G|D|G|C|
+A|A|F|G|G|G|G|G|C|
+E|E|F|F|F|G|C|C|C|
+E|E|F|G|G|G|G|G|C|
+E|E|E|G|H|G|I|G|C|
+K|E|E|H|H|I|I|C|C|
+K|E|E|H|J|I|J|L|L|
+K|K|K|J|J|J|J|J|L|
+CPU time 191.405 seconds korrekt */
+dreh(M,G) => % O=0: in der Mitte, O=1: auf der rechten Linie, O=2: unten, O=3: unten rechts
+        N = len(M), [Z0,S0] :: 1..N, O :: 0..3, % wo ist der Drehpunkt?
+        matrix_element(M, Z0,S0, G),
+    	foreach(Z1 in 1..N, S1 in 1..N)
+    		% Bei 180-Grad-Drehung um Z0|S0 ist Z1|S1 symmetrisch zu Z2|S2:
+    		Z2 #= 2*Z0 - Z1 + (O div 2), S2 #= 2*S0 - S1 + (O mod 2), 
+            good(M,G, Z1,S1, Z2,S2)
+    	end.
+
+spiegel(M,G) => % O=0: in der Mitte, O=1: auf der rechten Linie, O=2: auf der unteren Linie
+        N = len(M), [Z0,S0] :: 1..N, O :: 0..2, % wo ist der Spiegelpunkt?
+        Dir :: 1..4, % Spiegelungsrichtung 1=- 2=| 3=/ 4=\ 
+        matrix_element(M, Z0,S0, G),
+    	foreach(Z1 in 1..N, S1 in 1..N)
+    		% Bei Spiegelung um Z0|S0 ist Z1|S1 spiegelsymmetrisch zu Z2|S2:
+            DZ #= Z1 - Z0, DS #= S1 - S0,
+    		    (Dir #= 1 #/\ Z2 #= Z0 - DZ + (O div 2) #/\ S2 #= S1)  % horizontale Spiegelung
+            #\/ (Dir #= 2 #/\ S2 #= S0 - DS + (O mod 2) #/\ Z2 #= Z1)  % vertikale Spiegelung 
+            #\/ (Dir #= 3 #/\ Z2 #= Z0 + DS #/\ S2 #= S0 + DZ)         % /-diagonale Spiegelung 
+            #\/ (Dir #= 4 #/\ Z2 #= Z0 - DS #/\ S2 #= S0 - DZ),        % \-diagonale Spiegelung 
+            good(M,G,Z1,S1,Z2,S2)
+    	end.
+
+good(M,G,Z1,S1,Z2,S2) =>
+    N = len(M), 
+    foreach(Z20 in 1..N, S20 in 1..N)
+        (Z2 #= Z20 #/\ S2 #= S20) #=> (G #= M[Z1,S1] #<=> G #= M[Z20,S20])
+    end,
+    % Z2|S2 nicht im Grid #=> Z1|S1 nicht in G (sonst ragt G über den Rand hinaus):
+    (Z2 #< 1 #\/ Z2 #> N #\/ S2 #< 1 #\/ S2 #> N) #=> M[Z1,S1] #!= G.

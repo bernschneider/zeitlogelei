@@ -1,0 +1,41 @@
+/* Zeit Logelei 2013/11 */
+import sat.
+main =>
+   Haus= {{ 0, 0,0,0,8, 0, 0,0, 0,0},
+   		  { 0, 0,0,0,0, 0, 6,0, 0,0},
+   		  { 0, 0,0,8,0, 0, 0,0, 0,0},
+   		  {10, 0,0,0,0, 6, 0,0, 0,4},
+   		  { 0, 0,4,0,0, 0, 0,4, 0,0},
+   		  { 0, 0,0,0,6, 0, 0,0, 0,0},
+   		  { 0,12,0,0,0, 0, 3,0,12,0},
+   		  { 0, 0,0,0,3, 0, 0,0, 0,0},
+   		  { 0, 0,0,0,0, 0,12,0, 0,0},
+   		  { 2, 0,0,0,0, 0, 0,0, 0,0}},
+   NZ = len(Haus), NS = len(Haus[1]), 
+   Cnt = [(Z0,S0,Haus[Z0,S0]) : Z0 in 1..NZ, S0 in 1..NS, Haus[Z0,S0]>0], N = len(Cnt),
+   M = new_array(NZ,NS), M :: 1..N,
+   foreach(I in 1..N) 
+        (Z0,S0,C) = Cnt[I], M[Z0,S0] #= I,
+   		sum([(M[Z,S] #= I) : Z in 1..NZ, S in 1..NS]) #= C
+   end,
+   foreach(Z1 in 1..NZ, Z2 in Z1+1..NZ, S1 in 1..NS, S2 in 1..NS, S1!=S2, Z in min(Z1,Z2)..max(Z1,Z2), S in min(S1,S2)..max(S1,S2))
+		(M[Z1,S1] #= M[Z2,S2]) #=> (M[Z,S] #=  M[Z1,S1])
+   end,
+   solve(M),
+   foreach(Z in 1..NZ)
+   	foreach(S in 1..NS)
+   		printf("%c|", chr(64+M[Z,S]))
+   	end, nl
+   end.
+/* 
+D|D|A|A|A|A|A|A|A|A|
+D|D|C|C|C|C|B|B|B|F|
+D|D|C|C|C|C|B|B|B|F|
+D|D|G|G|E|E|E|H|H|F|
+D|D|G|G|E|E|E|H|H|F|
+J|J|J|J|I|I|I|I|I|I|
+J|J|J|J|K|K|K|L|L|L|
+J|J|J|J|M|M|M|L|L|L|
+O|N|N|N|N|N|N|L|L|L|
+O|N|N|N|N|N|N|L|L|L|
+CPU time 8.898 seconds korrekt */

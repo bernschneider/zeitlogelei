@@ -1,0 +1,17 @@
+/* Zeit Logelei 2013/22 Und es begab sich zu der Zeit der großen 32 ..
+Jedem der Buchstaben von A bis J wurde eine andere Zahl von 1 bis 10 zugeordnet, 
+und die Zahlen geben einfach die Summe der Zahlen des Wortes an. 
+Die 32 muss wohl FEHDE heißen; 22, das ist wohl ein DIEB und 10 die JAGD." 
+Frauke ist begeistert: "Dann könnte 19 für GABE stehen und 26 für BACH – 
+und was ist dann 30?" – "Wie wäre es mit EBBE?", schlägt Rolf vor.
+Wenn die drei mit ihren Deutungen richtigliegen, welcher Buchstabe wurde dann welcher Zahl zugeordnet? */
+import cp.
+main ?=>
+    Digit = new_list(10), Digit :: 1..10, all_different(Digit),
+    foreach((Num,Word) in [(32,"FEHDE"), (22,"DIEB"), (10,"JAGD"), (19,"GABE"), (26,"BACH"), (30,"EBBE")])
+        Num #= sum( [Digit[ord(C)-64] : C in Word] ) % Convert Letter C -> Digit
+    end,
+    solve(Digit), 
+    foreach(I in 1..10) printf("%c=%d, ", chr(64+I), Digit[I]) end, nl, fail.
+/* A=3, B=8, C=9, D=2, E=7, F=10, G=1, H=6, I=5, J=4
+CPU time 0.001 seconds no more solutions korrekt */

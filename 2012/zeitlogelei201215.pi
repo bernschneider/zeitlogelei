@@ -1,0 +1,54 @@
+/* Zeit Logelei 2012/15 Verstecken Sie die 25 Primzahlen kleiner 100 in den Eiern
+https://www.zeit.de/2012/15/Spiele-Logelei-15 */
+import sat. 
+main ?=> 
+   C = {{b,r,r,r,b}, % b=blau, r=rot,
+	 	{g,l,b,b,r}, % g=grün, l=lila
+	 	{x,b,r,r,x}, % x=blau unten
+	 	{e,r,x,x,r}, % e=gelb
+	 	{e,x,g,e,r}}, 
+   NZ = len(C), NS = len(C[1]),
+   M = new_array(NZ,NS), M :: primes(100), Mvars = vars(M), % Eier
+   M[1,2] #= 17, M[1,2] #= 17, M[3,4] #= 53, M[5,1] #= 59, 
+   % Zwei aufeinanderfolgende Primzahlen dürfen nicht benachbart sein: 
+   foreach(Z in 1..NZ, S in 1..NS-1) no_neib(M[Z,S], M[Z,S+1]) end,
+   foreach(Z in 1..NZ-1, S in 1..NS) no_neib(M[Z,S], M[Z+1,S]) end, 
+   % .. auch nicht diagonal:  
+   foreach(Z in 1..NZ-1, S in 1..NS-1) 
+       no_neib(M[Z,S], M[Z+1,S+1]), no_neib(M[Z+1,S], M[Z,S+1]) 
+   end,
+   all_different(Mvars), % alle Primzahlen verstecken!
+   foreach(Z in 1..NZ, S in 1..NS)
+        % rot: Die Zahl links daneben ist kleiner als diese Zahl:
+        if     C[Z,S]=r then M[Z,S-1] #< M[Z,S] 
+        % blau: Die Zahl darunter ist der Durchschnitt der Zahl und der übernächsten:
+        elseif C[Z,S]=b then 2 * M[Z+1,S] #= M[Z,S] + M[Z+2,S]
+        % g_elb: Addiert man diese Zahl zu der Zahl rechts daneben, so erhält man ein Palindrom 
+        elseif C[Z,S]=e then X #= M[Z,S] + M[Z,S+1], palindrom(X) 
+        % grün: Diese Zahl ist größer als alle anderen Zahlen in dieser Zeile
+        elseif C[Z,S]=g then foreach(S1 in 1..NS, S1!=S) M[Z,S] #> M[Z,S1] end 
+        % Lila: Diese Zahl ist kleiner als alle waagerecht und senkrecht angrenzenden Zahlen
+        elseif C[Z,S]=l then M[Z,S] #< M[Z-1,S], M[Z,S] #< M[Z,S-1], M[Z,S] #< M[Z,S+1], M[Z,S] #< M[Z+1,S] 
+        end
+   end,
+   solve(Mvars), 
+   foreach(Z in 1..NZ) 
+     foreach(S in 1..NS) 
+		printf("%2d|", M[Z,S])
+	end, nl
+   end, fail.
+/*
+ 5|17|67|79|13|
+47| 2|11|23|43|
+89|31|41|53|73|
+ 3|19|71|83|97|
+59| 7|61|29|37|
+CPU time 2.202 seconds, no more solutions, korrekt */
+palindrom(X) => 
+    (X #>= 10 #/\ X #< 100) #=> X div 10 #= X mod 10,  % zweistellig
+    X #>= 100               #=> X div 100 #= X mod 10. % dreistellig
+
+no_neib(X,Y) =>
+    [IX,IY] :: 1..25, % Indizes für X bzw. Y in der Primzahlreihe
+    element(IX, primes(100), X), element(IY, primes(100), Y),
+    abs(IY - IX) #!= 1. % nicht direkt hintereinander!

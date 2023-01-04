@@ -1,0 +1,42 @@
+/* Zeit Logelei 2012/35 Acht Politiker haben eine nahezu identische Dissertation angefertigt
+https://www.zeit.de/2012/35/Spiele-Logelei-35 */
+import cp.
+main ?=>
+    Abg = new_list(8), Abg :: 1..8, % hat abgeschrieben von
+    % Eine der acht Arbeiten ist das Original. Alle anderen haben bei genau einer Person abgeschrieben:
+    sum([(Abg[I] #= I) : I in 1..8]) #= 1,
+    A=1, B=2, H=3, K=4, M=5, S=6, T=7, V=8, 
+    Name = ["Andre","Bauer","Hauch","Kunz","Maier","Schubert","sTriegler","Vongabel"],
+    foreach((P1,P2,P3,P4) in [
+        (H,K,B,S), % Hauch:Kunz -> Bauer:Schubert, 
+        (A,M,S,H), % Andre:Maier -> Schubert:Hauch, 
+        (H,M,A,M), % Hauch:Maier -> Andre:Maier, 
+        (A,K,H,K), % Andre:Kunz -> Hauch:Kunz, 
+        (S,H,B,A), % Schubert:Hauch -> Bauer:Andre, 
+        (B,S,T,S), % Bauer:Schubert ->  sTriegler:Schubert, 
+        (V,M,S,K)])% Vongabel:Maier -> Schubert:Kunz
+        Abg[P1] #= P2 #=> Abg[P3] #= P4
+    end,
+    foreach((P1,P2,P3,P4) in [
+        (A,K,H,M), % Andre:Kunz <-> Hauch:Maier, 
+        (V,M,B,K), % Vongabel:Maier <-> Bauer:Kunz, 
+        (T,V,M,S)])% sTriegler:Vongabel <-> Maier:Schubert
+        Abg[P1] #= P2 #^ Abg[P3] #= P4
+    end,   
+    solve(Abg),
+    foreach(I in 1..8)
+        if Abg[I] = I 
+            then printf("%s hat das Original geschrieben.%n", Name[I])
+            else printf("%s hat bei %s abgeschrieben.%n", Name[I], Name[Abg[I]])
+        end
+    end, fail.
+/*
+Andre hat bei Kunz abgeschrieben.
+Bauer hat bei Schubert abgeschrieben.
+Hauch hat bei Kunz abgeschrieben.
+Kunz hat das Original geschrieben.
+Maier hat bei Schubert abgeschrieben.
+Schubert hat bei Kunz abgeschrieben.
+sTriegler hat bei Schubert abgeschrieben.
+Vongabel hat bei Maier abgeschrieben. 
+CPU 0 seconds, no more solutions, korrekt */

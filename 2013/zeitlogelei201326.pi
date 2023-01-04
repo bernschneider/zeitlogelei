@@ -1,0 +1,38 @@
+/* Zeit Logelei 2013/26 was die Dinosaurier hier gerechnet haben */
+import cp, util.
+main =>
+    mult(["ABBA", "CCAAD", "BBDD", "BDDBDD"]).
+/*
+1925 * 364
+-------
+ 5775
+ 11550
+   7700
+-------
+ 700700 */
+mult(L) =>
+   Letter = keys(new_set(flatten(L))), % verwendete Buchstaben
+   Digit = new_list(len(Letter)), Digit :: 0..9, % eine Ziffer je Buchstabe
+   all_different(Digit),
+   Zeilen = 3, % Anzahl der Teilrechnungen, im Beispiel = 3
+   LenZeile = 5, % maximale Länge der Teilergebnisse, im Beispiel = 5
+   Num = new_array(len(L)), % numerische Repräsentation der Elemente von L
+   foreach(I in 1..len(L))
+       S = [Digit[find_first_of(Letter, C)] : C in L[I]], % Convert Letter C -> Digit
+       to_num(S, Num[I]), S[1] #!= 0
+   end,
+   Num[1] * 100 + Num[2] * 10 + Num[3] #= Num[4],
+   solve(Digit ++ Num),
+   X = gcd(gcd(Num[1],Num[2]),Num[3]), Y = Num[4] // X,
+   printf("%d * %d%n", X, Y),
+   printf("-------%n"),
+   foreach(I in 1..Zeilen)
+       foreach(_ in 2..I+LenZeile-len(L[I])) print(' ') end, % Indent
+       println(Num[I])
+   end,
+   printf("-------%n"),
+   printf(" %d%n%n", Num[4]).
+
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).

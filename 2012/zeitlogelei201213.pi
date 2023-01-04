@@ -1,0 +1,37 @@
+/* Zeit Logelei 2012/13 Kurt wird 70 Jahre alt. Zu seinem Geburtstag möchte er seine Verwandten und viele Freunde einladen
+https://www.zeit.de/2012/13/Spiele-Logelei-13 */
+import cp.
+main ?=>    %   1            2                       3                    4            5
+    NGaeste = ["Verwandten", "Schmetterlingszüchter","Hubschrauberleute", "Singkreis", "Naturschutzverein"],
+    Mo=1, Di=2, Mi=3, Do=4, Fr=5, Wtag = ["Montag","Dienstag","Mittwoch","Donnerstag","Freitag"],
+    G = new_list(5), G :: 1..5, assignment(G,RG), % Wer kommt am Montag, Dienstag, ...?
+    W = new_list(7), W :: 0..1, % 1 = der I-te Wunsch wird erfüllt
+    sum(W) #= 6,
+    % Am Mittwoch habe ich Geburtstag, da kommen nur die Verwandten oder die Schmetterlingszüchter infrage:
+    W[1] #= (G[Mi] #= 1 #\/ G[Mi] #= 2),
+    % Aber bitte nicht die Schmetterlingszüchter und die Hubschrauberleute direkt hintereinander:
+    W[2] #= (abs(RG[2] - RG[3]) #!= 1),
+    % Der Singkreis sollte Montag oder Dienstag kommen:
+    W[3] #= (G[Mo] #= 4 #\/ G[Di] #= 4),
+    % Wenn du am Mittwoch die Schmetterlingszüchter einlädst, dann bitte nicht am Freitag die Hubschrauberleute:
+    W[4] #= (G[Mi] #= 2 #=> G[Fr] #!= 3),
+    % Den Naturschutzverein sollte ich früher einladen als den Singkreis:
+    W[5] #= (RG[5] #< RG[4]),
+    % Wenn du die Schmetterlingszüchter nicht am Montag einladen willst, dann solltest du die Verwandten am Dienstag einladen:
+    W[6] #= (G[Mo] #!= 2 #=> G[Di] #= 1),
+    % Für die Schmetterlingszüchter, den Naturschutzverein und die Modellhubschrauberbauer ist der Donnerstag ungünstig:
+    W[7] #= (G[Do] #!= 2 #/\ G[Do] #!= 5 #/\ G[Do] #!= 3),
+    solve(G ++ W),
+    foreach(J in 1..7, W[J]=0) 
+        printf("Der %d.te Wunsch konnte nicht erfüllt werden.%n", J)
+    end,
+    foreach(I in 1..5)
+        printf("Am %s kommen die %s.%n", Wtag[I], NGaeste[G[I]])
+    end, nl, fail.
+/* Der 3.te Wunsch konnte nicht erfüllt werden.
+Am Montag kommen die Schmetterlingszüchter.
+Am Dienstag kommen die Naturschutzverein.
+Am Mittwoch kommen die Verwandten.
+Am Donnerstag kommen die Singkreis.
+Am Freitag kommen die Hubschrauberleute.
+CPU time 0.002 seconds, no more solutions, korrekt */

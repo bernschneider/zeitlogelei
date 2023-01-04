@@ -1,0 +1,60 @@
+/* Zeit Logelei 2013/07 Drei Hebammen
+An welchem Tag fand dieses Gespräch statt? */
+import sat.
+main ?=>
+    C = new_list(31), C :: 0..3, B=1, T=2, E=3, Name = ["Bettina","Tanja","Eva"],
+    Letzter :: 28..31, foreach(I in 29..31) I #> Letzter #=> C[I] #= 0 end, 
+    % Eva: "Lustig finde ich, dass jede von uns genau drei Geburten gehabt hat." 
+    foreach(H in 1..3) sum([(C[I] #= H) : I in 1..31]) #= 3 end,
+    % Bettina: "Ich hatte eine Geburt am Letzten des Monats!"
+    element(Letzter,C,B),
+    SQ = [1,4,9,16,25], PRIMES = primes(31),
+    foreach(I in 1..31)
+        % Tanja, "meine Geburten waren allesamt an Quadratzahltagen!" 
+        C[I] #= T #=> I :: SQ,
+        % Bettina: "Quadratzahltage hatte außer dir niemand,
+        C[I] #= E #=> I :: [X : X in 1..31, not membchk(X, SQ)],
+        % ... aber dafür waren meine Babys allesamt Primzahlbabys!"
+        C[I] #= B #=> I :: PRIMES
+    end,
+    % Bettina und Tanja haben sich immer abgewechselt mit den Geburten:
+    Idx = new_list(6), Idx :: 1..31, increasing_strict(Idx),
+    foreach(I in 1..6)
+        if I mod 2 = 1 then element(Idx[I],C,T) else element(Idx[I],C,B) end
+    end,
+    % Bettina: "Ach ja, und meine letzte Geburt war 24 Tage später als meine erste."
+    Idx[6] - Idx[2] #= 24,
+    /* Bettina: "Diesmal hatten wir keine zwei Geburten am selben Tag!"
+    "Noch nicht einmal an aufeinanderfolgenden Tagen", ergänzt Tanja. 
+    "Das stimmt aber nur, wenn man mal davon absieht, dass ich zwei direkt hintereinander hatte!", seufzt Eva.
+    "Oh, da hast du recht", entschuldigt sich Tanja. */
+    foreach(I in 1..30)
+        (C[I] #> 0 #/\ C[I+1] #> 0) #=> (C[I] #= E #/\ C[I+1] #= E)
+    end,
+    DoppelE :: 1..30, element(DoppelE,C,E), DoppelE1 #= DoppelE + 1, element(DoppelE1,C,E), 
+    % "Und ich finde lustig, dass es zwölf aufeinanderfolgende Tage gab, an denen keine Geburt stattfand!", erwidert Tanja:
+    Pause :: 1..20, foreach(I in 1..31) (Pause #=< I #/\ I #=< Pause + 11) #=> C[I] #= 0 end, 
+    % Bettina: "Wir hatten aber an jedem Wochentag mindestens eine Geburt, das fand ich am lustigsten!", ergänzt Bettina und fährt gleich fort: 
+    foreach(Wtag in 1..7) I :: 1..31, I mod 7 #= Wtag - 1, element(I,C,V), V #> 0 end,
+    % Eva: "Heute sind die Babys in Summe genau 250 Tage alt!". 
+    % M.a.W. Alter der Babys in Summe am Letzten des Monats =
+    250 - 9 * Heute #= 9 * Letzter - sum([I*(C[I] #> 0) : I in 1..31]),
+    solve(C ++ Idx ++ [Letzter,DoppelE,Pause,Heute]),
+    printf("Der %d. ist der Monatsletzte%n", Letzter), printf("Heute ist der %d. des Folgemonats.%n", Heute),
+    printf("Die Pause begann am %d.%n", Pause),
+    foreach(I in 1..31, C[I]>0)
+        printf("%d: %s%n", I, Name[C[I]])
+    end, fail.
+/* Der 29. ist der Monatsletzte     [PB: Februar im Schaltjahr]
+Heute ist der 10. des Folgemonats.  [PB: 10. März]
+Die Pause begann am 17.
+1: Tanja
+3: Eva
+5: Bettina
+9: Tanja
+11: Bettina
+13: Eva
+14: Eva
+16: Tanja
+29: Bettina
+CPU time 0.189 seconds no more solutions korrekt */

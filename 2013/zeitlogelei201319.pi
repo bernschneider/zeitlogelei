@@ -1,0 +1,16 @@
+/* Zeit Logelei 2013/19 Kommissar Frei und das Zahlenschloss */
+import cp, util.
+main ?=>
+    PRIMES = primes(100), SQ = [I*I : I in 1..99],
+    L = new_list(8), L :: 1..9, all_different(L),
+    to_num(L[1..4], L14), L14 :: SQ,
+    to_num(L[5..8], L58), L58 :: SQ,
+    foreach(I in 1..4) to_num(L[2*I-1..2*I], L2), L2 :: PRIMES end,
+    [P1,P2] :: [2,3,5,7], P1 #< P2, % breaking symmetries
+    to_num(L[4..5], L45), L45 #= P1 * P2,
+    solve(L ++ [L14,L58,L45,P1,P2]),
+    println(L), fail.
+/* [4,7,6,1,5,3,2,9] CPU time 0.005 seconds no more solutions korrekt */
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).

@@ -1,0 +1,32 @@
+/* Zeit Logelei Nr. 2012/38 Die Vögel trillern eine Musimetik
+Notation (Notenlinien von unten nach oben 1..5; das tiefe C liegt auf Linie 0)
+Note C auf Linie 0, D unter 1, E auf 1, F unter 2, G auf 2, A unter 3, H auf 3
+Note C unter 4,     D auf 4 usw. */
+import cp, util.
+
+main =>
+    add(["HAHAHAH", "DGHDGHD", "CEFFCEA", "AHCAAAG"]). /*
+2929292
+4524524
+1766179
+------
+9219995 korrekt */
+add(L) => % das letzte Element von L ist die Summe der vorherigen Elemente
+   Letter = keys(new_set(flatten(L))), % verwendete Buchstaben
+   Digit = new_list(len(Letter)), Digit :: 0..9, % eine Ziffer je Buchstabe
+   all_different(Digit),
+   Zeilen = len(L) - 1, % Anzahl der Summanden, im Beispiel = 2
+   Num = new_array(len(L)), % numerische Repräsentation der Elemente von L
+   foreach(I in 1..len(L))
+       S = [Digit[find_first_of(Letter, C)] : C in L[I]], % Convert Letter C -> Digit
+       to_num(S, Num[I]), S[1] #!= 0
+   end,
+   sum([Num[I] : I in 1.. Zeilen]) #= Num[len(L)],
+   solve(Digit ++ Num),
+   foreach(I in 1..Zeilen) printf("%6d%n", Num[I]) end,
+   printf("------%n"),
+   printf("%6d%n%n", Num[len(L)]).
+
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).

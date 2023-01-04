@@ -1,0 +1,30 @@
+/* Zeit Logelei 2012/12 Bert besitzt einen Safe.
+Um diesen zu öffnen, muss man eine achtstellige Zahl eingeben, die nicht mit einer 0 beginnt.
+https://www.zeit.de/2012/12/Spiele-Logelei-12 */
+import sat, util.
+
+main ?=>
+    N = 8, L = new_list(N), L :: 0..9, L[1] #> 0,
+    Num :: 1..99999999, to_num(L, Num),
+    Qsum #= sum(L), is_prime(Qsum), % Die Quersumme ist eine Primzahl
+    % Die Zahl ist das Quadrat einer Zahl mit mindestens zwei gleichen Ziffern:
+    LZ = new_list(4), LZ :: 0..9, LZ[1] #> 0, 
+    [I,J] :: 1..4, I #< J, element(I,LZ,V), element(J,LZ,V), % LZ[I] #= LZ[J],
+    Z :: 1..9999, to_num(LZ, Z), Num #= Z * Z, 
+    Num mod 16 #> 0,  % Die Zahl ist nicht durch 16 teilbar.
+    L[N] #= L[N-1],   % Die letzte Ziffer ist dieselbe wie die vorletzte.
+    L[1] #= 2 * L[8], % Die erste Ziffer ist das Doppelte der letzten Ziffer.
+    solve(L ++ [Qsum,Z,Num]),
+    printf("Die Zahl lautet %d.%n", Num),
+    fail.
+/* Die Zahl lautet 87198244.
+CPU time 10 seconds, no more solutions, korrekt */
+is_prime(X) =>
+   Max = fd_max(X),
+   foreach(I in 2..Max // 2)
+      I #!= X #=> X mod I #> 0
+   end.
+
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).

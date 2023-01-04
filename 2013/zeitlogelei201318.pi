@@ -1,0 +1,38 @@
+/* Zeit Logelei 2013/18 Bei den Fröschen */
+import cp, util.
+quoook =>
+    X = 0, F = 1, % vorn
+    foreach(I in 1..14)
+        X := X + F * I,
+        F := -F % d.h. abwechselnd vor und zurück
+    end,
+    printf("nach %s %d Sprünge%n", cond(X>=0,"vorn", "hinten"), abs(X)).
+    % nach hinten 7 Sprünge, korrekt
+
+quaaak =>
+    X = 0, Y = 0, % X = nach vorn, Y = nach links
+    Fx = 1, Fy = 0, % Richtungsfaktoren
+    foreach(I in 1..14)
+        X := X + I * Fx, 
+        Y := Y + I * Fy,
+        % Jedesmal um 90 Grad nach links abbiegen: 
+        % 1|0 -> 0|1 -> -1|0 -> 0|-1, also (Fx,Fy) := (-Fy, Fx):
+        X0 = Fx, Fx := -Fy, Fy := X0
+    end,
+    printf("nach vorn %d, nach links %d Sprünge", X, Y).
+    % nach vorn 7, nach links 8 Sprünge                  % ____sin(30)=1/2
+                                                         % \  |
+quiiik =>                                                % 1\ |cos(30)=sqrt(3)/2
+    X = 0, Y = 0, % X = nach vorn, Y = nach links            \| <- für diesen Winkel
+    % 120 Grad, d.h. 90 Grad + 30 Grad, sin(30)|cos(30)=0.5|sqrt(3)/2 
+    % Bei I mod 3 = 1 ist Fx|Fy =    1| 0 (Einheit der X-Achse = 1)
+    % Bei I mod 3 = 2 ist Fx|Fy = -0.5| 1 (Einheit der Y-Achse = sqrt(3)/2)
+    % Bei I mod 3 = 0 ist Fx|Fy = -0.5|-1 
+    Fx = [-0.5,1,-0.5], Fy = [-1,0,1], % Richtungsfaktoren bei Drehung um 120 Grad
+    foreach(I in 1..14)
+        J = 1 + (I mod 3),
+        X := X + I * Fx[J], 
+        Y := Y + I * Fy[J]
+    end,                                                         % /2 aus Zeile 27  
+    printf("nach vorn %1.0f, nach links %1.0f*sqrt(3) Sprünge", X, Y/2). 
+    % nach vorn 0, nach links 5*sqrt(3) Sprünge, ZEIT: sqrt(75) Sprünge, korrekt

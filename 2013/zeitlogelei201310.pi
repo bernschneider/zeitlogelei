@@ -1,0 +1,33 @@
+/* Zeit Logelei 2013/10 Vier Ansteckungskrankheiten
+Im Dimiser Krankenhaus liegen vier Patienten, .. */
+import cp, util.
+main ?=>
+    K=1, S=2, J=3, H=4, Name = [kratz,schnautz,juck,hust],
+    N=1, W=2, L=3, B=4, Krankheit = [nierenkratzen,wirbelwackeln,leberjucken,beindruecken],
+    Kr = new_array(4,4), Kr :: 0..1, % Person P hat Krankheit I
+    foreach(P in 1..4) sum(Kr[P]) #= 2 end, %.. von denen jeder genau zwei dieser Krankheiten hat.
+    foreach((P1,K1,P2,K2) in 
+        [(K,N,J,W), % Wenn Frau Kratz Nierenkratzen hat, dann hat Herr Juck Wirbelwackeln. 
+         (S,W,K,L), % Wenn Frau Schnautz Wirbelwackeln hat, dann hat Frau Kratz Leberjucken.
+         (H,B,S,W), % Wenn Herr Hust Beindrücken hat, dann hat Frau Schnautz Wirbelwackeln. 
+         (K,L,H,W), % Wenn Frau Kratz Leberjucken hat, dann hat Herr Hust Wirbelwackeln
+         (H,W,S,N), % Wenn Herr Hust Wirbelwackeln hat, dann haben sowohl Frau Schnautz 
+         (H,W,K,N), % .. als auch Frau Kratz Nierenkratzen, ..
+         (H,W,K,W), % .. und Frau Kratz hat dann außerdem noch Wirbelwackeln.
+         (H,L,J,L), % Wenn Herr Hust Leberjucken hat, dann hat Herr Juck ebenfalls Leberjucken.
+         (K,B,H,W), % Wenn Frau Kratz Beindrücken hat, dann hat Herr Hust Wirbelwackeln. 
+         (S,N,K,L)])% Wenn Frau Schnautz Nierenkratzen hat, hat Frau Kratz Leberjucken.
+         Kr[P1,K1] #= 1 #=> Kr[P2,K2] #= 1
+    end,
+    solve(Kr),
+    foreach(P in 1..4) 
+        printf("%w hat ", Name[P]),
+        foreach(I in 1..4, Kr[P,I]=1) printf("%w ", Krankheit[I]) end, nl
+    end,
+    fail.
+/* 
+kratz hat nierenkratzen wirbelwackeln 
+schnautz hat leberjucken beindruecken 
+juck hat wirbelwackeln leberjucken 
+hust hat nierenkratzen leberjucken 
+CPU time 0.001 seconds no more solutions korrekt */

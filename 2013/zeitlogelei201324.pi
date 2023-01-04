@@ -1,0 +1,53 @@
+/* Zeit Logelei 2013/24 Professor Dr. Zomberdi
+Bei der Erkrankung seiner sechs Patienten werden alle Ich-Aussagen von der Person so verändert, 
+dass sie die korrekten Substantive, Adjektive und Verben durch falsche ersetzt.
+Was wollten die Patienten mit den Ich-Aussagen wirklich sagen? */
+import cp.
+main ?=>
+    Gerda=1, Rudolf=2, Evi=3, Willi=4, _Rita=5, Maik=6, % 6 Personen
+    Tab=1, _Hun=2, Sal=3, Vie=4, Fil=5, Fra=6,       Substantiv = ["Tabletten","Hunden","Salat","Vierbeiner","Filme","Frauen"],
+    Scho=1, Grue=2, Sche=3, _Grus=4, Gros=5, Vers=6, Adjektiv = ["schönen","grünen","scheußliche","gruselige","großen","verschmusten"],
+    Es=1, Ve=2, Se=3, Fu=4, Ta=5, _Ne=6,             Verb = ["esse","vermisse","sehe","fürchte","tanze","nehme"],
+    Sub = new_list(6), Sub :: 1..6, assignment(Sub,RSub),
+    Adj = new_list(6), Adj :: 1..6, assignment(Adj,RAdj),
+    Ver = new_list(6), Ver :: 1..6, assignment(Ver,RVer),
+    Template = ["Gerda: Ich %s gerne %s %s.%n",              % Gerda: "Ich esse gerne schöne Tabletten." 
+                "Rudolf: Ich %s morgen wieder mit %s %s.%n", % Rudolf: "Ich vermisse morgen wieder mit grünen Hunden."
+                "Evi: Ich %s meinen %s %s.%n",               % Evi: "Ich sehe meinen scheußlichen Salat." 
+                "Willi: Ich %s nicht schon wieder %s %s!%n", % Willi: "Ich fürchte nicht schon wieder gruselige Vierbeiner!"
+                "Rita: Ich %s jeden Tag %s %s.%n",           % Rita: "Ich tanze jeden Tag große Filme." 
+                "Maik: Ich %s mich vor %s %s.%n"],           % Maik: "Ich nehme mich vor verschmusten Frauen
+    % Da die betroffenen Personen zudem sehr empathisch sind, verwenden sie bei solchen Ich-Aussagen ausschließlich Wörter, die einer ihrer Mitpatienten gerne gesagt hätte:
+    foreach(I in 1..6) Ver[I] #!= I, Adj[I] #!= I, Sub[I] #!= I end,
+    % .. und zwar nie mehr als ein Wort des gleichen Mitpatienten:
+    foreach(I in 1..6) all_different([RVer[I],RAdj[I],RSub[I]]) end,
+    % Filme sind nie scheußlich oder grün, Tabletten nicht grün und Frauen nicht groß:
+    foreach(I in 1..6) 
+        Sub[I] #= Fil #=> (Adj[I] #!= Sche #/\ Adj[I] #!= Grue), 
+        Sub[I] #= Tab #=>  Adj[I] #!= Grue,
+        Sub[I] #= Fra #=>  Adj[I] #!= Gros
+    end,
+    % Das Wort Tabletten hat eine Frau gesagt, essen kann man hier nur Salat, und Maik ist ein Angsthase:
+    foreach(I in 1..6) 
+        Sub[I] #= Tab #=> I mod 2 #= 1, 
+        Ver[I] #= Es #=> Sub[I] #= Sal 
+    end, 
+    Ver[Maik] #= Fu,
+    % Keiner hier fürchtet sich vor Frauen oder Filmen:
+    foreach(I in 1..6) Ver[I] #= Fu #=> (Sub[I] #!= Fra #/\ Sub[I] #!= Fil) end,
+    % Evi spricht mal wieder nur in Alliterationen ..
+        ( Ver[Evi] #= Se #/\ (Adj[Evi] #= Scho #\/ Adj[Evi] #= Sche) #/\ Sub[Evi] #= Sal )
+    #\/ ( Ver[Evi] #= Ve #/\ Adj[Evi] #= Vers #/\ Sub[Evi] #= Vie ), 
+    Sub[Rudolf] #= Fra, % .. und Rudolf denkt nur an Frauen.
+    Ver[Gerda] #!= Ta, Ver[Willi] #!= Ta, % Gerda und Willi tanzen übrigens überhaupt nicht
+    solve(Sub ++ Adj ++ Ver ++ RSub ++ RAdj ++ RVer),
+    foreach(I in 1..6) printf(Template[I], Verb[Ver[I]], Adjektiv[Adj[I]], Substantiv[Sub[I]]) end,
+    fail.
+/* 
+Gerda: Ich sehe gerne gruselige Filme.
+Rudolf: Ich tanze morgen wieder mit schönen Frauen.
+Evi: Ich vermisse meinen verschmusten Vierbeiner.
+Willi: Ich esse nicht schon wieder grünen Salat!
+Rita: Ich nehme jeden Tag scheußliche Tabletten.
+Maik: Ich fürchte mich vor großen Hunden.
+CPU time 0.001 seconds korrekt */

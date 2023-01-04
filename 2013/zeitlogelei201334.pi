@@ -1,0 +1,39 @@
+/* Zeit Logelei 2013/34 Gras ist nicht gleich Gras
+https://www.zeit.de/2013/34/spiele-logelei-34 */
+import cp.
+main ?=>
+    Gras = ["Mauer", "Silbermond", "Haus", "Steppentanz", "Heide", "Gaensefuss"],
+    Merkmal = [["holzig","faserig"], ["beharrt","unbehaart"],["3-granig","5-granig"], ["gerollt","gefaltet"], ["gekielt","gepfaehlt"]],
+    % Gräser in den Zeilen, Merkmale in den Spalten:
+    M = {{0,_,_,_,0}, % 0: 1. Merkmal, 1: 2. Merkmal
+         {_,0,_,_,0},
+         {0,_,0,0,_},
+         {_,_,_,1,0},
+         {_,_,_,_,_},
+         {_,_,_,_,_}}, N = len(M), E = len(M[1]), M :: 0..1,
+    foreach((G,X,Y) in [(1,1,5), (2,2,5), (4,4,5), (5,1,3), (6,2,4)])
+        foreach(G1 in 1..N, G1!=G) M[G1,X] #!= M[G,X] #\/ M[G1,Y] #!= M[G,Y] end,
+        [GX,GY] :: 1..N, GX #!= G, GY #!= G, % Gegenbeispiele für weniger Merkmale
+        matrix_element(M, GX,X, M[G,X]),
+        matrix_element(M, GY,Y, M[G,Y]),
+    end,
+    foreach((G,X,Y,Z) in [(3,1,3,4), (6,2,3,5)])
+        foreach(G1 in 1..N, G1!=G) M[G1,X] #!= M[G,X] #\/ M[G1,Y] #!= M[G,Y] #\/ M[G1,Z] #!= M[G,Z] end,
+        [GXY,GXZ,GYZ] :: 1..N, GXY #!= G, GXZ #!= G, GYZ #!= G, % Gegenbeispiele für weniger Merkmale
+        matrix_element(M, GXY,X, M[G,X]), matrix_element(M, GXY,Y, M[G,Y]), % X,Y
+        matrix_element(M, GXZ,X, M[G,X]), matrix_element(M, GXZ,Z, M[G,Z]), % X,Z
+        matrix_element(M, GYZ,Y, M[G,Y]), matrix_element(M, GYZ,Z, M[G,Z])  % Y Z
+    end,
+    solve(M),
+    foreach(G in 1..N) 
+		printf("%11sgras: ", Gras[G]), 
+        foreach(I in 1..E) printf("%11s", Merkmal[I, 1+M[G,I]]) end, nl
+    end, nl, fail.
+/* 
+      Mauergras:      holzig  unbehaart   5-granig    gerollt    gekielt
+ Silbermondgras:     faserig    beharrt   3-granig    gerollt    gekielt
+       Hausgras:      holzig  unbehaart   3-granig    gerollt  gepfaehlt
+Steppentanzgras:     faserig  unbehaart   3-granig   gefaltet    gekielt
+      Heidegras:     faserig    beharrt   5-granig    gerollt  gepfaehlt
+ Gaensefussgras:      holzig    beharrt   3-granig   gefaltet  gepfaehlt
+korrekt */

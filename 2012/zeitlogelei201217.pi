@@ -1,0 +1,42 @@
+/* Zeit Logelei 2012/17 Bei einer Geburtstagsfeier wird ein Spiel gespielt: 
+Jeder der 10 Gäste hat eine Zahl von 1 bis 10 erhalten, und zwar jeder eine andere. 
+Konrad, das Geburtstagskind, muss nun herausfinden, wer welche Zahl hat
+https://www.zeit.de/2012/17/Spiele-Logelei-17 */
+import cp.
+main ?=>
+    Zahl = [An, Be, De, Ef, En, Ge, Ha, Ia, Ja, Ze],
+    Name = ["Anne","Ben","Denni","Efi","Enna", "Gero","Hana","Ian","Jan","Zeno"], 
+    N = len(Name), Zahl :: 1..N, all_different(Zahl),
+    foreach((P1,P2,Delta) in [
+        (An,De,0), % Anne: "Meine Zahl ist größer als die von Denni."
+        (Be,De,0), % Ben: "Meine Zahl ist größer als die von Denni."
+        (Ze,De,0), % Zeno: "Meine Zahl ist größer als die von Denni."
+        (De,En,0), % Denni: "Meine Zahl ist größer als die von Enna."
+        (En,Be,1), % Enna: "Meine Zahl ist um eins größer als die von Ben."
+        (Ef,Ja,0), % Efi: "Meine Zahl ist größer als die von Jan."
+        (Ge,Ia,0), % Gero: "Meine Zahl ist größer als die von Ian."
+        (Ha,Ze,-5),% Hana: "Meine Zahl ist um fünf kleiner als die von Zeno."
+        (Ia,Ef,0), % Ian: "Meine Zahl ist größer als die von Efi."
+        (Ja,De,0)])% Jan: "Meine Zahl ist größer als die von Denni."
+        % Nur die Gäste haben die Wahrheit gesagt, die eine ungerade Zahl erhalten haben: 
+        if Delta = 0 
+            then P1 mod 2 #= 1 #<=> P1 #> P2
+            else P1 mod 2 #= 1 #<=> P1 #= P2 + Delta  
+        end
+    end,
+    solve(Zahl),
+    Ranking = [(Zahl[I],I) : I in 1..10].sort(),
+    foreach((Z,I) in Ranking) printf("%s hat die Zahl %d.%n", Name[I], Z) end, 
+    fail.
+/* 
+Hana hat die Zahl 1.
+Jan hat die Zahl 2.
+Efi hat die Zahl 3.
+Ben hat die Zahl 4.
+Ian hat die Zahl 5.
+Zeno hat die Zahl 6.
+Gero hat die Zahl 7.
+Denni hat die Zahl 8.
+Anne hat die Zahl 9.
+Enna hat die Zahl 10.
+CPU time 0.012 seconds, no more solutions, korrekt */

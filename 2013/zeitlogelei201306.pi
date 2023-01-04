@@ -1,0 +1,25 @@
+/* Zeit Logelei 2013/06 Lisa besitzt 25 Münzen (1, 2, 5, 10, 20 und 50 Cent) */
+import sat, util.
+main ?=>
+    Vals = [1, 2, 5, 10, 20, 50],
+    Hsum = [93,38,105,66,113], Vsum = [93,68,142,18,94], N = len(Hsum),
+    M = new_array(N,N), M :: Vals,
+    foreach({Sum,L} in zip(Hsum,M.rows()) ++ zip(Vsum,M.columns())) Sum #= sum(L) end,
+    % Lisa hat nie gleiche Münzen nebeneinandergelegt:
+    foreach(Z in 1..N, S in 1..N-1) M[Z,S] #!= M[Z,S+1] end,
+    foreach(Z in 1..N-1, S in 1..N) M[Z,S] #!= M[Z+1,S] end,
+    % .. noch nicht einmal diagonal:
+    foreach(Z in 1..N-1, S in 1..N-1) 
+        M[Z,S] #!= M[Z+1,S+1], M[Z,S+1] #!= M[Z+1,S] 
+    end,
+    solve(M),
+    foreach(Z in 1..N)
+        foreach(S in 1..N) printf("%2d|", M[Z,S]) end, nl
+    end, fail.
+/* 
+20| 2|50| 1|20|
+ 1| 5|20|10| 2|
+ 2|50| 2| 1|50|
+20| 1|20| 5|20|
+50|10|50| 1| 2|
+CPU time 1.244 seconds no more solutions korrekt */

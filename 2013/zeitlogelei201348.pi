@@ -1,0 +1,25 @@
+/* Zeit Logelei 2013/48 25 Kugeln in 5 Urnen
+https://www.zeit.de/2013/48/spiele-logelei-48 */
+import cp, util.
+
+main =>
+  Words = ["BLITZ", "BOXER", "DUMPF", "KLANG", "KREML", "PABLO", 
+           "ROWDY", "STICH", "VISUM", "WOGEN", "ZWECK", "ZWEIG"],
+  U = new_list(25), U :: 1..5, % in welcher Urne liegt der Buchstabe?
+  foreach(I in 1..5) count(I, U, 5) end, % in jeder Urne liegen 5 Buchstaben
+  Alphabet = "ABCDEFGHIKLMNOPQRSTUVWXYZ", % (ohne das J)
+  foreach(Word in Words) % die gezogenen Buchstaben kommen aus verschiedenen Urnen:
+    all_different( [U[find_first_of(Alphabet, C)] : C in Word] )
+  end,
+  solve(U),
+  foreach(I in 1..5, Letter in 1..25)
+      if U[Letter]=I then printf("%c ", Alphabet[Letter]) end,
+      if Letter=25 then nl end
+  end.
+/*
+A D E T V 
+B C G M Y 
+F I K O Q 
+H L U W X 
+N P R S Z 
+CPU time 0.003 seconds korrekt */

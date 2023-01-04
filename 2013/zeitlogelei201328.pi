@@ -1,0 +1,22 @@
+/* Zeit Logelei 2013/51 Professor Knusi bei den Quernianern
+Wer sagt die Wahrheit, und wer lügt? Und als Bonusfrage: Was hat wohl Vulu gesagt? */
+import cp.
+main ?=>
+    G = [F,I,L,N,P,T, U,V,W,X,Y,Z], G :: [0,1], % 0=lügt 
+    foreach((A,B,WB,C,WC) in [(F,I,0,L,1), % Fulu: "Iucki lügt, und Lulu sagt die Wahrheit." 
+                              (I,N,0,T,0), % Iucki: "Nulu und Tucki lügen." 
+                              (L,T,1,W,0), % Lulu: "Tucki sagt die Wahrheit, und Wuchi lügt."
+                              (N,V,1,Z,0), % Nulu: "Vulu sagt die Wahrheit, und Zucki lügt." 
+                              (P,X,1,I,1), % Pucki: "Xulu und Iucki sagen die Wahrheit." 
+                              (T,Z,1,P,0), % Tucki: "Zucki sagt die Wahrheit, und Pucki lügt." 
+                              (U,F,1,V,0), % Uulu: "Fulu sagt die Wahrheit, und Vulu lügt."
+                              (W,P,1,F,0), % Wuchi: "Pucki sagt die Wahrheit, und Fulu lügt." 
+                              (X,U,1,N,0), % Xulu: "Uulu sagt die Wahrheit, und Nulu lügt." 
+                              (Y,W,1,U,0), % Yucki: "Wuchi sagt die Wahrheit, und Uulu lügt." 
+                              (Z,Y,0,X,0) ]) % Zucki: "Yucki und Xulu lügen."
+        A #= 1 #<=> (B #= WB #/\ C #= WC)
+    end,
+    solve(G), Name = ['F','I','L','N','P','T','U','V','W','X','Y','Z'],
+    printf("%w sagen die Wahrheit, der Rest lügt.%n", [Name[J] : J in 1..len(G), G[J]=1]),
+    fail.
+/* FLTVZ sagen die Wahrheit, der Rest lügt - korrekt */

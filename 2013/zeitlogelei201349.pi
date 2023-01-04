@@ -1,0 +1,27 @@
+/* Zeit Logelei 2013/49 Knusel, Frasel und Plosel
+https://www.zeit.de/2013/49/spiele-logelei-49 */
+import cp.
+
+main ?=>
+  Kn=1, Fr=2, Pl=3, Name = ["Knusel", "Frasel", "Plosel"],
+  % Jede der drei Spezies geht genau drei der fünf folgenden Tätigkeiten nach:
+  Action = ["baseln", "feseln", "koseln", "wuseln", "zieseln"], B=1, F=2, K=3, W=4, Z=5,
+  M = new_array(3,5), M :: 0..1, foreach(L in M) sum(L) #= 3 end,
+  M[Fr,B] #^  M[Pl,K], % "Entweder baseln Frasel oder Plosel koseln."  
+  M[Kn,K] #=> M[Pl,W], % "Wenn Knusel koseln, dann wuseln Plosel."
+  M[Kn,W] #^  M[Pl,B], % "Entweder wuseln Knusel oder Plosel baseln."
+  M[Kn,F] #=> M[Fr,F], % "Wenn Knusel feseln, dann feseln Frasel."
+  M[Kn,W] #^  M[Fr,F], % "Entweder wuseln Knusel oder Frasel feseln."
+  M[Fr,W] #=> M[Pl,Z], % "Wenn Frasel wuseln, dann ziesln Plosel."
+  M[Kn,F] #^  M[Pl,B], % "Entweder feseln Knusel oder Plosel baseln."
+  M[Fr,K] #=> M[Pl,F], % "Wenn Frasel koseln, dann feseln Plosel."
+  M[Pl,K] #^  M[Fr,K], % "Entweder koseln Plosel oder Frasel koseln."
+  solve(M), 
+  foreach(I in 1..3)
+      printf("%s ", Name[I]),
+      foreach(J in 1..5, M[I,J]=1) printf("%s ", Action[J]) end, nl
+  end, fail.
+/*
+Knusel baseln koseln zieseln 
+Frasel baseln feseln koseln 
+Plosel baseln feseln wuseln - no more solutions, korrekt */

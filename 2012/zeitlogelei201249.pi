@@ -1,0 +1,26 @@
+/* Zeit Logelei 2012/49 Peter hilft seinen drei Töchtern beim Anziehen */
+import cp, util.
+main ?=>
+    Lena=1, Caro=2, Maja=3,                                   NameP = ["Lena","Caro","Maja"],
+    Oben  = new_list(3), Oben :: 1..4,  all_different(Oben),  NameO = ["rotes T-Shirt","blaues T-Shirt","weisses Hemd","gelbes Sweatshirt"],
+    Mitte = new_list(3), Mitte :: 1..3, all_different(Mitte), NameM = ["pinker Rock","Jeans","lila Hose"],
+    Unten = new_list(3), Unten :: 1..3, all_different(Unten), NameU = ["rote Socken","gestreifte Socken","weisse Socken"],
+    Mitte[Lena] #= 3 #=> Oben[Lena] #= 1, % "Die lila Hose ziehe ich nicht an", sagt Lena, "außer wenn ich dazu das rote T-Shirt bekomme."
+    Mitte[Caro] #= 1 #=> Oben[Caro] #!= 3, % Caro protestiert: "Den pinken Rock ziehe ich nur an, wenn ich dazu nicht das weiße Hemd tragen muss."
+    Mitte[Lena] #= 3, % Lena entgegnet: "Mir sind die Jeans und der pinke Rock zu groß!"
+    Unten[Maja] #= 1, % Maja hat inzwischen Socken rausgeholt. "Die roten gehören mir".
+    Oben[Maja]  #= 2, % Maja findet ein blaues T-Shirt: "Das gefällt mir, das will ich anziehen!"
+    foreach(T in 1..3)
+        Unten[T] #= 2 #=> Mitte[T] #!= 3, % die gestreiften Socken passen nicht zur lila Hose
+        Mitte[T] #= 1 #=> (Oben[T] #!= 1 #/\ Unten[T] #!= 1) % "Aber nicht wieder Rot zu Pink, das beißt sich."
+    end,
+    solve(Oben ++ Mitte ++ Unten),
+    foreach(T in 1..3)
+        printf("%s: %s, %s und %s.%n", NameP[T], NameO[Oben[T]], NameM[Mitte[T]], NameU[Unten[T]])
+    end, println("Tim: der Rest."),
+    fail. /* 
+Lena: rotes T-Shirt, lila Hose und weisse Socken.
+Caro: gelbes Sweatshirt, pinker Rock und gestreifte Socken.
+Maja: blaues T-Shirt, Jeans und rote Socken.
+Tim: der Rest.
+no more solutions, korrekt */

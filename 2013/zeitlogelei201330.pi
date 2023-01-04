@@ -1,0 +1,61 @@
+/* Zeit Logelei 2013/30 Nina im Copyshop (mit festen Preisen)
+https://www.zeit.de/2013/30/spiele-logelei-30 */
+import sat, util.
+main =>
+    Copies = [170,170,170, 325,325,325,325, 1,1,1,1,1, 45,45,45,45,45,45,
+              617,617,617, 300,300,300,300], 
+    N = len(Copies),
+    Shop = ["Slowcopy", "Fastcopy", "Schreibwaren"],
+    M = new_array(N,3), Mt = transpose(M), % Copies von Dok in Shop
+    Mt[1] :: 1..15,  % Slowcopy ist teuer, muss aber min. 1x genutzt werden; deutlicher Rabatt bei 100 Copies
+    Mt[2] :: 0..300, % Eventuell einen 300er hier drucken, um 1000er Mengenrabatt zu erhalten
+    Mt[3] :: 0..2,   % maximal 2 Pakete, um 600 Copies zu drucken
+    foreach(Dok in 1..N)
+        M[Dok,1] + M[Dok,2] + 300 * M[Dok,3] #>= Copies[Dok] % Schreibwaren verkauft nur Pakete á 300 Stck
+    end,
+    Sum = new_list(3), Sum :: 1..2000, % Anzahl der Kopien je Shop
+    foreach(S in 1..3) Sum[S] #= sum(Mt[S]) end,
+    Sum[1] #= 100,     % Slowcopy (um 100er Mengenrabatt zu erhalten)
+    Sum[2] #>= 1000,   % Fastcopy (um 1000er Mengenrabatt zu erhalten)
+    Total :: 1..20000, % Gesamtkosten
+    Total #= 10 * Sum[1] + 5 * Sum[2] + 719 * Sum[3],
+    solve([$min(Total)], vars(M) ++ Sum),
+    Cost = [10 * Sum[1], 5 * Sum[2], 719 * Sum[3]],
+    foreach(Dok in 1..N)
+        printf("Dok %d (%d Copies): %w%n", Dok, Copies[Dok], M[Dok])
+    end,
+    foreach(S in 1..3)
+        printf("%s: %d Copies, %5.2f €%n", Shop[S], Sum[S], Cost[S]/100)
+    end,
+    printf("Total cost: %6.2f", Total/100).
+/*
+Dok 1 (170 Copies): {14,156,0}
+Dok 2 (170 Copies): {13,157,0}
+Dok 3 (170 Copies): {10,160,0}
+Dok 4 (325 Copies): {1,24,1}
+Dok 5 (325 Copies): {1,24,1}
+Dok 6 (325 Copies): {11,14,1}
+Dok 7 (325 Copies): {5,20,1}
+Dok 8 (1 Copies): {1,0,0}
+Dok 9 (1 Copies): {1,0,0}
+Dok 10 (1 Copies): {1,0,0}
+Dok 11 (1 Copies): {1,0,0}
+Dok 12 (1 Copies): {1,0,0}
+Dok 13 (45 Copies): {1,44,0}
+Dok 14 (45 Copies): {7,38,0}
+Dok 15 (45 Copies): {4,41,0}
+Dok 16 (45 Copies): {1,44,0}
+Dok 17 (45 Copies): {10,35,0}
+Dok 18 (45 Copies): {1,44,0}
+Dok 19 (617 Copies): {1,16,2}
+Dok 20 (617 Copies): {1,16,2}
+Dok 21 (617 Copies): {5,12,2}
+Dok 22 (300 Copies): {1,0,1}
+Dok 23 (300 Copies): {1,0,1}
+Dok 24 (300 Copies): {6,294,0}
+Dok 25 (300 Copies): {1,0,1}
+Slowcopy: 100 Copies, 10.00 €
+Fastcopy: 1139 Copies, 56.95 €
+Schreibwaren: 13 Copies, 93.47 €
+Total cost: 160.42
+CPU time 66.126 seconds korrekt */

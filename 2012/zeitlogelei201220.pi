@@ -1,0 +1,27 @@
+/* ZEIT Logelei 20/2012
+Magisches Quadrat
+http://www.zeit.de/2012/20/Spiele-Logelei-20 */
+import util, cp.
+main ?=>
+    M = {{13, _, _, _, _},
+         {25, _, _, 2, _},
+         { _, 5, 8, _, _},
+         { _, _,16, _, _},
+         {19, _, _, _,15}}, N = len(M), M :: 1..N*N,
+    Mvars = array_matrix_to_list(M), all_different(Mvars),
+    Sum = sum(1..25) // N,
+    foreach(L in M.rows()++M.columns()) sum(L) #= Sum end,
+    sum([M[I,I]     : I in 1..N]) #= Sum, % Diagonal 1
+    sum([M[I,N+1-I] : I in 1..N]) #= Sum, % Diagonal 2
+    solve(M),
+    foreach(Z in 1..N, S in 1..N)
+        printf("%2d|", M[Z,S]),
+        if S = N then nl end
+    end, fail.
+/*
+13|23|11| 4|14|
+25|12|20| 2| 6|
+ 7| 5| 8|24|21|
+ 1|22|16|17| 9|
+19| 3|10|18|15| 
+CPU time 0.005 seconds, no more solutions, korrekt! */

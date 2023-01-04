@@ -1,0 +1,37 @@
+/* Zeit Logelei Nr. 2013/03 Anna und das Lebkuchenhaus */
+import cp, util.
+main1 =>
+    Vars = [Lkhaus,Semmel,Obstkuchen,Pralinen,F], Vars :: 1..100,
+    Lkhaus + Semmel #= Obstkuchen, % + Zeile 9 -> Semmel * (F+1) = Obstkuchen
+    Lkhaus #= Semmel + Pralinen,   % + Zeile 9 -> Semmel * (F-1) = Pralinen
+    3 * Pralinen #= 2 * Obstkuchen,% + Zeilen 5, 6 -> 3 * Semmel * (F-1) = 2 * Semmel * (F+1)
+    % Zeile 7 -> 3 * F - 3 = 2 * F + 2 -> F = 5 (rechnerische Lösung)
+    Semmel * F #= Lkhaus,
+    solve(Vars),
+    printf("% d Semmeln", F). %  5 Semmeln korrekt
+
+main2 =>
+    add(["ANNA", "GELD", "LADEN"]). /*
+  2772
+  9815
+------
+ 12587 korrekt */
+add(L) => % das letzte Element von L ist die Summe der vorherigen Elemente
+   Letter = keys(new_set(flatten(L))), % verwendete Buchstaben
+   Digit = new_list(len(Letter)), Digit :: 0..9, % eine Ziffer je Buchstabe
+   all_different(Digit),
+   Zeilen = len(L) - 1, % Anzahl der Summanden, im Beispiel = 2
+   Num = new_array(len(L)), % numerische Repräsentation der Elemente von L
+   foreach(I in 1..len(L))
+       S = [Digit[find_first_of(Letter, C)] : C in L[I]], % Convert Letter C -> Digit
+       to_num(S, Num[I]), S[1] #!= 0
+   end,
+   sum([Num[I] : I in 1.. Zeilen]) #= Num[len(L)],
+   solve(Digit ++ Num),
+   foreach(I in 1..Zeilen) printf("%6d%n", Num[I]) end,
+   printf("------%n"),
+   printf("%6d%n%n", Num[len(L)]).
+
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).

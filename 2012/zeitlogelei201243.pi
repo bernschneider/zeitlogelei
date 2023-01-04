@@ -1,0 +1,40 @@
+/* Zeit Logelei 2012/43 Jeder der neun Schafhirten von Hinterwalden hat eine andere Anzahl an Schafen. */
+import cp, util.
+main ?=>
+    An=1, Fr=2, Ha=3,  Ho=4, Ja=5, Mi=6,  Pe=7, Si=8, St=9, 
+    Hirte = ["An", "Fr", "Ha",  "Ho", "Ja", "Mi",  "Pe", "Si", "St"], N = len(Hirte),
+    Schafe = new_list(N), Schafe :: 1..N, all_different(Schafe), % Ranking
+    Wahr = new_array(N,2), Wahr :: 0..1, % Hirte I sagt bei seinem J. Satz die Wahrheit
+    % Auf die Frage, wer wie viele Schafe besitzt, antworten sie der Reihe nach,
+    % .. wobei sie einmal die Wahrheit sagen und einmal lügen:
+    foreach(H in 1..N) Wahr[H,1] + Wahr[H,2] #= 1 end,
+    Cnt = [1 : _ in 1..N], % alle machen zunächst ihre 1. Aussage
+    foreach((H,H1,H2) in 
+	   [(Ja,An,Mi), % Jakob: "Andreas hat mehr Schafe als Michael."
+		(An,Pe,Si), % Andreas: "Peter hat mehr Schafe als Simon."
+		(Mi,An,Fr), % Michael: "Andreas hat mehr Schafe als Franz."
+		(Si,Ha,Ho), % Simon: "Hans hat mehr Schafe als Holger."
+		(Pe,St,Ja), % Peter: "Stefan hat mehr Schafe als Jakob."
+		(Fr,Mi,Si), % Franz: "Michael hat mehr Schafe als Simon."
+		(Ha,Ja,An), % Hans: "Jakob hat mehr Schafe als Andreas."
+		(Ho,St,An), % Holger: "Stefan hat mehr Schafe als Andreas."
+		(St,Si,An), % Stefan: "Simon hat mehr Schafe als Andreas."
+		(Ja,Ho,Si), % Jakob: "Holger hat mehr Schafe als Simon."
+		(An,Ja,Fr), % Andreas: "Jakob hat mehr Schafe als Franz."
+		(Mi,Ja,Pe), % Michael: "Jakob hat mehr Schafe als Peter."
+		(Si,Ja,Pe), % Simon: "Jakob hat mehr Schafe als Peter."
+		(Pe,Si,Mi), % Peter: "Simon hat mehr Schafe als Michael."
+		(Fr,Ha,Ja), % Franz: "Hans hat mehr Schafe als Jakob."
+		(Ha,Fr,Pe), % Hans: "Franz hat mehr Schafe als Peter."
+		(Ho,Si,An), % Holger: "Simon hat mehr Schafe als Andreas."
+		(St,Ha,Mi)])% Stefan: "Hans hat mehr Schafe als Michael."   
+       Wahr[H,Cnt[H]] #= (Schafe[H1] #> Schafe[H2]),
+       Cnt[H] := 2 % die nächste Aussage von H wird seine 2. Aussage sein
+    end,
+    % Wenn Peter weniger Schafe hat als Andreas, dann hat Michael weniger Schafe als Holger.":
+    Schafe[Pe] #< Schafe[An] #=> Schafe[Mi] #< Schafe[Ho],
+    solve(vars(Wahr) ++ Schafe),
+    println([H : (_,H) in [(Schafe[X], Hirte[X]) : X in 1..N].sort()]),
+    fail.
+/* [St,An,Fr,Pe,Ja,Ha,Mi,Si,Ho] 
+CPU time 0.003 seconds, no more solutions, korrekt */

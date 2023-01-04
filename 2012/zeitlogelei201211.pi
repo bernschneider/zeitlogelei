@@ -1,0 +1,44 @@
+/* Zeit Logelei 2012/11 
+http://www.zeit.de/2012/11/Spiele-Logelei-11 
+*/
+import sat, util.
+
+main =>
+   N = 9, R=11, B=12, G=13,   % 9 Zeilen x 9 Spalten, Farben 1..3
+   SigZ = [ [0,0,2,G,1], [0,0,0,3,0,0], [0,4,0,0,B],   [0,R,0,0,3,G,0], [B,0,0,2,0],   [4,B,0,0,G], [0,4,G,0,0],   [2,3,0,0,0], [0,0,0,4]], % Zeilensignatur Count
+   SigS = [ [2,0,0,2,R],  [0,R,0,0,0,G], [G,0,2,0,0,0], [R,0,0,3,0,0,0], [B,R,0,0,0,0], [0,2,B,0],   [3,0,0,0,0,1], [1,0,0,4,1], [0,0,0,2,G,1]], % Spaltensignatur
+   Board = new_array(N,N),  
+   Boardvars = array_matrix_to_list(Board), Boardvars :: [R,B,G],  
+   foreach(Z in 1..N) signature(N, L, SigZ[Z]), L = [Board[Z,S] : S in 1..N] end,
+   foreach(S in 1..N) signature(N, L, SigS[S]), L = [Board[Z,S] : Z in 1..N] end,
+   solve(Boardvars), print_board(N, Board). %,
+   % solve_all([ff,down], Boardvars) = Sols, print(numbersols = len(Sols)).
+/*	
+ G G G R B B G G B
+ G R G B B B G R R
+ B R R R R B G G B
+ B R B G R R R G R
+ B B B G R R B B R
+ G G G G B B G B G
+ B B R R R R G B G
+ B B G G G R B B G
+ R G G B B R R R R
+CPU time 1.004 seconds korrekt */
+
+signature(N, L, Sig) =>     % berechnet L aus Sig!
+	L = new_list(N), L :: 11..13, 
+	Len = len(Sig), Idx = new_list(Len), Idx :: 1..N, Idx[Len] #= N, % increasing_strict(Idx), % Indices der End-Felder
+    foreach(J in 1..Len)
+    	if J=1 then I0 #= 0 else I0 #= Idx[J-1] end, 
+      I1 #= Idx[J], I0 #< I1, [S] :: 11..13, element(I1, L, S),
+     	sum([ (L[I] #= S) * (I0 #< I) * (I #=< I1) : I in 1..N]) #= I1 - I0,  % alle haben die gleiche Farbe S
+    	if Sig[J] > 10 then Sig[J] #= S	elseif Sig[J] > 0 then Sig[J] #= I1 - I0 end,
+      if J<Len then I2 #= I1 + 1, element(I2, L, S2), S #!= S2 end
+    end. 
+    
+print_board(N, Board) =>
+   C = "RBG",
+   foreach(I in 1..N, J in 1..N)
+      printf(" %c", C[Board[I,J] - 10]),
+      if J = N then nl end
+   end.

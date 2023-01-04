@@ -1,0 +1,42 @@
+/* Zeit Logelei 2012/01 Vier Familien haben unterschiedliche Silvesterbräuche
+https://www.zeit.de/2012/01/Spiele-Logelei-01 */
+import cp.
+main ?=>    %      1         2              3          4
+    NFamilie = ["Becker", "Müller",    "Hausmann",  "Keller"],
+    NBrauch  = ["spielt", "debattiert", "überrascht","tanzt"],
+    Brauch = new_list(4), Brauch :: 1..4, assignment(Brauch,RBrauch), %  1  2  3  4
+    Beginn = new_list(4), Beginn :: 1..4, assignment(Beginn,RBeginn), % [18,19,20,21], %Wann beginnt die Feier? 
+    Gaeste = new_list(4), Gaeste :: 1..4, assignment(Gaeste,RGaeste), %  [8,10,12,14], Wieviele Gäste sind eingeladen?
+    % Aus Sicherheitsgründen maile ich Ihnen immer zwei Alternativen, von denen genau eine korrekt ist:
+    % Müllers spielen Spiele / Müllers beginnen um 19 Uhr – 
+    Brauch[2] #= 1 #^ Beginn[2] #= 2,
+    % 10 Leute gehen um 18 Uhr zur Feier / Müllers haben 10 Leute eingeladen – 
+    element(RBeginn[1],Gaeste,V1), V1 #= 2 #^ Gaeste[2] #= 2,
+    % 10 Leute gehen um 19 Uhr zur Feier / 14 Leute gehen um 21 Uhr zur Feier – 
+    element(RBeginn[2],Gaeste,V2), element(RBeginn[4],Gaeste,V3), V2 #= 2 #^ V3 #= 4,
+    % 8 Leute debattieren / 8 Leute gehen um 20 Uhr zur Feier – 
+    element(RBrauch[2],Gaeste,V4), element(RBeginn[3],Gaeste,V5), V4 #= 1 #^ V5 #= 1,
+    % gespielt wird ab 18 Uhr / 14 Leute debattieren – 
+    element(RBeginn[1],Brauch,V6), element(RGaeste[4],Brauch,V7), V6 #= 1 #^ V7 #= 2,
+    % Hausmanns laden 8 Leute ein / Kellers beginnen um 18 Uhr – 
+    Gaeste[3] #= 1 #^ Beginn[4] #= 1,
+    % Beckers beginnen um 20 Uhr / 10 Leute überraschen – 
+    element(RGaeste[2],Brauch,V8), Beginn[1] #= 3 #^ V8 #= 3,
+    % um 21 Uhr beginnt der Spieleabend / 14 Leute gehen um 21 Uhr zur Feier – 
+    element(RBeginn[4],Brauch,V9), element(RGaeste[4],Beginn,V10), V9 #= 1 #^ V10 #= 4,
+    % Kellers haben 8 Gäste geladen / 12 Leute spielen – 
+    element(RGaeste[3],Brauch,V11), Gaeste[4] #= 1 #^ V11 #= 1,
+    % Müllers beginnen um 19 Uhr / 10 Leute tanzen.
+    element(RGaeste[2],Brauch,V12), Beginn[2] #= 2 #^ V12 #= 4,
+    solve(Brauch ++ Beginn ++ Gaeste),
+    foreach(I in 1..4) 
+        printf("Famile %s %s ab %d Uhr mit %d Gästen.%n", 
+            NFamilie[I], NBrauch[Brauch[I]], 17+Beginn[I], 6+2*Gaeste[I])
+    end,
+    nl, fail.
+/* 
+Famile Becker debattiert ab 18 Uhr mit 14 Gästen.
+Famile Müller überrascht ab 19 Uhr mit 10 Gästen.
+Famile Hausmann tanzt ab 20 Uhr mit 8 Gästen.
+Famile Keller spielt ab 21 Uhr mit 12 Gästen.
+CPU time 0.004 seconds, no more solutions, korrekt */

@@ -1,0 +1,96 @@
+/* Zeit Logelei 2012/32 */
+import cp, util.
+main =>
+   LM = {{a,b,c,d},
+		 {e,x,f,x},
+	     {g,x,h,i},
+	     {j,x,x,x}}, get_global_map().put(lm,LM),       
+   WLetter := [a,e,f,g,h,j], get_global_map().put(wl,WLetter), % alle Buchstaben mit waagrechter Bedingung
+   SLetter := [a,b,c,d,g,i], get_global_map().put(sl,SLetter), % alle Buchstaben mit senkrechter Bedingung
+   N = 4, ZAHL = 10, _QSUM = 1, FWD = 1, REV = 0, % cond arbeitet nicht mit Bool!
+   M = new_array(N,N),
+   MVars = array_matrix_to_list(M),
+   MVars :: 0..9,
+   % Waagrecht:
+   waagrecht(M,a,ZAHL,FWD,AW), 
+   waagrecht(M,e,ZAHL,FWD,EW),
+   waagrecht(M,f,ZAHL,FWD,FW),
+   waagrecht(M,g,ZAHL,FWD,GW),
+   waagrecht(M,h,ZAHL,FWD,HW),
+   waagrecht(M,j,ZAHL,FWD,JW),      
+   % Senkrecht:
+   senkrecht(M,a,ZAHL,FWD,AS), senkrecht(M,a,ZAHL,REV,RAS),
+   senkrecht(M,b,LBS), % senkrecht(M,b,ZAHL,FWD,BS), 
+   senkrecht(M,c,ZAHL,FWD,CS),
+   senkrecht(M,d,ZAHL,FWD,DS),
+   senkrecht(M,g,ZAHL,FWD,GS),
+   senkrecht(M,i,ZAHL,FWD,IS),
+   % Beachte: In Verbindung mit #=> könnnen is_prime/1 usw. nicht verwendet werden!
+   PR = primes(9999), NPR = [I : I in 1..9999, not membchk(I,PR)],
+   SQ = [I*I : I in 1..99], NSQ = [I : I in 1..9999, not membchk(I, SQ)], % Non-Square
+   CU = [I*I*I : I in 1..22], NCU = [I : I in 1..9999, not membchk(I, CU)], % Non-Cube
+   EW :: SQ #=> IS :: CU, % W Wenn EW eine Quadratzahl ist, dann ist IS eine Kubikzahl. 
+   FW :: NPR #=> AS :: CU, % F Wenn FW keine Primzahl ist, dann ist AS eine Kubikzahl. 
+   AW :: SQ #=> GW :: NCU, % F Wenn AW eine Quadratzahl ist, dann ist GW keine Kubikzahl. 
+   X :: 1..22, AS #!= GW + DS #=> X*X*X #= FW, % F Wenn AS nicht die Summe aus GW und DS ist, dann ist FW eine Kubikzahl. 
+   GW :: NCU #=> AW #= GW * GW, % F Wenn GW keine Kubikzahl ist, dann ist AW das Quadrat von GW. 
+   X1 :: 1..999, GS :: NPR #=> JW #= X1 * GS, % W Wenn GS keine Primzahl ist, dann ist JW Vielfaches von GS. 
+   X2 :: 1..999, DS :: PR #=> CS #= X2 * FW, % W Wenn DS eine Primzahl ist, dann ist CS Vielfaches von FW. 
+   HW :: NSQ #=> DS mod 2 #= 0, % F Wenn HW keine Quadratzahl ist, dann ist DS gerade. 
+   EW :: NSQ #=> DS :: SQ, % F Wenn EW keine Quadratzahl ist, dann ist DS eine Quadratzahl. 
+   GS :: NSQ #=> GS #= prod(LBS), % F Wenn GS keine Quadratzahl ist, dann ist GS das Querprodukt von BS. 
+   CS mod RAS #= 0 #=> GS :: CU, % F Wenn CS Vielfaches des Rückwerts von AS ist, dann ist GS keine Kubikzahl. 
+   AW mod FW #!= 0 #=> AW mod EW #= 0, % F Wenn AW kein Vielfaches von FW ist, dann ist AW Vielfaches von EW. 
+   AS :: NPR #=> AW #= AS * AS, % F Wenn AS keine Primzahl ist, dann ist AW das Quadrat von AS. 
+   AW mod GW #= 0 #=> GW :: PR, % F Wenn AW Vielfaches von GW ist, dann ist GW eine Primzahl.
+   solve(MVars),
+   foreach(I in 1..N) 
+      foreach(J in 1..N) 
+           printf("%d ", M[I,J])
+      end,
+      nl
+   end,
+   nl.
+/*
+8 3 8 1 
+3 6 2 9 
+6 4 3 6 
+4 8 6 4 
+CPU time 19.774 seconds, korrekt */
+waagrecht(M,Letter,Base,Fwd,X) => % Base = 10/1 (1 = Quersumme), Fwd = FWD/REV (REV = Rückwert)
+        waagrecht(M,Letter,Tmp), to_num(Tmp, Base, Fwd, X).
+
+waagrecht(M,Letter,Tmp) =>
+		LM = get_global_map().get(lm), WLetter = get_global_map().get(wl),
+		N = len(LM), Row := 0, Col := 0, Len := 0,
+		foreach(R in 1..N)
+			foreach(C in 1..N, LM[R,C] = Letter) Row := R, Col := C end,
+			if Len == 0, Row  > 0 then 
+				foreach(Cn in Col+1..N, Len == 0, membchk(LM[R,Cn],WLetter)) Len := Cn - Col end,
+				if Len = 0 then Len := N+1-Col end 
+		    end 
+		end,
+	    Tmp = new_list(Len), Tmp :: 0..9,
+   		foreach(I in 0..Len-1) M[Row,Col+I] #= Tmp[I+1] end,
+		M[Row,Col] #!= 0.	
+
+senkrecht(M,Letter,Base,Fwd,X) => % Base = 10/1 (1 = Quersumme), Fwd = FWD/REV (REV = Rückwert)
+        senkrecht(M,Letter,Tmp), to_num(Tmp, Base, Fwd, X).
+
+senkrecht(M,Letter,Tmp) =>
+		LM = get_global_map().get(lm), SLetter = get_global_map().get(sl),        
+		N = len(LM), Row := 0, Col := 0, Len := 0,
+		foreach(C in 1..N)
+			foreach(R in 1..N, LM[R,C] = Letter) Row := R, Col := C end,
+			if Len == 0, Col > 0 then 
+				foreach(Rn in Row+1..N, Len == 0, membchk(LM[Rn,C],SLetter)) Len := Rn - Row end,
+				if Len = 0 then Len := N+1-Row end
+			end 
+		end,
+   		Tmp = new_list(Len), Tmp :: 0..9,
+   		foreach(I in 0..Len-1) M[Row+I,Col] #= Tmp[I+1] end,
+		M[Row,Col] #!= 0.	
+   
+to_num(List, Base, Fwd, Num) => % Num = Wert der Liste
+        Len = length(List), 
+        Num #= cond(Fwd, sum([List[I]*Base**(Len-I) : I in 1..Len]), sum([List[I]*Base**(I-1) : I in 1..Len])).

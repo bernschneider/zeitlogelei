@@ -1,0 +1,32 @@
+/* Zeit Logelei 2012/33 Professor Knusi ist zu Besuch in Tomba Tomba
+https://www.zeit.de/2012/33/Spiele-Logelei-33
+ */
+import cp.
+main ?=>
+    Af=1, Bf=2, Dk=3, Df=4, Ef=5, Ff=6, Gk=7, Hk=8, Nk=9, Nf=10, Ok=11, Sf=12, Tf=13, Vk=14, Zf=15,  
+    Name = ["Achaf","Benf","Durk","Dref","Elef","Füff","Gusk","Hank","Neuk","Nüff","Onik","Seef","Tonf","Viek","Zapf"], N = len(Name),
+    Wahr = new_list(N), Wahr :: 0..1, % 1 = sagt die Wahrheit
+    foreach((P,P1,W1) in [
+        (Nf,Ff,1), % Nüff: "Füff sagt die Wahrheit."
+        (Ok,Bf,0), % Onik: "Benf lügt."
+        (Dk,Ok,1), % Durk: "Onik sagt die Wahrheit."
+        (Df,Tf,0), % Dref: "Tonf lügt."
+        (Vk,Sf,1), % Viek: "Seef sagt die Wahrheit."
+        (Ff,Gk,0), % Füff: "Gusk lügt."
+        (Sf,Nf,1), % Seef: "Nüff sagt die Wahrheit."
+        (Bf,Vk,0), % Benf: "Viek lügt."
+        (Af,Dk,1), % Achaf: "Durk sagt die Wahrheit."
+        (Nk,Af,0), % Neuk: "Achaf lügt."
+        (Gk,Zf,1), % Gusk: "Zapf sagt die Wahrheit."
+        (Ef,Nk,0), % Elef: "Neuk lügt."
+        (Hk,Df,1), % Hank: "Dref sagt die Wahrheit."
+        (Zf,Hk,0)])% Zapf: "Hank lügt."
+        Wahr[P] #= (Wahr[P1] #= W1)
+    end,
+    Wahr[Tf] #= (Wahr[Nf] #= Wahr[Ok]), % Tonf: "Nüff und Onik gehören zum selben Stamm."
+    solve(Wahr),
+    foreach(I in 1..N, Wahr[I]=1) printf("%s ", Name[I]) end, 
+    println("sagen die Wahrheit, der Rest lügt."),
+    fail.
+/* Benf Gusk Neuk Tonf Zapf sagen die Wahrheit, der Rest lügt.
+CPU time 0.0 seconds, no more solutions, korrekt */

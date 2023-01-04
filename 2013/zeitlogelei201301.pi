@@ -1,0 +1,56 @@
+/* Zeit Logelei Nr. 2013/01 Bei Pflanz & More gibt es gerade eine Rabatt-Aktion: 
+Wer mindestens drei Produkte kauft, muss das billigste nicht bezahlen */
+import cp, util.
+main =>     %  1      2       3     4      5        6
+    Name = [rechen,setzling,streu,kuebel,liesel,pfluecker],
+    N = len(Name), Preis = new_list(N), Preis :: 1..100,
+    % Fritz: "Ich habe für einen Pressluftrechen, eine Gieß-Liesel und einen Elektropflücker nur 17 Euro bezahlt."
+    Fritz = [1,0,0,0,1,1], zahlt(Preis,Fritz,17),
+    % Dorothee: "Und ich habe zwei Automatikkübel und ein Setzling-Set für 11 Euro bekommen
+    Doro = [0,1,0,2,0,0], zahlt(Preis,Doro,11),
+    % Erwin: "Ein Elektropflücker, ein Sack Pflanzenstreu und eine Gieß-Liesel haben zusammen nur 24 Euro gekostet
+    Erwin = [0,0,1,0,1,1], zahlt(Preis,Erwin,24),
+    % Kurt: "Ich habe einen Pressluftrechen, ein Setzling-Set und zwei Säcke Pflanzenstreu gekauft und 31 Euro bezahlt, 
+    % aber das war dumm von mir: Wenn ich zwei separate Einkäufe gemacht hätte, hätte ich noch 5 Euro mehr sparen können."
+    Kurt = [1,1,2,0,0,0], zahlt(Preis,Kurt,31),
+    Extra :: 1..N, element(Extra,Preis,PreisExtra), % ein Produkt zahlt Kurt extra; es kostet PreisExtra
+    Kurt1 = new_list(N), Kurt1 :: 0..2, 
+    foreach(I in 1..N)
+        I #=  Extra #=> Kurt1[I] #= Kurt[I] - 1,
+        I #!= Extra #=> Kurt1[I] #= Kurt[I] 
+    end,
+    zahlt(Preis,Kurt1,PreisKurt1), PreisKurt1 + PreisExtra #= 26, % 26 = 31 - 5 -> 5 € gespart!
+    /* Jasmin: "Ich wollte einen Automatikkübel und zwei Setzling-Sets kaufen. An der Kasse habe ich dann Jonas getroffen, 
+    der einen Sack Pflanzenstreu und zwei Gieß-Lieseln kaufen wollte. Vor dem Bezahlen haben wir ein Produkt getauscht; 
+    so haben wir zusammen 6 Euro weniger bezahlt, als wenn jeder seine eigenen Sachen bezahlt hätte. */
+    Jasmin = [0,2,0,1,0,0], zahlt(Preis,Jasmin,PreisJasmin),
+    Jonas =  [0,0,1,0,2,0], zahlt(Preis,Jonas,PreisJonas),
+    [Ja2Jo, Jo2Ja] :: 1..N, Ja2Jo #!= Jo2Ja, % Jasmin übergibt Ja2Jo an Jonas, Jonas übergibt Jo2Ja an Jasmin
+    Jasmin1 = new_list(N), Jonas1 = new_list(N), Jasmin1 ++ Jonas1 :: 0..3,
+    foreach(I in 1..N)
+        I #= Ja2Jo                    #=> (Jasmin1[I] #= Jasmin[I] - 1 #/\ Jonas1[I] #= Jonas[I] + 1),
+        I #= Jo2Ja                    #=> (Jasmin1[I] #= Jasmin[I] + 1 #/\ Jonas1[I] #= Jonas[I] - 1),
+        (I #!= Ja2Jo #/\ I #!= Jo2Ja) #=> (Jasmin1[I] #= Jasmin[I]     #/\ Jonas1[I] #= Jonas[I])
+    end,
+    zahlt(Preis,Jasmin1,PreisJasmin1), zahlt(Preis,Jonas1,PreisJonas1),
+    PreisJasmin + PreisJonas #= 6 + PreisJasmin1 + PreisJonas1, % 6 € gespart!
+    solve(Preis ++ [Extra,PreisExtra,PreisKurt1] ++ Kurt1 ++ [Ja2Jo,Jo2Ja,PreisJasmin,PreisJonas,PreisJasmin1,PreisJonas1] ++ Jasmin1 ++ Jonas1),
+    println([PreisJasmin,PreisJonas,PreisJasmin1,PreisJonas1]),
+    printf("Kurt bezahlt %w extra.%n", Name[Extra]),
+    printf("Jasmin und Jonas tauschen %w und %w.%n", Name[Ja2Jo], Name[Jo2Ja]),
+    foreach(I in 1..N) printf("%w kostet %d €.%n", Name[I], Preis[I]) end.
+/* Kurt bezahlt rechen extra.
+Jasmin und Jonas tauschen kuebel und streu.
+rechen kostet 4 €.
+setzling kostet 9 €.
+streu kostet 11 €.
+kuebel kostet 2 €.
+liesel kostet 3 €.
+pfluecker kostet 13 €.
+CPU time 0.06 seconds korrekt */
+zahlt(Preis,Menge,X) =>
+    N = len(Preis),
+    scalar_product(Preis,Menge,Brutto),
+    % Man muss das billigste Produkt nicht bezahlen:
+    Rabatt #= min([Preis[I]*(Menge[I] #> 0)+100*(Menge[I] #= 0) : I in 1..N]),
+    X #= Brutto - Rabatt. 

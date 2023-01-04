@@ -1,0 +1,42 @@
+/* Zeit Logelei 2014/43 Schriftliche Division
+https://www.zeit.de/2013/43/spiele-logelei-43 */
+import sat, util.
+main =>     %      1         2        3        
+  Templates = ["?XX????XX", "?X?", "Y?Z?X??",  
+               "?XX", "?X?",    % 4, 5
+               "X??", "X?XX",   % 6, 7 Achtung: bei 6 wurde das heruntergeholte ? weggelassen wg. Zeile 35
+               "X??", "0",      % 8, 9(die Nullerzeile) [von PB eingefügt, nicht im Bild!]
+               "X???", "X???",  % 10, 11
+               "Y???", "YXYY",  % 12, 13
+               "Y??X", "Y???",  % 14, 15
+               "YY?Y", "???",   % 16, 17          
+               "???"],          % Rest 
+  N = len(Templates),
+  L = new_list(N), Num = new_list(N), Num :: 0..999999999,
+  Fav = [X,Y,Z], Fav :: 0..9, all_different(Fav),
+  foreach(I in 1..N)
+    T = Templates[I], Len = len(T),
+    L[I] = new_list(Len), L[I] :: 0..9,
+    to_num(L[I], Num[I]), 
+    foreach(J in 1..Len)
+        if     T[J]='X' then    L[I,J] #= X
+        elseif T[J]='Y' then    L[I,J] #= Y
+        elseif T[J]='Z' then    L[I,J] #= Z
+        elseif T[J]='?' then    L[I,J] #!= X, L[I,J] #!= Y, L[I,J] #!= Z 
+        else V = to_int(T[J]),  L[I,J] #= V
+        end
+    end
+  end,
+  Num[2] #> Num[N], % Divisor > Rest
+  Num[1] #= Num[2] * Num[3] + Num[N], % Division mit Rest
+  % Ungerade Zeile der Teilrechnung = Divisor * (betr. Ergebnisziffer):
+  foreach(I in 1..7) Num[3+2*I] #= Num[2] * L[3,I] end, 
+  % Subtraktionen [nicht nötig, um die richtige Lösung zu erhalten]
+  % to_num(L[1,1..3], Num[4]), Num[4] - Num[5] #= Num[6], % 1. Subtraktion
+  solve(Fav ++ Num ++ flatten(L)),
+  printf("%d / %d = %d R %d%n", Num[1], Num[2], Num[3], Num[N]).
+/*  833945733 / 437 = 1908342 R 279
+CPU time 1 second korrekt */
+to_num(List, Num) => 
+        Len = length(List), if len(List)>1 then List[1] #> 0 end,
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).

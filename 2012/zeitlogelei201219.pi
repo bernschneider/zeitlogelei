@@ -1,0 +1,27 @@
+/* Zeit Logelei 2012/19 Eleonore und das Alter
+https://www.zeit.de/2012/19/Spiele-Logelei-19 */
+import cp.
+main1 ?=>
+    Vars = [E, H, F], Vars :: 3..75, % Eleonore, Hubert, Frederik
+    % E -> F: "Wenn du so alt sein wirst, wie ich jetzt bin, werde ich viermal so alt sein, wie du warst, als ich so alt war, wie du jetzt bist.":
+    Delta1 #= E - F, E + Delta1 #= 4 * (F - Delta1),
+    % E -> H: "Wenn ich so alt sein werde, wie du jetzt bist, wirst du dreimal so alt sein, wie ich jetzt bin."
+    Delta2 #= H - E, H + Delta2 #= 3 * E,
+    E + H + F #= 77, % Zusammen sind wir 77 Jahre alt!
+    solve(Vars ++ [Delta1, Delta2]),
+    printf("Eleonore ist %d, Hubert %d und Frederik %d Jahre alt.%n", E, H, F),
+    fail.
+/* Eleonore ist 21, Hubert 42 und Frederik 14 Jahre alt.
+no more solutions, korrekt */
+main2 ?=>
+    Vars = [L, J], Vars :: -75..75, % Lara, Julian
+    % Lara: "In fünf Jahren werde ich so alt sein, wie Julian ist, wenn ich sieben Jahre alt bin":
+    Delta1 #= 7 - L, L + 5 #= J + Delta1,
+    % Lara: "Wenn Julian so alt sein wird, wie ich derzeit bin, wird Julian drei Jahre jünger sein, als ich dann bin"
+    Delta2 #= J - L, J + Delta2 #= (L +Delta2) - 3,
+    solve(Vars ++ [Delta1, Delta2]),
+    printf("Lara ist %d und Julian %d Jahre alt.%n", L, J),
+    fail.
+/* Lara ist -1 und Julian -4 Jahre alt 
+no more solutions, korrekt.
+ZEIT: Wenn das, was die kleine Lara erzählt, stimmen würde, würde Julian erst in vier Jahren geboren werden und sie selbst erst in einem Jahr */

@@ -1,0 +1,25 @@
+/* Zeit Logelei 2012/24 Jeden Morgen steigt Hannah auf ihr Fahrrad 
+und fährt auf der schnurgeraden Straße von Sassenhausen nach Nebenwald.
+Zwischen Sassenhausen und Langental gibt es auch eine direkte Straße (ebenfalls schnurgerade); diese führt über einen Berg, 
+der genau in der Mitte zwischen den beiden Dörfern seine Spitze hat. 
+Hannah mag diese Strecke nicht und braucht ohnehin auf beiden Wegen gleich lang, 
+da sie bergauf immer sehr langsam ist.
+https://www.zeit.de/2012/24/Spiele-Logelei-24 */
+import cp.
+main ?=>
+    Vars = [X,Y,Z], Vars :: 1..30,
+    % X = Strecke von Sassenhausen nach Nebenwald, 
+    % Y = von Nebenwald nach Langenthal
+    % Z = direkt von Sassenhausen nach Langenthal, alle Angaben in km
+    X #> Y, % Nach etwas mehr als der Hälfte der Zeit hat sie Nebenwald erreicht
+    X + Y #= 17, % Sie benötigt für die 17 Kilometer genau eine Stunde
+    % Sie ist bergab mit 39 km/h fünfmal so schnell ist wie bergauf,
+    % d.h. die Abfahrt von Berg bis Langenthal dauert 1/6 Stunde, 
+    % das ergibt bei 39 km/h eine Strecke von 39/6 km
+    Z #= 39 // 3, % die Auffahrt auf den Berg ist genauso weit wie die Abfahrt
+    X * X + Y * Y #= Z * Z, % Pythagoras
+    solve(Vars),
+    printf("X = %d km, Y = %d km, Z = %d km%n", X, Y, Z),
+    fail.
+/* X = 12 km, Y = 5 km, Z = 13 km
+CPU time 0.001 seconds, no more soltions, korrekt*/

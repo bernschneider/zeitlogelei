@@ -1,0 +1,31 @@
+/* Zeit Logelei 2013/13 Professor Knusi in der Steinzeit */
+import cp, util.
+main ?=>
+    B=1, D=2, G=3, L=4, M=5, T=6, W=7, Z=8, 
+    Name = [bubu,dada,gaga,luul,maa,tok,waewae,zak],
+    Wahr = new_list(8), Wahr :: 0..1, sum(Wahr) #= 6, % 1 = die Aussage ist richtig
+    LR = new_list(8), LR :: 1..8, all_different(LR), % Längenranking
+    foreach((P1,P2,P3) in 
+        [(D,Z,T), % Dada: "Zak Knochen länger Tok." 
+         (L,G,M), % Luul: "Gaga Knochen länger Maa." 
+         (Z,W,B), % Zak: "Wäwä Knochen länger Bubu." 
+         (W,D,T), % Wäwä: "Dada Knochen länger Tok."   
+         (G,T,B), % Gaga: "Tok Knochen länger Bubu." 
+         (M,D,W), % Maa: "Dada Knochen länger Wäwä." 
+         (B,L,M), % Bubu: "Luul Knochen länger Maa." 
+         (D,L,M), % Dada: "Luul Knochen länger Maa." 
+         (L,T,G), % Luul: "Tok Knochen länger Gaga." 
+         (Z,T,M), % Zak: "Tok Knochen länger Maa." 
+         (T,L,G), % Tok: "Luul Knochen länger Gaga." 
+         (M,B,G), % Maa: "Bubu Knochen länger Gaga." 
+         (W,L,G)])% Wäwä: "Luul Knochen länger Gaga."
+        Wahr[P1] #= 1 #<=> LR[P2] #> LR[P3]
+    end,
+    solve(Wahr ++ LR),
+    foreach(I in 1..8,Wahr[I]=0) printf("%w ",Name[I]) end, println("meinten kürzer statt länger."),
+    Ranking = [(LR[I],I) : I in 1..8].sort_down(),
+    println([Name[J] : (_,J) in Ranking]),
+    fail.
+/* tok waewae meinten kürzer statt länger.
+Vom Längsten an abwärts: [zak,tok,dada,waewae,bubu,gaga,luul,maa]
+CPU time 0.001 seconds, no more solutions. */

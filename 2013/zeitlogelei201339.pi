@@ -1,0 +1,20 @@
+/* Zeit Logelei 2013/39
+https://www.zeit.de/2013/39/spiele-logelei-39 */
+import cp.
+main =>  %   1            2        3         4        5         6
+  Name = ["Tanja",    "Eduard", "Marco",   "J-C",   "Tina",  "Martin", 
+          "Frederik", "Sabine", "Melanie", "Sonja", "Boris", "Eric"],
+         %   7            8        9         10      11         N 
+  N = len(Name), P = new_list(N), P :: 0..1, % 1 = kann sehen, 0 = Augen verbunden
+  sum(P) #= N//2, % einer Hälfte werden die Augen verbunden
+  % Die meisten antworten auf die Frage nach verbundenen Augen mit "nein", also mit 1:
+  foreach(I in [1,3])  antwort(P[I],P[I+1],1), antwort(P[I+1],P[I],1) end,
+  foreach(I in 5..N-1) antwort(P[I],P[I+1],1) end,
+  antwort(P[N],P[9],0), % Nur Eric sagt, dass Melanie die Augen verbunden hat (Antwort 0).
+  solve(P), 
+  foreach(I in 1..N, P[I]=0) printf("%s, ", Name[I]) end, 
+  println("haben die Augen verbunden, der Rest nicht."), nl. %, fail.
+/* Tina, Martin, Frederik, Sabine, Melanie, Sonja, haben die Augen verbunden, der Rest nicht.
+korrekt */
+antwort(X,Y,A) => % X wird gefragt, ob Y die Augen verbunden hat. Die Antwort lautet A
+    X #= 1 #=> Y #= A. % wenn X sehen kann, stimmt die Antwort!

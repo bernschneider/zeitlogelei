@@ -1,0 +1,39 @@
+/* Zeit Logelei 2012/39 Luise auf Kaffeefahrt in die Eifel
+PB: Die Städte wurden von mir nach der vermutlichen Route sortiert! */
+import cp, util.
+main ?=>   %     1           2            3          4          5                 6
+    NameP = ["Gunter",    "Luise",     "Maria",  "Roswitha", "Ursula",        "Walter"],
+    Stadt = new_list(6), Stadt :: 1..6, assignment(Stadt,RStadt),
+    NameS = ["Regensburg","Ingolstadt","Ulm",    "Stuttgart","Karlsruhe",     "Pirmasens"],
+    Gekauft = new_list(6), Gekauft :: 1..6, assignment(Gekauft,RGekauft),
+    NameG = ["Beauty-Set","Heizdecke", "Kochbuch","Strümpfe","Salatschleuder","Tischdecke"], 
+    % Maria stieg später in den Reisebus als Walter:
+    Stadt[3] #> Stadt[6],
+    % Die Heizdecke wurde nicht von einer Person aus Baden-Württemberg gekauft:
+    element(RGekauft[2],Stadt,SH), SH :: [1,2,6],
+    % Weder die Person aus Karlsruhe noch die aus Pirmasens kaufte eine Tischdecke:
+    element(RGekauft[6],Stadt,ST), ST #< 5,
+    % Die Person, die in Regensburg zustieg, kaufte ein Kochbuch:
+    element(RStadt[1],Gekauft,3),
+    % Roswitha kommt aus Stuttgart:
+    Stadt[4] #= 4,
+    % Die Strümpfe wurden von einem Mann, das Beauty-Set von einer Frau gekauft:
+    PS #= RGekauft[4], PS :: [1,6], PB #= RGekauft[1], PB :: 2..5,
+    % Die weiteste Anreise hatte Gunter, die kürzeste Ursula:
+    Stadt[1] #= 1, Stadt[5] #= 6,
+    % Die Frau aus Ingolstadt kaufte eine Salatschleuder:
+    element(RStadt[2],Gekauft,5), 
+    solve(Stadt ++ RStadt ++ Gekauft ++ RGekauft ++ [SH,ST,PS,PB]),
+    foreach(P in 1..6) 
+        printf("%s aus %s kaufte %s.%n", 
+            NameP[P], NameS[Stadt[P]], NameG[Gekauft[P]]) 
+    end,
+    fail.
+/* 
+Gunter aus Regensburg kaufte Kochbuch.
+Luise aus Ingolstadt kaufte Salatschleuder.
+Maria aus Karlsruhe kaufte Beauty-Set.
+Roswitha aus Stuttgart kaufte Tischdecke.
+Ursula aus Pirmasens kaufte Heizdecke.
+Walter aus Ulm kaufte Strümpfe.
+CPU time 0.0 seconds, no more solutions, korrekt */

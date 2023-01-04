@@ -1,0 +1,22 @@
+/* Zeit Logelei 2012/25 Die vier Damen des Kaffeekränzchens Oberniedel unterhalten sich über den neuen Laden im Dorf
+https://www.zeit.de/2012/25/Spiele-Logelei-25 */
+import sat.
+main ?=>
+    Preis = [Pu,Pi,Tu,St,Bl], Name = ["Punki","Pinky","Tülli","Steif","Blausi"],
+    Preis :: 1..40,
+    2 * Pu + Pi + Tu #= 43,
+    St + Pu + Bl #= 39,
+    2 * Bl + 3 * Pi + Tu #= 21,
+    Pi + 2 * Tu + Pu + Bl #= 27,
+    solve(Preis),
+    foreach(I in 1..len(Preis))
+        printf("%s kostet %d €.%n", Name[I], Preis[I])
+    end,
+    fail.
+/* 
+Punki kostet 18 €.
+Pinky kostet 6 €.
+Tülli kostet 1 €.
+Steif kostet 20 €.
+Blausi kostet 1 €.
+CPU time 0.177 seconds, no more solutions, korrekt */

@@ -1,0 +1,39 @@
+/* Zeit Logelei 2014/45 Uhrzeit
+https://www.zeit.de/2013/45/spiele-logelei-45 */
+import cp, util.
+main ?=>
+  Z = new_list(6), Z :: 1..9, all_different(Z),
+  HMS = new_list(3), HMS :: 1..59, HMS[1] #< 24,
+  foreach(I in 1..3) HMS[I] #= 10 * Z[2*I-1] + Z[2*I] end, 
+  HMS[1] + HMS[2] #= HMS[3],
+  X :: 1..7, X * X #= HMS[1] #\/ X * X #= HMS[2] #\/ X * X #= HMS[3],
+  Y :: 1..3, Y * Y * Y #= HMS[1] #\/ Y * Y * Y #= HMS[2] #\/ Y * Y * Y #= HMS[3],
+  solve(Z ++ HMS ++ [X,Y]), 
+  printf("%2d:%2d:%2d%n", HMS[1], HMS[2], HMS[3]), fail.
+/* 16:27:43 no more solutions, korrekt */
+
+alpha =>
+    add(["BAVIAN", "KORILLA", "VIOLINE"]). /* 
+ 638032
+7410993
+-------
+8049025 korrekt */
+add(L) => % das letzte Element von L ist die Summe der vorherigen Elemente
+   Letter = keys(new_set(flatten(L))), % verwendete Buchstaben
+   Digit = new_list(len(Letter)), Digit :: 0..9, % eine Ziffer je Buchstabe
+   all_different(Digit),
+   Zeilen = len(L) - 1, % Anzahl der Summanden, im Beispiel = 2
+   Num = new_array(len(L)), % numerische Repräsentation der Elemente von L
+   foreach(I in 1..len(L))
+       S = [Digit[find_first_of(Letter, C)] : C in L[I]], % Convert Letter C -> Digit
+       to_num(S, Num[I]), S[1] #!= 0
+   end,
+   sum([Num[I] : I in 1.. Zeilen]) #= Num[len(L)],
+   solve(Digit ++ Num),
+   foreach(I in 1..Zeilen) printf("%7d%n", Num[I]) end,
+   printf("-------%n"),
+   printf("%7d%n%n", Num[len(L)]).
+
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).

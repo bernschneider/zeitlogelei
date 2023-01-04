@@ -1,0 +1,18 @@
+/* Zeit Logelei 2012/37 Bei den Namen der 12 Flüsse in Pelungien waren die Einwohner nicht sehr geistreich: 
+Es sind einfach die Buchstaben von A bis L. Alle 12 Flüsse sind unterschiedlich lang */
+import cp, util.
+main ?=>
+    Fluss = new_list(12), Fluss :: 1..12, all_different(Fluss), % Ranking
+    % Lese die Nummern der Flüsse und die Relationen "kürzer" bzw. "länger" aus der Datei:
+    foreach(Line in tail(read_file_lines("zeitlogelei201237.inp")))       
+       L1 = ord(Line[6])-64,  K1 = faktor(Line[8]),  R1 = ord(Line[19])-64,  
+       L2 = ord(Line[30])-64, K2 = faktor(Line[32]), R2 = ord(Line[43])-64,
+       % Ist die Relation "länger", dann multipliziere beide Seiten mit -1:
+       K1 * Fluss[L1] #< K1 * Fluss[R1] #=> K2 * Fluss[L2] #< K2 * Fluss[R2]
+    end, 
+    solve(Fluss),
+    println([chr(64+F) : (_,F) in [(Fluss[X], X) : X in 1..12].sort()]),
+    fail.
+/* LFJEHCBAKGDI
+CPU time 0.059 seconds, no more solutions, korrekt */
+faktor(R) = cond(R='l', -1, 1).
