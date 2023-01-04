@@ -1,0 +1,70 @@
+/* Zeit Logelei 2008/33
+https://www.zeit.de/2008/33/Spiele-Logelei-33
+Von den turbetischen Philosophen ist bekannt, dass sie entweder immer lügen oder immer die Wahrheit sagen. 
+Zudem nehmen sie an, dass bei einer "Oder-Aussage" niemals beides der Fall sein kann. */
+import cp, util.
+
+main1 => 
+    Ph = [Bat, Chris, Elke, Gert, Hol, Lu, Mani, Max, Phil, Sven, Tanja, Tom], N = len(Ph), Ph :: 0..1,
+    PhStr = ["Bat", "Chris", "Elke", "Gert", "Hol", "Lu", "Mani", "Max", "Phil", "Sven", "Tanja", "Tom"],
+    foreach((P, P1,W1, P2,W2) in [
+        (Phil, Max,1, Elke,1), % Phil: "Max oder Elke sagt die Wahrheit." 
+        (Tom, Sven,0, Elke,1), % Tom: "Sven lügt, oder Elke sagt die Wahrheit." 
+        (Mani, Phil,0, Gert,1), % Mani: "Phil lügt, oder Gert sagt die Wahrheit." 
+        (Chris, Hol,0, Lu,1), % Chris: "Hol lügt, oder Lu sagt die Wahrheit." 
+        (Elke, Mani,0, Chris,1), % Elke: "Mani lügt, oder Chris sagt die Wahrheit." 
+        (Bat, Tanja,0, Hol,1), % Bat: "Tanja lügt, oder Hol sagt die Wahrheit." 
+        (Sven, Tanja,1, Chris,1), % Sven: "Tanja oder Chris sagt die Wahrheit." 
+        (Gert, Hol,1, Elke,1), % Gert: "Hol oder Elke sagt die Wahrheit." 
+        (Tanja, Bat,0, Phil,0), % Tanja: "Bat oder Phil lügt." 
+        (Hol, Tom,0, Chris,0), % Hol: "Tom oder Chris lügt." 
+        (Max, Elke,1, Chris,1), % Max: "Elke oder Chris sagt die Wahrheit." 
+        (Lu, Hol,0, Elke,1)]) % Lu: "Hol lügt, oder Elke sagt die Wahrheit."
+            P #= (P1 #= W1 #^ P2 #= W2)
+end,
+solve(Ph),
+foreach(I in 1..N, Ph[I]=0) printf("%s ", PhStr[I]) end,
+println("lügen."). %  Hol Lu Max Tanja lügen, korrekt.
+
+/* 2. Lehrer Klaus: "Unser Lernziel ist die Dezi-mal-zahl!" Und er untermauert dies mit einer Alphametik: */
+main2 => % tbc
+    mult(["DEZI", "ZAHL", "LZRRL", "LNDZZ", "IDBDN", "ZAHL", "LERNZIEL"]). /*
+6741 * 4092
+-----------
+24552
+ 28644
+  16368
+    4092
+-----------
+27584172
+CPU time 0.035 seconds, korrekt */
+
+mult(L) => % L[1] * L[2] = L[len(L)]; dazwischen stehen die Teilrechnungen
+   Letter = keys(new_set(flatten(L))), % verwendete Buchstaben
+   Digit = new_list(len(Letter)), Digit :: 0..9, % eine Ziffer je Buchstabe
+   all_different(Digit),
+   Zeilen = len(L[1]), % Anzahl der Teilrechnungen, im Beispiel = 4
+   LenZeile = max([len(L[2+I]) : I in 1..Zeilen]), % maximale Länge der Zeilen, im Beispiel = 5
+   Num = new_array(len(L)), % numerische Repräsentation der Elemente von L
+   foreach(I in 1..len(L))
+       S = [Digit[find_first_of(Letter, C)] : C in L[I]], % Convert Letter C -> Digit
+       to_num(S, Num[I]), S[1] #!= 0
+   end,
+   Num[1] * Num[2] #= Num[len(L)], % Hauptgleichung (im Beispiel DEZI * WERT = PARKZEIT)
+   L1 = L[1],
+   foreach(I in 1..Zeilen) % zeilenweise Teilrechnung:
+       Digit[find_first_of(Letter, L1[I])] * Num[2] #= Num[2+I]
+   end,
+   solve(Digit ++ Num),
+   printf("%d * %d%n", Num[1], Num[2]),
+   printf("-----------%n"),
+   foreach(I in 1..Zeilen)
+       foreach(_ in 2..I+LenZeile-len(L[2+I])) print(' ') end, % Indent
+       println(Num[2+I])
+   end,
+   printf("-----------%n"),
+   printf("%d%n%n", Num[len(L)]).
+
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).

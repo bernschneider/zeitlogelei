@@ -1,0 +1,50 @@
+/* Zeit Logelei 2009/35 Check solution for correctnes
+https://www.zeit.de/2009/35/Spiele-Logelei-35
+Der Inselstaat Chamylien hat eine eigene Währung: Ein chamylischer Dollar entspricht 100 chamylischen Cent. */
+import cp, util.
+main ?=>
+    M = [0, 4, 9, 23, 38, 51, 78], 
+    pay(M, 2, 0, 42), % in keinem der beiden Fälle ist die Münze mit dem größten Wert beteiligt. 
+    pay(M, 2, 1, 42), % .. und einmal mit Wechseln
+    % (2) Für den Betrag von 37 Cent sind hingegen drei Münzen nötig:
+    pay(M, 3, 1, 37), 
+    % (3) Für 21 Cent sogar sind vier Münzen nötig:
+    pay(M, 4, 1, 21), 
+    % Der größte Geldbetrag, der sich ohne Wechseln überhaupt nicht bezahlen lässt, lautet 19 Cent.
+    foreach(Y in 20..39) pay(M, _, 0, Y) end, % (5..24)
+    % (4) Ein Betrag von 87 Cent lässt sich relativ einfach als Summe zweier Münzen bezahlen; 
+    pay(M, 2, 1, 87). % ,
+    %, fail.
+/*
+42 = sum([4,38])
+42 = sum([-9,51])
+37 = sum([-23,9,51])
+21 = sum([-78,23,38,38])
+20 = sum([4,4,4,4,4])
+21 = sum([4,4,4,9])
+22 = sum([4,9,9])
+23 = sum([23])
+24 = sum([4,4,4,4,4,4])
+25 = sum([4,4,4,4,9])
+26 = sum([4,4,9,9])
+27 = sum([4,23])
+28 = sum([4,4,4,4,4,4,4])
+29 = sum([4,4,4,4,4,9])
+30 = sum([4,4,4,9,9])
+31 = sum([4,4,23])
+32 = sum([9,23])
+33 = sum([4,4,4,4,4,4,9])
+34 = sum([4,4,4,4,9,9])
+35 = sum([4,4,4,23])
+36 = sum([4,9,23])
+37 = sum([4,4,4,4,4,4,4,9])
+38 = sum([38])
+39 = sum([4,4,4,4,23])
+87 = sum([9,78]) */
+pay(M, N, W, X) =>
+    if var(N) then N = 9 end,
+    if W = 1 then M := M ++ [-V : V in M] end, % W = 1 heißt mit Wechseln
+    Xs = new_list(N), Xs :: M,
+    sum(Xs) #= X,
+    solve(Xs), Xs1 = [V : V in Xs, V != 0],
+    printf("%d = sum(%w)%n", X, Xs1).

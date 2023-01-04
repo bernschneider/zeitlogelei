@@ -1,0 +1,49 @@
+/* Zeit Logelei 2008/26 Summen von Blöcken
+https://www.zeit.de/2008/26/Spiele-Logelei-26, siehe auch zeitlogelei200826.pdf */
+import sat, util.
+main =>
+  Max = 9, % Ziffern von 1..9
+  SigZ = [ [13,5,27], [8,19,9], [7,11,24], [24,7,5], [17,17,4], [19,1,3,15], [4,15,2,18], [9,18,2], [1,2,7,22], [9,36], [35,1,5] ], % Zeilensignatur, 0 = ?
+  SigS = [ [3,34,6], [12,17,16], [6,3,11,10], [15,23], [21,8,7], [20,16], [14,5,14], [16,5,9,8], [4,8,28], [9,14,14], [33,1,11] ], % Spaltensignatur
+  NZ = len(SigZ), NS = len(SigS),
+  Board = new_array(NZ+1,NS+1), Board[NZ+1,NS+1] #= 0,	% End-0er angefügt für die Blockbildung
+  foreach(Z in 1..NZ) Board[Z,NS+1] #= 0 end, 
+  foreach(S in 1..NS) Board[NZ+1,S] #= 0 end,  
+  Boardvars = array_matrix_to_list(Board), Boardvars :: 0..Max,  
+  foreach(Row in rows(Board)) all_different_except_0(Row) end,
+  foreach(Col in columns(Board)) all_different_except_0(Col) end,
+  foreach(Z in 1..NZ) signature(NS, Max, [Board[Z,S] : S in 1..NS+1], SigZ[Z]) end,
+  foreach(S in 1..NS) signature(NZ, Max, [Board[Z,S] : Z in 1..NZ+1], SigS[S]) end,
+  solve(Boardvars), print_board(NZ, NS, Board).
+/* 
+ 3 9 1   5   8 6 4 2 7
+   3 5   4 7 6 2   1 8
+ 7     5 2 4   8 1 6 9
+ 1 2 3 4 6 8     7   5
+ 9 8   6 3 1 2 5     4
+ 8 7 4   1   3   6 9  
+ 4   7 8   2   9 3 5 1
+ 5 4   3 8 6 1   2    
+   1   2   3 4   9 7 6
+   6 2 1   5 9 7 8 4 3
+ 6 5 8 9 7     1   3 2
+CPU time 2.388 seconds, korrekt */
+signature(N, Max, L, Sig) =>     % berechnet L aus Sig! Kein solve(Idx) nötig!
+	L = new_list(N+1), L :: 0..Max, L[N+1] #= 0,
+	Len = len(Sig), Idx = new_list(Len+1), Idx :: 0..N+1,       % Indices der End-0er
+	foreach(J in 1..Len)
+   	I0 #= Idx[J], I1 #= Idx[J+1], I0 #< I1, I1 #> 1,
+   	element(I1,L,0),     	% I1 zeigt auf eine 0
+   	sum([ L[I] * (I0 #< I) * (I #< I1) : I in 1..N]) #= S,  % berechne die Teilsumme S
+   	S #> 0, if Sig[J] > 0 then S #= Sig[J] end				% S>0 und ggfs. die Zahl in der Signatur!
+   end, 
+   % Vor dem ersten Index stehen nur 0er:
+   foreach(I in 1..N) (Idx[1] #< I) #\/ (L[I] #= 0) end,
+   % 0er hinter Nicht-0ern müssen ein Index sein (dürfen nicht sonstwo stehen): > 1 5 >0 0 0 3 4 >0
+   foreach(I in 2..N+1) (L[I] #= 0  #/\ L[I-1] #> 0) #=> sum([(Idx[J] #= I) : J in 1..Len+1]) #> 0 end.
+
+print_board(NZ, NS, Board) =>
+  foreach(I in 1..NZ, J in 1..NS)
+     if Board[I,J]>0 then printf(" %1d", Board[I,J]) else print("  ") end,
+     if J = NS then nl end
+  end.

@@ -1,0 +1,28 @@
+/* Zeit Logelei 2008/35 Acht Bergsteiger
+https://www.zeit.de/2008/35/Spiele-Logelei-35
+Acht erfahrene Bergsteiger sowie zwei Neulinge  sitzen am Lagerfeuer und reden über die Seven  Summits, die jeweils höchsten Berge der sieben  Kontinente. 
+Jeder der acht hat schon mindestens  einen dieser Berge bestiegen. Dabei geht es in ihrem Gespräch nur um diese sieben Berge – alle anderen zählen nicht.
+Iris, die neu dabei ist, schaut Jochen an, der auch noch recht neu ist, und schüttelt den Kopf: "Das ist doch Unsinn, was die da erzählen!" – 
+"Ach, weißt du", erwidert Jochen, "wenn jemand schon alle sieben Berge bestiegen hat, dann ist ihm das so zu Kopf gestiegen, 
+dass er in solchen Runden nur noch Lügen erzählt!"
+Welcher Bergsteiger hat wie viele Berge bestiegen? */
+import cp, util.
+
+main ?=>
+    Bs = [A,B,C,D,E,F,G,H],  Bs :: 1..7, % Anzhal der bestiegenen Berge
+    foreach((X,Y,Z) in [
+        (A,B,C), % Astrid: "Beate hat mehr Berge bestiegen als Carlos!" 
+        (C,C,D), % Beate: "Carlos hat mehr Berge bestiegen als Dominique!" 
+        (C,G,H), % Carlos: "Gesine hat mehr Berge bestie- gen als Harald!" 
+        (D,C,G), % Dominique: "Carlos hat mehr Berge bestiegen als Gesine!" 
+        (E,G,B), % Edelgard: "Gesine hat mehr Berge bestiegen als Beate!" 
+        (F,H,C), % Fabian: "Harald hat mehr Berge bestiegen als Carlos!" 
+        (G,F,A), % Gesine: "Fabian hat mehr Berge bestiegen als Astrid!" 
+        (H,A,E)])% Harald: "Astrid hat mehr Berge bestiegen als Edelgard!" 
+            (X #< 7) #<=> (Y #> Z)
+    end,    
+    solve(Bs),
+    println(Bs),
+    fail. 
+/* [7,7,7,7,7,7,7,7] d.h. alle acht Bergsteiger haben bereits alle sieben Berge bestiegen!
+CPU time 0.0 seconds, no more solutions, korrekt */

@@ -1,0 +1,29 @@
+/* Zeit Logelei 2008/42 Supersudoku
+https://www.zeit.de/2008/42/Spiele-Logelei-42
+Die kleine Gabi hat dieses Rechteck gemalt. "Das ist ein Supersudoku!", erklärt sie stolz ihr em Papa. */
+import cp, util.
+
+main ?=>
+    M = new_array(4,8),  M:: 1..9, 
+    % Wenn in zwei Feldern dasselbe Symbol steht, muss da auch dieselbe Ziffer rein:
+    M[1,5] #= M[3,7], M[1,7] #= M[2,3], M[2,5] #= M[4,8],
+    % Wie immer muss in jeder Zeile, jeder Spalte und in jedem der fett umrandeten Gebiete jede Ziffer von 1 bis 9 maximal einmal vorkommen:
+    foreach(L in M.rows() ++ M.columns()) all_different(L) end,
+    foreach(Z0 in [0,2], S0 in [0,4]) all_different([M[Z0+Z,S0+S] : Z in 1..2, S in 1..4]) end,
+    % In jeder Zeile bilden die ersten drei und die letzten drei Ziffern je eine Quadratzahl und die beiden Ziffern dazwischen eine Primzahl:
+    SQUARES = [X * X : X in 1..31], PRIMES = primes(99),    
+    foreach(Z in 1..4)
+        Sq1 #= 100 * M[Z,1] + 10 * M[Z,2] + M[Z,3], Pr #= 10 * M[Z,4] + M[Z,5], Sq2 #= 100 * M[Z,6] + 10 * M[Z,7] + M[Z,8],
+        [Sq1,Sq2] :: SQUARES, Pr :: PRIMES
+    end, 
+    solve(M),
+    foreach(Z in 1..4, S in 1..8)
+        printf("%d|", M[Z,S]), if S = 8 then nl end
+    end, 
+    nl, fail. 
+/* 
+6|2|5|9|7|8|4|1|
+7|8|4|1|9|6|2|5|
+8|4|1|2|3|5|7|6|
+5|7|6|3|1|2|8|9|
+CPU time 0.007 seconds, no more solutions, korrekt */

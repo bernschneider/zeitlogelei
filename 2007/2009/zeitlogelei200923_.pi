@@ -1,0 +1,61 @@
+/* Zeit Logelei 2009/23 Unvollständige Früchte-Alphametik 
+https://www.zeit.de/2009/23/Spiele-Logelei-23 */
+good(X, Digits) =>
+    L = to_list(Digits), % X = Sum, 
+    while(X > 0)
+        membchk(X mod 10, L),
+        X := X div 10
+    end. 
+main =>
+    N = 300,
+    Cnt = new_array(N), % Wie viele Lösungen git es für die Summe Sum?
+    foreach(Sum in 1..N) Cnt[Sum] = 0 end,
+    Sols = new_array(N,3), % Merke dir zu jeder Summe die letzte Lösung A, B, T
+    foreach(A in 1..9, B in 1..9, T in 0..9, B!=A, T!=A, T!=B)
+        Sum = 10*A+B + 10*B+T + 10*A+T,
+        Cnt[Sum] := Cnt[Sum] + 1,
+        Sols[Sum,1] := A, Sols[Sum,2] := B, Sols[Sum,3] := T
+    end,
+    foreach(Sum in 1..299, Cnt[Sum] = 1, good(Sum, Sols[Sum]))
+        printf("Sum=%d, A=%d, B=%d, T=%d%n", Sum, Sols[Sum,1], Sols[Sum,2], Sols[Sum,3])
+    end.
+/*
+Sum=42, A=1, B=2, T=0
+Sum=48, A=1, B=2, T=3
+Sum=50, A=1, B=2, T=4
+Sum=51, A=2, B=1, T=0
+Sum=52, A=1, B=2, T=5 <- das ist die Antwort!
+Sum=53, A=1, B=3, T=0
+Sum=54, A=1, B=2, T=6
+Sum=56, A=1, B=2, T=7
+Sum=58, A=1, B=2, T=8
+Sum=59, A=2, B=1, T=4
+Sum=60, A=1, B=2, T=9
+Sum=64, A=1, B=4, T=0
+Sum=68, A=1, B=4, T=2
+Sum=70, A=1, B=4, T=3
+Sum=73, A=2, B=3, T=0
+Sum=74, A=1, B=4, T=5
+Sum=76, A=1, B=4, T=6
+Sum=78, A=1, B=4, T=7
+Sum=80, A=1, B=4, T=8
+Sum=93, A=1, B=5, T=9
+Sum=244, A=8, B=6, T=9
+Sum=248, A=9, B=6, T=1
+Sum=250, A=9, B=6, T=2
+Sum=252, A=9, B=6, T=3
+Sum=254, A=9, B=6, T=4
+Sum=256, A=9, B=6, T=5
+Sum=257, A=9, B=7, T=0
+Sum=260, A=9, B=6, T=7
+Sum=262, A=9, B=6, T=8
+Sum=268, A=9, B=8, T=0
+Sum=270, A=9, B=8, T=1
+Sum=271, A=8, B=9, T=6
+Sum=272, A=9, B=8, T=2
+Sum=274, A=9, B=8, T=3
+Sum=276, A=9, B=8, T=4
+Sum=278, A=9, B=8, T=5
+Sum=280, A=9, B=8, T=6
+Sum=282, A=9, B=8, T=7
+CPU time 0.003 seconds */

@@ -1,0 +1,33 @@
+/* Zeit Logelei 2009/48 Professor Knusi auf dem Planeten Voikmarr
+https://www.zeit.de/2009/48/Spiele-Logelei-48 */
+import cp, util.
+main =>
+    Person = [A,B,C,D, E,F,G,H, I,J,K,L, M,N,O,P], NN = len(Person), NP = NN // 4,
+    Person :: 1..NP, global_cardinality(Person, $[1-4,2-4,3-4,4-4]),
+    Eq = 1, Df = 0,
+    foreach((N1,N2,Rel) in [
+        (G,P,Eq),           % Gome und Prgklt sind dieselbe Person; 
+        (N,P,Df),           % Neguja heißt nicht Prgklt; 
+        (E,F,Eq),           % Efoi hört auf den Namen Fuliwcn; 
+        (B,G,Df),           % Berugo und Gome sind verschiedene Eingeborene.
+        (I,L,Df), (I,N,Df), % Inimiatorifuti heißt weder Lesa noch Neguja; 
+        (B,A,Eq),           % Berugo heißt auch Aguio; 
+        (J,D,Df), (J,K,Df), % Jaliwo heißt weder Deliba noch Koremusa; 
+        (H,O,Eq),           % Hlrtsa heißt Olipa. 
+        (M,N,Eq),           % Möö hört auch auf den Namen Neguja; 
+        (A,N,Df),           % Aguio heißt nicht Neguja; 
+        (F,G,Df), (F,N,Df), % Fuliwcn heißt weder Gome noch Neguja; 
+        (C,O,Eq),           % Coniga heißt Olipa
+        (L,M,Df), (L,C,Df)])% Lesa heißt weder Möö noch Coniga!
+        if Rel = Eq then N1 #= N2 else N1 #!= N2 end
+    end,
+    solve(Person),
+    foreach(Pers in 1..NP)
+        foreach(X in 1..NN, Person[X]=Pers) printf("%c ", chr(64+X)) end, nl
+    end.
+/* 
+A B E F 
+C H I O 
+D K M N 
+G J L P 
+CPU time 0.001 seconds, korrekt */

@@ -1,0 +1,50 @@
+/* Zeit Logelei 2008/46 DRAFT
+https://www.zeit.de/2008/46/Spiele-Logelei-46 */
+import util, cp.
+/* 1. In Brosien lügen einige Teenager immer, andere sagen immer die Wahrheit. 
+Auf dem Schulhof stehen vier Jungs und unterhalten sich über die vier Mädels am anderen Ende des Schulhofs. 
+Wer sagt die Wahrheit, und wer lügt? */
+main1 ?=>
+    /* 1. In Brosien lügen einige Teenager immer, andere sagen immer die Wahrheit. 
+    Wer sagt die Wahrheit, und wer lügt? */
+    P = [Bj, Di, Do, Mi, Mo, So, Ta, Th], P :: 0..1, % 1 = Sagt die Wahrheit
+    N = len(P), Pstr = ["Björn", "Dietmar", "Doris", "Michael", "Monika", "Sonja", "Tanja", "Thomas"],
+    foreach((P1,P2,P3,W) in [
+        (Bj,Ta,Mo,0), % Björn: "Tanja würde sagen, Monika lügt." 
+        (Th,Mo,Ta,1), % Thomas: "Monika würde sagen, Tanja sagt die Wahrheit." 
+        (Di,Mo,Do,0), % Dietmar: "Monika würde sagen, Doris lügt." 
+        (Mi,So,Ta,0), % Michael: "Sonja würde sagen, Tanja lügt." 
+        (So,Th,Mi,0), % Sonja: "Thomas würde sagen, Michael lügt." 
+        (Do,Bj,Th,0), % Doris: "Björn würde sagen, Thomas lügt." 
+        (Mo,Di,Bj,0), % Monika: "Dietmar würde sagen, Björn lügt." 
+        (Ta,Mi,Bj,0)])% Tanja: "Michael würde sagen, Björn lügt."         
+        P1 #= (P2 #= (P3 #= W))
+    end,
+    solve(P),
+    foreach(I in 1..N, P[I]=0)
+        printf("%s ", Pstr[I])
+    end, println("lügen. Der Rest sagt die Wahrheit."),
+    fail. /*
+Dietmar Tanja Thomas lügen. Der Rest sagt die Wahrheit.
+CPU time 0.0 seconds, no more solutions, korrekt */
+main2 ?=>  
+    % 2. Wie alt sind die drei? 
+    P = [A, B, C], P :: 1..100, % Alter der drei Personen
+    Pstr = ["Anton", "Berit", "Conny"],
+    % Conny: "Als ich so jung war, wie Anton war, als Berit so jung war, wie Anton jetzt ist, war ich genau doppelt so alt wie Berit." 
+    Delta1 #= B - A, A #< B, % vor <Delta1> Jahren war Berit so jung wie Anton jetzt ist
+    Delta2 #= C - (A - Delta1), % vor <Delta2> Jahren war Conny so alt wie damals Anton war: <A - Delta1> Jahre
+    C - Delta2 #= 2 * (B - Delta2), % damals war Conny genau doppelt so alt wie Berit.
+    % Berit: "Vor vierzehn Jahren waren Anton und ich zusammen genauso alt, wie Conny damals war." 
+    (A - 14) + (B - 14) #= C - 14,
+    % Anton: "Vor drei Jahren waren Conny und ich im Schnitt genauso alt wie Berit."
+    (C - 3) + (A - 3) #= 2 * (B - 3),
+    solve(P ++ [Delta1, Delta2]),
+    foreach(I in 1..3)
+        printf("%s ist %d Jahre alt, ", Pstr[I], P[I])
+    end,
+    nl, fail. /*
+Anton ist 21 Jahre alt, Berit ist 28 Jahre alt, Conny ist 35 Jahre alt
+CPU time 0.002 seconds, no more solutions, korrekt */
+
+/* 2008/45: Inas persönliche Glückskombination lautet: 3, 7, 8, 11, 18, 21 */

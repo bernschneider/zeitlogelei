@@ -1,0 +1,41 @@
+/* Zeit Logelei 2009/34 
+https://www.zeit.de/2009/34/Spiele-Logelei-34 */
+import cp.
+
+main ?=> % drehe die Raute um 45 Grad nach rechts
+    C1 = {{2,2,2,1,1}, % Stellenzahl
+          {1,1,1,1,1},
+          {1,2,2,2,1},
+          {1,1,2,1,1},
+          {1,2,2,2,1}},
+    C2 = {"/2/2",  % 1,2,3,4 = Pfeil in Quadrant 1,2,3,4
+          "4Q/\\", % Q = Produkt ist eine Quadratzahl
+          "221Q", % /,\ = Doppelpfeil
+          "Q4\\/"},
+    M = new_array(5,5), M :: 1..99,
+    foreach(Z in 1..5, S in 1..5) C1[Z,S] #= 1 #<=> M[Z,S] #=< 9 end,
+    foreach(Z in 1..4, S in 1..4)
+        % Jedes Zeichen zeigt eine Beziehung zwischen den vier Zahlen drum herum:
+        L = [M[Z,S], M[Z,S+1], M[Z+1,S], M[Z+1,S+1]],
+        % Das Produkt der beiden Zahlen, auf die Doppelpfeile zeigen, 
+        % ist um eins größer als das Produkt der anderen beiden Zahlen:
+        if     C2[Z,S] = '/'  then L[2] * L[3] #= 1 + L[1] * L[4]
+        elseif C2[Z,S] = '\\' then L[1] * L[4] #= 1 + L[2] * L[3]
+        % Quadrat: Das Produkt der vier Zahlen ist eine Quadratzahl:
+        elseif C2[Z,S] = 'Q' then Y :: 1..9*99, Y * Y #= prod(L)
+        % Die Zahl, auf die ein Pfeil zeigt, ist die Summe der drei anderen Zahlen:
+        else   I = ord(C2[Z,S]) - ord('0'), 2 * L[I] #= sum(L)
+        end
+    end,
+    solve(M),
+    foreach(Z in 1..5, S in 1..5)
+        printf("%2d|", M[Z,S]), if S = 5 then nl end
+    end,
+    nl, fail.
+/*
+95|12|22| 5| 8|
+ 8| 1| 9| 2| 1|
+ 8|17|68|15| 8|
+ 5| 4|47| 6| 5|
+ 7|35|86|11| 9|
+CPU time 1.879 seconds, korrekt */

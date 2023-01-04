@@ -1,0 +1,36 @@
+/* Zeit Logelei 2009/23 Unvollständige Früchte-Alphametik aus Äpfeln, Bananen und Trauben
+Wir kennen die Summe nicht, nur Lara bekommt sie gesagt. Dann weiß sie die Lösung.
+Benita bekommt die Zahl der Ziffern der Summe gesagt und weiß damit die Lösung.
+https://www.zeit.de/2009/23/Spiele-Logelei-23 */
+valid(X, Digits) => % Alle Ziffern von X sind in Digits enthalten
+    while(X > 0) membchk(X mod 10, Digits), X := X div 10 end. 
+main =>
+    N = 300,
+    Cnt = new_array(N), % Wie viele Lösungen git es für die Summe Sum?
+    foreach(Sum in 1..N) Cnt[Sum] = 0 end,
+    Sols = new_list(N), % Merke dir zu jeder gültigen Summe die letzte Lösung A, B, T
+    foreach(A in 1..9, B in 1..9, T in 0..9, B!=A, T!=A, T!=B)
+        Sum = 10*A+B + 10*B+T + 10*A+T, % das ist der bekannte Teil der Alphametik
+        if valid(Sum, [A,B,T]) then % es gibt auch in der Summe nur die drei Ziffern A, B und T!
+            Cnt[Sum] := Cnt[Sum] + 1, Sols[Sum] := [A,B,T]
+        end
+    end,
+    foreach(Sum in 1..299, Cnt[Sum] = 1)
+        printf("Sum=%3d, A=%d, B=%d, T=%d%n", Sum, Sols[Sum,1], Sols[Sum,2], Sols[Sum,3])
+    end.
+/*
+Sum= 52, A=1, B=2, T=5 <- es muss diese Lösung sein, sonst hätte Benita sie nicht gewußt!
+Sum=108, A=1, B=8, T=0
+Sum=111, A=5, B=1, T=0
+Sum=112, A=1, B=8, T=2
+Sum=115, A=5, B=1, T=2
+Sum=118, A=1, B=8, T=5
+Sum=119, A=1, B=9, T=0
+Sum=135, A=5, B=3, T=1
+Sum=166, A=6, B=4, T=1
+Sum=181, A=8, B=1, T=5
+Sum=189, A=8, B=1, T=9
+Sum=191, A=9, B=1, T=0
+Sum=199, A=9, B=1, T=4
+Sum=202, A=9, B=2, T=0
+CPU time 0.002 seconds */

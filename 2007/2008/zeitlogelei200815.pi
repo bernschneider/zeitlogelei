@@ -1,0 +1,45 @@
+/* Zeit Logelei 2008/15 Professor Knusi: Spielkarten am Strand
+https://www.zeit.de/2008/15/Spiele-Logelei-15 (Nr. 16 ist ein Kreuzzzahlrätsel)
+Professor Knusi ist zu Gast in der Welt der Spielkarten. Kürzlich lagen einige Bildkarten (Asse, Könige, Damen und Buben) am Strand. 
+Bei einer Party erzählen einige der Karten Professor Flusi davon. 
+Aber nur diejenigen Karten, die damals am Strand dabei waren, sagen die Wahrheit, alle anderen lügen. 
+Welche fünf Karten lagen in welcher Reihenfolge am Strand? */
+import util, cp.
+main => 
+    Kz=1, Pk=2, Hz=3, Ko=4, StrF = ["Kreuz", "Pik", "Herz", "Karo"], % Ff
+    XA=1, XB=2, XD=3, XK=4, StrX = ["Ass", "Bube", "Dame", "König"], % X
+    % War die Karte W[Ff,X] bzw. Wt[X,Ff] dabei (und sagt somit die Wahrheit)?
+    W = new_array(4,4), W :: 0..1, Wt = W.transpose(), 
+    % Fünf Karten waren am Strand dabei:
+    Wvars = vars(W), sum(Wvars) #= 5, 
+    % Welche Karte liegt an Position P am Strand? K[Pos,Dim] (DimF = Farbe, DimX = Wert)
+    K = new_array(5,2), K :: 1..4, DimF=1, DimX=2,
+    foreach(F in 1..4, X in 1..4) W[F,X] #= 1 #<=> sum([(K[P,DimF] #= F)*(K[P,DimX] #= X) : P in 1..5]) #= 1 end,
+    % Kreuzass: »Weder Pikbube noch Karobube waren dabei.«:
+    W[Kz,XA] #= ( W[Pk,XB] #= 0 #/\ W[Ko,XB] #= 0 ), 
+    % Pikass: »Von jeder der vier Farben war mindestens eine Karte am Strand.«:
+    W[Pk,XA] #= ( sum([ (sum(W[Ff]) #> 0) : Ff in 1..4]) #= 4 ), 
+    % Herzass: »Am Strand lagen genauso viele Asse wie Buben.«:
+    W[Hz,XA] #= ( sum(Wt[XA]) #= sum(Wt[XB]) ), 
+    % Pikkönig: »Mindestens eine der fünf Karten war eine Herz-Karte und hatte ein Ass und eine Dame als direkte Nachbarn.«: 
+    W[Pk,XK] #= ( sum([(K[P-1,DimX] #= XA)*(K[P,DimF] #= Hz)*(K[P+1,DimX] #= XD)
+                     + (K[P-1,DimX] #= XD)*(K[P,DimF] #= Hz)*(K[P+1,DimX] #= XA) : P in 2..4]) #>= 1 ), 
+    % Herzkönig: »Die mittlere der fünf Karten war ein Bube.«:
+    W[Hz,XK] #= ( K[3,DimX] #= XB ), 
+    % Kreuzdame: »Genau eine der fünf Karten hatte die Farbe Kreuz.«:
+    W[Kz,XD] #= ( sum(W[Kz]) #= 1 ), 
+    % Herzdame: »Die beiden Karten links und rechts außen gehörten zur Karo-Farbe.«:
+    W[Hz,XD] #= ( K[1,DimF] #= Ko #/\ K[5,DimF] #= Ko ), 
+    % Karodame: »Unter den fünf Karten fanden sich zwei, die direkt nebeneinanderlagen, welche die gleiche Farbe hatten.«:
+    W[Ko,XD] #= ( sum([(K[P,DimF] #= K[P+1,DimF]) : P in 1..4]) #>= 1 ), 
+    % Kreuzbube: »Die zweite Karte von links war der Pikkönig.«:
+    W[Kz,XB] #= ( K[2,DimF] #= Pk #/\ K[2,DimX] #= XK ),  
+    % Pikbube: »Herzkönig und Herzdame lagen beide am Strand, direkt nebeneinander.«:
+    W[Pk,XB] #= ( sum([(K[P,DimF] #= Hz)*(K[P,DimX] #= XK)*(K[P+1,DimF] #= Hz)*(K[P+1,DimX] #= XD) : P in 1..4]) #= 1 ), 
+    % Karobube: »Sowohl Kreuzass als auch Kreuzkönig waren am Strand.«:
+    W[Ko,XB] #= ( W[Kz,XA] #= 1 #/\ W[Kz,XK] #= 1 ), 
+    solve(vars(W) ++ vars(K)),
+    foreach(P in 1..5) printf("%s %s, ", StrF[K[P,DimF]], StrX[K[P,DimX]]) end,
+    nl, fail.
+/* Kreuz Bube, Pik König, Kreuz Ass, Herz Bube, Pik Dame
+CPU time 1.185 seconds, no more solutions */

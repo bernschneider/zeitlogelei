@@ -1,0 +1,26 @@
+/* Zeit Logelei 2008/25
+https://www.zeit.de/2008/25/Spiele-Logelei-25
+Professor Knusi ist zu Besuch bei den Torbasen. Die albern gern etwas herum und haben eine bemerkenswerte Eigenschaft: 
+Sie hören nie auf zu wachsen. Genau genommen ist es so: Bis zum Alter von drei Jahren ist das Wachstum noch unkontrolliert, 
+aber ab dem dritten Lebensjahr wachsen Torbasen genau einen Zentimeter pro Jahr.
+Professor Knusi hat den Fehler begangen, zwei kichernde Torbasen (die sichtlich schon älter als drei sind) nach dem Alter zu fragen. 
+Wie alt und wie groß sind die beiden? */
+import sat.          
+main ?=>  
+    Torbase = ["Alfons", "Befons"],
+    Alter = [AA, AB], Groesse = [GA, GB], Alter :: 4..100, Groesse :: 4..200,
+    Delta1 #= AB - AA,  % Afons: »Wenn ich so alt sein werde, wie Befons jetzt ist, ..
+    AB + Delta1 #= 4 * AA, % ..wird er viermal so alt sein, wie ich jetzt bin.« 
+    GB - Delta1 #= GA + AA, % Befons: »Als ich so alt war, wie Afons jetzt ist, war ich so groß, wie Afons sein wird, wenn er doppelt so alt sein wird, wie er jetzt ist.« 
+    Delta2 #= GB - GA, % Afons: »Und wenn ich so groß sein werde, wie du jetzt bist, ..
+    GB + Delta2 #= 2 * GA, % .. wirst du doppelt so groß sein, wie ich jetzt bin!« 
+    GA + Delta3 #= GB - 10, % Befons: »Wenn du zehn Zentimeter kleiner sein wirst, als ich jetzt bin, ..
+    AA + Delta3 #= 2 * Delta1, % .. wirst du doppelt so alt sein, wie ich war, als du geboren wurdest!«
+    solve(Alter ++ Groesse ++ [Delta1,Delta2,Delta3]),
+    foreach(I in 1..2)
+        printf("%s ist %d Jahre alt und %d Zentimeter groß.%n", Torbase[I], Alter[I], Groesse[I])
+    end,
+    nl, fail. /* 
+Alfons ist 20 Jahre alt und 100 Zentimeter groß.
+Befons ist 50 Jahre alt und 150 Zentimeter groß.
+CPU time 0.022 seconds, no more solutions, korrekt */

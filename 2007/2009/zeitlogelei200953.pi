@@ -1,0 +1,36 @@
+/* Zeit Logelei Nr. 2009/53 Alphametik */
+import cp, util.
+
+main =>
+    mult(["NACHT", [_,_,_,_,_,_,_,_,_], "WEIHNACHTSMANN"]). /*
+80536 * 920557933
+-----------
+74138053692088
+Der Weihnachtsmann macht SMACCWSHH
+CPU time 10.395 seconds, no more solutions, korrekt */
+
+mult(L) ?=> % L[1] * L[2] = L[3]; 
+   Letter = keys(new_set(flatten([L[1],L[3]]))), % verwendete Buchstaben
+   Digit = new_list(len(Letter)), Digit :: 0..9, % eine Ziffer je Buchstabe
+   all_different(Digit),
+   Num = new_list(3), % numerische Repräsentation der Elemente von L
+   foreach(I in 1..3)
+       if I = 2 then S = L[2], S :: 0..9 
+                else S = [Digit[find_first_of(Letter, C)] : C in L[I]] % Convert Letter C -> Digit
+       end,
+       to_num(S, Num[I]), S[1] #!= 0
+   end,
+   Num[1] * Num[2] #= Num[3],
+   % Erste Teilrechnung:
+   T1 #= L[2,1] * Num[1], T1 mod 10 #= DigitE, % L[2,1] * NACHT = ?????E 
+   DigitE #= Digit[find_first_of(Letter, 'E')],
+   solve(Digit ++ Num ++ [T1,DigitE]),
+   printf("%d * %d%n", Num[1], Num[2]),
+   printf("-----------%n"),
+   printf("%w%n", Num[3]),
+   printf("Der Weihnachtsmann macht %s%n", [Letter[find_first_of(Digit,L[2,I])] : I in 1..9]),
+   nl, fail.
+
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).

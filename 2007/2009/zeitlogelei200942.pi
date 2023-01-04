@@ -1,0 +1,20 @@
+/* ZEIT Logelei 42/2009 Die Kolumne für logische Rätsel wurde viermal gekürzt
+https://www.zeit.de/2009/42/Spiele-Logelei-42 */
+import cp.
+main ?=> 
+    % Der Kürzungsprozess selbst geschah in jeweils zwei Stufen: 
+    [Prozentsatz] :: 1..99, % Zuerst wurde die Kolumne um einen gewissen Prozentsatz der bisherigen Länge gekürzt
+    [Zeichen] :: 1..250, % .. dann wurde noch einmal eine feste Anzahl an Zeichen entfernt:
+ 	Z = new_list(9), % Länge der Kolumne in Zeichen je Teilschritt
+    Z[1] #= 2250, % die Kolumne war vor fünf Jahren noch 2250 Zeichen lang. 
+    Z[9] #= 774, % seither wurde sie noch vier Mal gekürzt und ist nun 774 Zeichen lang.
+    foreach(I in 2..2..8)
+        Z[I] #= Z[I-1] * (100 - Prozentsatz) // 100,
+        Z[I+1] #= Z[I] - Zeichen
+    end,
+    Z[1] - 500 #= Z[3], % das erste Mal wurde sie insgesamt um 500 Zeichen gekürzt
+	solve(Z),
+	printf("%d Prozent, %d Zeichen%n", Prozentsatz,  Zeichen),
+    fail.
+/* 20 Prozent, 50 Zeichen
+CPU time 0.002 seconds, no more solutions, korrekt */

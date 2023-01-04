@@ -1,0 +1,45 @@
+/* Zeit Logelei 2008/29
+https://www.zeit.de/2008/29/Spiele-Logelei-29
+Den Tieren im Zoo ist langweilig. Da hat das Känguru eine Idee: "Jeder von uns zieht eine blaue oder eine rote Karte. 
+Du musst aus unseren Aussagen erraten, wer welche Farbe gezogen hat. Wer kann dem Faultier helfen? */
+import sat.          
+main ?=> 
+    Rot=0, Blau=1,
+    Ae=1, Et=2, Kr=3, Ku=4, Le=5, Nd=6, Se=7, Sd=8, Tr=9, Ze=10, N=10, 
+    Tstr = ["Antilope", "Elefant", "Käfer", "Känguru", "Löwe", "Nilpferd", "Schlange", "Seehund", "Tiger", "Ziege"],
+    Farbe = new_list(N), Farbe :: [Rot,Blau],
+    A = new_array(N,2), A :: 0..1, % 1 = wahre Aussage
+    % Wer Blau gezogen hat, muss anschließend eine wahre und eine falsche Aussage machen, ..
+    % .. und wer Rot gezogen hat, muss entweder zwei wahre oder zwei falsche Aussagen machen:
+    foreach(I in 1..N) Farbe[I] #= sum(A[I]) mod 2 end, % <- Knackepunkt
+    Nr = [1,1,1,1,1, 1,1,1,1,1], % lfd. Nummer der Auusage von Tier T1
+    foreach((T1,T2,F) in [
+        (Ae,Kr,Rot),  % Antilope: "Käfer rot." 
+        (Kr,Ku,Blau), % Käfer: "Känguru blau." 
+        (Sd,Ze,Blau), % Seehund: "Ziege blau." 
+        (Ku,Ae,Blau), % Känguru: "Antilope blau." 
+        (Le,Kr,Blau), % Löwe: "Käfer blau." 
+        (Ae,Sd,Blau), % Antilope: "Seehund blau." 
+        (Ze,Le,Rot),  % Ziege: "Löwe rot." 
+        (Kr,Et,Rot),  % Käfer: "Elefant rot." 
+        (Ku,Sd,Rot),  % Känguru: "Seehund rot." 
+        (Se,Sd,Blau), % Schlange: "Seehund blau." 
+        (Tr,Ze,Rot),  % Tiger: "Ziege rot." 
+        (Et,Kr,Blau), % Elefant: "Käfer blau." 
+        (Nd,Sd,Blau), % Nilpferd: "Seehund blau." 
+        (Ze,Se,Rot),  % Ziege: "Schlange rot." 
+        (Se,Et,Blau), % Schlange: "Elefant blau." 
+        (Sd,Kr,Rot),  % Seehund: "Käfer rot." 
+        (Tr,Nd,Blau), % Tiger: "Nilpferd blau." 
+        (Le,Tr,Rot),  % Löwe: "Tiger rot." 
+        (Et,Se,Rot),  % Elefant: "Schlange rot." 
+        (Nd,Et,Rot)]) % Nilpferd: "Elefant rot."
+            A[T1,Nr[T1]] #= (Farbe[T2] #= F), 
+            Nr[T1] := Nr[T1] + 1
+    end,
+    solve(Farbe ++ vars(A)),
+    foreach(I in 1..N, Farbe[I]=Rot) printf("%s, ", Tstr[I]) end, 
+    println("haben rot gezogen."),
+    fail.  /* 
+Antilope, Nilpferd, Seehund, Ziege haben rot gezogen.
+CPU time 0.003 seconds, no more solutions */

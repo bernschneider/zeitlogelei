@@ -1,0 +1,30 @@
+/* Zeit Logelei 2008/21 (2008/20 ist ein Krezzahlrätsel!)
+https://www.zeit.de/2008/21/Spiele-Logelei-21/komplettansicht
+Frau Fröhlich ist ganz verdattert: Vor ihr steht Herr Fröhlich mit einem Blumenstrauß. Sie freut sich: »Das ist das erste Mal, 
+dass du unseren Hochzeitstag nicht vergessen hast!« Dann sieht sie das Schild an dem Blumenstrauß: »13,11 Euro – 
+Fromherz Flower Floristik dankt!« Frau Fröhlich stutzt, aber sie kennt ihren Mann gut: »Oh, ich weiß, warum: 
+Am 13. November haben wir uns damals das erste Mal geküsst!« »Aber warum hast du den Strauß nicht ausgepackt?« 
+Wieder grübelt Frau Fröhlich. Sie weiß, dass auch das kein Zufall ist. »Ich soll wohl die Blumen erraten?«
+Dann überlegt sie plötzlich: »Bei Fromherz Flower Floristik gibt es keine Blumensträuße zu 13,11 Euro – 
+die Nelken kosten dort 1,10 Euro, die Tulpen 1,20 Euro, die Gerbera 1,30 Euro und die Rosen 1,60 Euro. 
+Und du weißt genau, dass ich keine anderen Blumen mag.« Schließlich aber fällt ihr ein: »Ah, natürlich! Die haben derzeit das Sonderangebot: 
+Wenn man von einer Sorte mindestens fünf Stück nimmt, gibt es zehn Prozent Rabatt auf diese Blumenart!«
+»Na, dann weiß ich, aus welchen Blumen der Strauß besteht!«, freut sich Frau Fröhlich und gibt ihrem Mann einen Kuss. */
+import cp.          
+main ?=> 
+    Anz = new_list(4), Anz :: 0..10, % Wieviele Blumen je Art kauft Herr Fröhlich?
+    Art = ["Nelken", "Tulpen", "Gerbera", "Rose"],
+    Preis = [110, 120, 130, 160],    % Preis in Cent je Nelke, Tulpe, Gerbera, Rose
+    PreisJeArt = new_list(4), PreisJeArt :: 0..1000,
+    foreach(I in 1..4)
+        Anz[I] #< 5  #=> PreisJeArt[I] #= Anz[I] * Preis[I],
+        Anz[I] #>= 5 #=> PreisJeArt[I] #= Anz[I] * Preis[I] * 9 // 10
+    end,
+    sum(PreisJeArt) #= 1311,
+    solve(Anz ++ PreisJeArt),
+    print("Frau Fröhlich hat von ihrem Mann einen Strauß mit "),
+    foreach(I in 1..4, Anz[I]>0) printf("%d %s, ", Anz[I], Art[I]) end,
+    println("bekommen."), 
+    fail.  
+/* Frau Fröhlich hat von ihrem Mann einen Strauß mit 9 Nelken, 2 Gerbera, 1 Rose bekommen.
+CPU time 0.011 seconds, no more solutions, korrekt */

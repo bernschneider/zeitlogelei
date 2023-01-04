@@ -1,0 +1,30 @@
+/* Zeit Logelei 2008/30 Fernsehshow
+https://www.zeit.de/2008/30/Spiele-Logelei-30
+In einer Fernsehshow kann ein Kandidat bis zu 50.000 Euro gewinnen. Dazu muss er einen von sieben farbigen Umschlägen 
+auswählen, jeder  enthält einen anderen (ganzzahligen) Geldbetrag. Im Lauf der Sendung erspielt sich der Kandidat 
+Hinweise über den Inhalt der Umschläge. In welchem Umschlag befinden sich die 50.000 Euro? */
+import sat.          
+main ?=> 
+    U = [Bl,Br,Ge,Gr,Or,Ro,Vi], Ustr = ["Blau", "Braun", "Gelb", "Grün", "Orange", "Rot", "Violett"],
+    N = len(U), U :: 1..50000, all_different(U),
+    Usort = new_list(N), Usort :: 1..50000, increasing_strict(Usort), Usort[N] #= 50000,
+    foreach(I in 1..N) sum([(U[I] #= Usort[J]) : J in 1..N]) #= 1 end,
+    A = new_list(10), A :: 0..1, % 1 = Aussage ist wahr
+    sum(A) #= 8, % Von den zehn Aussagen für den heutigen Kandidaten sind allerdings zwei falsch.
+    A[1] #=  (Bl + Vi #= 50000), % 1.: Der blaue und der violette Umschlag enthalten in der Summe 50.000 Euro. 
+    A[2] #=  (Gr + Or #= 50000), % 2.: Der grüne und der orangefarbene Umschlag enthalten in der Summe 50.000 Euro.  
+    A[3] #=  (Or #= 15000), % 3.: Der orangefarbene Umschlag enthält 15.000 Euro. 
+    A[4] #=  (Vi #>= 20000 #/\ Vi #=< 30000), % 4.: Im violetten Umschlag stecken  mindestens 20.000, höchstens jedoch 30.000 Euro.  
+    A[5] #=  (Ge #> 25000), % 5.: Der gelbe Umschlag enthält mehr als 25.000 Euro. 
+    A[6] #=  (Ge #= 3 * Bl), % 6.: Der grüne Umschlag enthält dreimal so viel Geld wie der blaue. 
+    A[7] #=  (Ro #= 2 * Br #^ Ge #= 2 * Br), % 7.: Entweder  der rote oder der gelbe Umschlag enthält doppelt so viel Geld wie der braune. 
+    A[8] #=  (Br #= 8000 + Vi), % 8.: Der braune  Umschlag enthält 8000 Euro mehr als der violette.  
+    A[9] #=  (Usort[2] #= 12000), % 9.: Der zweitniedrigste Betrag lautet auf 12.000 Euro. 
+    A[10] #= (Usort[6] #= Ro #^ Usort[6] #= Bl), % 10.: Der zweithöchste Betrag befindet sich entweder im roten oder im blauen Umschlag. 
+    solve(U ++ Usort ++ A),
+    println(Usort),
+    foreach(I in 1..N) printf("%s = %d Euro, ", Ustr[I], U[I]) end, nl,
+    print("Falsche Aussagen: "), foreach(I in 1..10, A[I]=0) printf("%d ", I) end, nl,
+    nl, fail. /* Usort = [4000,12000,15000,24000,35000,46000,50000]
+Blau = 46000 Euro, Braun = 12000 Euro, Gelb = 50000 Euro, Grün = 35000 Euro, Orange = 15000 Euro, Rot = 24000 Euro, Violett = 4000 Euro, 
+Falsche Aussagen: 4 6 - CPU time 5.142 seconds, no more solutions, korrekt */

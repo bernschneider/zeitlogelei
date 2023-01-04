@@ -1,0 +1,67 @@
+/* Zeit Logelei 2009 / 38
+   Pyramide */
+import util.
+import cp. 
+main => go.
+
+go =>  % 13 x 13
+	M = {             {1},
+					 {_,_},
+					{_,_,_},
+				   {_,_,_,_},
+				  {_,1,_,_,_},
+				 {_,_,_,1,1,_},
+				{_,_,_,_,_,_,_},
+			   {_,_,1,_,_,_,_,_},
+			  {_,_,_,1,_,_,1,_,_},
+			 {_,_,_,_,_,_,1,1,_,_},
+			{1,_,_,_,_,1,_,_,_,_,_},
+		   {_,_,_,_,_,_,_,1,_,1,_,_},
+		  {_,_,1,_,_,_,1,_,_,_,_,1,_}},
+	E = {             {_}, 				% die Ausnahmen
+					 {_,_},
+					{_,_,_},
+				   {_,_,_,_},
+				  {_,_,_,_,_},
+				 {_,_,_,_,_,_},
+				{_,_,_,_,_,_,_},
+			   {_,_,_,_,_,_,_,_},
+			  {_,_,_,_,_,_,_,_,_},
+			 {_,_,_,_,_,_,_,_,_,_},
+			{_,_,_,_,_,_,_,_,_,_,_},
+		   {_,_,_,_,_,_,_,_,_,_,_,_},
+		  {_,_,_,_,_,_,_,_,_,_,_,_,_}},
+   M :: [0,1], E :: [0,1], Mf = vars(M), Ef = vars(E),
+   sum(Ef) #= 4,											% es gibt genau 4 Ausnahmen
+   foreach(R in 2..13)										% Randfelder
+   		E[R,1] #= 1 #=> M[R,1] #= 0,						% Ausnahme
+   		E[R,1] #= 0 #=> M[R,1] #= M[R-1,1], 				% wie darüber
+   		E[R,R] #= 1 #=> M[R,R] #= 0,						% Ausnahme
+   		E[R,R] #= 0 #=> M[R,R] #= M[R-1,R-1]				% wie darüber
+   end, 
+   foreach(R in 3..13, C in 2..R-1)							% Mittelfelder
+   		E[R,C] #= 1 #=> M[R,C] #= 0,						% Ausnahme
+   		E[R,C] #= 0 #=> M[R,C] #= M[R-1,C-1] #^ M[R-1,C]	% XOR der beiden Kästchen darüber
+   end,
+   solve(Mf++Ef),
+   foreach(R in 1..13)
+   	  foreach(C in 1..(13-R)) print(' ') end, 
+      foreach(C in 1..R) print(cond(E[R,C]=1,'~ ',cond(M[R,C]=1,'x ','- '))) end, nl
+   end. /*
+            x
+           x x
+          x - x
+         x ~ x x
+        x x x - x
+       x - - x x x
+      x x - ~ - - x
+     x - x - - - x x
+    x x x x - - x - x
+   x - - - x - x x x ~
+  x x - - ~ x x - - x -
+ x - x - - x - x - x x -
+x x x x - x x x x x - x -
+
+Die vier Ausnahmestellen sind: 
+Zeile 4, 2. Kästchen, Zeile 7, 4. Kästchen, Zeile 10, 10. Kästchen und Zeile 11, 5. Kästchen */
+ 

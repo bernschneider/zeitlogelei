@@ -1,0 +1,43 @@
+/* Zeit Logelei 2008/18
+Mehr Automasierung möglich durch Parsen der Hinweise: 
+1. split(Hinweise,'.') -> Aussagen 
+2. Filtere in jeder Aussage die Großbuchstaben heraus -> [X1,Y1,X2,Y2]
+https://www.zeit.de/2008/18/Spiele-Logelei-18 */
+import cp.
+main =>
+    % X
+    B=1, E=2, F=3, K=4, S=5, W=6,
+    Xstr = ["besonfende Beruffen", "enbochende Elufen", "filbragende Folgahen", "kechorende Kadisen", "schonafende Schorimpfen", "walipfende Weronen"],
+    % Y
+    B=1, G=2, N=3, K=4, S=5, Z=6,  
+    Ystr = ["berupfen Bontichen", "gewatschen Golgasen", "nofimsen Noromsen", "kalebsen Kurwienen", "sotiffen Silpaffen", "zerhelsen Zelfingsen"],
+    Y = new_list(6), Y :: 1..6, all_different(Y), % Tätigkeit von X ist Y[X]
+    foreach((X1,Y1, X2,Y2) in [
+        (S,Z, B,G), % Wenn schonafende Schorimpfen Zelfingsen zerhelsen, gewatschen besonfende Beruffen Golgasen. 
+        (F,B, W,K), % Wenn filbragende Folgahen Bontichen berupfen, kalebsen walipfende Weronen Kurwienen. 
+        (E,G, B,N), % Wenn enbochende Elufen Golgasen gewatschen, nofimsen besonfende Beruffen Noromsen. 
+        (E,K, F,B), % Wenn enbochende Elufen Kurwienen kalebsen, berupfen filbragende Folgahen Bontichen. 
+        (E,Z, K,G), % Wenn enbochende Elufen Zelfingsen zerhelsen, gewatschen kechorende Kadisen Golgasen. 
+        (E,B, W,S), % Wenn enbochende Elufen Bontichen berupfen, sotiffen walipfende Weronen Silpaffen. 
+        (K,G, S,Z), % Wenn kechorende Kadisen Golgasen gewatschen, zerhelsen schonafende Schorimpfen Zelfingsen. 
+        (B,Z, S,B), % Wenn besonfende Beruffen Zelfingsen zerhelsen, berupfen schonafende Schorimpfen Bontichen. 
+        (K,Z, W,B), % Wenn kechorende Kadisen Zelfingsen zerhelsen, berupfen walipfende Weronen Bontichen. 
+        (B,N, S,G), % Wenn besonfende Beruffen Noromsen nofimsen, gewatschen schonafende Schorimpfen Golgasen. 
+        (E,S, K,G), % Wenn enbochende Elufen Silpaffen sotiffen, gewatschen kechorende Kadisen Golgasen. 
+        (W,S, E,G), % Wenn walipfende Weronen Silpaffen sotiffen, gewatschen enbochende Elufen Golgasen. 
+        (E,N, F,B)])% Wenn enbochende Elufen Noromsen nofimsen, berupfen filbragende Folgahen Bontichen
+            Y[X1] #= Y1 #=> Y[X2] #= Y2
+    end,
+    solve(Y),
+    foreach(I in 1..6)
+        printf("%s %s%n", Xstr[I], Ystr[Y[I]])
+    end,
+    nl, fail. 
+/* 
+besonfende Beruffen gewatschen Golgasen
+enbochende Elufen nofimsen Noromsen
+filbragende Folgahen berupfen Bontichen
+kechorende Kadisen sotiffen Silpaffen
+schonafende Schorimpfen zerhelsen Zelfingsen
+walipfende Weronen kalebsen Kurwienen
+CPU time 0.001 seconds, no more solutions, korrekt */

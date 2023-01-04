@@ -1,0 +1,47 @@
+/* Zeit Logelei 2008/27 (28 ist Kreuzzahl)
+https://www.zeit.de/2008/27/Spiele-Logelei-27
+Im Museum liegen neun wertvolle Münzen zum Quadrat angeordnet hinter Glas. Beim Putzen bringt Putzmeister Julius aus Versehen 
+die Münzen durcheinander. Er möchte die Münzen wieder so anordnen, wie sie vorher lagen. Aber er kann sich nur noch an Folgendes erinnern.
+Wo lag welche Münze? */
+import cp.          
+main ?=>  
+    Agr=1, Aug=2, Ger=3, Get=4, Max=5, Ner=6, Ota=7, Tib=8, Tit=9,
+    Tstr = ["Agrippa", "Augustus", "Germanicus", "Geta", "Maximus", "Nero", "Otacilia", "Tiberius", "Titus"], 
+    M = new_array(3,3), M :: 1..9, all_different(vars(M)), % 3 x 3 Matrix der neun Münzen
+    KZ = new_list(9), KZ :: 1..3, % Zeile der Münze I 
+    KS = new_list(9), KS :: 1..3, % Spalte der Münze I 
+    foreach(I in 1..9, Z in 1..3, S in 1..3) M[Z,S] #= I #=> (KZ[I] #= Z #/\ KS[I] #= S) end,
+    no_orth_nb(KZ, KS, Get, Agr), % Die Geta-Münze war nicht zur Agrippa-Münze benachbart,
+    diag_nb(KZ, KS, Get, Max), % .. dafür aber diagonal zur Maximus-Münze,
+    orth_nb(KZ, KS, Max, Agr), % .. die wiederum zur Agrippa-Münze benachbart war. 
+    KS[Ota] #= KS[Ger], % Die Otacilia-Münze und die Germanicus-Münze lagen in der gleichen Spalte,
+    KZ[Ota] #> KZ[Ger],  % .. wobei die Otacilia-Münze weiter unten war. 
+    no_nb(KZ, KS, Tit, Ger), % Die Titus-Münze und die Germanicus-Münze lagen nicht direkt nebeneinander, auch nicht diagonal. 
+    KS[Ger] #= KS[Ner] #^ KZ[Ger] #= KZ[Ner],  % Die Germanicus-Münze lag entweder in der selben Spalte oder in der selben Zeile wie die Nero-Münze. 
+    KZ[Tib] #= KZ[Aug],  % Die Tiberius-Münze und die Augustus-Münze lagen in der gleichen Zeile,
+    KS[Tib] #> KS[Aug],  % .. wobei die Tiberius-Münze weiter rechts war. 
+    diag_nb(KZ, KS, Ner, Tit), % Die Nero-Münze und die Titus-Münze waren diagonal benachbart. 
+    KS[Aug] #= KS[Ner],  % Augustus-Münze und Nero-Münze lagen in der gleichen Spalte,
+    KZ[Aug] #< KZ[Ner],  % .. wobei die Augustus-Münze weiter oben war.,
+    solve(vars(M) ++ KZ ++ KS),
+    foreach(Z in 1..3, S in 1..3)
+        printf("%10s|", Tstr[M[Z,S]]),
+        if S = 3 then nl end
+    end, nl, fail.  /* 
+   Agrippa|  Augustus|  Tiberius|
+   Maximus|      Nero|Germanicus|
+     Titus|      Geta|  Otacilia|
+CPU time 0.004 seconds, no more solutions, sieht gut aus! */
+orth_nb(KZ, KS, X, Y) =>
+    abs(KZ[X] - KZ[Y]) + abs(KS[X] - KS[Y]) #= 1.
+
+no_orth_nb(KZ, KS, X, Y) =>
+    abs(KZ[X] - KZ[Y]) + abs(KS[X] - KS[Y]) #!= 1.
+
+no_nb(KZ, KS, X, Y) =>
+    abs(KZ[X] - KZ[Y]) #> 1 #\/
+    abs(KS[X] - KS[Y]) #> 1.
+
+diag_nb(KZ, KS, X, Y) =>
+    abs(KZ[X] - KZ[Y]) #= 1 #/\
+    abs(KS[X] - KS[Y]) #= 1.

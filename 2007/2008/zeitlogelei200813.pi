@@ -1,0 +1,36 @@
+/* Zeit Logelei 2008/13
+https://www.zeit.de/2008/13/Spiele-Logelei-13
+Bei der Erfindermesse, die von Mittwoch bis Sonntag stattfindet, präsentieren vier Erfinder ihre Erfindungen
+an unterschiedlichen Tagen. Einer davon ist Edwin Ernst, und der hat vor lauter Aufregung nicht nur vergessen, 
+wann er dran ist, sondern auch, was er eigentlich erfunden hat. Er weiß nur noch Folgendes:
+Wer kann Edwin Ernst helfen? */
+import cp.
+main => 
+    _E=1, T=2, V=3, W=4, O=5, Istr = ["E. Ernst", "T. Tremple", "V. Vasse", "W. Wulf", "Anderer"],
+    FA=1, IW=2, KW=3, UT=4,  Estr = ["das Faltauto", "die Indoor-Wettermaschine", "die Katzen-Wellness-Maschine", "den unverlierbarer Teppich", "Andere"],
+    Tag =       new_list(5), Tag :: 1..5,       assignment(Tag, RTag), Tstr = ["Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"],
+    Erfindung = new_list(5), Erfindung :: 1..5, assignment(Erfindung, RErfindung),
+    Tag[V] #> 1, Tag[T] #<= 2, Erfindung[O] #= 5,
+    element(FA, RErfindung, IFA), element(IFA, Tag, TFA),
+    element(UT, RErfindung, IUT), element(IUT, Tag, TUT), TUT #> 1,
+    TWplus1 #= Tag[W] + 1, element(TWplus1, RTag, IWplus1), IWplus1 #!= O, element(IWplus1, Tag, TW1), TW1 #!= Tag[O],
+    foreach(I in 1..5)
+        % Derjenige Erfinder, der zwei Tage nach demjenigen Erfinder, der die Indoor-Wettermaschine erfunden hat, seine Erfindung präsentiert, ist nicht Waldemar Wulff.
+        Erfindung[I] #= IW #=> (Tag[I] #=< 3 #/\ Tag[W] #!= Tag[I] + 2  #/\ Tag[O] #!= Tag[I] + 2),
+        % Derjenige Erfinder, der am Tag vor Vladimir Vasse seine Erfindung präsentiert, ist nicht derjenige, der seine Erfindung zwei Tage vor der Präsentation des Faltautos mit Tragetasche vorstellt.
+        Tag[I] #= Tag[V] - 1 #=> (Tag[I] #!= TFA - 2 #/\ Tag[O] #!= TFA - 2 #/\ I #!= 5), 
+        % Derjenige Erfinder, der am Tag vor der Präsentation des unverlierbaren Teppichs präsentiert, ist nicht Taribald Trempel.
+        Tag[I] + 1 #= TUT #=> (I #!= T #/\ I #!= O), 
+        % Derjenige Erfinder, der am Tag nach Waldemar Wulff präsentiert, präsentiert am Tag vor der Präsentation der Indoor-Wettermaschine.
+        Erfindung[I] #= IW #=> Tag[I] - 1 #= TW1
+    end,
+    % Derjenige Erfinder, der seine Erfindung drei Tage nach Taribald Trempel präsentiert, ist nicht der mit dem Katzen-Wellness-Apparat.
+    TT3 #= Tag[T] + 3, element(TT3, RTag, IT3), element(KW, RErfindung, IKW), IT3 #!= IKW, IT3 #!= 5,
+    solve(Tag ++ RTag ++ Erfindung ++ RErfindung ++ [TT3, IT3, IKW]),
+    foreach(Tg in 1..5, RTag[Tg]!=5) I = RTag[Tg], printf("Am %s präsentiert %s %s.%n", Tstr[Tg], Istr[I], Estr[Erfindung[I]]) end,
+    nl, fail. /* 
+Am Mittwoch präsentiert W. Wulf die Katzen-Wellness-Maschine.
+Am Donnerstag präsentiert T. Tremple den unverlierbarer Teppich.
+Am Freitag präsentiert V. Vasse die Indoor-Wettermaschine.
+Am Sonntag präsentiert E. Ernst das Faltauto.
+CPU time 0.004 seconds, no more solutions, korrekt. */

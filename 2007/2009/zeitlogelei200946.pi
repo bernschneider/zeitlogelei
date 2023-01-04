@@ -1,0 +1,29 @@
+/* Zeit Logelei 2009/46 Professor Eybrandt, Experte für metakulturelles Volkswissen
+https://www.zeit.de/2009/46/Spiele-Logelei-46 
+Wie muss man sich verhalten, wenn man alle Regeln beachtet? */
+import cp, util.
+main ?=>
+    ActStr = ["A sagen", "B sagen",
+              "nach dem Essen ruhen", "nach dem Essen tausend Schitte tun",
+              "eine Grube graben", "in eine Grube fallen",
+              "bellen", "beißen"], N = len(ActStr),
+    Act = [As,Bs,NdEr,NdEtSt, EGg, IeGf, Bel, Bei], Act :: 0..1, % 1 = man tut es
+    % Regeln:
+    As #=> Bs,              % Wer A sagt, muss auch B sagen
+    NdEr #\/ NdEtSt,        % Nach dem Essen sollst du ruhn oder tausend Schritte tun
+    EGg #=> IeGf,           % Wer andern eine Grube gräbt, fällt selbst hinein
+    Bel #=> #~ Bei,         % Hunde, die bellen, beißen nicht
+    #~ Bel #=> #~ NdEtSt,   % Wer nicht bellt, tut nach dem Essen auch keine tausend Schritte.
+    #~ NdEr #\/ Bei,        % Nach dem Essen niemals ruhn, es sei denn, man tut beißen tun.
+    #~ Bei #=> EGg,         % Wer nicht beißt, gräbt stattdessen eine Grube
+    #~ Bs #=> EGg,          % Will man B nicht gerne sagen, muss man eine Grube graben
+    As #\/ Bei,             % Beim Zahnarzt kann man A sagen oder beißen oder beides
+    IeGf #=> NdEtSt,        % Wer in eine Grube fällt, der muss wohl vorher tausend Schritte getan haben.
+    Bs #=> IeGf,            % Wer B sagt, fällt in die Grube
+    solve(Act),
+    foreach(I in 1..N, Act[I]=1)
+        printf("%s, ", ActStr[I])
+    end,
+    nl, fail. /* 
+A sagen, B sagen, nach dem Essen tausend Schitte tun, eine Grube graben, in eine Grube fallen, bellen, 
+CPU time 0.001 seconds, no more solutions, korrekt */

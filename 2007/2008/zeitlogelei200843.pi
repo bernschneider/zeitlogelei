@@ -1,0 +1,50 @@
+/* Zeit Logelei 2008/43
+https://www.zeit.de/2008/43/Spiele-Logelei-43 */
+import cp.
+/* Britta möchte einen Bericht über die diesjährige Lügenweltmeisterschaft schreiben. Vor ihr sitzen die vier 
+Gewinner und erzählen. Zunächst ist Britta verwirrt, doch dann erinnert sie sich an die Warnung eines Kollegen: 
+Die vier lügen natürlich immer noch. Der Gewinner hat vier falsche Aussagen gemacht, der Zweitplatzierte drei, 
+der Drittplatzierte zwei und der Viertplatzierte eine. Wie ist die Lügenmeisterschaft ausgegangen? */
+main ?=>
+  F=1, G=2, L=3, S=4, Str = ["Fallesch", "Gunwar", "Luergen", "Schwindolin"], 
+  Falsch = new_list(4), Falsch :: 1..4, all_different(Falsch), % Anzahl der falschen Aussagen
+  A = new_array(4,4), A :: 0..1, % A[P,I] = 1 <=> P´s I-te Aussage ist wahr
+  Nr = [0,0,0,0], % Nr[P] = laufende Nr der Aussagen von P
+  foreach((P,P1,P2) in [
+    (F,S,G), % Fallesch: "Schwindolin war besser als Gunwar." 
+    (L,F,L), % Lürgen: "Fallesch war besser als ich." 
+    (G,L,G), % Gunwar: "Lürgen war besser als ich." 
+    (S,G,S), % Schwindolin: "Gunwar war besser als ich." 
+    (F,L,S), % Fallesch: "Lürgen war besser als Schwindolin." 
+    (L,S,G), % Lürgen: " Schwindolin war besser als Gunwar." 
+    (G,L,F), % Gunwar: "Lürgen war besser als Fallesch." 
+    (S,L,S), % Schwindolin: "Lürgen war besser als ich." 
+    (F,G,F), % Fallesch: "Gunwar war besser als ich." 
+    (L,G,F), % Lürgen: "Gunwar war besser als Fallesch." 
+    (G,S,F), % Gunwar: "Schwindolin war besser als Fallesch." 
+    (S,G,F), % Schwindolin: "Gunwar war besser als Fallesch." 
+    (F,F,S), % Fallesch: "Ich war besser als Schwindolin." 
+    (L,G,L), % Lürgen: "Gunwar war besser als ich." 
+    (G,F,G), % Gunwar: "Fallesch war besser als ich." 
+    (S,L,F)])% Schwindolin: "Lürgen war besser als Fallesch."
+        Nr[P] := Nr[P] + 1,
+        A[P,Nr[P]] #= (Falsch[P1] #> Falsch[P2])
+  end,
+  foreach(P in 1..4) Falsch[P] + sum(A[P]) #= 4 end, % jeder hat 4 Aussagen gemacht
+  solve(vars(A) ++ Falsch),
+  Ranking = [(Falsch[P],P) : P in 1..4].sort_down(), 
+  foreach((Rang,P) in Ranking)
+    printf("%d. %11s: %w%n", 5-Rang, Str[P], A[P])
+  end, 
+  nl, fail. /* 
+1. Schwindolin: {0,0,0,0}
+2.    Fallesch: {1,0,0,0}
+3.      Gunwar: {0,0,1,1}
+4.     Luergen: {1,1,0,1}
+
+1. Schwindolin: {0,0,0,0}
+2.    Fallesch: {1,0,0,0}
+3.     Luergen: {1,1,0,0}
+4.      Gunwar: {1,0,1,1}
+CPU time 0.001 seconds, leider zwei Lösungen
+ZEIT: Schwindolin hat gewonnen. Danach kamen Fallesch, Lürgen und Gunwar */

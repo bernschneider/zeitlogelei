@@ -1,0 +1,48 @@
+/* Zeit Logelei 2009/35
+https://www.zeit.de/2009/35/Spiele-Logelei-35
+Der Inselstaat Chamylien hat eine eigene Währung: Ein chamylischer Dollar entspricht 100 chamylischen Cent. */
+import sat, util. % Achtung: Dieses Programm funktioniert nicht mit cp!
+main ?=>
+    % Es gibt sechs verschiedene Münzen. Die kleinste Münze hat einen Wert von 4 Cent. 
+    Vals = [0,4] ++ [X : X in 6..100, X mod 5 > 0], % Es gibt keine Münze, deren Wert ein Vielfaches von 5 Cent ist
+    M = new_list(7), M :: Vals, M[1] #= 0, M[2] #= 4, increasing_strict(M),
+    % Auch entspricht keine Münze einem Vielfachen einer anderen Münze:
+    foreach(I in 2..6, J in I+1..7) M[J] mod M[I] #> 0 end,
+    sum(M) #> 200, % Hat man von jeder Sorte eine Münze, so besitzt man mehr als 2 Dollar:
+    % 42 Cent kann man bezahlen, indem zwei Münzen den Besitzer wechseln; dies geht einmal ohne und einmal mit wechseln: 
+    pay(M, 2..6, 2, 0, 42), pay(M, 2..6, 2, 1, 42), % in keinem der beiden Fälle ist die Münze mit dem größten Wert beteiligt. 
+    % Für den Betrag von 37 Cent sind hingegen drei Münzen nötig:
+    notpay2(M, 37, [-1,1]), % geht auch nicht mit Wechseln!
+    pay(M, 3, 1, 37), 
+    % Für 21 Cent sogar sind vier Münzen nötig:
+    notpay3(M, 21, [-1,1]), pay(M, 4, 1, 21), 
+    % Der größte Geldbetrag, der sich ohne Wechseln überhaupt nicht bezahlen lässt, lautet 19 Cent.
+    notpay3(M, 19, [1]),    
+    foreach(Y in 20..39) pay(M, _, 0, Y) end, % 40 = 20 + 20, 41 = 20 + 21 usw. -> alle weiteren Beträge gehen dann auch!
+    pay(M, 2, 0, 87),    % Ein Betrag von 87 Cent lässt sich relativ einfach als Summe zweier Münzen bezahlen;
+    notpay2(M, 92, [1]), % für 92 Cent ist dies jedoch nicht möglich.
+    solve(M),
+    println(tail(M)), % (ohne die 0 am Anfang)
+    fail. 
+/* [4,9,23,38,51,78]
+CPU time 24 seconds, no more solutions, korrekt (Beweis siehe zeitlogelei200935check.pi) */
+pay(M, N, W, X) => 
+    pay(M, 2..7, N, W, X). % im Normalfall sind alle echten Münzen erlaubt
+
+pay(M, Vs, N, W, X) => % nur bei 42 (Vs = 2..6) ist die größte Münze verboten!
+    if var(N) then N = 9, Vs := [1|Vs] end, % erlaube auch die Münze Nr. 1 (Wert = 0)
+    Sig = new_list(N), % Sig = -1 für Wechselgeld
+    if W = 1 then Sig :: [-1,1], sum(Sig) #< N else Sig :: [1] end, % W = 1 heißt mit Wechseln
+    Msel = new_list(N), Msel :: Vs,
+    Mval = new_list(N), foreach(I in 1..N) element(Msel[I], M, Mval[I]) end,
+    scalar_product(Mval, Sig, X).
+
+notpay2(M, X, Sig) => 
+    foreach(I1 in 1..7, S1 in Sig, I2 in 1..7, S2 in Sig) 
+        S1*M[I1] + S2*M[I2] #!= X 
+    end.
+
+notpay3(M, X, Sig) =>
+    foreach(I1 in 1..7, S1 in Sig, I2 in 1..7, S2 in Sig, I3 in 1..7, S3 in Sig) 
+        S1*M[I1] + S2*M[I2] + S3*M[I3] #!= X 
+    end.

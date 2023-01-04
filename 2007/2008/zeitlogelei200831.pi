@@ -1,0 +1,88 @@
+/* Zeit Logelei 2008/31 Crossfigure Puzzle Kreuzzahlrätsel
+https://www.zeit.de/2008/31/Spiele-Logelei-31 
+Passe ggfs. Zeilen 6-14 an! Achtung: Z, S, X werden schon verwendet!
+4 5 1 6 1 8 2 7 
+1 2 1 5 3 8 2 9 
+2 1 1 6 1 8 1 7 
+5 9 7 1 1 8 4 1 CPU time 6.38 seconds, korrekt */
+import sat, util.
+main =>
+   A=1, B=2, C=3, D=4, E=5, F=6, G=7, H=8, I=9, J=10, K=11, L=12, M=13, N=14, O=15, P=16, Max=16,
+   LM = {{A,B,C,D,E,F,G,H},
+		 {I,0,0,0,0,0,J,0},
+		 {K,0,L,0,M,0,0,N},
+		 {O,0,0,0,0,P,0,0}},     
+   WLetter = [A,D,I,J,K,M,O,P], % alle Buchstaben mit waagrechter Bedingung
+   SLetter = [A,B,C,D,E,F,G,H,K,L,M,N], % alle Buchstaben mit senkrechter Bedingung
+   Wr = new_array(Max,4), Wr :: 1..999999, Squares = [Y**2: Y in 1..99], % Waagrechte Zahlen
+   Sr = new_array(Max,4), Sr :: 1..9999,   Primes = primes(99), % Senkrechte Zahlen
+   NZ = len(LM), NS = len(LM[1]), 
+   FWD = 1, REV = 2, QSUM = 3, QPROD = 4,
+   X = new_array(NZ,NS), XVars = array_matrix_to_list(X), XVars :: 0..9,
+   % Waagerecht:
+   Wr[A,FWD] #= Sr[C,FWD] * Sr[A,FWD], % A C senkrecht mal A senkrecht
+   Wr[D,FWD] #= Wr[K,FWD] + Wr[O,FWD], % D K waagerecht plus O waagerecht 
+   Wr[I,FWD] #= Wr[O,FWD] + Wr[D,FWD], % I O waagerecht plus D waagerecht
+   Wr[J,FWD] :: Primes, % J eine Primzahl
+   Wr[K,FWD] :: Squares, % K eine Quadratzahl
+   multiple(Wr[M,FWD],Sr[H,FWD]), % M ein Vielfaches von H senkrecht
+   Wr[O,FWD] #= Wr[P,FWD] * Sr[N,FWD], % O P waagerecht mal N senkrecht
+   Wr[P,FWD] #= Wr[J,FWD] * Wr[J,FWD], % P das Quadrat von J waagerecht
+   % Senkrecht:
+   Sr[A,FWD] :: Primes, % A eine Primzahl
+   multiple(Sr[B,FWD],Sr[L,FWD]), % B ein Vielfaches von L senkrecht
+   Sr[C,FWD] :: Primes, % C eine Primzahl
+   Root :: 1..9, Sr[D,FWD] #= Root ** 4, % D das Quadrat einer Quadratzahl
+   Sr[E,FWD] :: Primes, % E eine Primzahl
+   Sr[F,FWD] #= Sr[F,REV], % F ein Palindrom
+   multiple(Sr[G,FWD],Sr[A,FWD]), % G ein Vielfaches von A senkrecht
+   Sr[H,FWD] :: Primes, % H eine Primzahl
+   Sr[K,FWD] :: Squares, % K eine Quadratzahl
+   Sr[L,FWD] :: Primes, % L eine Primzahl
+   Sr[M,FWD] :: Primes, % M eine Primzahl
+   Sr[N,FWD] :: Primes, % N eine Primzahl
+   foreach(Letter in WLetter) % Berechne alle Waagrechten Zahlen aus der Matrix X
+        Row := 0, Col := 0, Len := 0,
+		foreach(Z in 1..NZ)
+			foreach(S in 1..NS, LM[Z,S] = Letter) Row := Z, Col := S end,
+			if Len == 0, Row  > 0 then 
+				foreach(Cn in Col+1..NS, Len == 0, membchk(LM[Z,Cn],WLetter)) Len := Cn - Col end,
+				if Len = 0 then Len := NS+1-Col end 
+		    end 
+		end,
+	    Temp = new_list(Len), Temp :: 0..9,
+   		foreach(Idx in 0..Len-1) X[Row,Col+Idx] #= Temp[Idx+1] end,
+		X[Row,Col] #!= 0,
+        to_num(Temp,Wr[Letter,FWD]), to_num_rev(Temp,Wr[Letter,REV]),
+        Wr[Letter,QSUM] #= sum(Temp), Wr[Letter,QPROD] #= prod(Temp)
+   end,
+   foreach(Letter in SLetter) % berechne alle senkrechte Zahlen aus der Matrix X 
+      Row := 0, Col := 0, Len := 0,
+		foreach(S in 1..NS)
+			foreach(Z in 1..NZ, LM[Z,S] = Letter) Row := Z, Col := S end,
+			if Len == 0, Col > 0 then 
+				foreach(Rn in Row+1..NZ, Len == 0, membchk(LM[Rn,S],SLetter)) Len := Rn - Row end,
+				if Len = 0 then Len := NZ+1-Row end
+			end 
+		end,
+   		Temp = new_list(Len), Temp :: 0..9,
+   		foreach(Idx in 0..Len-1) X[Row+Idx,Col] #= Temp[Idx+1] end,
+		X[Row,Col] #!= 0,
+        to_num(Temp,Sr[Letter,FWD]), to_num_rev(Temp,Sr[Letter,REV]),
+        Sr[Letter,QSUM] #= sum(Temp), Sr[Letter,QPROD] #= prod(Temp)
+   end,
+   solve(XVars ++ vars(Wr) ++ vars(Sr) ++ [Root]), % ++ vars(Wr) ++ vars(Sr)),
+   foreach(Z in 1..NZ) 
+      foreach(S in 1..NS) printf("%d ", X[Z,S]) end, nl
+   end. 
+
+multiple(X,A) => % X ist Vielfaches von A
+   X mod A #= 0.
+
+to_num(List, Num) => % Num = Wert der Liste
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).
+
+to_num_rev(List, Num) => % Num = Rückwert der Liste
+        Len = length(List),
+        Num #= sum([List[I]*10**(I-1) : I in 1..Len]).

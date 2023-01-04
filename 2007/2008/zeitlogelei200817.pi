@@ -1,0 +1,38 @@
+/* Zeit Logelei 2008/17 Wo sitzen die Raben?
+https://www.zeit.de/2008/17/Spiele-Logelei-17/komplettansicht
+Die sieben Raben der Hexe Axabra kommen von ihrem Ausflug zurück und krächzen wie wild im Chor: 
+»Wir haben alle auf einer Stromleitung nebeneinander gesessen!« Dann berichten sie: 
+Die Hexe Axabra kratzt sich am Kopf: »Das ist doch Unsinn, was ihr mir da erzählt. 
+Bestimmt lügt wieder einer von euch!«
+»Aber nein, keiner hat gelogen!«, empören sich die Raben, und Quraksch fährt fort: 
+»Aber nicht alle haben – so wie ich – nach Norden geguckt!« -> Zeile 17
+Da weiß die Hexe, wie die Raben auf der Stromleitung saßen. Sie auch? */
+import cp.
+main =>
+    B=1, C=2, D=3, G=4, K=5, P=6, Q=7, % Raben
+    Rstr = ["Braks", "Crangs", "Draaks", "Grooks", "Krachz", "Prahgz", "Quraksch"], 
+    Rabe = new_list(7), Rabe :: 1..7, % welcher Rabe sitzt an Position P auf der Leitung?
+    Pos = new_list(7), assignment(Rabe, Pos), % auf welcher Position sitzt Rabe R?
+    RabeX = [0] ++ Rabe ++ [0], % wir fügen links und rechts auf der Stange eine Leerstelle hinzu
+    Su = -1, No = 1, Ri = new_list(7), Ri :: [No, Su], Bstr = ["Süd", "", "Nord"], Ri[Q] #= No, 
+    Li = -1, Re = 1, 
+    foreach((R0, S1,R1, S2,R2) in [
+        (D, Re,B, Li,C), % Draaks: »Entweder saß rechts neben mir Braks oder links neben mir Crangs.«
+        (Q, Li,P, Li,C), % Quraksch: »Links neben mir saß entweder Prahgz oder Crangs.«
+        (K, Li,B, Re,C), % Krachz: »Entweder saß links neben mir Braks oder rechts neben mir Crangs.«
+        (P, Re,C, Re,D), % Prahgz: »Rechts neben mir saß entweder Crangs oder Draaks.«
+        (C, Li,G, Re,K), % Crangs: »Entweder saß links neben mir Grooks oder rechts neben mir Krachz.«
+        (G, Li,D, Li,C), % Grooks: »Links neben mir saß entweder Draaks oder Crangs.« 
+        (B, Re,P, Li,G)])% Braks: »Entweder saß rechts neben mir Prahgz oder links neben mir Grooks.«
+            P1 #= Pos[R0] + Ri[R0] * S1 + 1, element(P1, RabeX, C1), % links von Krachz brauchen wir eine Leerstelle!
+            P2 #= Pos[R0] + Ri[R0] * S2 + 1, element(P2, RabeX, C2),
+            C1 #= R1 #^ C2 #= R2
+    end, 
+    solve(Ri ++ Rabe ++ Pos),
+    foreach(I in 1..7)
+        printf("%s (Blickrichtung %s), ", Rstr[Rabe[I]], Bstr[2+Ri[Rabe[I]]])
+    end,
+    nl, fail. 
+/* Krachz (Blickrichtung Süd), Braks (Blickrichtung Süd), Grooks (Blickrichtung Süd), Crangs (Blickrichtung Nord), 
+Draaks (Blickrichtung Nord), Prahgz (Blickrichtung Süd), Quraksch (Blickrichtung Nord)
+no more solutions, korrekt */

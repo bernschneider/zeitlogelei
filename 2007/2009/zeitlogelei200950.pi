@@ -1,0 +1,36 @@
+/* Zeit Logelei 2009/50 Fachtagung "Mathematik im Alltag"
+https://www.zeit.de/2009/50/Spiele-Logelei-50 */
+import cp, util.
+main ?=>
+    % Professoren:
+    _Kur=1, Spu=2, Vro=3, Zag=4, Zah=5, ProfStr = ["Kurz", "Spunsch", "Vronibert", "Zagel", "Zahl"],
+    N = 5, 
+    Pos = new_list(N), Pos :: 1..N, assignment(Pos, _RPos), % Rang in der Reihe der Vorträge
+    Aut=1, Kin=2, Koc=3, Ung=4, Zap=5, VorStr = ["Autokauf", "Kindererziehung", "Kochoptimierungen", "Ungerade Zahlen", "Zappen"],
+    Vor = new_list(N), Vor :: 1..N, assignment(Vor, RVor), % Vortrag von Professor Nr. I
+    % Dr. Vronibert und Dr. Spunsch möchten nicht direkt nacheinander vortragen. 
+    abs(Pos[Vro] - Pos[Spu]) #> 1,
+    % Der Vortrag über die Vorteile von ungeraden Zahlen im Alltag soll an einer ungeraden Stelle im Programm stehen.
+    element(RVor[Ung], Pos, PosUng), PosUng mod 2 #= 1,
+    % Prof. Dr. Zahl möchte direkt im Anschluss an den Vortrag von Dr. Vronibert seinen Vortrag halten. 
+    Pos[Zah] #= 1 + Pos[Vro],
+    % Dr. Spunsch möchte direkt nach den mathematischen Methoden der Kindererziehung vortragen. 
+    element(RVor[Kin], Pos, PosKin), Pos[Spu] #= PosKin + 1,
+    % Sowohl Prof. Dr. Zahl als auch Dr. Spunsch möchten vor dem Vortrag über den Nutzen des Primzahlsatzes beim Zappen vortragen. 
+    element(RVor[Zap], Pos, PosZap), Pos[Zah] #< PosZap, Pos[Spu] #< PosZap,
+    % Der Vortrag über die A-priori-Abschätzungen für Kochoptimierungen soll vor dem Vortrag über die Anwendungen des quadratischen Reziprozitätsgesetzes beim Autokauf erfolgen. 
+    element(RVor[Koc], Pos, PosKoc), element(RVor[Aut], Pos, PosAut), PosKoc #< PosAut,    
+    % Prof. Dr. Zahl möchten später vortragen als Prof. Dr. Zagel.
+    Pos[Zah] #> Pos[Zag],
+    solve(Vor ++ Pos),
+    Ranking = [(Pos[J],J,Vor[J]) : J in 1..N].sort(),
+    println("Hier die Reihe der Vorträge:"),
+    foreach((P,I,V) in Ranking) printf("%d. %9s: %s%n", P, ProfStr[I], VorStr[V]) end,
+    nl, fail.
+/* Hier die Reihe der Vorträge:
+1.     Zagel: Ungerade Zahlen
+2. Vronibert: Kochoptimierungen
+3.      Zahl: Kindererziehung
+4.   Spunsch: Autokauf
+5.      Kurz: Zappen
+CPU time 0.001 seconds, no more solutions, korrekt */

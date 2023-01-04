@@ -1,0 +1,43 @@
+/* Zeit Logelei 2009/27 10 Billiardkugeln sind im Dreieck angeordnet: 1. Reihe 1 Kugel, 2. Reihe 2 Kugeln usw.
+https://www.zeit.de/2009/27/Spiele-Logelei-27 */
+import cp.
+main ?=>
+    Adr = new_list(10), Adr :: 1..10, assignment(Adr, RevAdr), % Adresse der Kugel I in Tatjana´s Perspektive
+    T = 1, A = 2, M = 3, Name = ["Tatjana", "Astrid", "Melanie"],
+    Orders = [ [[1], [2,3], [4,5,6], [7,8,9,10]],   % Adressen in Tatjana´s Perspektive
+               [[10], [6,9], [3,5,8], [1,2,4,7]],   % .. in Astrid´s Perspektive
+               [[7], [4,8], [2,5,9], [1,3,6,10]] ], % .. in Melanie´s Perspektive
+    Ueber = [[{X,Y} : Z1 in 1..3, Z2 in Z1+1..4, X in Order[Z1], Y in Order[Z2]] : Order in Orders], % X liegt über Y
+    /* Tatjana: "Die 3 ist weiter oben als die 8." "Die 4 ist weiter oben als die 9." "Die 4 ist weiter oben als die 5."
+    Astrid: "Die 7 ist weiter oben als die 4." "Die 3 ist weiter oben als die 5." "Die 8 ist weiter oben als die 9."
+    Melanie: "Die 6 ist weiter oben als die 5." "Die 4 ist weiter oben als die 8." "Die 2 ist weiter oben als die 10." */
+    foreach((P,K1,K2) in [
+        (T,3,8), (T,4,9), (T,4,5), (A,7,4), (A,3,5), (A,8,9), (M,6,5), (M,4,8), (M,2,10)])
+            table_in({Adr[K1],Adr[K2]}, Ueber[P])
+    end,
+    % Tatjana: "Aber auf alle Fälle ist die 2 auf der gleichen Höhe wie die 4, und zwar weiter rechts!":
+    NebenT = [{Orders[T,Z,I1],Orders[T,Z,I2]} : Z in 2..4, I1 in 1..Z-1, I2 in I1+1..Z], % {X,Y} heißt X liegt links neben Y
+    table_in({Adr[4],Adr[2]}, NebenT),
+    solve(Adr ++ RevAdr),
+    foreach(P in 1..3)
+        printf("Perspektive von %s:%n", Name[P]),
+        foreach(Line in Orders[P]) 
+            foreach(I in Line) printf("%2d|", RevAdr[I]) end, nl
+        end 
+    end, nl, fail.    
+/* Perspektive von Tatjana:
+10|
+ 1| 7|
+ 4| 2| 3|
+ 6| 5| 9| 8|
+Perspektive von Astrid:
+ 8|
+ 3| 9|
+ 7| 2| 5|
+10| 1| 4| 6|
+Perspektive von Melanie:
+ 6|
+ 4| 5|
+ 1| 2| 9|
+10| 7| 3| 8|
+CPU time 0.001 seconds, no more solutions, korrekt */

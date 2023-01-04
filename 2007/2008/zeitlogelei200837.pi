@@ -1,0 +1,19 @@
+/* Zeit Logelei 2008/37 Wie lange dauert es?
+https://www.zeit.de/2008/37/Spiele-Logelei-37
+Tina wohnt in Zubelheim, Bert in Babelfingen. Dazwischen liegen 350 Kilometer, Luftlinie. Gelegentlich treffen sich die beiden für ein Wochenende 
+im Hotel zur Goldenen Blume. Das liegt zwar nicht auf dem Weg zwischen Zubelheim und Babelfingen, aber es ist romantisch. Außerdem führen sowohl 
+von Zubelheim als auch von Babelfingen schnurgerade Straßen zum Hotel, was die Fahrt angenehm macht. Heute morgen sind die beiden zeitgleich aufgebrochen. 
+Beide fahren mit konstanter Geschwindigkeit aufs Hotel zu, wobei Bert etwas schneller fährt, da er weiter vom Hotel entfernt wohnt als Tina und 
+die beiden dort gleichzeitig ankommen wollen. Seit dem Aufbruch ist eine halbe Stunde vergangen, als bei Bert das Autotelefon klingelt. 
+Tina: "Hallo Bert, wo bist du?" – "Luftlinie bin ich nur noch 275 Kilometer von dir entfernt, mein Schatz", erwidert Bert. Er weiß genau, wie schnell Tina fährt. 
+"Und wie lange dauert es noch, bis wir uns treffen?", will Tina wissen, als Bert in einen Tunnel kommt und die Leitung unterbrochen wird.
+Wie lange dauert es noch, bis sich die beiden in die Arme schließen können? */
+import cp.
+main =>
+    T :: 1..180, % die verbleibende Fahrzeit in Minuten
+    % Strahlensatz: T / 275 = (30 + T) / 350 | * 275 * 350 erweitern:
+    350 * T #= 275 * (30 + T),
+    solve(T),
+    printf("Tina und Bert müssen noch %d Stunde und %d Minuten fahren, bis sie sich im Hotel treffen.", T div 60, T mod 60).
+/* Tina und Bert müssen noch 1 Stunde und 50 Minuten fahren, bis sie sich im Hotel treffen.
+korrekt */

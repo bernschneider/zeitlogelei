@@ -1,0 +1,27 @@
+/* Zeit Logelei 2008/38 Code des Safes
+https://www.zeit.de/2008/38/Spiele-Logelei-38
+Safeknacker Vincent ist in die Villa des Barons von Madarian eingebrochen, der einige sehr wertvolle Diamanten besitzt. 
+Sein Safe ist mit einem Zahlenschloss gesichert, der Code besteht aus sieben Ziffern. Der Hausherr hat sich den Code 
+in Form eines Rätsels notiert: Welche Ziffernfolge öffnet den Safe? */
+import sat.
+
+main ?=>
+    Code = new_list(7),  Code :: 1..9, % die Null kommt nicht vor
+    sum(Code) mod 11 #= 0, % Die Summe aller sieben Ziffern ist durch 11 teilbar
+    all_different(Code), % Keine Ziffer wird öfter als einmal verwendet
+    Code[1] mod 2 #= 1,  Code[7] mod 2 #= 1, % Die erste und die letzte Ziffer sind ungerade, 
+    Code[3] mod 2 #= 0,  Code[5] mod 2 #= 0, % die dritte und fünfte Ziffer sind gerade
+    abs(Code[2] - Code[4]) #= 1, % Die zweite und die vierte Ziffer unterscheiden sich um 1
+    Delta #= abs(Code[6] - Code[3]), Delta :: [2,3,5,7], % die Differenz zwischen der dritten und der vorletzten Ziffer ist eine Primzahl
+    Code[5] #= Code[7] + X, element(_, Code[1..3], X), % Die fünfte Ziffer ist gleich der Summe aus der letzten Ziffer und einer der ersten drei Ziffern
+    Idx2 :: 1..7, element(Idx2, Code, 2), % Die Ziffer 2 wird im Code verwendet
+    Idx1 #= Idx2 - 1, Idx3 #= Idx2 + 1, element(Idx1, Code, Davor), element(Idx3, Code, Danach), 
+    Davor + Danach #> 9, % die Summe der beiden Ziffern unmittelbar vor und unmittelbar nach der 2 ist größer als 9. 
+    (Code[4] #> 4) + (Code[7] #>= 4) #= 1, % Entweder ist die mittlere Ziffer größer als 4 und die letzte Ziffer kleiner als 4 oder umgekehrt
+    (Code[2] mod 3 #= 0) + (Code[6] mod 3 #= 0) #= 1, % Entweder ist die zweite Ziffer ohne Rest durch 3 teilbar und die vorletzte nicht oder umgekehrt. 
+    Code[2] #< Code[1], Code[2] #> V, element(_, Code[3..7],V), % Die zweite Ziffer ist kleiner als die erste, aber größer als mindestens eine andere Ziffer
+    solve(Code ++ [Delta,X,Idx1,Idx2,Idx3]),
+    println(Code),
+    nl, fail. 
+/* [7,6,2,5,8,4,1]
+CPU time 0.062 seconds, no more solutions, korrekt */

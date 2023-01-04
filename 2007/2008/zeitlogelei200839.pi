@@ -1,0 +1,36 @@
+/* Zeit Logelei 2008/39 Eine Diebesbande hat eine Bank überfallen und verteilt jetzt die Beute
+https://www.zeit.de/2008/39/Spiele-Logelei-39
+Wie viel Euro hat die Bande erbeutet, und wie viel erhält jedes einzelne Bandenmitglied? */
+import cp.
+main ?=>
+    Str = ["Hauptganove", "Oberganove", "Ganove", "Hauptdieb", "Oberdieb", "Dieb"],
+    Beute = new_list(6),  Beute :: 1..1000000, % Beute 
+    Rest  = new_list(7),  Rest  :: 1..1000000, % Rest[1] = Gesamte Beute, Rest[2..] = Rest in den Verteilungsrunden
+    /* Traditionell erhält zuerst der Hauptganove die Hälfte der Beute sowie einen halben Euro extra:
+    Danach erhalten die beiden Oberganoven je ein Drittel vom Rest sowie einen drittel Euro extra:
+    Danach die drei Ganoven: Sie erhalten vom Rest je ein Viertel sowie einen viertel Euro extra:
+    Nun sind die vier Hauptdiebe, die fünf Oberdiebe und die sechs Diebe dran: 
+    Zuerst erhalten die Hauptdiebe je ein Fünftel des Restes sowie einen fünftel Euro extra:
+    dann die Oberdiebe je ein Sechstel des Restes sowie einen sechstel Euro extra:
+    und am Ende die Diebe je ein Siebtel des Restes sowie einen siebtel Euro extra: */
+    foreach(I in 1..6)
+        0         #= (Rest[I] + 1) mod (I+1), % der Auszahlungsbetrag sollte ganzzahlig sein!
+        Beute[I]  #= (Rest[I] + 1) div (I+1), 
+        Rest[I+1] #= Rest[I] - I * Beute[I]
+    end,
+    /* Als die Bande mit dem Verteilen fertig ist, bleibt noch etwas Geld übrig. Nach kurzer Diskussion wird 
+    beschlossen, dieses Geld in die "Altersvorsorgekasse für Diebe und ähnliches Gesindel" einzuzahlen. 
+    Hierbei erhält jedes Bandenmitglied den gleichen Anteil vom Restgeld angerechnet, nämlich 5 Euro. */
+    Rest[7] #= (1+2+3+4+5+6) * 5,
+    solve(Beute ++ Rest),
+    printf("Die Bande hat %d Euro entwendet.%n", Rest[1]),
+    foreach(I in 1..6) printf("%s %s bekommt %d Euro.%n", cond(I=1,"Der","Jeder"), Str[I], Beute[I]) end, 
+    nl, fail. /* 
+Die Bande hat 534239 Euro entwendet.
+Der Hauptganove bekommt 267120 Euro.
+Jeder Oberganove bekommt 89040 Euro.
+Jeder Ganove bekommt 22260 Euro.
+Jeder Hauptdieb bekommt 4452 Euro.
+Jeder Oberdieb bekommt 742 Euro.
+Jeder Dieb bekommt 106 Euro.
+CPU time 0.561 seconds, no more solutions, korrekt */

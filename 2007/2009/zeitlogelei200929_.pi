@@ -1,0 +1,24 @@
+/* Zeit Logelei 2009/29 Daniel ist Gärtner. Gestern erst hat er sich beschwert, bei seiner 
+Arbeit müsse er gar nicht denken. Die Rache seines Chef war folgende Arbeitsanweisung:
+https://www.zeit.de/2009/29/Spiele-Logelei-29 */
+import cp.
+main =>
+    Str = ["Dach", "Erdbeeren", "Kirschbaum", "Preisschilder", "Radieschen", "Ziege", "Zwiebeln"], N = len(Str), 
+    Todo = [Da, Er, Ki, Pr, Ra, Zi, Zw], Todo :: 1..N, increasing_strict(Todo), % Ranking
+        %(Ra,Da, Zi,Zw), % Wenn du die Radieschen gießt, bevor du das Dach flickst, füttere die Ziege vor dem Zwiebelnpflanzen! 
+        %(Er,Ra, Zw,Zi), % Wenn du die Erdbeeren vor dem Radieschengießen erntest, pflanze die Zwiebeln vor dem Ziegefüttern! 
+        %(Ra,Zw, Er,Ra), % Gießt du die Radieschen vor dem Zwiebelnpflanzen, dann ernte die Erdbeeren vor dem Radieschengießen! 
+        %(Pr,Er, Ra,Ki), % Wenn du die Preisschilder vor dem Erdbeerpflücken schreibst, dann gieß die Radieschen, bevor du den Kirschbaums pfropfst! 
+        %(Zi,Ra, Pr,Zw), % Fütterst du die Ziege vor dem Radieschengießen, schreib die Preisschilder vor dem Zwiebelnpflanzen! 
+        %(Da,Zi, Pr,Er), % Wenn du das Dach flickst, bevor du die Ziege fütterst, schreib die Preisschilder vor dem Erdbeerpflücken! 
+        %(Zw,Ra, Ki,Zi), % Wenn du erst die Zwiebeln pflanzt und dann die Radieschen gießt, pfropf den Kirschbaum, bevor du die Ziege fütterst. 
+    Da #< Ki #=> Zi #< Ra, %Wenn du das Dach flickst, bevor du den Kirschbaum pfropfst, füttere die Ziege vor dem Gießen der Radieschen! 
+    Ki #< Zw #=> Da #< Pr, % pfropfst du den Kirschbaum vor dem Zwiebelnpflanzen, dann flick das Dach, bevor du die Preisschilder schreibst!
+    solve(Todo),
+    Ranking = [(Todo[I],I) : I in 1..N].sort(),
+    foreach((Rang,I) in Ranking)
+        printf("%d. %s, ", Rang, Str[I])
+    end. %,
+    % nl, fail. 
+/*  
+ */

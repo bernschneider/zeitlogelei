@@ -1,0 +1,34 @@
+/* Zeit Logelei 2009/52 Vor einer Talkshow
+https://www.zeit.de/2009/52/Spiele-Logelei-52
+Welche der Gäste sind Politiker, und wie viele wahre Aussagen wird jeder Gast machen? */
+import cp, util.
+main ?=>
+    Name = ["Erich", "Martin", "Roland", "Sabine", "Tanja"],
+    E=1, M=2, R=3, S=4, T=5,  
+    N = 5, Max = 10,
+    Pol = new_list(N), Pol :: 0..1, % 1=ist Politiker (hält sein Versprechen nicht)
+    % Nun sind zwei der Gäste Politiker, und wie man weiß, halten Politiker ihre Versprechen nicht, während alle anderen das tun. 
+    sum(Pol) #= 2,
+    Cnt = new_list(N), Cnt :: 0..Max, % Anzahl der wahren Aussagen 
+    Pol[E] #= 0 #<=> Cnt[E] #> Cnt[R], % Erich: "Ich werde mehr wahre Aussagen als Roland machen!" – 
+    Pol[T] #= 0 #<=> Cnt[T] #=< 2, % Tanja: "Ich werde maximal zwei wahre Aussagen machen!" – 
+    Pol[M] #= 0 #<=> Cnt[R] + Cnt[M] #> Cnt[T], % Martin: "Roland und ich zusammen werden mehr wahre Aussagen machen als Tanja." – 
+    Pol[S] #= 0 #<=> sum(Cnt) #< 10, % Sabine: "Die Summe all unserer wahrer Aussagen wird kleiner als zehn sein." – 
+    Pol[R] #= 0 #<=> Cnt[R] #> Cnt[T], % Roland: "Ich werde mehr wahre Aussagen machen als Tanja." – 
+    Pol[E] #= 0 #<=> Cnt[E] #< Cnt[S], % Erich: "Ich werde weniger wahre Aussagen machen als Sabine." – 
+    Pol[T] #= 0 #<=> Cnt[T] #= Cnt[M] + Cnt[S], % Tanja: "Ich werde genauso viele wahre Aussagen machen wie Martin und Sabine zusammen." – 
+    Pol[M] #= 0 #<=> Cnt[M] #= min(Cnt), % Martin: "Niemand wird weniger wahre Aussagen machen als ich!" – 
+    Pol[S] #= 0 #<=> Cnt[S] #= Cnt[T], % Sabine: "Ich werde genauso viele wahre Aussagen machen wie Tanja." – 
+    Pol[R] #= 0 #<=> Cnt[R] #= Cnt[T] + Cnt[S], % Roland: "Ich werde genauso viele wahre Aussagen machen wie Tanja und Sabine zusammen."
+    solve(Pol ++ Cnt), % println(Cnt),
+    foreach(I in 1..N) 
+        printf("%6s macht %d wahre Aussagen%s%n", Name[I], Cnt[I], cond(Pol[I]=1, " und ist Politiker.",".")) 
+    end,
+    nl, fail.
+/* 
+ Erich macht 3 wahre Aussagen und ist Politiker.
+Martin macht 1 wahre Aussagen.
+Roland macht 3 wahre Aussagen.
+Sabine macht 1 wahre Aussagen und ist Politiker.
+ Tanja macht 2 wahre Aussagen.
+CPU time 0.001 seconds, no more solutios, korrekt */

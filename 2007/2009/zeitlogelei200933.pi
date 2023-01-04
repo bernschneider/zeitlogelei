@@ -1,0 +1,26 @@
+/* Zeit Logelei 2009/33 Küsschen beim Schüleraustausch mit Frankreich
+https://www.zeit.de/2009/33/Spiele-Logelei-33 
+Man gibt sich bei Begrüßung und Abschied Küsschen: 
+jeweils eins links und eins rechts und jeder jedem, außer Jungen untereinander */
+import cp, util.
+party1 ?=>
+    Cnt = [M,J,N], Cnt :: 2..20, M + J #= N, 
+    68 #= M * (M + 2*J - 1), % 68 = M * (N-1) + J * M
+    solve(Cnt),
+    println(Cnt), % [4,7,11] no more solutions, korrekt
+    fail.
+
+party2 ?=>
+    Cnt = [M1,J1, M2,J2], Cnt :: 0..10,   
+    M1 + J1 #= 10, M2 + J2 #= 6, % 10 sind schon da, 6 kommen hinzu
+    78 #= 2 * (M1 * 6 + J1 * M2), % Mädchen küssen alle 6 Neuen, Jungs nur die neuen Mädchen (je 2x)
+    solve(Cnt),
+    println(Cnt), % [3,7,3,3], no more solutions, korrekt
+    fail.
+
+party3 ?=>
+    Cnt = [M,J,N], Cnt :: 2..20, M + J #= N, 
+    75 #= M * (M + 2*J - 1) - (N - 1), % Abzug für die Belgierin
+    solve(Cnt),
+    println(Cnt), % [7,3,10] no more solutions, korrekt
+    fail.

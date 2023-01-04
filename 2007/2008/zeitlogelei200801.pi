@@ -1,0 +1,23 @@
+/* Zeit Logelei 2008/01
+https://www.zeit.de/2008/01/Spielen-Logelei-01
+Auch dieses Jahr sollen die sieben traditionellen Silvesterbräuche zum Einsatz kommen. Streit gibt es aber um die Reihenfolge.
+Wie können alle Wünsche berücksichtig werden? */ 
+import cp, util.
+main ?=>
+    Name = ["Erbsen essen","Handschuhwerfen","Knoblauchorakel","Karten spielen","Räucherstäbchen","Schnapsgießen","Zufallsartikel"],
+    Rang = [Ee, Hw, Ko, Ks, _Rs, Sg, Za], N = len(Rang), Rang :: 1..N, all_different(Rang),
+    abs(Hw - Sg) #= 1, % Jochen: „Handschuhwerfen passt einfach gut zum Schnapsgießen. Ich finde, es sollte direkt davor oder direkt danach stattfinden
+    % Tina: „Ich finde, das Kartenspielen sollte auf alle Fälle vor dem Schnapsgießen statt finden. 
+    % Martin: „Na ja, also direkt nach dem Schnapsgießen sind wir noch nicht besoffen, das geht noch in Ordnung, oder? 
+    Ks #=< Sg + 1, % Tina: "Na gut."
+    Za #< Ko, % Tina: „Aber die Zufallsartikel in der Wikipedia schauen wir uns vor dem Knoblauchorakel an. Mit den Knoblauchfingern kommt mir keiner an meinen Computer! 
+    Ko #< Ks, % Claudia: „Ich freue mich auf das Räucherstäbchenanzünden. Aber bevor wir Karten spielen, sollten wir das Knoblauchorakel befragt haben! 
+    abs(Ee - Ks) #> 1, % Jochen: „Erbsen essen und Kartenspielen würde ich nicht direkt nacheinander machen. 
+    abs(Hw - Za) #= 2, % Tina: „Also wenn ihr mich fragt, sollte zwischen dem Handschuhwerfen und den Zufallsartikeln in der Wikipedia genau ein weiteres Event stattfinden. 
+    Sg #< Ee, % Susie: „Ich finde, das Erbsenessen macht nur dann Spaß, wenn wir zuvor schon das Schnapsgießen hatten. 
+    solve(Rang),
+    Ranking = [(Rang[I],I) : I in 1..N].sort(),
+    foreach((_,I) in Ranking) printf("%s - ", Name[I]) end,
+    nl, fail.
+/* Zufallsartikel - Knoblauchorakel - Handschuhwerfen - Schnapsgießen - Karten spielen - Räucherstäbchen - Erbsen essen
+CPU time 0.001 seconds, no more solutions, korrekt */

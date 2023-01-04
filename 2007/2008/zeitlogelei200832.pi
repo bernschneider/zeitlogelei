@@ -1,0 +1,31 @@
+/* Zeit Logelei 2008/32 To Be Solved
+https://www.zeit.de/2008/32/Spiele-Logelei-32
+Einige Archäologen finden: Je älter ein Fossil ist, desto besser ist es. Andere wiederum meinen: 
+je größer, desto besser. Eine dritte Gruppe hat den "Fossil-Quality-Indicator" (FQI) entwickelt.
+Auf einem Kongress fallen folgende Aussagen. Wie ist die Reihenfolge nach den jeweiligen Kriterien? */
+import cp, util.
+
+main ?=> 
+    Al=1, Gr=2, FQI=3, Kstr = ["Alter", "Größe", "FQI  "], 
+    A=1, B=2, C=3, D=4, N = 4, Fstr = ["Archotaktus", "Brosilea", "Cytophora", "Dochtybus"], 
+    R = new_array(3,N), R :: 1..N, foreach(K in 1..3) all_different(R[K]) end, % Ränge je Kriterium K
+    foreach((F1,K1,G1, F2,K2,G2) in [
+        (A,Al,C,  C,Gr,B), % "Wenn der Archotaktus älter ist als die Cytophora, dann ist die Cytophora größer als die Brosilea." – 
+        (A,Gr,C,  C,FQI,D),% "Wenn der Archotaktus größer ist als die Cytophora, hat die Cytophora einen besseren FQI als der Dochtybus." – 
+        (C,Al,D,  D,Gr,A), % "Wenn die Cytophora älter ist als der Dochtybus, ist der Dochtybus größer als der Archotaktus." – 
+        (C,Gr,B,  C,Al,D), % "Wenn die Cytophora größer ist als die Brosilea, ist die Cytophora älter als der Dochtybus." – 
+        (D,Al,A,  D,Gr,B), % "Wenn der Dochtybus älter ist als der Archotaktus, ist der Dochtybus größer als die Brosilea." – 
+        (A,Gr,B,  B,Al,D), % "Wenn der Archotaktus größer ist als die Brosilea, ist die Brosilea älter als der Dochtybus." – 
+        (B,Al,C,  B,FQI,A),% "Wenn die Brosilea älter ist als die Cytophora, hat die Brosilea einen besseren FQI als der Archotaktus." – 
+        (B,FQI,D, A,Al,C)])% "Wenn die Brosilea einen besseren FQI hat als der Dochtybus, ist der Archotaktus älter als die Cytophora." 
+            R[K1,F1] #> R[K1,G1] #=> R[K2,F2] #> R[K2,G2]
+end,
+R[Gr,D] #< R[Gr,A], % "Der Dochtybus ist kleiner als der Archotaktus." – 
+solve(R),
+foreach(K in 1..3)
+    printf("Nach %s: %w%n", Kstr[K], [(R[K,I],Fstr[I]) : I in 1..N].sort_down()) 
+end, fail. /*
+Nach Alter: [(4,Brosilea),(3,Dochtybus),(2,Cytophora),(1,Archotaktus)]
+Nach Größe: [(4,Archotaktus),(3,Dochtybus),(2,Brosilea),(1,Cytophora)]
+Nach FQI:   [(4,Cytophora),(3,Dochtybus),(2,Brosilea),(1,Archotaktus)]
+CPU time 0.001 seconds, no more solutions, korrekt */

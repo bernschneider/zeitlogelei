@@ -1,0 +1,57 @@
+/* Zeit Logelei 2009/44 (nach Janko Zahlenlabyritnh)
+https://www.zeit.de/2009/44/Spiele-Logelei-44 */
+import sat, util.
+main =>
+	Max = 3, 		 
+    M = {{_,_,1,_,_,_,_,_,_},
+         {_,_,_,_,_,_,_,_,_},
+         {_,_,_,_,_,_,2,_,1},
+         {1,_,_,_,_,_,_,_,_},
+         {_,_,_,_,_,_,_,_,3},
+         {_,_,_,_,2,_,_,_,_},
+         {_,_,_,_,_,_,_,_,_},
+         {_,2,_,_,1,_,_,_,_},
+         {_,_,_,_,_,3,_,_,_}}, N = len(M),  M :: 0..Max,
+    foreach(Row in M.rows())    good(Max, Row) end,
+    foreach(Col in M.columns()) good(Max, Col) end,
+    Zs = new_array(N*N), Ss = new_array(N*N), 
+    Zs[1] = 7, Ss[1] = 1, % Kreis (Startpunkt)
+    % Beschreibe den Weg durch das Labyrinth:
+    Weg = "RHLHHHRRTLTRRTLTRRRRHHHLTTLHHHHRTRRTTTTTLLLLLLLTRRRRRRRRHHHHHHHHLTLHLLLLLLTRRRTT", 
+    Dir = new_array(N,N), Dir[4,4] = ' ', % Endpunkt
+    Mem = new_array(N,N), Mem :: 0..Max, % Memory: was wer die letze Zahl?
+    % 1. Möglichkeit: M[Startpunkt] #= 1, Mem[Startpunkt] #= 1  (wie z.B. in Janko Zahlenlabyrinth Nr. 10)
+    % 2. Möglichkeit: M[Startpunkt] #= 0, Mem[Startpunkt] #= 3 (wie hier)
+    M[7,1] #= 1 #\/ (M[7,1] #= 0 #/\ Mem[7,1] #= 3),
+    foreach(I in 1..N*N-1)
+    	Zs[I+1] = cond(Weg[I]='T', Zs[I] + 1, cond(Weg[I]='H', Zs[I] - 1, Zs[I])),
+    	Ss[I+1] = cond(Weg[I]='R', Ss[I] + 1, cond(Weg[I]='L', Ss[I] - 1, Ss[I])),
+    	% Mem bleibt gleich bzw. steigt um 1 mod Max:
+    	M[Zs[I+1], Ss[I+1]] #= 0 #=>  Mem[Zs[I+1], Ss[I+1]] #= Mem[Zs[I], Ss[I]],
+    	M[Zs[I+1], Ss[I+1]] #> 0 #=> (Mem[Zs[I+1], Ss[I+1]] - Mem[Zs[I], Ss[I]]) mod Max #= 1,
+    	Dir[Zs[I], Ss[I]] = Weg[I]
+    end, % println(Zs), println(Ss),
+    foreach(Z in 1..N, S in 1..N)
+    	M[Z,S] #= 0 #\/ M[Z,S] #= Mem[Z,S]
+    end,
+	MVars = array_matrix_to_list(M) ++ array_matrix_to_list(Mem), 
+    solve(MVars),
+    foreach(Z in 1..N, S in 1..N)
+		if M[Z,S]>0 then printf("%2d", M[Z,S]) else print("  ") end,
+		printf("%c|", Dir[Z,S]),
+    	if S = N then nl end
+    end.
+/*
+ 2T|  L| 1L| 3L|  L|  L|  L|  T|  L|
+ 3R|  R|  R|  T|  R| 1T|  H| 2L|  H|
+  R|  R|  T|  T| 3H|  R| 2R|  T| 1H|
+ 1H| 3T| 2L|   |  H|  T|  L|  T|  H|
+  H| 1R|  R| 2T|  H|  T|  H|  T| 3H|
+  H|  L| 3T|  L| 2H|  L| 1H|  T|  H|
+  R|  H|  R| 1R|  R| 2R| 3H|  T|  H|
+  T| 2L|  L|  L| 1L|  L|  L| 3L|  H|
+  R|  R|  R|  R|  R| 3R|  R| 1R| 2H|
+CPU time 0.275 seconds, korrekt */    
+good(Max, L) =>
+	sum(L) #= Max * (Max + 1) // 2, % alle Zahlen 1..Max müsssen vorkommen
+	all_different_except_0(L).

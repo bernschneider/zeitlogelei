@@ -1,0 +1,47 @@
+/* ZEIT Logelei 41/2009 Rätselwettbewerb
+https://www.zeit.de/2009/41/Spiele-Logelei-41 
+Bei einem Wettbewerb waren fünf unterschiedlich schwere logische Rätsel zu lösen  */
+import util,sat.
+main => 
+    C=1,D=2,S=3,P=4,T=5, TlnStr = ["Christian","Daniela","Sabine","Peter","Tobias"],
+    BU=1,DO=2,KA=3,LA=4,_SU=5,  % Rätsel Buchstabensalat, Domino, Kakuro, Labyrinth, Sudoku
+    PjR = new_list(5), PjR :: [10, 15, 20, 25, 30], all_different(PjR), % % Punkte je Rätsel 
+    M = new_array(5,5), M :: 0..1, Mt = M.transpose(), % M[I,J]=1 <=> Tln I löste Rätsel J
+    Pkt = new_list(5), Pkt :: 0..100, all_different(Pkt), % Keine zwei Teilnehmer erreichten die gleiche Summe von Punkten
+    foreach(I in 1..5) scalar_product(M[I], PjR, Pkt[I]) end,
+    % Keinem der fünf Teilnehmer gelang es, alle fünf Rätsel zu lösen:
+    foreach(I in 1..5) sum(M[I]) #< 5 end,
+    % Daniela landete mit 65 Punkten auf dem dritten Platz.
+    Pkt[D] #= 65, sum([(Pkt[I] #< 65): I in 1..5, I != D]) #= 2,
+    % Sabines insgesamt erreichte Punktzahl ist gerade, die von Christian ungerade. 
+    Pkt[S] mod 2 #= 0, Pkt[C] mod 2 #= 1, 
+    % Tobias erzielte exakt doppelt so viele Punkte wie der Teilnehmer, der nur Sudoku und Kakuro lösen konnte. 
+    Pkt[T] #= 2 * PktSK, TlnSK :: 1..5, element(TlnSK, Pkt, PktSK), eq(M,TlnSK,[0,0,1,0,1]),
+    % Der Buchstabensalat war weniger wert als ein anderes Rätsel, das Daniela nicht löste. 
+    Rae1 :: 1..5, Rae1 #!= BU, element(Rae1, M[D], 0), element(Rae1, PjR, PRae1), PjR[BU] #< PRae1,
+    % Christian löste mindestens drei der fünf Rätsel. 
+    sum(M[C]) #>= 3,
+    % Neben Sabine konnte nur ein weiterer Teilnehmer das Labyrinthrätsel lösen; das war aber nicht Tobias. 
+    M[S,LA] #= 1, Tln1 :: 1..5, Tln1 #!= S, matrix_element(M, Tln1, LA, 1), Tln1 #!= T, sum(Mt[LA]) #= 2, 
+    % Genau eines der fünf Rätsel wurde sowohl von Peter als auch von Sabine gelöst:
+    Rae2 :: 1..5, element(Rae2, M[P], 1), element(Rae2, M[S], 1), 
+    % Es war mindestens 10 Punkte mehr wert als das Dominorätsel:
+    element(Rae2, PjR, PRae2), PRae2 #>= 10 + PjR[DO],   
+    % Nur einer der fünf Teilnehmer scheiterte am Kakuro.
+    sum(Mt[KA]) #= 4,
+    solve(vars(M) ++ PjR ++ Pkt ++ [TlnSK,PktSK,Rae1,PRae1,Rae2,PRae2]), 
+    println("BU DO KA LA SU"),
+    foreach(I in 1..5, J in 1..5)
+	    if M[I,J]=1 then printf("%2d|",PjR[J]) else print("  |") end, 
+        if J = 5 then printf("-> %2d %s%n", Pkt[I], TlnStr[I]) end
+    end.
+/* 
+BU DO KA LA SU
+20|  |25|  |10|-> 55 Christian
+20|15|  |30|  |-> 65 Daniela
+20|15|25|30|  |-> 90 Sabine
+  |  |25|  |10|-> 35 Peter
+20|15|25|  |10|-> 70 Tobias
+CPU time 0.113 seconds, korrekt */
+eq(M,Tln,Sig) =>
+    foreach(I in 1..5, J in 1..5) Tln #= I #=> M[I,J] #= Sig[J] end.

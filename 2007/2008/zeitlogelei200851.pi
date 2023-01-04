@@ -1,0 +1,35 @@
+/* ZEIT Logelei 2008/51
+https://www.zeit.de/2008/51/Spiele-Logelei-51 
+Martin sitzt grübelnd am Küchentisch und studiert einen Schmierzettel. Stirnrunzelnd sagt er zu seiner Frau Birgit: 
+"Ich soll für unsere landwirtschaftliche Vereinszeitung einen Bericht über die fünf Bauernbrüder Gabelmann schreiben, 
+die jeder einen anderen der ersten fünf Plätze bei der diesjährigen Tierschau belegt haben. */
+import cp.
+main ?=> 
+    E=1, F=2, K=3, P=4, W=5, BruderStr = ["Erwin", "Franz", "Kurt", "Peter", "Willi"],
+    Beruf = new_list(5), Beruf :: 1..5, assignment(Beruf,RevBeruf),
+    S=1, H=2, K=3, P=4, W=5, BerufStr = ["Schäfer", "Hühnerzüchter", "Kuhbauer", "Pferdezüchter", "Sch_Weinezüchter"],
+    Alter = new_list(5), Alter :: [31, 35, 39, 43, 46], all_different(Alter), % 31, 39, 43, 46, X  (Alter[F] = Y+4, Alter[E] = Z+4) 
+    Rang = new_list(5), Rang :: 1..5, assignment(Rang,RevRang),
+    Beruf[K] #= S #\/ Beruf[K] #= P, % Kurt ist entweder der Schäfer oder der Pferdezüchter
+    foreach(I in 1..5) Beruf[I] #= H #<=> Alter[I] #= 31  end, % der Jüngste ist 31 Jahre alt und hat eine Hühnerfarm.
+    % Der Älteste ist 46 Jahre alt und hat 2 Plätze schlechter abgeschnitten als der Bruder, der Schweine züchtet:
+    element(RevBeruf[W], Rang, RangBW),
+    foreach(I in 1..5) Alter[I] #= 46 #=> Rang[I] #= 2 + RangBW  end,
+    element(RevBeruf[S], Alter, AlterBS), Alter[F] #= 4 + AlterBS, % Franz ist genau 4 Jahre älter als der Schafzüchter. 
+    foreach(I in 1..5) Alter[I] #= 43 #=> Rang[W] + 3 #= Rang[I] end, % Willi liegt 3 Plätze weiter vorn als der 43-jährige
+    % Erwin hat Platz 1 erreicht und ist 4 Jahre älter als der Bruder, der den zweiten Platz belegt hat:
+    Rang[E] #= 1, element(RevRang[2], Alter, AlterR2), Alter[E] #= 4 + AlterR2,
+    Alter[P] #= 39, % "Peter feiert noch in diesem Jahr seinen vierzigsten Geburtstag."
+    solve(Beruf ++ Alter ++ Rang ++ [RangBW, AlterBS, AlterR2]),
+    Ranking = [(Rang[I],I) : I in 1..5].sort(),
+    foreach((Rg,I) in Ranking)
+	    printf("%d. Platz: %s ist %s und %d Jahre alt.%n", Rg, BruderStr[I], BerufStr[Beruf[I]], Alter[I])
+    end,
+    nl, fail.
+/* 
+1. Platz: Erwin ist Sch_Weinezüchter und 35 Jahre alt.
+2. Platz: Willi ist Hühnerzüchter und 31 Jahre alt.
+3. Platz: Kurt ist Pferdezüchter und 46 Jahre alt.
+4. Platz: Peter ist Schäfer und 39 Jahre alt.
+5. Platz: Franz ist Kuhbauer und 43 Jahre alt.
+CPU time 0.001 seconds */

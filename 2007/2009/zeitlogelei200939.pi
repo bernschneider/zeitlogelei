@@ -1,0 +1,58 @@
+/* Zeit Logelei Nr. 2009/39 Alphametik Schriftliche Division (siehe Ausdruck)
+https://www.zeit.de/2009/39/Spiele-Logelei-39 */
+import sat, util.
+main =>      
+    L = [[8,_,_,_,_,_,_,_], [_,_,_,7], [_,_,_,9,_], % X / Y = Z
+         [8,_,_,_], [_,_,_,_],      % 1. Teilrechnung: A, Z1 * Y -> 10*(A - Z1 * Y) + X5 = B unter den Strich schreiben
+         [_,_,7,_], [5,_,_,_],      % 2. Teilrechnung: B, Z2 * Y -> 10*(B - Z2 * Y) + X6 = C
+         [_,_,_,_,_], [_,5,_,_,6],  % 3. Teilrechnung: C, Z3 * Y -> 10*(C - Z3 * Y) + X7 = D
+         [_,_,_,_,_], [_,_,_,7,_],  % 4. Teilrechnung: D, Z4 * Y -> 10*(D - Z4 * Y) + X8 = E
+         [_,_,_,_], [5,_,_,_]],     % 5. Teilrechnung: E, Z5 * Y ->     E - Z5 * Y       = 0
+    Flat = flatten(L), Flat :: 0..9, N = len(L),
+    Num = new_list(N), Num :: 0..89999999, % numerische Repräsentation der Elemente von L
+    foreach(I in 1..N)
+        if I < N then L[I,1] #!= 0 end,
+        to_num(L[I], Num[I])
+    end,
+    Num[1] #= Num[2] * Num[3],
+    L[4] = L[1,1..4], % A = die ersten 4 Stellen von X
+    % Teilrechnungen:
+    foreach(I in 1..len(L[3]))
+        Num[3+2*I] #= L[3,I] * Num[2], % Z[I] * Y links darunter schreiben ..
+        if I < len(L[3]) 
+        then Num[4+2*I] #= 10 * (Num[2+2*I] - Num[3+2*I]) + L[1,4+I] % .. und abziehen, dann die nächste Stelle von X herunterholen
+        else 0          #=       Num[2+2*I] - Num[3+2*I] % bei der letzten Subtraktion kommt 0 heraus!       
+        end    
+    end,
+    solve(Flat ++ Num),
+    printf("%d / %d = %d%n", Num[1], Num[2], Num[3]),
+    println(Num[5]), printf("----%n"),
+    Indent = ["", " ", " ", "  ", "    "], Underline = ["", "----", "-----", "-----", "----"],
+    foreach(I in 2..len(L[3]))
+        printf("%s%d%n", Indent[I], Num[2+2*I]),
+        printf("%s%d%n", Indent[I], Num[3+2*I]),
+        printf("%s%s%n", Indent[I], Underline[I]) 
+    end,
+    println("       0"),    
+    nl, fail.
+/*
+87654321 / 1997 = 43893
+7988
+----
+ 7774
+ 5991
+ ----
+ 17833
+ 15976
+ -----
+  18572
+  17973
+  -----
+    5991
+    5991
+    ----
+       0
+CPU time 4.475 seconds, no more solutions, korrekt */
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).

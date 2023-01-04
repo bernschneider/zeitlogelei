@@ -1,0 +1,37 @@
+/* Zeit Logelei 2008/22
+https://www.zeit.de/2008/22/Spiele-Logelei-22
+Beim Neustädter Sommerfest steht wie jedes  Jahr der traditionelle Stadtlauf auf dem Programm,  
+der auf dem Rathausplatz beginnt und nach knapp 10.000 Metern auch wieder dort endet.  
+Über die Teilnehmer, die auf den ersten fünf Plätzen ins Ziel kamen, ist Folgendes bekannt.
+Welcher Teilnehmer (Vor- und Nachname sowie Startnummer) belegte welchen Platz? */
+import util, cp.
+main ?=>
+    VA=1, VC=2, VE=3, VH=4, VT=5, Vstr = ["Andreas", "Christoph", "Erik", "Helmut", "Thorsten"], 
+    NG=1, NH=2, NK=3, NR=4, NV=5, Nstr = ["Gablenz", "Hildebrand", "Kühn", "Rettich", "Vogel"],
+    Snr = [14, 23, 39, 41, 52], % Startnummern der 5 Bestplatzierten
+    Vorname=1, Nachname=2, Startnr=3, % Dimensionen von Platz und von M
+    Platz = new_array(3,5), Platz :: 1..5, % Vorname -> Platz, Nachname -> Platz, Startnummerindex -> Platz
+    M =     new_array(3,5), M :: 1..5,     % Platz -> Vorname, Platz -> Nachname, Platz -> Startnummerindex
+    foreach(Dim in 1..3) assignment(Platz[Dim], M[Dim]) end, 
+    PHR #= Platz[Vorname,VH], element(PHR, M[Nachname], NR), element(PHR, M[Startnr], SHR), SHR #>= 3, % Die Startnummer von Helmut Rettich ist größer als 30.
+    PVT #= Platz[Vorname,VT],  element(PVT, M[Startnr], find_first_of(Snr,39)), PVT #> 1, % Weder Thorsten mit der Startnummer 39 
+    PNK #= Platz[Nachname,NK], element(PNK, M[Startnr], find_first_of(Snr,14)), PNK #> 1, % ...noch Herr Kühn mit der Startnummer 14 konnten das Rennen gewinnen.
+    Platz[Vorname,VC] #> Platz[Startnr,find_first_of(Snr,23)], % Christoph kam später ins Ziel als der Teilnehmer mit der Startnummer 23.
+    element(Platz[Vorname,VE], M[Startnr], SVE), element(Platz[Nachname,NV], M[Startnr], SNV),
+    SVE #> SNV, % Erik hat eine höhere Startnummer als Herr Vogel
+    element(Platz[Nachname,NH], M[Startnr], SNH), element(Platz[Nachname,NG], M[Startnr], SNG),
+    SNH #> SNG, % Herr Hildebrand trägt eine höhere Startnummer als Herr Gablenz 
+    Platz[Nachname,NH] + 1 #= Platz[Startnr,find_first_of(Snr,52)], % ..und kommt unmittelbar vor dem Teilnehmer mit der Startnummer 52 ins Ziel.
+    Platz[Vorname,VA] #> Platz[Startnr,find_first_of(Snr,41)], % Andreas lief langsamer als der Teilnehmer mit der Startnummer 41.
+    V3 #= M[Vorname,3], V3 :: [1,3], Platz[Nachname,NG] #!= 3,  % Der Vorname des Drittplatzierten, bei dem es sich nicht um Herrn Gablenz handelt, beginnt mit einem Vokal.
+    S4 #= M[Startnr,4], S4 :: 2..4, % Snr[2..4] = [23, 39, 41], d.h. der Teilnehmer, der auf Platz 4 landete, besitzt eine ungerade Startnummer.    
+    solve(vars(Platz) ++ vars(M)),
+    foreach(P in 1..5)
+        printf("Platz %d: %s %s, Startnummer %d%n", P, Vstr[M[Vorname,P]], Nstr[M[Nachname,P]], Snr[M[Startnr,P]] )
+    end, nl, fail.  /* 
+Platz 1: Erik Hildebrand, Startnummer 41
+Platz 2: Helmut Rettich, Startnummer 52
+Platz 3: Andreas Vogel, Startnummer 23
+Platz 4: Thorsten Gablenz, Startnummer 39
+Platz 5: Christoph Kühn, Startnummer 14
+CPU time 0.003 seconds, no more solutions, korrekt */

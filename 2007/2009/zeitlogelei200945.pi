@@ -1,0 +1,27 @@
+/* Zeit Logelei 2009/45 Professor Knusi fragt: "Welches ist der höchste Berg?"
+https://www.zeit.de/2009/45/Spiele-Logelei-45 */
+import cp, util.
+main ?=>
+    BergStr = ["Hale-Ole", "Kamu-Ramu", "Lawi-Bawi", "Sebu-Sebu", "Tango-Tangi"], N = len(BergStr),
+    Berg = [HO,KR,LB,SS,TT], Berg :: 1..N, all_different(Berg), % 1 = niedrigster Berg, N = höchster Berg
+    % Es gilt dort als höflich, jede Frage dreimal zu beantworten: mindestens einmal wahr und einmal falsch. 
+    % Piliwu als Häuptling genau zwei wahre und eine falsche Aussage machen:
+    foreach((X1,Y1,X2,Y2,X3,Y3,Cnt) in [
+        (KR,SS,TT,LB,HO,LB,[1,2]), % Koliwu: "Sebu-Sebu ist höher als Kamu-Ramu. Tango-Tangi ist niedriger als Lawi-Bawi. Hale-Ole ist niedriger als Lawi-Bawi." 
+        (SS,LB,SS,HO,SS,KR,[1,2]), % Laliwu: "Lawi-Bawi ist höher als Sebu-Sebu. Hale-Ole ist höher als Sebu-Sebu. Sebu-Sebu ist niedriger als Kamu-Ramu." 
+        (KR,SS,TT,HO,LB,KR,[1,2]), % Maliwu: "Sebu-Sebu ist höher als Kamu-Ramu. Hale-Ole ist höher als Tango-Tangi. Lawi-Bawi ist niedriger als Kamu-Ramu."
+        (TT,SS,LB,HO,SS,KR,[1,2]), % Niliwu: "Tango-Tangi ist niedriger als Sebu-Sebu. Hale-Ole ist höher als Lawi-Bawi. Kamu-Ramu ist höher als Sebu-Sebu." 
+        (KR,TT,KR,SS,LB,HO,[1,2]), % Oliwu: "Kamu-Ramu ist niedriger als Tango-Tangi. Kamu-Ramu ist niedriger als Sebu-Sebu. Lawi-Bawi ist niedriger als Hale-Ole." 
+        (LB,SS,KR,TT,SS,KR,[2])  ])% Piliwu: "Lawi-Bawi ist niedriger als Sebu-Sebu. Tango-Tangi ist höher als Kamu-Ramu. Kamu-Ramu ist höher als Sebu-Sebu."
+            C #= (X1 #< Y1) + (X2 #< Y2) + (X3 #< Y3), 
+            C :: Cnt
+    end,
+    solve(Berg),
+    Ranking = [(Berg[I],I) : I in 1..N].sort_down(),
+    foreach((B,I) in Ranking)
+        printf("%d. %s, ", N+1-B, BergStr[I])
+    end,
+    nl, fail. 
+/* Ranking vom höchsten Berg zum niedrigsten: 
+1. Tango-Tangi, 2. Kamu-Ramu, 3. Lawi-Bawi, 4. Sebu-Sebu, 5. Hale-Ole
+CPU time 0.002 seconds, no more solutiojs, korrekt */

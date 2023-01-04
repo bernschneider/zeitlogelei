@@ -1,0 +1,54 @@
+/* ZEIT Logelei 2008/49 
+https://www.zeit.de/2008/49/Spiele-Logelei-49 
+Josef sitzt im Löwen, einer seiner vier Stammkneipen, und liest einen Brief von Tim: 
+"Ich habe vier Deiner Skatkarten in Deinen Stammkneipen versteckt, und zwar in jeder Kneipe anderswo! 
+Wo findet Josef welche Karte? */
+import cp.
+main ?=> 
+    N=1, L=2, K=3, P=4, KneipeStr = ["Ni Hao", "Löwen", "Kreta", "Piemonte"],
+    B=1, D=2, K=3, A=4, KarteStr = ["Bube", "Dame", "König", "Ass"],
+    H=1, O=2, K=3, P=4, FarbeStr = ["Herz", "karO", "Kreuz", "Pik"],
+    S=1, L=2, U=3, T=4, OrtStr = ["auf dem Stuhl", "unter der stehLampe", "hinter der tÜr", "über dem Tresen"],
+    Karte = new_list(4), Karte :: 1..4, assignment(Karte,RevKarte),
+    Farbe = new_list(4), Farbe :: 1..4, assignment(Farbe,RevFarbe),
+    Ort =   new_list(4), Ort :: 1..4,   assignment(Ort,RevOrt),
+    element(RevOrt[S], Karte, KarteOS), element(RevOrt[T], Karte, KarteOT), % Karte Stuhl bzw. Tresen
+    element(RevFarbe[H], Karte, KarteFH), element(RevFarbe[P], Karte, KarteFP), % Karte Herz bzw. Pik
+    element(RevOrt[L], Farbe, FarbeOL), % Farbe stehLampe
+    element(RevFarbe[H], Ort, OrtFH), element(RevFarbe[O], Ort, OrtFO), % Ort Herz bzw. karO
+      (Karte[P] #= B) % Der Bube liegt im Piemonte. 
+    + (KarteOT #= D) % Über dem Tresen ist die Dame versteckt.   
+    + (Ort[K] #= U) % Hinter der tÜr des Kreta befindet sich eine Karte. 
+    + (KarteOS #= K) % Auf dem Stuhl liegt der König. 
+    + (KarteFH #= B) % Ich habe den Herz-Buben versteckt. 
+    + (Ort[P] #= U) % Im Piemonte befindet sich hinter der tÜr eine Karte. 
+    + (Karte[K] #= B) % Im Kreta ist der Bube. 
+    + (Karte[P] #= D) % Die Dame liegt im Piemonte. 
+    + (KarteFP #= A) % Ich habe das Pik-Ass versteckt. 
+    + (OrtFH #= L) % Die Herzkarte ist unter der stehLampe. 
+    + (Karte[P] #= K) % Im Piemonte liegt der König. 
+    + (FarbeOL #= O) % Unter der stehLampe ist die karOkarte. 
+    + (Farbe[N] #= P) % Die Pikkarte liegt im Ni Hao. 
+    + (OrtFO #= U) % Die karOkarte ist hinter der tÜr. 
+    + (FarbeOL #= P) % Unter der stehLampe ist die Pikkarte. 
+    + (Ort[P] #= L) % Im Piemonte befindet sich unter der stehLampe eine Karte. 
+    + (KarteOS #= B) % Der Bube liegt auf dem Stuhl. 
+    + (KarteOT #= K) % Der König ist über dem Tresen versteckt. 
+    + (Karte[K] #= A) % Das Ass ist im Kreta. 
+    + (KarteOS #= D) % Die Dame liegt auf dem Stuhl. 
+    + (Karte[N] #= K) % Im Ni Hao ist der König. 
+    + (Ort[P] #= S) % Im Piemonte liegt eine Karte auf dem Stuhl. 
+    + (Farbe[K] #= K) % Im Kreta liegt die Kreuzkarte. 
+    + (Ort[N] #= L) % Im Ni Hao befindet sich unter der stehLampe eine Karte." */
+      #= 1, % Von diesen Hinweisen ist aber nur genau einer wahr
+    solve(Karte ++ Farbe ++ Ort ++ RevKarte ++ RevFarbe ++ RevOrt),
+    foreach(I in 1..4)
+	    printf("Im %s %s befindet sich die Karte %s-%s.%n", KneipeStr[I], OrtStr[Ort[I]], FarbeStr[Farbe[I]], KarteStr[Karte[I]])
+    end,
+    nl, fail.
+/* 
+Im Ni Hao hinter der tÜr befindet sich die Karte Herz-Dame.
+Im Löwen unter der stehLampe befindet sich die Karte Kreuz-Bube.
+Im Kreta auf dem Stuhl befindet sich die Karte Pik-König.
+Im Piemonte über dem Tresen befindet sich die Karte karO-Ass.
+CPU time 0.005 seconds, no more solutions, korrekt */

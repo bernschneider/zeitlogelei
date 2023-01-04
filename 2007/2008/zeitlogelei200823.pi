@@ -1,0 +1,50 @@
+/* Zeit Logelei 2008/23 (24 ist Kreuzzahl)
+https://www.zeit.de/2008/23/Spiele-Logelei-23
+Im Abteil 17 des ICE 76 von Basel nach Kiel sind alle sechs Plätze reserviert, jeder aber nur für eine Teilstrecke. 
+Können Sie herausfinden, wo die sechs Personen ein- und aussteigen? */
+import cp.          
+main ?=> 
+                  H=1,             B=2,             S=3,             L=4,         R=5,             W=6,
+    Pers = ["Frau Hoffmann", "Herr Berthold", "Frau Schüller", "Herr Lohm", "Frau Reichelt", "Herr Weber"], NP = len(Pers),
+    % Zughalte:   1          2           3           4            5          6           7           8            9       10
+    Station = ["Basel", "Freiburg", "Karlsruhe", "Mannheim", "Frankfurt", "Kassel", "Göttingen", "Hannover", "Hamburg", "Kiel"], 
+    NS = len(Station),
+    Init = [ord(Station[I,1]) : I in 1..NS], % Anfangsbuchstabe des Bahnhofs
+    % die sechs Personen steigen in sechs verschiedenen Städten ein und haben sechs verschiedene Fahrtziele:
+    Start = new_list(NP), Start :: 1..NS-1, all_different(Start), % Einsteigebahnhof
+    Ziel  = new_list(NP), Ziel  :: 2..NS,   all_different(Ziel),  % Aussteigebahnhof
+    foreach(I in 1..NP) 
+        Start[I] #< Ziel[I], 
+        Start[I] #!= 1 #\/ Ziel[I] #!= NS % jeder fährt nur eine Teilstrecke
+    end,
+    foreach(St in 1..NS)
+        Cnt = [_,_], Cnt :: 0..3, % Wieviele Frauen bzw. Männer sind im Bahnhof St an Bord?
+        foreach(Sex in 1..2) 
+            Cnt[Sex] #= sum([(Start[I] #=< St)*(St #< Ziel[I]) : I in 1..NP, I mod 2 = Sex-1])
+        end,
+        Cnt[1] #!= 1 #\/ Cnt[2] #!= 1 % auf keinem Streckenabschnitt sind ein Mann und eine Frau allein im Abteil        
+    end,
+    % Frau Schüller steigt in Mannheim (St=4) ein und verlässt das Abteil als Letzte:
+    Start[S] #= 4, foreach(I in 1..NP, I!=S) Ziel[I] #< Ziel[S] end,
+    % Frau Hoffmann steigt früher ein als Herr Lohmeyer und später wieder aus:
+    Start[H] #< Start[L], Ziel[H] #> Ziel[L],
+    % Frau Reichelt verlässt den Zug in dem Bahnhof, in dem Herr Berthold einsteigt:
+    Ziel[R] #= Start[B],
+    % Herr Weber sitzt in Göttingen (St=7) im Zug und steigt dort weder ein noch aus:
+    Start[W] #< 7, 7 #< Ziel[W],
+    % Eine der sechs Personen fährt von Basel (St=1) nach Frankfurt (St=5):
+    X :: 1..NP, element(X, Start, 1), element(X, Ziel, 5),
+    % Für einen der drei Männer gilt: Die Städte, in denen seine Fahrt beginnt und endet, ..
+    MrZ :: [2,4,6], element(MrZ, Start, ZStart), element(MrZ, Ziel, ZZiel),
+    element(ZStart, Init, ZInit), element(ZZiel, Init, ZInit), % .. haben den gleichen Anfangsbuchstaben:
+    solve(Start ++ Ziel ++ [X, MrZ, ZStart, ZZiel, ZInit]),
+    foreach(I in 1..NP)
+        printf("%s steigt in %s ein und in %s aus.%n", Pers[I], Station[Start[I]], Station[Ziel[I]])
+    end, nl, fail.  /* 
+Frau Hoffmann steigt in Freiburg ein und in Hamburg aus.
+Herr Berthold steigt in Frankfurt ein und in Göttingen aus.
+Frau Schüller steigt in Mannheim ein und in Kiel aus.
+Herr Lohm steigt in Karlsruhe ein und in Kassel aus.
+Frau Reichelt steigt in Basel ein und in Frankfurt aus.
+Herr Weber steigt in Kassel ein und in Hannover aus.
+CPU time 0.006 seconds, no more solutions, sieht gut aus! */

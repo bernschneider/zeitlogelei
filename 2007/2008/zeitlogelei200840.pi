@@ -1,0 +1,54 @@
+/* Zeit Logelei 2008/40 
+https://www.zeit.de/2008/40/Spiele-Logelei-40 */
+import sat.
+main =>
+    % Manfred möchte sich eine Reisetasche nähen.
+    NZ = 20, NS = 14, % Er hat ein 1,40 m brites und 2 m langes Stück Stoff gekauft. Laut Schnittmuster besteht die Tasche aus 11 Teilen.
+    /* Manfred fängt an, rechts unten Teil A auszuschneiden, ein 10 cm x 10 cm großes Quadrat. 
+    Da meint Tamara: "Du solltest zuerst planen, damit der Stoff auch reicht!"
+    "Ach was", erwidert Manfred, "der Stoff ist 2 m lang; da passen am linken Rand genau die Teile E und K hin." – 
+    "Aber du kannst Teil K nicht einfach um 90 Grad drehen, sonst stimmt die Laufrichtung des Stoffes nicht. 
+    In der Nähanleitung steht, dass bei den Rechtecken die erste Zahl immer die Breite angibt und die zweite die Höhe." – 
+    "Mist, dann hätte ich wirklich mehr überlegen sollen, bevor ich losgeschnitten habe", ärgert sich Manfred. 
+    Manfred: "Ich benötige noch die folgenden Rechtecke: 30 cm x 30 cm (Teil B), 40 cm x 80 cm (C), 50 cm x 30 cm (D), 50 cm x 1 m (E), 60 cm x 40 cm (F), 
+    70 cm x 40 cm (G), 70 cm x 50 cm (H), 90 cm x 20 cm (I), 90 cm x 40 cm (J), 1 m x 30 cm (K)." – "Das könnte knapp werden", meint Tamara.
+    Aber schließlich ruft er: "Es klappt doch noch!" Wie? */
+    %         A            B          C          D          E           F          G          H          I          J          K
+    Rects = [[NZ,NS,1,1], [_,_,3,3], [_,_,8,4], [_,_,3,5], [_,_,10,5], [_,_,4,6], [_,_,4,7], [_,_,5,7], [_,_,2,9], [_,_,4,9], [_,_,3,10]], % Rect = [Z,S,DZ,DS]
+    foreach([Z,S,DZ,DS] in Rects) Z :: 1..NZ-DZ+1, S :: 1..NS-DS+1 end,
+    diffn(Rects), % die Rechtecke überschneiden sich nicht!
+    % Erzeuge Matrix mit den lfd. Nummern der Rechtecke:
+    N = len(Rects), M = new_array(NZ,NS), M :: 0..N, % 0 = dieses Stück bleibt über
+    foreach(I in 1..N, Z in 1..NZ, S in 1..NS)
+        M[Z,S] #= I #<=> 
+   		(Rects[I,1] #=< Z #/\ Z #< Rects[I,1]+Rects[I,3] #/\ Rects[I,2] #=< S #/\ S #< Rects[I,2]+Rects[I,4])  
+    end,
+    solve(vars(Rects) ++ vars(M)),
+    foreach(Z in 1..NZ, S in 1..NS)
+        printf("%c|", cond(M[Z,S]>0,chr(64+M[Z,S]),' ')), if S = NS then nl end
+    end. 
+/* 
+G|G|G|G|G|G|G|H|H|H|H|H|H|H|
+G|G|G|G|G|G|G|H|H|H|H|H|H|H|
+G|G|G|G|G|G|G|H|H|H|H|H|H|H|
+G|G|G|G|G|G|G|H|H|H|H|H|H|H|
+F|F|F|F|F|F| |H|H|H|H|H|H|H|
+F|F|F|F|F|F|B|B|B|E|E|E|E|E|
+F|F|F|F|F|F|B|B|B|E|E|E|E|E|
+F|F|F|F|F|F|B|B|B|E|E|E|E|E|
+J|J|J|J|J|J|J|J|J|E|E|E|E|E|
+J|J|J|J|J|J|J|J|J|E|E|E|E|E|
+J|J|J|J|J|J|J|J|J|E|E|E|E|E|
+J|J|J|J|J|J|J|J|J|E|E|E|E|E|
+C|C|C|C|D|D|D|D|D|E|E|E|E|E|
+C|C|C|C|D|D|D|D|D|E|E|E|E|E|
+C|C|C|C|D|D|D|D|D|E|E|E|E|E|
+C|C|C|C|K|K|K|K|K|K|K|K|K|K|
+C|C|C|C|K|K|K|K|K|K|K|K|K|K|
+C|C|C|C|K|K|K|K|K|K|K|K|K|K|
+C|C|C|C|I|I|I|I|I|I|I|I|I| |
+C|C|C|C|I|I|I|I|I|I|I|I|I|A|
+CPU time 12.963 seconds, korrekt:
+An der linken Stoffkante liegen von oben nach unten die Stücke G, F, J und C, 
+an der rechten Kante von oben nach unten die Stücke H, E, K und um 10 cm nach links versetzt I. 
+Die üNSigen Stücke in der Mitte ergeben oben B und unten D */

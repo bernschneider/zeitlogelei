@@ -1,0 +1,22 @@
+/* Zeit Logelei 2008/07
+https://www.zeit.de/2008/07/Spiele-Logelei-07/komplettansicht
+Familie Rosenfeld verbringt ihren Sommerurlaub auf einer kleinen Insel, die vor über 200 Jahren einem berüchtigten Piraten als Unterschlupf diente. 
+Angeblich ist auf dieser Insel ein Schatz vergraben – und tatsächlich findet Heinz, der Vater, im Internet eine Schatzkarte mit folgenden Anweisungen:
+»Geh von der alten Eiche am Westufer 65 Schritte in Richtung Brunnen und dann 25 Schritte nach Norden. 
+Von hier geh exakt die halbe Strecke zum Leuchtturm und schließlich 30 Schritte nach Westen.«
+»Na toll«, brummt Heinz. »Woher wissen wir denn, wie lang die Schritte dieses Seeräubers waren?«
+»Nicht so schnell aufgeben!«, entgegnet sein zwölfjähriger Sohn Michael. »Immerhin stehen die Eiche, der Brunnen und der Leuchtturm noch.« 
+Sein Bruder Henning, der gerade einen Rundgang über die Insel gemacht hat, pflichtet ihm bei: 
+»Der Brunnen und der Leuchtturm sind gleich weit von der Eiche entfernt, nämlich jeweils 390 Schritte.«
+»Deiner Schritte«, erwidert Heinz skeptisch.
+»Und der Leuchtturm steht genau 300 Schritte nördlich des Brunnens«, fügt Henning hinzu. »Siehst du nicht, was das bedeutet?«
+»Na klar!« ruft Michael und läuft los. »Ich weiß jetzt, wo der Schatz vergraben ist!« Wo? */
+main => 
+    65 / 25 = 390 / 150, % Also gilt der Strahlensatz!
+    % Somit steht man nach dem zweiten Zug auf der Waagrechten zwischen Eiche und der Linie zwischen Leuchtturm und Brunnen.
+    X = sqrt(65**2-25**2), % .. und zwar X Meter rechts von der Eiche
+    % Dann geht man die halbe Strecke zum Leuchtturm und 30 Meter nach links
+    X = 2 * 30.0. 
+    % Mit dem Strahlensatz folgt daraus, dass der Schatz auf der halben Streck zwischen Eiche und Leuchtturm liegt!
+/* Lösung aus Nr. 06:
+Marion und Melanie haben genau 100 Tennisbälle */

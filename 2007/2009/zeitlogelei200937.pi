@@ -1,0 +1,28 @@
+/* Zeit Logelei 2009/37 Professor Knusi in Grosilien
+https://www.zeit.de/2009/37/Spiele-Logelei-37
+In Grosilien ist es üblich, dass Leute, die in einem Haus mit einer ungeraden Hausnummer wohnen, lügen 
+und alle anderen die Wahrheit sagen. Folgendes erzählen sieben Grosilianer aus derselben Straße */
+import sat, util.
+main ?=>
+    HNR =[A, B, C, D, E, F, G], HNR :: 1..100,
+    A mod 2 #= 0 #<=> B #> C, % Asl: "Besl hat eine größere Hausnummer als Cesl." 
+    A mod 2 #= 0 #<=> sum([(X mod 2 #= 1) : X in HNR]) #= 7, % Asl: "Wir sieben wohnen alle in Häusern mit ungerader Hausnummer." 
+    B mod 2 #= 0 #<=> F #= 14, % Besl: "Fesl wohnt in Haus Nummer 14." 
+    B mod 2 #= 0 #<=> abs(F - G) #= 1, % Besl: "Die Hausnummern von Fesl und Gesl unterscheiden sich um 1." 
+    B mod 2 #= 0 #<=> C #< D, % Besl: "Cesl hat eine kleinere Hausnummer als Desl." 
+    C mod 2 #= 0 #<=> max(HNR) #= 15, % Cesl: "Die größte Hausnummer, die einer von uns sieben hat, ist 15." 
+    D mod 2 #= 0 #<=> A #> C, % Desl: "Asl hat eine größere Hausnummer als Cesl." 
+    D mod 2 #= 0 #<=> C #> E, % Desl: "Cesl hat eine größere Hausnummer als Esl." 
+    D mod 2 #= 0 #<=> sum(HNR) #= 57, % Desl: "Die Summe aller unserer Hausnummern beträgt 57." 
+    F mod 2 #= 0 #<=> C mod 2 #= 0, % Fesl: "Cesl wohnt in einer geraden Hausnummer." 
+    E mod 2 #= 0 #<=> sum(HNR) #= 114, % Esl: "Die Summe aller unserer Hausnummern beträgt 114." 
+    G mod 2 #= 0 #<=> A #> E, % Gesl: "Asl hat eine größere Hausnummer als Esl." 
+    G mod 2 #= 0 #<=> E #> D, % Gesl: "Esl hat eine größere Hausnummer als Desl." 
+    G mod 2 #= 0 #<=> max(HNR) #= 14, % Gesl: "Die größte Hausnummer, die einer von uns sieben hat, ist 14." 
+    G mod 2 #= 0 #<=> A #< F, % Gesl: "Asl hat eine kleinere Hausnummer als Fesl." 
+    solve(HNR), 
+    println(HNR), fail.
+/* 
+ A B C D E  F  G
+[9,7,7,4,5,11,14] 
+no more solutions, korrekt */

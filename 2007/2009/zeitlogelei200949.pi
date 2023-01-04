@@ -1,0 +1,27 @@
+/* ZEIT Logelei 49/2009 Uhr aus mit drei Scheiben aus farbigen Symbolen
+ (Portierung von logelei200949.py.py)
+Nummeriere die Zeichen beginnend mit 0 = rosa Dreieck (auf jeder Scheibe gleich) */
+import cp.
+main =>
+	L = [12,15,16],  % Zeichen pro Scheibe von innen nach aussen
+	M = [120,96,90], % 24 * 60 / L
+	Zeiten = [[5,5,5,34], [7,7,7,4*60+6], [0,3,4,23*60+17]], % Zeiger 0,1,2 + Minuten
+	Jetzt = [5,9,1],
+	Vals = [[I : I in 1..M[S], M[S] mod I = 0] : S in 1..3],
+	D = new_list(3), foreach(S in 1..3)  D[S]  :: Vals[S] end,
+	% Zeigerstellung um 0 Uhr:
+	Z0 = new_list(3), foreach(S in 1..3) Z0[S] :: 0..L[S]-1 end,	
+	foreach(Zs in Zeiten, S in 1..3)
+		% Zeiger S um 0 Uhr = Z0[S], Zs[4] Minuten später = Zs[S]
+		(Z0[S] + Zs[4] div D[S]) mod L[S] #= Zs[S]
+	end,
+	T :: 0..1439, 
+	foreach(S in 1..3) Jetzt[S] #= (Z0[S] + T div D[S]) mod L[S] end,
+	solve(D ++ Z0 ++ [T]),
+	printf("Jetzt ist es %2d:%2d Uhr %w%n", T div 60,  T mod 60, Jetzt),
+	printf("Die Scheiben drehen sich nach %d, %d bzw. %d Minuten weiter (von innen nach aussen)%n", D[1], D[2], D[3]),
+	printf("Um 0:00 Uhr stehen die Scheiben auf %w%n", Z0).
+/* Jetzt ist es 18:38 Uhr [5,9,1]
+Die Scheiben drehen sich nach 15, 1 bzw. 90 Minuten weiter (von innen nach aussen)
+Um 0:00 Uhr stehen die Scheiben auf [3,1,5]
+CPU time 0.006 seconds, korrekt */

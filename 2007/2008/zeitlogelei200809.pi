@@ -1,0 +1,50 @@
+/* Zeit Logelei 2008/09 (Nr. 08 ist ein Kreuzzahlrätsel!)
+https://www.zeit.de/2008/09/Spiele-Logelei-09/komplettansicht
+1. Nach §3 der Kuckucksuhrenverkaufsverordnung (KucVVO) ist an jeder echten Kuckucksuhr eine wahre Aussage 
+und an jeder unechten Kuckucksuhr eine falsche Aussage anzubringen.
+Herr Huggelhuber hat seine Kuckucksuhren deshalb wie folgt beschriftet:
+Welche Kuckucksuhren sind echt? */
+import util, cp.
+main1 =>
+    Echt = new_list(7), Echt :: 0..1, % 1 = echt
+    foreach((U, U1,E1, U2,E2) in [
+        (1, 3,1, 2,1), % Kuckucksuhr Nr. 1: »Wenn Kuckucksuhr Nr. 3 echt ist, dann ist auch Kuckucksuhr Nr. 2 echt.«
+        (2, 4,0, 7,0), % Kuckucksuhr Nr. 2: »Wenn Kuckucksuhr Nr. 4 unecht ist, dann ist auch Kuckucksuhr Nr. 7 unecht.«
+        (3, 2,0, 7,1), % Kuckucksuhr Nr. 3: »Wenn Kuckucksuhr Nr. 2 unecht ist, dann ist Kuckucksuhr Nr. 7 echt.«
+        (4, 6,0, 7,1), % Kuckucksuhr Nr. 4: »Wenn Kuckucksuhr Nr. 6 unecht ist, dann ist Kuckucksuhr Nr. 7 echt.«
+        (5, 1,1, 3,0), % Kuckucksuhr Nr. 5: »Wenn Kuckucksuhr Nr. 1 echt ist, dann ist Kuckucksuhr Nr. 3 unecht.«
+        (6, 7,0, 2,1), % Kuckucksuhr Nr. 6: »Wenn Kuckucksuhr Nr. 7 unecht ist, dann ist Kuckucksuhr Nr. 2 echt.«
+        (7, 3,0, 5,1)])% Kuckucksuhr Nr. 7: »Wenn Kuckucksuhr Nr. 3 unecht ist, dann ist Kuckucksuhr Nr. 5 echt.«
+            Echt[U] #= (U1 #= E1 #=> U2 #= E2)
+    end,
+    solve(Echt),
+    foreach(I in 1..7, Echt[I]=0) printf("Kuckucksuhr %d ist ein Imitat.%n", I) end.
+/* Kuckucksuhr 5 ist ein Imitat. Korrekt! */
+
+/* 2. Der gewiefte Kuckucksuhrenverkäufer präsentiert die Alphametik KUCK + KUCK = EULEN mit den Worten:
+»Wussten Sie schon, dass bei echten Kuckucksuhren Eulen anstelle der Kuckucke verwendet werden?« */
+main2 =>
+    add(["KUCK", "KUCK", "EULEN"]). /*
+  8708
+  8708
+------
+ 17416 */
+add(L) => % das letzte Element von L ist die Summe der vorherigen Elemente
+   Letter = keys(new_set(flatten(L))), % verwendete Buchstaben
+   Digit = new_list(len(Letter)), Digit :: 0..9, % eine Ziffer je Buchstabe
+   all_different(Digit),
+   Zeilen = len(L) - 1, % Anzahl der Summanden, im Beispiel = 2
+   Num = new_array(len(L)), % numerische Repräsentation der Elemente von L
+   foreach(I in 1..len(L))
+       S = [Digit[find_first_of(Letter, C)] : C in L[I]], % Convert Letter C -> Digit
+       to_num(S, Num[I]), S[1] #!= 0
+   end,
+   sum([Num[I] : I in 1.. Zeilen]) #= Num[len(L)],
+   solve(Digit ++ Num),
+   foreach(I in 1..Zeilen) printf("%6d%n", Num[I]) end,
+   printf("------%n"),
+   printf("%6d%n%n", Num[len(L)]).
+
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).

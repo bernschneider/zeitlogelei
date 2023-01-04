@@ -1,0 +1,33 @@
+/* Zeit Logelei 2009/21 Fünf Brüder haben je einen Fisch gefangen
+https://www.zeit.de/2009/21/Spiele-Logelei-21 */
+import cp.
+main ?=>
+    M=1, N=2, O=3, P=4, R=5, BruderStr = ["Martin", "Norbert", "Olaf", "Peter", "Ralph"], 
+    M=1, B=2, K=3, S=4, R=5, FischStr = ["die Makrele", "die Bachforelle", "den Karpfen",  "den Saibling", "die Regenbogenforelle"],
+    Bruder = new_list(5), Bruder :: 1..5, all_different(Bruder), % Fisch -> Bruder der ihn gefangen hat
+    Rang =  new_list(5), Rang  :: 1..5, all_different(Rang), % Rang nach Größe, der Kleinste hat Rang 1 
+    foreach((Br,F1,F2) in [ % Br sagt: F1 ist kleiner als F2
+        (M,K,M), % Martin: "Die Makrele ist größer als der Karpfen."
+        (P,S,K), % Peter: "Der Saibling ist natürlich viel kleiner als der Karpfen."
+        (O,M,B), % Olaf: "Die Bachforelle ist deutlich größer als die Makrele."
+        (M,B,K), % Martin: "Die Bachforelle ist natürlich kleiner als der Karpfen."
+        (O,B,R), % Olaf: "Selbstverständlich ist die Regenbogenforelle größer als die Bachforelle."
+        (R,S,K), % Ralph: "Der Karpfen ist größer als der Saibling."
+        (P,R,S), % Peter: "Ich denke, die Regenbogenforelle ist kleiner als der Saibling."
+        (N,S,B)])% Norbert: "Die Bachforelle ist sicherlich größer als der Saibling."
+            Bruder[F1] #!= Br, % sonst hätte er gesagt, F1 ist größer als F2
+            Bruder[F2] #!= Br #=> Rang[F1] #< Rang[F2]
+    end,
+    solve(Bruder ++ Rang),
+    Ranking = [(Rang[I],Bruder[I],I) : I in 1..5].sort_down(), % Rang, Bruder, Fisch
+    foreach((Rng,Br,I) in Ranking)
+        printf("%d. %s hat %s gefangen.%n", 6-Rng, BruderStr[Br], FischStr[I])
+    end,
+    nl, fail. 
+/* Nach Größe, der Größte zuerst:
+1. Peter hat den Karpfen gefangen.
+2. Olaf hat den Saibling gefangen.
+3. Ralph hat die Regenbogenforelle gefangen.
+4. Norbert hat die Bachforelle gefangen.
+5. Martin hat die Makrele gefangen.
+CPU time 0.0 seconds, no more solutions */

@@ -1,0 +1,33 @@
+/* Zeit Logelei 2008/14
+https://www.zeit.de/2008/14/Spiele-Logelei-14 
+Ich fahre mit jeder Linie einmal: mit einer eine Haltestelle weit, mit einer zwei etc., bis neun.« »Aber das geht doch gar nicht«, wendet Anna ein,
+»wenn du jetzt eine Haltestelle fährst und mit der nächsten Linie zwei…« – »Moment«, unterbricht Tobias, »ich fahre die Zahlen nicht in der richtigen Reihenfolge ab.« – 
+»Ach so! Und zum Schluss kommst du wieder am Hotel an?« – »Genau!« Welche Route hat Tobias geplant, und wo befindet sich das Hotel? */
+import cp.
+next(I) = cond(I<9, I+1, 1).
+
+main => 
+    Bl=1, Br=2, Cy=3, Ge=4, Gr=5, Li=6, Ma=7, Or=8, Ro=9, N = 9,
+    StrF = ["blau", "braun", "cyan", "gelb", "grün", "lila", "magenta", "orange", "rot"],
+    Line = new_list(N), Line :: 1..N, all_different(Line), % Reihenfolge der befahrenen Linien
+    Line[1] #= Ge, % Anna und Tobias steigen gemeinsam bei ihrem Hotel in die gelbe U-Bahn-Linie ein:
+    Stop = new_array(N,2), Stop :: 1..12,  Einstieg=1, Ausstieg=2, % Nr. der Haltestelle Einstieg / Ausstieg
+    Stop[1,2] #> Stop[1,1], % Anna: »Fährst du auch zum Dom?« Tobias: »Nein, ich mache eine Rundfahrt.  
+    /* {Line1,Stop1,Line2,Stop2} heißt, es gibt einen Übergang von Line1,Stop1 zu Line2,Stop2:
+    (Nummerierung der Stops von oben nach unten und von links nach rechts, siehe Ausdruck) */
+    HalfNet = [{Bl,1,Br,9}, {Bl,3,Or,5}, {Bl,5,Li,5}, {Bl,7,Li,8}, {Bl,9,Gr,8},
+               {Cy,1,Li,1}, {Cy,4,Br,3}, {Cy,7,Ma,4}, 
+               {Ge,1,Or,1}, {Ge,2,Or,2}, {Ge,3,Li,3}, {Ge,6,Br,1}, {Ge,7,Ma,1}, {Ge,8,Ma,2},
+               {Or,3,Br,7}, {Or,8,Ma,7}, {Or,9,Gr,6},
+               {Gr,1,Ro,1}, {Gr,3,Br,12}, {Gr,5,Ma,8}, 
+               {Li,4,Br,5}, {Li,10,Ma,5}, {Li,10,Ro,8}, {Ma,5,Ro,8},  {Ro,3,Br,10}],
+    Net = HalfNet ++ [{F2,S2,F1,S1} : {F1,S1,F2,S2} in HalfNet],
+    foreach(I in 1..N) table_in({Line[I], Stop[I,Ausstieg], Line[next(I)], Stop[next(I),Einstieg]}, Net) end,
+    Dist = new_list(N), Dist :: 1..N, all_different(Dist),
+    foreach(I in 1..N) Dist[I] #= abs(Stop[I,Ausstieg] - Stop[I,Einstieg]) end,
+    solve(Line ++ Dist ++ vars(Stop)),
+    foreach(I in 1..N) printf("%s: %d Halte, ", StrF[Line[I]], Dist[I]) end,
+    nl, fail.
+/* gelb: 1 Halt, magenta: 3 Halte, cyan: 6 Halte, lila: 9 Halte, rot: 7 Halte, 
+   grün: 5 Halte, orange: 4 Halte, blau: 2 Halte, braun: 8 Halte
+CPU time 0.016 seconds, no more solutions, korrekt */

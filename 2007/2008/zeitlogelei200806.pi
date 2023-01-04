@@ -1,0 +1,26 @@
+/* Zeit Logelei 2008/06
+https://www.zeit.de/2008/06/Spiele-Logelei-06/
+Marion und Melanie sammeln Tischtennisbälle auf. Marion beginnt gedankenverloren, die Bälle geometrisch anzuordnen. 
+Zuerst legt sie einige Bälle nebeneinander, dann legt sie eine weitere Reihe, mit genauso vielen Bällen darüber, und so fährt sie fort.
+Wie viele Bälle haben die beiden? */
+import cp.
+main ?=>
+    /* Als sie alle Bälle aufgebraucht hat, staunt sie: »Guck mal Melanie, das ist ein Quadrat geworden!« – »Oh, das ist toll!« 
+    freut sich Melanie, »lass mich auch mal.« Und schon ist das Quadrat wieder durcheinandergewirbelt. */
+    N :: 1..100, % Seitenlänge Quadrat
+    Qanz #= N * N, % Anzahl der Bälle des Quadrats
+    /* Melanie legt ebenfalls eine Reihe aus Bällen nebeneinander. Die Reihe darüber legt sie aber um einen halben Ball versetzt, wobei sie einen Ball weniger verwendet. 
+    So macht sie weiter, bis sie in der letzten Reihe nur noch einen Ball setzt: »Schau mal, ich hab’ ein Dreieck gelegt!« */
+    B :: 1..100, % Basis des Dreiecks
+    Banz #= B * (B + 1) // 2, % Anzahl der Bälle des Dreiecks
+    /* Darauf Marion: »Oh, aber da sind ja noch Bälle übrig.« Sie überlegt kurz und legt dann mit den verbleibenden Bällen ein Quadrat mit drei Kugelreihen. 
+    »Guck, mit dem Rest kann ich wieder ein Quadrat legen, */
+    Qanz #= Banz + 3 * 3,
+    /* .. und das Schönste ist, meine beiden Quadrate sind zusammen genauso groß wie dein Dreieck.« 
+    Melanie runzelt die Stirn. Marion: »Ach so, mit der Größe meine ich natürlich nur die Anzahl der Bälle in der jeweils untersten Reihe.« */
+    N + 3 #= B,
+    solve([N, B, Banz, Qanz]),
+    printf("N = %d, B = %d, insgesamt %d Bälle.%n", N, B, Qanz), fail.
+    % N = 10, B = 13, insgesamt 100 Bälle, korrekt, no more solutions.
+/* Lösung aus Nr. 05
+Die Lösung des Sudokus lautet zeilenweise: 2413, 3124, 4231, 1342. Vorgegeben waren die 3 in der ersten Zeile, die 1 in der zweiten, die 4 in der dritten und die 2 in der letzten Zeile */

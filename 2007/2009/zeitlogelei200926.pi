@@ -1,0 +1,27 @@
+/* Zeit Logelei 2009/26 Drei Künstler
+https://www.zeit.de/2009/27/Spiele-Logelei-27 */
+import cp.
+main ?=>
+    G=1, L=2, V=3, Vorname = ["Gerda", "Lusian", "Volkmar"],
+    Name = new_list(3),  Name :: 1..3,  assignment(Name, RevName),   S=1, R=2, W=3, NameStr = ["Suriwecht", "von Rubenknecht", "Welpenecht"],
+    Form = new_list(3),  Form :: 1..3,  assignment(Form, RevForm),   D=1, K=2, Q=3, FormStr = ["Dreiecke", "Kreise", "Quadrate"],
+    Farbe = new_list(3), Farbe :: 1..3, assignment(Farbe, RevFarbe), G=1, R=2, B=3, FarbeStr = ["gelbe", "rote", "blaue"],
+    element(RevName[R], Form, FormR),   element(RevName[S], Form, FormS), % Form von Rubenknecht bzw. Suriwecht
+    element(RevForm[D], Farbe, FarbeD), element(RevForm[K], Farbe, FarbeK), element(RevName[R], Farbe, FarbeR), % Farbe von Dreieck, Kreis, Rot
+    Name[L] #= R #^ Form[V] #!= K, % Entweder heißt von Rubenknecht mit Vornamen Lusian, oder Volkmar bevorzugt keine Kreise
+    Form[L] #!= Q, % Lusian mag keine Quadrate.
+    Farbe[V] #= B #^ Name[G] #!= W, % Entweder ist Volkmar für Blau, oder Gerda heißt nicht Welpenecht.
+    Name[L] #!= W, % Lusian heißt mit Nachnamen nicht Welpenecht.
+    Name[V] #!= W #=> FarbeR #!= B, % Wenn Volkmar nicht Welpenecht heißt, dann tippt von Rubenknecht nicht auf Blau.
+    FormS #!= D,  % Suriwecht gibt den Dreiecken keine Zukunft.
+    FarbeD #= R #^ Name[G] #!= S, % Entweder sollen Dreiecke rot sein, oder Suriwecht heißt mit Vornamen nicht Gerda.
+    FarbeR #!= G, FormR #!= Q, % Weder Gelb noch Quadrate sind nach von Rubenknecht zukunftsträchtig.
+    FarbeK #!= G #^ Farbe[G] #= R, % Entweder sind Kreise nicht gelb, oder Gerda tippt auf Rot.
+    solve(Name ++ Form ++ Farbe ++ RevName ++ RevForm ++ RevFarbe),
+    foreach(P in 1..3)
+        printf("%s %s tippt auf %s %s.%n", Vorname[P], NameStr[Name[P]], FarbeStr[Farbe[P]], FormStr[Form[P]] )
+    end, nl, fail. /*
+Gerda von Rubenknecht tippt auf blaue Dreiecke.
+Lusian Suriwecht tippt auf rote Kreise.
+Volkmar Welpenecht tippt auf gelbe Quadrate.
+CPU time 0.0 seconds, no more solutions, korrekt */

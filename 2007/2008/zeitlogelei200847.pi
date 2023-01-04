@@ -1,0 +1,59 @@
+/* Zeit Logelei 2008/47
+https://www.zeit.de/2008/47/Spiele-Logelei-47
+Wie viele Kinder und wie viele Enkel hat Brunhild, und wie alt sind sie? */
+import sat.
+main =>
+    MaxK = 5, MaxE = 10, % Maximale Zahl der Kinder bzw. der Enkel von Oma Brunhild
+    Kind = new_list(MaxK), Kind :: 30..65, % Alter der Kinder
+    foreach(I in 1..MaxK-1) 
+        Kind[I] #= 0   #=> Kind[I+1] #= 0,
+        Kind[I+1] #> 0 #=> Kind[I] #< Kind[I+1]
+    end,
+    Enkel = new_list(MaxE), Enkel :: 0..60, % Alter der Enkel
+    foreach(I in 1..MaxE-1) Enkel[I] #= 0 #=> Enkel[I+1] #= 0 end,
+    Oma = 80, % Oma Brunhild ist 80. "Jetzt bin ich genauso alt wie alle meine Enkel zusammen":
+    Oma #= sum(Enkel),  
+    % "An meinem 70. Geburtstag war ich noch doppelt so alt wie alle Enkel zusammen:
+    Oma - 10 #= 2 * sum([(Enkel[I] - 10)*(Enkel[I] #> 10) : I in 1..MaxE]), 
+    % ..und an meinem 60. war ich viermal so alt." 
+    Oma - 20 #= 4 * sum([(Enkel[I] - 20)*(Enkel[I] #> 20) : I in 1..MaxE]),
+    % Ihre Tochter Gudrun (die keinen weiteren Nachwuchs plant): "Und an deinem 90. wirst du doppelt so alt sein wie meine Kinder zusammen.":
+    KindGudrun = new_list(MaxE), KindGudrun :: 0..1, KindGudrun[1] #= KindGudrun[2], % 1 = ist Kind von Gudrun
+    sum(KindGudrun) #> 1, % Gudrun redet von "Kinder" im Plural
+    foreach(I in 1..MaxE) Enkel[I] #= 0 #=> KindGudrun[I] #= 0 end,
+    scalar_product(KindGudrun, Enkel, SumKG), SumKG + 10 * sum(KindGudrun) #= 45,  
+    % Oma: "Aber doppelt so alt wie ein einziger meiner Enkel bin ich dann noch nicht." 
+    foreach(I in 1..MaxE) Enkel[I] #> 0 #=> 2 * (Enkel[I] + 10) #< Oma + 10 end,
+    % Da fragen die Zwillinge: "Omi, sind wir deine jüngsten Enkel?" – "Einzeln schon, ..
+    Enkel[1] #= Enkel[2], KindGudrun[1] #= KindGudrun[2], % die Zwillinge haben dieselbe Mutter
+    Enkel[4] #< Enkel[1] + Enkel[2], % wenn man euch zusammen nimmt, dann ist René der Jüngste (#3), Maria die Zweitjüngste (#4), erst dann kommt ihr." – 
+    foreach(I in 2..MaxE-1) Enkel[I+1] #> 0 #=> Enkel[I] #< Enkel[I+1] end, 
+    % "Erinnerst du dich", wendet sich Oma Brunhild wieder an Gudrun, "jedes Mal, wenn an meinem Geburtstag einer von euch (damit meint sie ihre eigenen Kinder) 
+    % doppelt so alt war wie ein anderer, habe ich ein Foto von beiden gemacht." – "Ja", entgegnet Gudrun, "ich erinnere mich an fünf Fotos aus fünf aufeinanderfolgenden Jahren." – 
+    [Foto1, Jung6, Alt6] :: 0..75, 
+    % Vor <Foto1> Jahren war ein Kind von Oma doppelt so alt wie ein anderes; und vor <Foto1>+1, ..+4 Jahren:
+    JungAlt = new_array(2,6), JungAlt :: 1..MaxK, 
+    foreach(I in 0..4)
+        element(JungAlt[1,1+I], Kind, Jung), element(JungAlt[2,1+I], Kind, Alt),
+        Jung #> Foto1 + I, Jung #< Alt,
+        2 * (Jung - Foto1 - I) #= Alt - Foto1 - I
+    end,
+    % "Vor genau 48 Jahren gab es noch ein sechstes Foto:
+    Foto6 = 48, element(JungAlt[1,6], Kind, Jung6), element(JungAlt[2,6], Kind, Alt6),
+    Jung6 #> Foto6, Jung6 #< Alt6,
+    2 * (Jung6 - Foto6) #= Alt6 - Foto6, 
+    % .. aber mehr als sechs wird es nie geben:
+    foreach(Foto in -20..65, Foto!=Foto6, Jung in 1..MaxK-1, Alt in Jung+1..MaxK)
+        (Foto #< Foto1 #\/ Foto #> Foto1 + 4) #=> 2 * (Kind[Jung] - Foto) #!= Kind[Alt] - Foto
+    end,
+    solve(Kind ++ Enkel ++ KindGudrun ++ [SumKG, Foto1, Jung6, Alt6] ++ vars(JungAlt) ),
+    print("Alter der Kinder von Oma: "),
+    foreach(I in 1..MaxK, Kind[I]>0) printf("%d, ", Kind[I]) end, nl,
+    print("Alter der Enkel: "), 
+    foreach(I in 1..MaxE, Enkel[I]>0) printf("%d, ", Enkel[I]) end, nl,
+    print("Alter der Kinder von Gudrun jetzt/in 10 Jahren: "), 
+    foreach(I in 1..MaxE, KindGudrun[I]=1) printf("%d/%d, ", Enkel[I], Enkel[I]+10) end. /* 
+Alter der Kinder von Oma: 53, 54, 55, 56, 58, 
+Alter der Enkel: 3, 3, 4, 5, 10, 21, 34, 
+Alter der Kinder von Gudrun jetzt/in 10 Jahren: 4/14, 21/31, 
+CPU time 17.061 seconds, no other solutions, sieht gut aus */

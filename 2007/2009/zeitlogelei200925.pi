@@ -1,0 +1,35 @@
+/* Zeit Logelei 2009/25 
+https://www.zeit.de/2009/25/Spiele-Logelei-25 */
+import sat, util.
+main ?=>
+    A=1, B=2, C=3, D=4, E=5, N = 5, 
+    M = new_array(N,N), Mt = M.transpose(), Mvars = vars(M), % 5x5 Matrix Zeilen 1..5, Spalten A..E
+    M :: 1..9, % Tragen Sie in jedes Feld eine Ziffer von 1 bis 9 so ein.
+    % Jede Ziffer kommt entweder genau fünfmal vor oder gar nicht. 
+    foreach(V in 1..9) count(V, Mvars, Cnt), Cnt :: [0,5] end,
+    % In Spalte C und Zeile 4 sind jeweils alle Ziffern verschieden:
+    all_different(Mt[C]), all_different(M[4]), 
+    % In Spalte A und Zeile 2 stehen die gleichen Ziffern:
+    foreach(V in 1..9) count(V, Mt[A], NV), count(V, M[2], NV) end,
+    % foreach(I in 1..N) element(_, M[2], Mt[A,I]), element(_, Mt[A], M[2,I]) end, 
+    % Die (bis zu) vier Nachbarn jeder Ziffer sind alle verschieden.
+    foreach(Z in 1..N, S in 1..N)
+        all_different([M[Z1,S1] : (Z1,S1) in [(Z-1,S),(Z,S-1),(Z,S+1),(Z+1,S)], 0<Z1, Z1=<N, 0<S1, S1=<N])
+    end,
+    M[2,A] #> M[3,E], % A2 ist größer als E3. 
+    M[1,B] + M[3,B] #= M[3,A], % B1+B3=A3
+    M[3,B] + M[3,A] #= M[1,C], % B3+A3=C1 
+    M[3,A] + M[1,C] #= M[2,B], % A3+C1= B2. 
+    % Die Summe der vier Nachbarfelder von D4 ist das Sechsfache der Ziffer in diesem Feld
+    M[3,D] + M[4,C] + M[4,E] + M[5,D] #= 6 * M[4,D], 
+    solve(M),
+    foreach(Z in 1..N, S in 1..N)
+		printf("%d|", M[Z,S]), if S = N then nl end
+    end, nl, fail.
+/*
+1|1|5|2|3|
+8|8|3|1|8|
+3|2|2|5|5|
+1|5|8|3|2|
+8|5|1|3|2|
+CPU time 4.614 second */    

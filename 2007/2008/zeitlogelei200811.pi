@@ -1,0 +1,47 @@
+/* Zeit Logelei 2008/11 Hallenfußballturnier (2008/12 ist ein Kreuzzahlrätsel)
+https://www.zeit.de/2008/11/Spiele-Logelei-11
+Kevin erzählt von einem Hallenfußballturnier seiner Schule, an dem vier Mannschaften teilgenommen haben: 
+aus der 7a, der 7b, 8a und 8b. Jede Mannschaft spielte genau einmal gegen jede andere. 
+In welche Klasse geht Kevin, und wie lauten die Ergebnisse aller sechs Spiele? */
+import util, cp.
+main => 
+    M7a=1, M7b=2, M8a=3, M8b=4, Mstr = ["7a", "7b", "8a", "8b"],
+    % In keinem Spiel blieb irgendeine Mannschaft komplett ohne Torerfolg:
+    Tore = new_array(4,4), Tore :: 1..5, % A schießt im Spiel gegen B Tore[A,B] Tore
+    % In keinem Spiel fielen mehr als fünf Tore:
+    foreach(I in 1..3, J in I+1..4) Tore[I,J] + Tore[J,I] #<= 5 end,
+    Punkte = new_list(4), Punkte :: 0..9, all_different(Punkte), % Insgesamt erreichten die vier Mannschaften vier verschiedene Punktzahlen.
+    Gegentore = new_list(4), Gegentore :: 0..15,
+    foreach(I in 1..4)
+        % Für einen Sieg gab es drei Punkte, für ein Unentschieden einen:
+        Punkte[I] #= sum([3*(Tore[I,J] #> Tore[J,I]) + (Tore[I,J] #= Tore[J,I]) : J in 1..4, J!=I]),
+        Tore[I,I] #= 1, % spielt keine Rolle, reduziert aber die Zahl der Lösungen
+        Gegentore[I] #= sum([Tore[J,I] : J in 1..4, J!=I])
+    end,
+    1 #= sum([(Tore[I,J] #= Tore[J,I]) : I in 1..3, J in I+1..4]),   % Im gesamten Turnier gab es ein einziges Unentschieden, ..
+    1 #= sum([(Tore[M7a,J] #= Tore[J,M7a]) : J in [M7b, M8a, M8b]]), % .. an diesem war die 7a beteiligt.
+    % Die 7b kassierte im gesamten Turnier weniger Tore als jede andere Mannschaft, konnte jedoch das Turnier nicht gewinnen. 
+    Gegentore[M7b] #= min(Gegentore),
+    MaxPunkte #= max(Punkte), Winner :: [M7a, M8a, M8b], element(Winner, Punkte, MaxPunkte),
+    Tore[M7a,M8a] #= Tore[M7b,M8a], Tore[M7b,M8a] #= Tore[M8b,M8a], % Die Mannschaft der 8a kassierte in allen drei Spielen die gleiche Anzahl an Gegentoren. 
+    Tore[M8b,M7a] #= Tore[M8b,M7b] + Tore[M8b,M8a], % Die 8b erzielte gegen die 7a genauso viele Tore wie gegen die beiden anderen Mannschaften zusammen. 
+    Tore[M7b,M7a] #= Tore[M8a,M8b], % Die 7b traf gegen die 7a genauso oft wie die 8a gegen die 8b. 
+    % Kevin schoss zwei Tore gegen die Parallelklasse (PKl), dennoch ging das Spiel verloren:
+    Kevin :: [M7a,M7b,M8a,M8b], Pkl = [M7b,M7a,M8b,M8a], element(Kevin, Pkl, Gegner), 
+    matrix_element(Tore, Kevin, Gegner, TKG), matrix_element(Tore, Gegner, Kevin, TGK), TKG #>= 2, TKG #< TGK,
+    % Die Mannschaft der 8b verlor ein Spiel mit drei Toren Differenz. 
+    sum([(Tore[J,M8b] - Tore[M8b,J] #= 3) : J in 1..4, J!=M8b]) #= 1,
+    % Die 7a erzielte sowohl gegen die 7b als auch gegen die 8b eine ungerade Anzahl an Treffern. 
+    Tore[M7a,M7b] mod 2 #= 1, Tore[M7a,M8b] mod 2 #= 1, 
+    solve(vars(Tore) ++ Gegentore ++ Punkte ++ [Kevin, Winner, MaxPunkte]),
+    printf("Kevin geht in die %s. Die %s gewann. Punkte: %w%n", Mstr[Kevin], Mstr[Winner], Punkte),
+    foreach(I in 1..3, J in I+1..4) printf("%s : %s = %d : %d%n", Mstr[I], Mstr[J], Tore[I,J], Tore[J,I]) end,
+    nl, fail. /* 
+Kevin geht in die 8b. Die 8a gewann. Punkte: [1,6,7,3]
+7a : 7b = 1 : 3
+7a : 8a = 2 : 2
+7a : 8b = 1 : 3
+7b : 8a = 2 : 3
+7b : 8b = 4 : 1
+8a : 8b = 3 : 2
+CPU time 0.002 seconds, no more solutions */

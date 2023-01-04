@@ -1,0 +1,22 @@
+/* Zeit Logelei 2008/10
+https://www.zeit.de/2008/10/Spiele-Logelei-10 BILD mit dem U-Bahn-Plan fehlt!
+In Lissabern haben die U-Bahn-Fahrer einen Streik angekündigt. Nur fünf Fahrer wollen trotzdem arbeiten, 
+aber jeder von ihnen will nur eine einzige Fahrt von Endstation zu Endstation machen. So sollen die wichtigsten Verbindungen ermöglicht werden. 
+Frau Rodrigão hat gerade die Liste gebracht, von wo nach wo Passagiere befördert werden sollen: 
+von N nach C, von P nach X, von O nach M, von Z nach B, von I nach O, von N nach F, von S nach K und von W nach S.
+»Ich fürchte…«, meint Herr Schüpfli, »…halt, vielleicht geht es doch! Können wir den Fahrern Pausen gönnen?« – 
+»Darüber hat sich noch nie jemand beklagt.« – »Gut, dann werden manche Fahrer ein Weilchen auf einen Anschluss warten.«
+Wie werden die U-Bahnen fahren? */
+/* 
+Lösung aus Nr. 10:
+Erst fährt Violett von N bis P. 
+Dann startet Grün in G und Blau in I. 
+In C warten sie aufeinander. 
+Blau fährt bis R, 
+Grün erst mal nur bis U. 
+Als Nächstes fährt Orange von F nach T, 
+danach Grün weiter bis nach X. 
+Zum Schluss fährt Violett mit einem anderen Fahrer von N nach P */
+/* Lösung aus Nr. 09:
+1. Nur die fünfte Kuckucksuhr ist ein Imitat.
+2. 8708 + 8708 =17416 */

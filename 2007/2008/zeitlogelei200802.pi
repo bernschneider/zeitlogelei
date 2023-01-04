@@ -1,0 +1,35 @@
+/* Zeit Logelei 2008/02
+https://www.zeit.de/2008/02/Spiele-Logelei-02
+Sagbert sitzt mit drei Freunden auf seiner Veranda und feiert Geburtstag. Als Geschenk haben sich die drei was ganz Besonderes ausgedacht: 
+Sie haben eine dieser Logeleien, die Sagbert so mag, erfunden. Diese tragen sie ihm gerade vor.
+Erfreut grübelt Sagbert über das Rätsel, kritzelt dann eine Lösung auf einen Zettel und meint schließlich erstaunt: 
+»Oh je, eure Logelei hat ja zwei Lösungen!« Jetzt muss man wissen, dass die vier aus Kerbelien stammen, 
+wo jeder von Geburt an entweder immer lügt (also das Gegenteil dessen sagt, was er meint) oder immer die Wahrheit sagt.
+Wer lügt nun alles, und wer sagt die Wahrheit? Und was ist mit der Logelei: Hat sie zwei Lösungen oder nicht? */
+import cp, util.
+
+main ?=> 
+    L = [H,K,N, I,M,P,S], L :: 0..1, % 1 = sagt die Wahrheit
+    Lstr = ["Hufried", "Konrich", "Norhart",  "Idra", "Mangrid", "Pella", "Sanesse"],
+    foreach((P1,P2,P3,W) in [
+        (H,S,I,1), % Hufried beginnt: »Sanesse sagt, dass Idra die Wahrheit sagt.«
+        (N,M,P,1), % Norhart fährt fort: »Mangrid sagt, dass Pella die Wahrheit sagt.«
+        (K,I,S,0), % Nun ist Konrich dran: »Idra sagt, dass Sanesse lügt.«
+        (H,P,I,0), % Wieder Hufried: »Pella sagt, dass Idra lügt.«
+        (N,I,M,1), % Daraufhin Norhart: »Idra sagt, dass Mangrid die Wahrheit sagt.«
+        (K,M,S,0)])% Zuletzt Konrich: »Mangrid sagt, dass Sanesse lügt.«
+            P1 #= (P2 #= (P3 #= W))
+end,
+solve(L),
+foreach(J in 1..len(L)) 
+    printf("%s %s, ", Lstr[J], cond(L[J]=1, "sagt die Wahrheit", "lügt")),
+    if J = 3 then nl end
+end,
+nl, nl, fail. 
+/* Sagbert sagt die Wahrheit. Es gibt tatsächlich zwei Lösungen für Idra bis Sanesse:
+
+Hufried lügt, Konrich sagt die Wahrheit, Norhart sagt die Wahrheit, 
+Idra lügt, Mangrid lügt, Pella lügt, Sanesse sagt die Wahrheit.
+
+Hufried lügt, Konrich sagt die Wahrheit, Norhart sagt die Wahrheit, 
+Idra sagt die Wahrheit, Mangrid sagt die Wahrheit, Pella sagt die Wahrheit, Sanesse lügt. */

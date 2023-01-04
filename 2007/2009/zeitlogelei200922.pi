@@ -1,0 +1,34 @@
+/* Zeit Logelei 2009/22 Magisches Quadrat
+https://www.zeit.de/2009/22/Spiele-Logelei-22 */
+import cp, util.
+main ?=> 
+    N = 4, M = new_array(N,N), M :: 1..16, all_different(vars(M)),
+    Diag1 = [M[I,I] : I in 1..N], Diag2 = [M[I,N+1-I] : I in 1..N],
+    foreach(L in M.rows() ++ M.columns() ++ [Diag1, Diag2])
+        sum(L) #= 34,
+        % "in jeder Zeile, jeder Spalte und jeder Diagonalen kommt maximal eine durch 4 teilbare Zahl vor!"
+        sum([(L[I] mod 4 #= 0) : I in 1..N]) #=< 1
+    end,
+    % in der zweiten Zeile stehen drei Primzahlen, 
+    % in der dritten Zeile stehen drei Zahlen, die durch drei teilbar sind, 
+    % und in der letzten Zeile stehen drei Zahlen, deren erste Ziffer eine 1 ist.":
+    Special = [primes(16), [3,6,9,12,15], [1|10..16]],
+    foreach(Z in 1..3) good(M[1+Z], Special[Z]) end,
+    % "Und außerdem sind die Zahlen in der Diagonalen von oben links nach rechts unten aufsteigend sortiert!", ergänzt Kathrin.
+    increasing_strict(Diag1),
+    % In jeder Spalte ist die Summe der beiden oberen Zahlen immer genau gleich der Summe der beiden unteren Zahlen!"
+    foreach(S in 1..N) M[1,S] + M[2,S] #= M[3,S] + M[4,S] end, 
+    solve(M),
+    foreach(Z in 1..N, S in 1..N)
+        printf("%2d|", M[Z,S]), if S=N then nl end
+    end,
+    nl, fail.
+/*
+ 4|10|15| 5|
+13| 7| 2|12|
+ 6|16| 9| 3|
+11| 1| 8|14|
+CPU time 0.06 seconds, no more solutions, korrekt */
+good(L, Spec) =>
+    N = len(L), Exc :: 1..N, % only 1 exception!
+    foreach(I in 1..N) I #= Exc #^ L[I] :: Spec end.

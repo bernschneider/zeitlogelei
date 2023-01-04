@@ -1,0 +1,52 @@
+/* Zeit Logelei 2008/05 (2008/04 ist ein Kreuzzahlrätsel, bei 2008/03 fehlt das Bild)
+https://www.zeit.de/2008/05/Spiele-Logelei-05/komplettansicht
+Anita und Benita haben gerade ein Mini-Sudoku gelöst. 
+Es besteht aus vier mal vier Kästchen, die dickeren Linien umfassen zwei mal zwei Kästchen. 
+Dementsprechend werden nur die Zahlen von 1 bis 4 verwendet.
+Können Sie mit den folgenden Informationen das Mini-Sudoku rekonstruieren? */
+import util, cp.
+main ?=> 
+    M = new_array(4,4), M :: 1..4,
+    foreach(L in M.rows() ++ M.columns ++ subsquares(M)) all_different(L) end, % Sudoku-Regeln
+    % Anita: »Auf den ersten Blick sieht so ein Sudoku sehr durcheinander aus. Aber wenn man es sich genauer anschaut, kann man viele Regelmäßigkeiten entdecken. 
+    % In jeder Zeile stand genau eine Vorgabe:
+    Hint = new_list(4), Hint :: 1..4, % Hint[Z] = Spalte des Hints in Zeile Z
+    % Nur schade, dass es eine Spalte gibt, wo sowohl die oberste als auch die unterste Zahl vorgegeben war:
+    Hint[1] #= Hint[4], 
+    % Jede der Zahlen von 1 bis 4 war genau einmal vorgegeben:
+    foreach(Z1 in 1..3, Z2 in Z1+1..4)
+        matrix_element(M, Z1, Hint[Z1], H1), 
+        matrix_element(M, Z2, Hint[Z2], H2), 
+        H1 #!= H2
+    end,
+    % Benita: Die Lösung in der einzigen Spalte ohne Vorgaben ist auch schön: 
+    nvalue(3, Hint), % es gibt nur 1 Spalte ohne Vorgaben, also 3 Spalten mit Vorgaben
+    % Da stehen die Zahlen 1, 2, 3, 4 von oben nach unten in der richtigen Reihenfolge:
+    S0 :: 1..4, 
+    foreach(Z in 1..4) 
+        Hint[Z] #!= S0, % S0 ist die Spalte ohne Vorgaben
+        matrix_element(M, Z, S0, Z)
+    end,
+    % Anita: »Und die Vieren sind auch regelmäßig angeordnet. Wenn man das Rätsel um 90 Grad dreht, stehen wieder genau an denselben Stellen welche wie vorher:
+    foreach(Z in 1..4, S in 1..4)
+        M[Z,S] #= 4 #=> M[S,5-Z] #= 4
+    end,
+    % Benita: Die Summe der drei Zahlen, die links neben einer Eins stehen, ist 10:
+    sum([M[Z,S-1] * (M[Z,S] #= 1) : Z in 1..4, S in 2..4]) #= 10,
+    solve([S0|vars(M)] ++ Hint),
+    foreach(Z in 1..4, S in 1..4)
+        printf("%d%c", M[Z,S], cond(S mod 2 = 0, '|', ' ')),
+        if S = 4 then nl, if Z = 2 then println("--- ---") end end
+    end,
+    print("Vorgegeben waren "),
+    foreach(Z in 1..4)
+        printf("die %d in der %d.ten Zeile, ", M[Z,Hint[Z]], Z)
+    end, nl, fail. /* 
+2 4|1 3|
+3 1|2 4|
+--- ---
+4 2|3 1|
+1 3|4 2|
+Vorgegeben waren die 3 in der 1.ten Zeile, die 1 in der 2.ten Zeile, die 4 in der 3.ten Zeile, die 2 in der 4.ten Zeile
+CPU time 0.005 seconds, no more solutions, korrekt */
+subsquares(M) = [{M[Z0,S0], M[Z0,S0+1], M[Z0+1,S0], M[Z0+1,S0+1]} : Z0 in [1,3], S0 in [1,3]].

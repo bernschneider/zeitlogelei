@@ -1,0 +1,26 @@
+/* Zeit Logelei 2008/45
+https://www.zeit.de/2008/45/Spiele-Logelei-45 */
+import cp.
+/* Ina (68) schreibt an Professor Knusi: "Ich habe bisher noch nie beim Lotto gewonnen. 
+Neulich habe ich aber erfahren, wie meine persönliche Glückskombination aussehen muss. 
+Gesucht ist eine Kombination aus sechs verschiedenen Zahlen zwischen 1 und 49. */
+main ?=>
+    Tipp = new_list(49), Tipp :: 0..1, sum(Tipp) #= 6,
+    Str20 = ["", "ein", "zwei", "drei", "vier", "fünf", "sechs", "sieben", "acht", "neun", "zehn", 
+             "elf","zwölf","dreizehn","vierzehn","fünfzehn","sechszehn","siebzehn","achtzehn","neunzehn"],
+    StrD10 = ["zwanzig", "dreissig", "vierzig"],
+    Str49 =  [Str20[I] ++ cond(I==1,"","und") ++ StrD10[J] : J in 1..3, I in 1..10],
+    Str = ["eins"] ++ Str20[3..20] ++ Str49, % println(Str),
+    % Da 3 meine Lieblingszahl ist, müssen genau 3 Zahlen ein I enthalten, 3 ein N und 3 ein A (wenn man sie ausschreibt). 
+    foreach(Letter in "ina") 
+        3 #= sum( [Tipp[I] : I in 1..49, membchk(Letter, Str[I])]) 
+    end,
+    3 #=  sum([ Tipp[I] : I in 3..3..48]), % genau 3 Zahlen müssen durch 3 teilbar sein
+    3 #=  sum([ Tipp[I] : I in primes(49)]), % 3 der Zahlen müssen Primzahlen sein
+    9 #=  sum([ Tipp[I] : I in 1..9]) + 2 * sum([Tipp[I] :  I in 10..49]), % die Zahlen haben zusammen 9 Ziffern
+    68 #= sum([ I * Tipp[I] :  I in 1..49]), % die Summe aller Zahlen muss mein Alter ergeben 
+    solve(Tipp),
+    println([I : I in 1..49, Tipp[I]=1]),
+    fail. /*
+[3,7,8,11,18,21]
+CPU time 0.505 seconds, no more solutions, korrekt */

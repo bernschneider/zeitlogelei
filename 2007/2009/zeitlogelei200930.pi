@@ -1,0 +1,50 @@
+/* Zeit Logelei 2009/30 30 Eine Reisegruppe hat zehn Plätze im ICE reserviert
+https://www.zeit.de/2009/30/Spiele-Logelei-30 */
+import cp, util.
+symclosure(L) = L ++ [{Y,X} : {X,Y} in L].
+main => 
+    case(1),
+    % Nach kurzem Aufenthalt setzt der Zug seine Fahrt in entgegengesetzter Richtung fort:
+    case(2).
+
+case(Case) => % (Bezeichnungen im Folgenden aus Sicht des 1. Falls)
+    Platz = [31,32,33,34, 37, 41,42,43, 45,47], Vorwaerts = [37,33,31], Tisch = [34,32,37,33,31],
+    Neben = symclosure([{45,47}, {47,43}, {43,41}, {34,32}, {37,33}, {33,31}]),
+    FensterRL = [[42,41,32,31],[45]], Fenster = flatten(FensterRL), % Fall 1: rechts, links, Fall 2 umgekehrt
+    VorHinter = symclosure([{42,41}, {43,34}, {41,32}, {34,33}, {32,31}]),
+    P = [A, B, C, D, _E, F, G, H, I, J], P :: Platz, all_different(P),
+    table_in({J,C}, Neben), % Jana: "Ich möchte neben Claudia sitzen." 
+    A :: FensterRL[Case], % Anton: "Ich möchte rechts am Fenster sitzen." 
+    C :: Fenster, % Claudia: "Ich möchte auch am Fenster sitzen!" 
+    H :: Fenster, H #!= 42, % Hanna: "Ich auch, aber nicht auf Platz 42." 
+    table_in({D,G}, Neben), % Daniela: "Ich möchte neben Gerd sitzen." 
+    % Emil: "Daniela, Froni, Hanna und Ingo wird schlecht, wenn sie rückwärts fahren."
+    % Daniela: "Wenn ich neben Bert sitze, stört es mich nicht, wenn ich rückwärts fahre!":
+    if Case = 1 then [F,H,I] :: Vorwaerts,    Richtung #= sum([(D #= P3)  : P3 in Vorwaerts])
+    else             [F,H,I] notin Vorwaerts, Richtung #= sum([(D #!= P3) : P3 in Vorwaerts])
+    end,
+    sum([(D #= P1)*(B #= P2) : {P1,P2} in Neben]) + Richtung #> 0,
+    B notin Tisch, % Bert: "Ich möchte auf keinen Fall an einem Tisch sitzen!" 
+    table_in({G,A}, Neben), % Gerd: "Und ich möchte neben Anton sitzen." 
+    table_in({F,I}, Neben), % Froni: "Ich möchte neben Ingo sitzen." 
+    table_notin({I,J}, VorHinter), table_notin({I,J}, Neben), % Ingo: "Ich möchte weder vor noch hinter, noch neben Jana sitzen." 
+    solve(P),
+    Template = {{ 0, 0, 0,42}, {45,47,43,41}, { 0, 0,34,32}, { 0,37,33,31}},
+    printf("%d. Fall:%n", Case),
+    foreach(Row in Template)
+        foreach(Seat in Row) 
+            Idx = 64 + find_first_of(P, Seat), if Idx < 64 then Idx := 32 end,
+            printf("%c ", chr(Idx)) 
+        end, nl
+    end. /*
+1. Fall:
+      E 
+B D G A 
+    J C 
+  I F H 
+2. Fall:
+      B 
+A G D H 
+    F I 
+  E J C 
+CPU time 0.003 seconds, korrekt */
