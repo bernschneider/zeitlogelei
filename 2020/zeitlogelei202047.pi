@@ -1,0 +1,51 @@
+/* Zeit Logelei 2020/47 Schreiben Sie in jedes Feld eine Zahl von 1 bis 9  so, dass sich 
+zwischen zwei Schwarzfeldern beziehungsweise zwischen Schwarzfeld und Rand keine Zahl wiederholt
+https://www.zeit.de/zeit-magazin/2020/47/spiele-logelei-47 */
+import cp.
+main ?=> 
+    CV = {{ -1, 27,960, -1, 72, 27},
+          {  0,  0,  0,  0,  0,  0},
+          {  0,  0,  0,192,  0,  0},
+          { -1, 18,  0,  0,  0, -1},
+          {  0,  0,  0,  0,  0, -1},
+          {  0,  0,  0,  0, -1, -1}},
+    CH = {{ -1,  0,  0, -1,  0,  0},
+          { 36,  0,  0, 18,  0,  0},
+          { 24,  0,  0, 36,  0,  0},
+          { -1, 16,  0,  0,  0, -1},
+          {810,  0,  0,  0,  0, -1},
+          { 24,  0,  0,  0, -1, -1}}, N = len(CV),
+    M = new_array(N,N), M :: 0..9,
+    foreach(Z in 1..N, S in 1..N, (CV[Z,S]!=0;CH[Z,S]!=0)) M[Z,S] #= 0 end,
+    foreach(Z in 1..N, S in 1..N, CV[Z,S]=0, CH[Z,S]=0) M[Z,S] #> 0 end,
+    foreach(Z0 in 1..N, S in 1..N, CV[Z0,S] > 0)
+        Z = Z0 + 1,
+        while(Z =< N, CV[Z,S] = 0, CH[Z,S] = 0) Z := Z + 1 end, % jetzt zeigt Z hinter das letzte Feld
+        L = [M[I,S] : I in Z0+1..Z-1],  
+        CV[Z0,S] #= prod(L), all_different(L)
+    end,  
+    foreach(Z in 1..N, S0 in 1..N, CH[Z,S0]> 0)
+        S = S0 + 1,
+        while(S =< N, CV[Z,S] = 0, CH[Z,S] = 0) S := S + 1 end, % jetzt zeigt S hinter das letzte Feld
+        L = [M[Z,I] : I in S0+1..S-1],
+        CH[Z,S0] #= prod(L), all_different(L)
+    end,
+    solve(M),
+    foreach(Z in 1..N, S in 1..N)
+        if CV[Z,S]<0 then print("       |")
+        elseif (CV[Z,S]>0; CH[Z,S]>0) then printf("%3s\\%3s|", str3(CV[Z,S]), str3(CH[Z,S]))
+        else printf("  <%d>  |", M[Z,S])
+        end, 
+        if S = N then nl end
+    end,
+    nl, fail. /*
+       | 27\   |960\   |       | 72\   | 27\   |
+   \ 36|  <9>  |  <4>  |   \ 18|  <6>  |  <3>  |
+   \ 24|  <3>  |  <8>  |192\ 36|  <4>  |  <9>  |
+       | 18\ 16|  <2>  |  <8>  |  <1>  |       |
+   \810|  <9>  |  <5>  |  <6>  |  <3>  |       |
+   \ 24|  <2>  |  <3>  |  <4>  |       |       |
+CPU time 0.002 seconds, no more solutions, korrekt
+Zeilenweise: 94/63, 38/49, 281, 9563, 234 */
+str3(X) = Str =>
+    if X = 0 then Str = "   " else Str = X.to_string() end.

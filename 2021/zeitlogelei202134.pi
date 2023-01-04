@@ -1,0 +1,21 @@
+/* Zeit Logelei Nr. 2021/34 Dorothea und ihre neuen Zeiteinheiten
+https://www.zeit.de/zeit-magazin/2021/34/logelei
+ */
+import cp.
+main => 
+    % Dorothea hat neue Stunden´, Minuten´ und Sekunden´ erfunden:
+    Vars = [H, M, S], Vars :: 1..1000000, % Länge von Dorotheas Zeiteinheiten in Minuten
+    % d.h. 1 Stunde´ = H echte Minuten, 1 Minute´ = M echte Minuten, 1 Sekunde´ = S echte Minuten
+    % Ein Tag sind fünf Stunden´ und siebzehn Minuten´:
+    24*60 #= 5 * H +  17 * M,
+    % Eine Stunde´, das sind sechs Minuten´ und einundzwanzig Sekunden´:
+    H #= 6 * M + 21 * S,
+    % Drei Tage und zweiundvierzig Sekunden´ sind sieben Stunden´ und hundertsiebenundneunzig Minuten´
+    3*24*60 + 42 * S #= 7 * H + 197 * M,
+    solve(Vars),
+    printf("Eine Dorothea-Stunde sind %d echte Minuten.%n",   H),
+    printf("Eine Dorothea-Minute sind  %d echte Minuten.%n",  M),
+    printf("Eine Dorothea-Sekunde sind  %d echte Minuten.%n", S). /* 
+Eine Dorothea-Stunde sind 237 echte Minuten.
+Eine Dorothea-Minute sind  15 echte Minuten.
+Eine Dorothea-Sekunde sind  7 echte Minuten. korrekt ! */

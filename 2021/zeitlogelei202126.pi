@@ -1,0 +1,29 @@
+/* Zeit Logelei 2021/26
+1. Wie alt sind Ina, Johannes und Martin? */
+import cp.
+main1 => 
+    L = [I, J, M], L :: 1..100, % Alter von Ina, Johannes bzw. Martin
+    % Ina: "Als ich so alt war, wie Johannes jetzt ist, war Martin so alt, wie Johannes und ich damals zusammen waren."
+    Delta1 #= I - J, 
+    M - Delta1 #= (J - Delta1 + I - Delta1),
+    % Martin: "Vor einem Jahr war das Alter von Ina und mir zusammengerechnet genau das Quadrat des Alters von Johannes von damals."
+    M - 1 + I - 1 #= (J - 1)**2,
+    % Johannes: "Wenn ich so alt sein werde wie Ina und Martin jetzt zusammen, dann sind wir alle drei zusammen 62 Jahre alt."
+    Delta2 #= I + M - J, 
+    I + Delta2 + M + Delta2 + J + Delta2 #= 62,
+    solve_all(L) = Sols, println(Sols).
+/* I J M
+ [[8,5,10]] korrekt */
+/* 2. Was kann man aus den folgenden Aussagen über das Alter von Nina und ihrem Bruder schließen? */
+main2  =>
+    L = [N, B], L :: 0..100, % N = Alter von Nina, B = Alter ihres Bruders
+    % Nina: "Es gibt einen Zeitpunkt, an dem ich doppelt so alt bin, wie mein Bruder jetzt ist:
+    N + Delta #= 2 * B, 
+    % Dieser Zeitpunkt kann in der Zukunft liegen, muss er aber nicht; darüber möchte ich keine Aussage machen:
+    Delta :: -10..10, % Delta kann negativ sein
+    % Wenn man das Alter meines Bruders zu diesem Zeitpunkt mit meinem jetzigen Alter multipliziert und dann durch das 
+    % jetzige Alter meines Bruders teilt, erhält man genau die Summe unserer beiden jetzigen Alter." 
+    (B + Delta) * N #= B * (N + B), % (B + Delta) * N / B #= N + B
+    solve_all(L) = Sols, println(Sols).
+/* [[0,0],[1,1],[2,2],[3,3],[4,4],[5,5],[6,6],[7,7],[8,8],[9,9],[10,10]]
+d.h. Nina und ihr Bruder sind gleich alt, vermutlich Zwillinge, korrekt */

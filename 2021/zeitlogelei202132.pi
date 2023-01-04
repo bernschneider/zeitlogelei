@@ -1,0 +1,41 @@
+/* Zeit Logelei Nr. 2021/32
+https://www.zeit.de/zeit-magazin/2021/32/logelei
+Ronalds Beitrag zur Ausstellung "Zusammenhang der Unikate" wird stark kritisiert: "Da kommen ja in jeder Zeile und jeder Spalte Symbole doppelt vor." */
+import util, sat.
+main ?=> 
+    Sym = "^#/o*=c", 
+    % Dr_eieck, Ra_ute, Ke_ule, Kr_eis, St_ern, Qu_adrat, H_alb_k_reis
+      Dr=1,     Ra=2,   Ke=3,   Kr=4,   St=5,   Qu=6,     Hk=7,  
+    C = {{Dr,Ra,Ke,Kr,Kr,St,St},
+         {Ke,Kr,Qu,Kr,St,Ra,Dr},
+         {Kr,Hk,St,Dr,St,Qu,Ra},
+         {Ke,Dr,Kr,Qu,Hk,Ke,Kr},
+         {Ra,Qu,Dr,Hk,Hk,Kr,Ke},
+         {Ke,St,Hk,Qu,Ra,Hk,Kr},
+         {Kr,St,Kr,Ra,Qu,Hk,Kr}}, N = len(C),
+    % "Oh, die Wahrheit ist nicht immer offensichtlich", antwortet Ronald, "man kann nämlich einige Felder schwärzen, ...
+    M = new_array(N,N), M :: 0..1, % 0 = geschwärzt, 1 = ungeschwärzt, d.h. weiss
+    % .. dann gibt es keine derartigen Doppelungen mehr":
+    foreach({Weiss,Symbol} in zip(M.rows(),C.rows()) ++ zip(M.columns(),C.columns()))
+        L = new_list(N),
+        foreach(I in 1..N) L[I] #= Weiss[I] * Symbol[I] end,
+        all_different_except_0(L)
+    end,
+    % "Dann könnte man einfach alle Felder schwärzen?" "Aber nein: Orthogonal benachbarte Felder darf man nicht schwärzen – das sähe hässlich aus:
+    foreach(Z in 1..N, S in 1..N-1) M[Z,S] + M[Z,S+1] #> 0 end,
+    foreach(Z in 1..N-1, S in 1..N) M[Z,S] + M[Z+1,S] #> 0 end,
+    % Und zudem müssen alle ungeschwärzten Felder zusammenhängen.":
+    scc_grid(M),
+    solve(M),
+    foreach(Z in 1..N, S in 1..N)
+        printf("%c|", cond(M[Z,S] = 0, '@', Sym[C[Z,S]])),
+        if S = N then nl end
+    end, nl, fail. /* @ = geschwärzt
+^|#|/|o|@|*|@|
+@|o|=|@|*|#|^|
+o|c|*|^|@|=|#|
+@|^|@|=|c|/|@|
+#|=|^|c|@|o|/|
+/|@|c|@|#|@|o|
+@|*|o|#|=|c|@|
+CPU time 0.726 seconds, no more solutions, korrekt */

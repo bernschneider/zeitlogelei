@@ -1,0 +1,15 @@
+/* Zeit Logelei 2022/30: Die geometrischen Figuren auf Dietmars Bettdecke */
+import cp.
+main ?=>
+    Fig = [Rt, Qu, Dr, Kr], % Raute, Quadrat, Dreieck, Kreis
+    Fig :: 1..100,
+    % Achtung: Jedes Quadrat ist auch gleichzeitig eine Raute (das hat Opa übersehen):
+    (Rt + Qu) + 1 #= 2 * Dr, % Wenn noch eine Raute mehr auf der Bettdecke wäre, dann gäbe es doppelt so viele Rauten wie Dreiecke.
+    Dr + 2 #= 3 * Qu, % Wenn es zwei weitere Dreiecke gäbe, dann wären es dreimal so viele Dreiecke wie Quadrate.
+    Qu + 3 #= 4 * Kr, % Wenn noch drei weitere Quadrate darauf wären, dann gäbe es viermal so viele Quadrate wie Kreise.
+    sum(Fig) #= 77,  % insgesamt sind es 77 Figuren
+    solve(Fig),
+    printf("Auf der Decke sind %d Rauten, %d Quadrate, %d Dreiecke und %d Kreise (Summme %d).%n", Rt, Qu, Dr, Kr, sum(Fig)),
+    fail. /* 
+Auf der Decke sind 40 Rauten, 9 Quadrate, 25 Dreiecke und 3 Kreise (Summme 77).
+CPU time 0.0 seconds, korrekt. */

@@ -1,0 +1,32 @@
+/* Zeit Logelei 2020/01
+https://www.zeit.de/zeit-magazin/2020/01/spiele-logelei-01
+In Bolomo gibt es Qua_lasen, Aes_ufen und Rob_ofen. Qualasen sagen immer die Wahrheit, während Äsufen und Robofen immer lügen. 
+Professor Knusi hat auf einer seiner Forschungsreisen sechs Bolomonesen gefragt, wer Qualase, wer Äsufe und wer Robofe ist. Hier die Antworten:
+"Fast alles ist mir jetzt klar", denkt da Knusi. Was ist noch unklar? */
+import cp.
+main ?=>
+  Gruppe = ["Qualase", "Äsufe", "Robofe"], 
+  Name = ["Joja", "Bojo", "Zodo", "Xolo", "Ömo", "Goro"], 
+  P = [J,B,Z,X,O,G], P :: 1..3, Qua=1, Aes=2, Rob=3, % 1 wahr, 2 + 3 falsch
+  foreach((P0,P1,G1,P2,G2,P3,G3) in 
+      [(J, B, Rob, Z, Aes, G, Qua),  % Jojo: "Wenn Bojo Robofe ist oder wenn Zodo Äsufe ist, dann ist Goro Qualase." 
+       (B, Z, Qua, O, Qua, G, Aes),  % Bojo: "Wenn Zodo Qualase ist oder wenn Ömo Qualase ist, dann ist Goro Äsufe." 
+       (Z, X, Aes, J, Rob, O, Qua),  % Zodo: "Wenn Xolo Äsufe ist oder wenn Jojo Robofe ist, dann ist Ömo Qualase." 
+       (X, O, Qua, B, Rob, J, Aes),  % Xolo: "Wenn Ömo Qualase ist oder wenn Bojo Robofe ist, dann ist Jojo Äsufe." 
+       (O, J, Rob, B, Aes, G, Qua),  % Ömo:  "Wenn Jojo Robofe ist oder wenn Bojo Äsufe ist, dann ist Goro Qualase." 
+       (G, Z, Aes, X, Rob, B, Qua)]) % Goro: "Wenn Zodo Äsufe ist oder wenn Xolo Robofe ist, dann ist Bojo Qualase." 
+       (P0 #= Qua) #<=> ((P1 #= G1 #\/ P2 #= G2) #=> P3 #= G3)
+  end,  
+  solve(P),
+  foreach(Group in keys(new_set(P)))
+      foreach(I in 1..len(P), P[I]=Group) printf("%s ", Name[I]) end,
+      printf("-> %s%n", Gruppe[Group])
+  end, println("---"),
+  fail.
+/* Bojo lügt. Unklar ist aber, ob Bojo Äsufe ist oder Robofe. Es gibt somit 2 Lösungen:
+Joja Zodo Ömo Goro -> Qualase
+Bojo Xolo -> Äsufe
+---
+Joja Zodo Ömo Goro -> Qualase
+Xolo -> Äsufe
+Bojo -> Robofe */

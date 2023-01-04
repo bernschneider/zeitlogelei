@@ -1,0 +1,35 @@
+/* Zeit Logelei 2022/16
+https://www.zeit.de/zeit-magazin/2022/16/logelei */
+import util, sat.
+main ?=>
+    CZ = [0,2,1,0,2,0], % 1: gleiche Farbe, 2: gleiche Form
+    CS = [0,1,0,0,1,0],
+    R=10, G=20, _B=30, Dr=1, Qu=2, Kr=3,
+    M = {{   _,   _,   _,   _,   _,R+Dr},
+         {   _,   _,R+Kr,   _,   _,   _},
+         {   _,   _,   _,   _,   _,   _},
+         {   _,   _,   _,G+Kr,   _,   _},
+         {   _,   _,R+Qu,   _,   _,   _},
+         {   _,   _,   _,   _,R+Kr,   _}}, 
+    N = len(M), M :: [0,11,12,13, 21,22,23, 31,32,33],
+    foreach({C,L} in zip(CZ, M.rows()) ++ zip(CS, M.columns()))
+        all_different_except_0(L), nvalue(4, to_list(L)), % leer + 3 Symbole
+        Farben = new_list(N), foreach(I in 1..N) Farben[I] #= L[I] div 10 end,
+        Formen = new_list(N), foreach(I in 1..N) Formen[I] #= L[I] mod 10 end,
+        nvalue(CntFarbe, Farben), nvalue(CntForm, Formen),
+        CntFarbe #= 2 #^ CntForm #= 2, % entweder oder
+        if     C = 1 then CntFarbe #= 2 end,     % gleiche Farbe (2 = leer + 1 Farbe)
+        if     C = 2 then CntForm  #= 2 end     % gleiche Form  (2 = leer + 1 Form)
+    end,
+    solve(vars(M)), ChrFarbe = " rgb", ChrForm = " <XO",
+    foreach(Z in 1..N, S in 1..N)
+            printf("%c%c|", ChrFarbe[1+M[Z,S] div 10], ChrForm[1+M[Z,S] mod 10]),
+            if S = N then nl end
+    end, fail, nl. /* r=rot, g=gelb, b=blau, <=Dreieck, X=Quadrat, O=Kreis:
+  |  |  |rO|rX|r<|
+  |gO|rO|bO|  |  |
+rX|  |  |  |r<|rO|
+gX|g<|  |gO|  |  |
+bX|gX|rX|  |  |  |
+  |  |r<|  |rO|rX|
+CPU time 0.377 seconds, korrekt */

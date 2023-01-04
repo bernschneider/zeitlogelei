@@ -1,0 +1,35 @@
+/* Zeit Logelei 2021/08 Zahlenpyramide */
+import cp.
+
+main =>
+    M = {{8},
+         {_,_},
+         {_,_,9},
+         {5,_,_, _},
+         {3,_,_, _,_},
+         {_,_,8, _,5,_},
+         {7,_,_, _,_,_, _}},
+    % Für die Pyramide gilt, dass nur Zahlen von 1 bis 9 eingetragen werden dürfen:
+    M :: 1..9, N = len(M),
+    % ... und dass in jeder Zeile jede Zahl nur maximal einmal vorkommen darf:
+    foreach(Row in M) all_different(Row) end,
+    % Jede Zahl, die sich über zwei anderen Zahlen befindet, 
+    % ist die Summe oder die Differenz der beiden Zahlen darunter:
+    foreach(Z in 1..N-1, S in 1..Z)
+        M[Z,S] #= M[Z+1,S] + M[Z+1,S+1] #\/ M[Z,S] #= abs(M[Z+1,S] - M[Z+1,S+1]) 
+    end,
+    solve_all(M) = Sols, println(solutions=len(Sols)),
+    solve(M),
+    foreach(Z in 1..N, S in Z-N+1..Z)  % je Zeile N-1..0 = führende Blanks, dann 1..N Zahlen
+        if S<1 then print(" ") else printf("%d ", M[Z,S]) end, 
+        if S=Z then nl end
+    end.
+/* solutions = 1
+      8 
+     2 6 
+    1 3 9 
+   5 4 1 8 
+  3 2 6 7 1 
+ 3 6 8 2 5 4 
+7 4 2 6 8 3 1 
+CPU time 0.008 seconds, korrekt */

@@ -1,0 +1,38 @@
+/* Zeit Logelei 2020/33 Beim Friseur */
+import cp.
+main ?=>
+    L14 = [1,2,3,4], [M, Y, X, _G] = L14, % Personen: 1=Maurin, 2=Yumba, 3=Xavier und 4=Gerda
+    % Die vier benutzen unterschiedliche Haarwaschmittel, Deos und Make-ups:
+    Hwm = new_list(4), Hwm :: L14, [Sh, Du, Ge, _Sf] = L14,   assignment(Hwm, PHwm), % Haarwaschmittel (Sf=Seifi)
+    Deo = new_list(4), Deo :: L14, [Gw, Mh, Bm, _Wn] = L14,   all_different(Deo),    % Deo (Wn = Waldrauschen)
+    Mup = new_list(4), Mup :: L14, [Wt, Wr, Lst, _Lsn] = L14, assignment(Mup, PMup), % Makeup (Lsn=Lidschatten)
+    % Maurin(M) benutzt Wimperntusche(Wt) und das Deo Gipfelwind(Gw), aber zum Haarewaschen verwendet er nicht Schampi(Sh):
+    Mup[M] #= Wt, Deo[M] #= Gw, Hwm[M] #!= Sh,
+    % Yumba(Y) wäscht die Haare mit Duschi(Du):
+    Hwm[Y] #= Du,
+    % Die Person, die das Haarwaschmittel Geli(Ge) verwendet, ist der Meinung, dass dazu das Deo Moorhauch(Mh) besonders gut passt:
+    element(PHwm[Ge], Deo, Mh),
+    % Die Person, die täglich ihr Wangenrouge(Wr) pflegt, ...
+    PWr #= PMup[Wr],
+    % .. benutzt das Deo Blütenmeer(Bm), wäscht sich aber die Haare nicht mit Schampi(Sh):
+    element(PWr, Deo, Bm), element(PWr, Hwm, HwmPwr), HwmPwr #!= Sh,
+    % Xavier(X) verwendet Lippenstift(Lst), aber das Haarwaschmittel Schampi(Sh) mag er nicht:
+    Mup[X] #= Lst, Hwm[X] #!= Sh,
+    solve(Mup ++ Deo ++ Hwm ++ PMup ++ PHwm),
+    println("                   M   Y   X   G"),
+    output(Hwm, "Haarwaschmittel", ["Sh", "Du", "Ge", "Sf"]),
+    output(Deo, "Deo", ["Gw", "Mh", "Bm", "Wn"]),
+    output(Mup, "Make-up", ["Wt", "Wr", "Lst", "Lsn"]),
+    nl, fail.
+/* Gerda(G) nutzt Schampi(Sh), Waldrauschen(Wn) und Lidschatten(Lsn), Martin(M) nutzt Seifi(Sf):
+                   M   Y   X   G
+Haarwaschmittel:  Sf  Du  Ge  Sh 
+            Deo:  Gw  Bm  Mh  Wn 
+        Make-up:  Wt  Wr Lst Lsn 
+korrekt, no more solutions 
+ZEIT: Xavier benutzt Geli, Moorhauch und Lippenstift; 
+Maurin Seifi, Gipfelwind und Wimperntusche; 
+Yumba Duschi, Blütenmeer und Wangenrouge; und 
+Gerda Schampi, Waldrauschen und Lidschatten */
+output(Kat, KatName, Str) =>
+    printf("%15s: ", KatName), foreach(P in 1..4) printf("%3s ", Str[Kat[P]]) end, nl.

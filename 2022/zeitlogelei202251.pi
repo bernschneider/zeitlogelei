@@ -1,0 +1,34 @@
+/* Zeit Logelei 2022/38 Alphametik spezial: 
+1. Alphametik: add(["ADVENT", "ADVENT", "GESANG"]), % 307198 +  307198 = 614396 korrekt (verwende hier alphametik.pi)
+2. Alphametik: Opa hat für die gleiche Ziffer verschiedene Buchstaben verwendet! -> spezial solution */
+import util, sat.
+% Achtung: Wenn man to_num importiert, kommt falsches Ergebnis 637234 * 637234 = 634434537434 :-(
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I] * 10**(Len-I) : I in 1..Len]).
+
+main => % 2. Alphametik
+    K  = new_list(6), K :: 0..9,   K[1]  #> 0, % numerische Repräsentation von "KERZEN"
+    K2 = new_list(12), K2 :: 0..9, K2[1] #> 0, % numerische Repräsentation von "KENNENLERNEN"
+    Knum ::  100000..999999,             to_num(K, Knum),   % die Zahl für KERZEN
+    K2num :: 100000000000..999999999999, to_num(K2, K2num), % die Zahl für KENNENLERNEN
+    Knum * Knum #= K2num,  % KERZEN * KERZEN = KENNENLERNEN
+    CodeLetter = "EKLNRZ", % in der Rechnung verwendete Buchstaben
+    Letter = new_list(10), Letter :: 1..6, % Kodierung der 10 Ziffern 0..9 zu Codes 1..6 (1=E, 2=K, 3=L, 4=N, 5=R, 6=Z)
+    KK2       = K ++ K2,              % das sind die verwendeten Ziffern
+    KK2letter = "KERZENKENNENLERNEN", % das soll bei der Kodierung herauskommen
+    % KK2 und KK2letter liefern die Constrains für Letter: 
+    foreach(I in 1..len(KK2))
+        J #= 1 + KK2[I],                                            % Letter-kodiert man die Ziffern aus KK2 zu Buchstaben ..
+        element(J, Letter, find_first_of(CodeLetter, KK2letter[I])) % .. kommt KERZENKENNENLERNEN heraus!
+    end,
+    solve(Letter ++ K2 ++ K ++ [K2num, Knum] ),
+    println("Ziffer: 0123456789"),                                % Ziffer -> 
+    printf("Code:   %s%n", [CodeLetter[Letter[D]] : D in 1..10]), % Buchstabe nach Kodierung mittels Letter
+    printf("%d * %d = %w%n", Knum, Knum, K2num),                  % die Rechnung mit Zahlen konvertiert ..
+    println("KERZEN * KERZEN = KENNENLERNEN"). /*                   .. ergibt die Rechnung mit Buchstaben
+Ziffer: 0123456789
+Code:   ENLNZKEKER
+709481 * 709481 = 503363289361
+KERZEN * KERZEN = KENNENLERNEN
+CPU time 10.469 seconds, no more solutions, korrekt */

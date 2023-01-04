@@ -1,0 +1,19 @@
+/* Zeit Logelei 2022/02
+https://www.zeit.de/zeit-magazin/2022/02/logelei */
+import alphametik.
+main => %                           v- magic: die 0 * ZONE = 0 Zwischenrechnung wurde ausgelassen
+   mult(["ZEBRA", "ZONE", "REBAE", "E", "COEUE", "ZONE", "RAZCE", "RESSOURCE"]). /*
+30714 * 3580
+------------
+10740
+     0
+  25060
+    3580
+    14320
+---------
+109956120 korrekt */
+   add(["ZEBRA", "ZONE", "HOFRAT"]). /*
+     93564
+      9083
+    ------
+    102647 korrekt */

@@ -1,0 +1,46 @@
+/* Zeit Logelei 20/2021 Strategiewechsel "berührt" - verwendet hcp_grid
+https://www.zeit.de/zeit-magazin/2021/20/logelei (möglicherweise) */
+import sat. 
+% Drucke '-' bzw. '|' falls eine gerichtete Kante 1 -> 2 oder 2 -> 1 existiert (verwendet in Zeilen 42ff):
+edge(EMap, Z1,S1, Z2,S2) = 1 + EMap.get({Z1,S1, Z2,S2}) + EMap.get({Z2,S2, Z1,S1}). 
+main =>	
+    Cnt = {{0,0,0,0,0,0},
+           {0,0,0,0,0,0},
+           {3,0,0,0,3,0},
+           {0,1,2,0,2,0},
+           {0,3,0,4,2,1},
+           {0,0,0,0,0,0}}, N = len(Cnt) + 1,
+    Grid = new_array(N,N), Grid :: 0..1, % Grid[Z,S] = 1 <=> der Rundweg führt durch Z|S
+    Es = [{(Z,S), (Z1,S1), _} : Z in 1..N, S in 1..N, Z1 in 1..N, S1 in 1..N, abs(Z1 - Z) + abs(S1 - S) = 1], % mögliche Kanten
+    hcp_grid(Grid, Es), % die gerichteten Kanten in Es formen im Grid einen Hamilton-Cycle
+    EMap = new_map(), foreach ({(Z1,S1),(Z2,S2),B} in Es) EMap.put({Z1,S1,Z2,S2}, B) end, % v v
+	% Die Zahl C in einem Feld gibt an, wie oft der Weg das Feld berührt (= betritt):     > *-* <
+	foreach(Z in 1..N-1, S in 1..N-1, Cnt[Z,S] > 0) % wie kann das Feld betreten werden?    |C|
+        Cnt[Z,S] #= %                                                                     > *-* <
+          sum([EMap.get({Z+DZ1,S+DS1,Z+DZ2,S+DS2}) : %                                      ^ ^
+            {DZ1,DS1,DZ2,DS2} in [{0,-1,0,0}, {1,-1,1,0}, {0,2,0,1}, {1,2,1,1}, % > oben links, > unten links, < oben rechts, < unten rechts 
+                                  {-1,0,0,0}, {-1,1,0,1}, {2,0,1,0}, {2,1,1,1}],% v oben links, v oben rechts, ^ unten links, ^ unten rechts
+            0<Z+DZ1, Z+DZ1=<N, 0<S+DS1, S+DS1=<N, 0<Z+DZ2, Z+DZ2=<N, 0<S+DS2, S+DS2=<N ]) 
+	end,
+    solve(vars(Grid) ++ values(EMap)),
+    SGrid = " *", SHor = " -", SVer = " |", SCnt = " 1234",
+    foreach(Z in 1..N-1)
+    	foreach(S in 1..N-1) printf("%c%c", SGrid[1+Grid[Z,S]], SHor[edge(EMap,Z,S,Z,S+1)]) end, println(SGrid[1+Grid[Z,N]]),
+    	foreach(S in 1..N-1) printf("%c%c", SVer[edge(EMap,Z,S,Z+1,S)], SCnt[1+Cnt[Z,S]] )  end, println(SVer[edge(EMap,Z,N,Z+1,N)])
+    end,
+    foreach(S in 1..N-1) printf("%c%c", SGrid[1+Grid[N,S]], SHor[edge(EMap,N,S,N,S+1)]) end, println(SGrid[1+Grid[N,N]]). /* 
+*-*-*-*-*-*-*
+|           |
+* *-*-* *-* *
+| |   | | | |
+* *-* *-* * *
+|3  |    3| |
+* *-* *-* *-*
+| |1 2| |2   
+* *-*-* *-*-*
+|  3   4 2 1|
+*-* *-* *-*-*
+  | | | |    
+  *-* *-*    
+CPU time 0.225 seconds, korrekt
+Zeilenweise, A steht für Außenfelder, I für Innenfelder: IIIIII, IAAIAI, IIAAAI, IAAIAA, IIIIII, AIAIAA */

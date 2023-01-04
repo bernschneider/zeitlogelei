@@ -1,0 +1,23 @@
+/* Zeit Logelei 2020/35 Drei Gleichungen, jeweils zwei Kästchen überflüssig */
+import cp, util.
+main =>
+    search("2-9*31=90*5-90/15"),     % 29*31=905-90/15
+    search("13+31+8/1=3*9*7-16*9"),  % 13+31+1=3*9*7-16*9
+    search("34/474+32/11=1+59/2-2"). % 34/44+32/11=1+59/22
+                                     % CPU time 0.128 seconds korrekt
+search(S) =>
+    N = len(S),
+    foreach(I in 1..N-1, J in I..N-1) % das erste mögliche J steht an Stelle I, weil das I.te Zeichen schon entfernt ist
+        Candidate = remove(remove(S,I),J),
+        if check(Candidate) then println(Candidate) end
+    end, println("---").
+
+remove(S,I) = S[1..I-1] ++ S[I+1..len(S)].
+
+check(S) =>
+    membchk('=', S), N = len(S), digit(S[1]), digit(S[N]), % Ziffern am Anfang und am Ende
+    foreach(I in 1..N-1) (digit(S[I]); digit(S[I+1])) end, % keine zwei Operatoren hintereinander
+    [LHS,RHS] = split(S,"="), abs(LHS.eval() - RHS.eval()) < 0.0000001. % LHS = RHS
+
+eval(S) = V =>
+    T = parse_term(S), V  = cond(number(T), T, T.apply()). % (apply funktioniert nicht auf Zahlen)

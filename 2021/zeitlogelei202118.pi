@@ -1,0 +1,27 @@
+/* Zeit Logelei Nr. 2021/18
+https://www.zeit.de/zeit-magazin/2021/18/logelei
+Drei selbsternannte Tier-Experten unterhalten sich. Was stimmt, wenn die Experten mit ihren Aussagen recht haben? */
+import cp.
+main ?=>
+    Str = ["Hamster wiegen 50 Kilo", "Meerschweinchen fresssen Regenwürmer", "Weise Mäuse sind grau", 
+            "graue Mäuse sind nicht weise", "Oppossums haben sechs Krallen an jeder Pfote", "Marder sind flach wie eine Pfütze"], 
+    Vars = [Hamster, Meerschweinchen, WeiseMaeuseGrau, GraueMaeuseNichtWeise, Opossums, Marder],
+    Vars :: [0, 1], % 1 = wahr
+    WeiseMaeuseGrau #^ GraueMaeuseNichtWeise,
+    % "Wenn Hamster 50 Kilo wiegen, fressen entweder Meerschweinchen Regenwürmer, oder weise Mäuse sind grau, aber niemals beides."
+    Hamster #=> (Meerschweinchen #^ WeiseMaeuseGrau),
+    % "Marder sind flach wie eine Pfütze, oder Opossums haben keine sechs Krallen an jeder Pfote oder beides", erwidert ein anderer.
+    Marder #\/ #~ Opossums,
+    % "Mäuse, die grau sind, sind nicht weise, es sei denn, das Opossum hat sechs Krallen an jeder Pfote", mischt sich der dritte ein.
+    #~ Opossums #=> GraueMaeuseNichtWeise,
+    % "Wenn Opossums sechs Krallen an jeder Pfote haben, dann wiegen Hamster keine 50 Kilo!"
+    Opossums #=> #~ Hamster,
+    % "Aber, aber: Entweder sind weise Mäuse grau oder Marder flach wie eine Pfütze oder beides, es sei denn, Hamster wiegen 50 Kilo."
+    #~ Hamster #=> (WeiseMaeuseGrau #\/ Marder),
+    % "Manche Leute sagen, dass Marder flach wie eine Pfütze sind, wenn Meerschweinchen Regenwürmer fressen. Aber das ist falsch!"
+    #~ (Meerschweinchen #=> Marder),
+    solve(Vars),
+    foreach(I in 1..6, Vars[I] = 1) printf("%s, ", Str[I]) end,
+    nl, fail.
+/* Hamster wiegen 50 Kilo, Meerschweinchen fresssen Regenwürmer, graue Mäuse sind nicht weise
+no more solutions, sieht gut aus */

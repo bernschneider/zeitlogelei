@@ -1,0 +1,40 @@
+/* Zeit Logelei 2022/10 Retro-Computertreffen
+https://www.zeit.de/zeit-magazin/2022/10/logelei
+Ruth erzählt ihren drei Freundinnen, dass sie es immer schwer findet, aus dem, was ihr Mann sagt, schlau zu werden. 
+Die drei nicken bestätigend und erzählen, was sie vom Retro-Computertreffen ihrer Ehemänner erfahren haben... 
+"Ich sag’s doch, das ist genau so ein Unsinn, wie mein Mann immer erzählt", meint da Ruth, und die vier sind ratlos...
+Wenn man das weiß, wie lautet die Zuordnung? */
+import cp.
+main =>
+    Pal=1, Sid=2, Vic=3, Sstr     = ["Pal", "Sid", "Vic"],
+    A=1, C=2, Z=3,       HatStr   = ["Amiga", "C64", "Z80"], 
+    G=1, H=2, P=3,       MachtStr = ["ist ein Gamer", "macht was mit Hardware", "programmiert"], 
+    Hat   = new_list(3), Hat   :: 1..3, all_different(Hat),   % Hat[M]   = M´s Computer
+    Macht = new_list(3), Macht :: 1..3, all_different(Macht), % Macht[M] = M´s Hobby
+    % Von den fünf Aussagen waren immer nur genau zwei richtig:
+    % Pia:  
+    2 #= (Hat[Sid] #!= A) +   % Sid hat keinen Amiga, 
+         (Macht[Vic] #!= H) + % Vic macht nichts mit Hardware,
+         (Hat[Pal] #!= Z) +   % Pal hat keinen Z80,
+         (Macht[Sid] #!= G) + % Sid ist kein Gamer, und  
+         (Hat[Vic] #!= C),    % Vic hat keinen C64.
+    % Mia: 
+    2 #= (Macht[Vic] #!= H) + % Vic macht nichts mit Hardware, 
+         (Hat[Sid] #!= Z) +   % SidhHat keinen Z80, 
+         (Macht[Pal] #!= H) + % Pal macht nichts mit Hardware, 
+         (Hat[Vic] #!= A) +   % Vic hat keinen Amiga, und 
+         (Macht[Sid] #= P),   % Sid programmiert. 
+    % Ria:
+    2 #= (Hat[Pal] #= C) +    % Pal hat einen C64, 
+         (Hat[Sid] #!= A) +   % Sid hat keinen Amiga, 
+         (Macht[Sid] #!= G) + % Sid ist kein Gamer, 
+         (Hat[Vic] #!= C) +   % Vic hat keinen C64, und 
+         (Macht[Pal] #= P),   % Pal programmiert. –
+    solve(Hat ++ Macht),
+    foreach(M in 1..3)
+        printf("%s hat einen %s und %s%n", Sstr[M], HatStr[Hat[M]], MachtStr[Macht[M]])
+    end. /* 
+Pal hat einen Amiga und programmiert
+Sid hat einen Z80 und ist ein Gamer
+Vic hat einen C64 und macht was mit Hardware
+CPU time 0.0 seconds, korrekt */

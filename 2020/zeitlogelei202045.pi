@@ -1,0 +1,50 @@
+/* Zeit Logelei Nr. 45/2020 Alphametik */
+import cp, util.
+
+main =>
+    add(["SAHNE", "TORTE", "EXPORT"]), /*
+ 85741
+ 23621
+------
+109362 */
+    mult(["DREI", "DREI", "ZUMUTUNG"]). /*
+M=6, U=0, I=7, T=8, R=2, G=9, E=5, D=3, Z=1, N=4, 
+3257 * 3257
+-----------
+10608049 */
+
+add(L) => % das letzte Element von L ist die Summe der vorherigen Elemente
+   Letter = keys(new_set(flatten(L))), % verwendete Buchstaben
+   Digit = new_list(len(Letter)), Digit :: 0..9, % eine Ziffer je Buchstabe
+   all_different(Digit),
+   Zeilen = len(L) - 1, % Anzahl der Summanden, im Beispiel = 2
+   Num = new_array(len(L)), % numerische Repräsentation der Elemente von L
+   foreach(I in 1..len(L))
+       S = [Digit[find_first_of(Letter, C)] : C in L[I]], % Convert Letter C -> Digit
+       to_num(S, Num[I]), S[1] #!= 0
+   end,
+   sum([Num[I] : I in 1.. Zeilen]) #= Num[len(L)],
+   solve(Digit ++ Num),
+   foreach(I in 1..Zeilen) printf("%6d%n", Num[I]) end,
+   printf("------%n"),
+   printf("%6d%n%n", Num[len(L)]).
+
+mult(L) => % L[1] * L[2] = L[3]
+   Letter = keys(new_set(flatten(L))), % verwendete Buchstaben
+   Digit = new_list(len(Letter)), Digit :: 0..9, % eine Ziffer je Buchstabe
+   all_different(Digit),
+   Num = new_array(len(L)), % numerische Repräsentation der Elemente von L
+   foreach(I in 1..len(L))
+       S = [Digit[find_first_of(Letter, C)] : C in L[I]], % Convert Letter C -> Digit
+       to_num(S, Num[I]), S[1] #!= 0
+   end,
+   Num[1] * Num[2] #= Num[3], % Hauptgleichung 
+   solve(Digit ++ Num),
+   foreach(I in 1..len(Letter)) printf("%c=%d, ", Letter[I], Digit[I]) end, nl,
+   printf("%d * %d%n", Num[1], Num[2]),
+   printf("-----------%n"),
+   printf("%d%n%n", Num[len(L)]).
+
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).

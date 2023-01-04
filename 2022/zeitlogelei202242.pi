@@ -1,0 +1,36 @@
+/* Zeit Logelei 2022/42 Beim Tanzabend kommen Wünsche für den Abschlusstanz auf. Wer tanzt mit wem?
+https://www.zeit.de/zeit-magazin/2022/42/spiele-logelei-42 */
+import cp.
+main ?=>
+    Tanz = new_list(10), Tanz :: 1..10, assignment(Tanz, Tanz), % Tanz[P] = Q <=> P tanzt mit Q
+    foreach(I in 1..10) Tanz[I] #!= I end,                      % keine tanzt mit sich selber!
+             B=1,      C=2,      E=3,    F=4,      L=5,    M=6,      N=7,    S=8,     T=9,     U=10, 
+    Name = ["Birgit", "Celine", "Elli", "Frieda", "Lena", "Monika", "Nina", "Sonja", "Tanja", "Udine"],
+    Cs= [{F, N,1,M, 1,U}, % Frieda: "Wenn Nina mit Monika tanzt, dann möchte ich mit Udine tanzen." 
+         {C, L,1,N, 0,E}, % Celine: "Wenn Lena mit Nina tanzt, dann möchte ich nicht mit Elli tanzen." 
+         {N, T,1,C, 1,B}, % Nina: "Wenn Tanja mit Celine tanzt, dann möchte ich mit Birgit tanzen." 
+         {S, E,1,L, 1,M}, % Sonja: "Wenn Elli mit Lena tanzt, dann möchte ich mit Monika tanzen." 
+         {B, S,1,U, 1,F}, % Birgit: "Wenn Sonja mit Udine tanzt, dann möchte ich mit Frieda tanzen." X
+         {E, L,1,M, 1,U}, % Elli: "Wenn Lena mit Monika tanzt, dann möchte ich mit Udine tanzen." 
+         {M, L,1,C, 1,S}, % Monika: "Wenn Lena mit Celine tanzt, dann möchte ich mit Sonja tanzen." 
+         {T, C,1,M, 1,S}, % Tanja: "Wenn Celine mit Monika tanzt, dann möchte ich mit Sonja tanzen." 
+         {U, M,0,C, 1,S}, % Udine: "Wenn Monika nicht mit Celine tanzt, dann möchte ich mit Sonja tanzen." X 
+         {L, S,1,T, 1,C}],% Lena: "Wenn Sonja mit Tanja tanzt, dann möchte ich mit Celine tanzen."
+    foreach({P2, P1,W1,Q1, W2,Q2} in Cs)
+        (Tanz[P1] #= Q1 #<=> W1) #=> (Tanz[P2] #= Q2 #<=> W2)
+    end,
+    solve(Tanz),
+    foreach(I in 1..10)
+        printf("%s tanzt mit %s%n", Name[I], Name[Tanz[I]])
+    end, fail. /* 
+Birgit tanzt mit Frieda X
+Celine tanzt mit Nina
+Elli tanzt mit Monika
+Frieda tanzt mit Birgit
+Lena tanzt mit Tanja
+Monika tanzt mit Elli
+Nina tanzt mit Celine
+Sonja tanzt mit Udine
+Tanja tanzt mit Lena
+Udine tanzt mit Sonja X
+no more solutions, korrekt! */

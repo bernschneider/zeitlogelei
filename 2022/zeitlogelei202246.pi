@@ -1,0 +1,20 @@
+/* Zeit Logelei 2022/46 Noahs Farbstifte
+https://www.zeit.de/zeit-magazin/2022/46/spiele-logelei-46
+Noah hat sieben Farbstifte unterschiedlicher Länge und Farbe... Können Sie mit diesen Informationen die Stifte der Länge nach sortieren? */
+import cp.
+main ?=>
+    Color = ["blau", "gelb", "grün", "lila", "pink", "rosa", "rot"],
+    Len =    [Ba,     Gb,     Gn,     La,     Pk,     Ra,     Rt], Len :: 1..7, all_different(Len),
+    Cs= [{Gb, Rt, Gn, Pk}, % Wenn gelb kleiner ist als rot,  dann ist grün größer als pink. 
+         {Ra, Pk, Ba, Rt}, % Wenn rosa kleiner ist als pink, dann ist blau größer als rot. 
+         {Gn, Ra, Rt, La}, % Wenn grün kleiner ist als rosa, dann ist rot  größer als lila. 
+         {Ra, Ba, La, Pk}, % Wenn rosa kleiner ist als blau, dann ist lila größer als pink. 
+         {Ba, Gn, La, Rt}, % Wenn blau kleiner ist als grün, dann ist lila größer als rot. 
+         {Rt, La, Ra, Gn}, % Wenn rot  kleiner ist als lila, dann ist rosa größer als grün. 
+         {Pk, Rt, Gb, Ra}, % Wenn pink kleiner ist als rot,  dann ist gelb größer als rosa. 
+         {Gb, Gn, Rt, Pk}, % Wenn gelb kleiner ist als grün, dann ist rot  größer als pink. 
+         {La, Ra, Rt, Gb}, % Wenn lila kleiner ist als rosa, dann ist rot  größer als gelb. 
+         {Pk, La, Ra, Gb}],% Wenn pink kleiner ist als lila, dann ist rosa größer als gelb
+    foreach({S1, T1, S2, T2} in Cs) S1 #< T1 #=> S2 #> T2 end,
+    solve(Len), println(map(second, sort(zip(Len, Color)))), fail. % sortiere Liste der {Len[I], Color[I]}; dann entnehme jeweils das 2. Element (die Farbe) 
+% [lila,pink,grün,blau,rosa,gelb,rot] - no more solutions, korrekt! */

@@ -1,0 +1,98 @@
+/* Zeit Logelei 2020/23 Kreuzzahlen
+jetzt mit waagrecht/senkrecht(M,Letter,Tmp) wobei Tmp eine Liste ist (siehe Zeile 22) */
+import cp, util.
+main ?=>
+   LM = {{a,b,c,d,e,f},
+		 {g,x,h,x,x,x},
+	     {i,x,x,j,k,l},
+	     {m,x,n,x,o,x},
+	     {p,q,x,r,s,t},
+	     {u,x,x,v,x,x}}, get_global_map().put(lm,LM),       
+   WLetter := [a,c,e,g,h,i,m,n,o,p,s,u,v], get_global_map().put(wl,WLetter), % alle Buchstaben mit waagrechter Bedingung
+   SLetter := [a,b,c,d,e,f,j,k,l,m,q,r,t], get_global_map().put(sl,SLetter), % alle Buchstaben mit senkrechter Bedingung
+   N = len(LM), ZAHL = 10, FWD = 1, REV = 0, QSUM = 1, % cond arbeitet nicht mit Bool!
+   M = new_array(N,N), MVars = array_matrix_to_list(M), MVars :: 0..9,
+   Primes = primes(99), Qubes = [I**3: I in 1..9],
+   % Waagerecht:
+   waagrecht(M,c,ZAHL,FWD,Cw),
+   waagrecht(M,g,ZAHL,REV,RGw), 
+   waagrecht(M,h,ZAHL,FWD,Hw),
+   waagrecht(M,i,ZAHL,FWD,Iw), Iw #= As * As,
+   waagrecht(M,o,ZAHL,FWD,Ow), Ow #= RGw,
+   waagrecht(M,p,LPw), palindrom(LPw), % Pw: Palindrom
+   waagrecht(M,p,ZAHL,FWD,Pw),
+   waagrecht(M,s,ZAHL,FWD,Sw), Sw :: Primes,
+   waagrecht(M,u,ZAHL,FWD,Uw), Uw #= Es * Es,
+   waagrecht(M,v,ZAHL,FWD,Vw), Vw #= Uw + Ms,
+   % Senkrecht:
+   senkrecht(M,a,ZAHL,FWD,As), square(As),
+   senkrecht(M,b,ZAHL,FWD,Bs), Bs #= Cw * Cw, 
+   senkrecht(M,c,ZAHL,FWD,Cs), Cs #= As * Ls * RFs,
+   senkrecht(M,e,ZAHL,FWD,Es),
+   senkrecht(M,f,ZAHL,REV,RFs),
+   senkrecht(M,j,ZAHL,FWD,Js), square(Js),
+   senkrecht(M,k,ZAHL,FWD,Ks), Ks #= Hw + Pw,
+   senkrecht(M,l,ZAHL,FWD,Ls),
+   senkrecht(M,m,ZAHL,FWD,Ms), Ms :: Qubes,
+   senkrecht(M,t,ZAHL,FWD,Ts), multiple(Ts, Ls),
+   solve(MVars),
+   foreach(I in 1..N) 
+      foreach(J in 1..N) printf("%d ", M[I,J]) end, nl
+   end, nl, fail.
+/*
+4 1 3 6 1 9 
+4 2 6 5 6 5 
+1 9 4 4 8 1 
+5 6 2 9 2 4 
+1 6 6 1 2 9 
+2 5 6 7 6 8 
+CPU time 0.2 seconds, no more solutions */
+multiple(X,A) => % X ist Vielfaches von A
+   X mod A #= 0.
+   
+square(X) =>
+   Max = fd_max(X), 
+   Tmp :: 0..Max,
+   X #= Tmp*Tmp.
+
+palindrom(L) =>
+    N = len(L),
+    foreach(I in 1..N//2) L[I] #= L[N + 1 - I] end.
+
+waagrecht(M,Letter,Base,Fwd,X) => % Base = 10/1 (1 = Quersumme), Fwd = FWD/REV (REV = Rückwert)
+        waagrecht(M,Letter,Tmp), to_num(Tmp, Base, Fwd, X).
+
+waagrecht(M,Letter,Tmp) =>
+		LM = get_global_map().get(lm), WLetter = get_global_map().get(wl),
+		N = len(LM), Row := 0, Col := 0, Len := 0,
+		foreach(R in 1..N)
+			foreach(C in 1..N, LM[R,C] = Letter) Row := R, Col := C end,
+			if Len == 0, Row  > 0 then 
+				foreach(Cn in Col+1..N, Len == 0, membchk(LM[R,Cn],WLetter)) Len := Cn - Col end,
+				if Len = 0 then Len := N+1-Col end 
+		    end 
+		end,
+	    Tmp = new_list(Len), Tmp :: 0..9,
+   		foreach(I in 0..Len-1) M[Row,Col+I] #= Tmp[I+1] end,
+		M[Row,Col] #!= 0.	
+
+senkrecht(M,Letter,Base,Fwd,X) => % Base = 10/1 (1 = Quersumme), Fwd = FWD/REV (REV = Rückwert)
+        senkrecht(M,Letter,Tmp), to_num(Tmp, Base, Fwd, X).
+
+senkrecht(M,Letter,Tmp) =>
+		LM = get_global_map().get(lm), SLetter = get_global_map().get(sl),        
+		N = len(LM), Row := 0, Col := 0, Len := 0,
+		foreach(C in 1..N)
+			foreach(R in 1..N, LM[R,C] = Letter) Row := R, Col := C end,
+			if Len == 0, Col > 0 then 
+				foreach(Rn in Row+1..N, Len == 0, membchk(LM[Rn,C],SLetter)) Len := Rn - Row end,
+				if Len = 0 then Len := N+1-Row end
+			end 
+		end,
+   		Tmp = new_list(Len), Tmp :: 0..9,
+   		foreach(I in 0..Len-1) M[Row+I,Col] #= Tmp[I+1] end,
+		M[Row,Col] #!= 0.	
+   
+to_num(List, Base, Fwd, Num) => % Num = Wert der Liste
+        Len = length(List), 
+        Num #= cond(Fwd, sum([List[I]*Base**(Len-I) : I in 1..Len]), sum([List[I]*Base**(I-1) : I in 1..Len])).

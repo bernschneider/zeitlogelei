@@ -1,0 +1,42 @@
+/* Zeit Logelei 2022/44 Unterteilen Sie das Diagramm in Gebiete
+https://www.zeit.de/zeit-magazin/2022/44/logelei */
+import sat. 
+main => 
+    C ={{0,1,0,0,0,4,0},
+		{0,0,0,0,0,0,0},
+		{2,3,0,3,0,0,0},
+		{0,0,3,0,0,2,0},
+		{0,1,0,1,3,0,0},
+		{0,0,0,2,0,3,0},
+		{2,0,0,0,0,0,0}},
+   N = len(C), Max = 4, MaxCnt = 6, % ein Gebiet der Größe F kann bis zu 6 mal vorkommen (Magic)
+   Colors = [10*F+I : I in 0..MaxCnt,F in 1..Max], % F ist der Count, I die lfd. Nr.
+   M = new_array(N,N),  M :: Colors, Mvars = vars(M),
+   foreach(Z in 1..N, S in 1..N, C[Z,S]>0) M[Z,S] // 10 #= C[Z,S] end,
+   Cnt = new_list(len(Colors)), Cnt :: 0..Max, % wie oft kommt 10*F+I in M vor? 
+   foreach({F10,F} in zip(Cnt,Colors))
+           count(F, Mvars, F10), % F kommt in M F10 mal vor
+           F10 #= 0 #\/ F10 #= F // 10
+   end, 
+   % Zwei verschiedene Gebiete der gleichen Größe dürfen nicht orthogonal (wohl aber diagonal) benachbart sein:
+   foreach(Z in 1..N, S in 1..N-1) (M[Z,S] // 10 #= M[Z,S+1] // 10) #=> M[Z,S] #= M[Z,S+1] end, 
+   foreach(Z in 1..N-1, S in 1..N) (M[Z,S] // 10 #= M[Z+1,S] // 10) #=> M[Z,S] #= M[Z+1,S] end,
+   % Alle Gebiete hängen zusammen:
+   foreach(F in Colors) 
+        Geb = new_array(N,N), Geb :: 0..1, scc_grid(Geb),
+        foreach(Z in 1..N, S in 1..N) Geb[Z,S] #= (M[Z,S] #= F) end        
+   end,
+   solve(Mvars ++ Cnt),
+   foreach(Z in 1..N) 
+      foreach(S in 1..N) 
+		   printf("%2d|", M[Z,S] // 10)
+	  end, nl
+   end. /*
+ 4| 1| 2| 2| 4| 4| 4|
+ 4| 4| 4| 3| 3| 1| 4|
+ 2| 3| 1| 3| 4| 4| 1|
+ 2| 3| 3| 4| 4| 2| 2|
+ 3| 1| 4| 1| 3| 3| 4|
+ 3| 3| 4| 2| 2| 3| 4|
+ 2| 2| 4| 4| 1| 4| 4|
+CPU time 4.452 seconds, sieht gut aus! */

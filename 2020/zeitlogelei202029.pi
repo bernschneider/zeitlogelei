@@ -1,0 +1,33 @@
+/* Zeit Logelei 2020/29: Drei besondere Computer
+https://www.zeit.de/zeit-magazin/2020/29/spiele-logelei-29 
+Clue: Bei der "Kombination" geht es um die Zuordnung Form -> Farbe für alle drei Computer insgesamt! */
+import util, cp. 
+main =>
+    FI=1, FP=2, FK=3, % die Formen Ikosaeder, Pyramide und Kugel
+    % Pform[F1,F2] = Wahrscheinlichkeit in Promille, dass der neonschwarze die Form F1 und der mitternachtsgrüne die Form F2 hat
+    % (die Form des himbeerpinken ergibt sich daraus)
+    Pform = new_array(3,3), Pform :: 0..999, Plist = array_matrix_to_list(Pform), 
+    sum(Plist) #= 1000, % alle Wahrscheinlichkeiten addieren sich zu 1000 Promille
+    foreach(F in 1..3) Pform[F,F] #= 0 end, % die Farben haben verschiedene Formen
+    % Der Computer in Form eines Ikosaeders ist mit einer Wahrscheinlichkeit von 30 Promille himbeerpink:
+    Pform[FP,FK] + Pform[FK,FP] #= 30, 
+    % Der neonschwarze ist mit einer Wahrscheinlichkeit von 310 Promille pyramidenförmig:
+    Pform[FP,1] + Pform[FP,2] + Pform[FP,3] #= 310,
+    % Der himbeerpinke ist mit einer Wahrscheinlichkeit von 280 Promille kugelförmig:
+    Pform[FI,FP] + Pform[FP,FI] #= 280,
+    % Der mitternachtgrüne ist mit einer Wahrscheinlichkeit von 440 Promille ein Ikosaeder:
+    Pform[1,FI] + Pform[2,FI] + Pform[3,FI] #= 440,
+    solve(Plist), % erstelle die Wahrscheinlichkeitsverteilung
+    % Welche Kombination hat nun die größte Wahrscheinlichkeit?
+    Pmax = 0, Max1 = 0, Max2 = 0,
+    foreach(F1 in 1..3, F2 in 1..3, F1!=F2)
+        if Pform[F1,F2] > Pmax then Pmax := Pform[F1,F2], Max1 := F1, Max2 := F2 end
+    end,
+    Max3 = 6 - Max1 - Max2, Fstr = ["Ikosaeder", "Pyramide", "Kugel"],
+    printf("Die Kombination mit der größten Wahrscheinlichkeit (%d Prozent) ist:%nneonschwarz -> %s%nmitternachtsgrün -> %s%nhimbeerpink -> %s", 
+            Pmax//10, Fstr[Max1], Fstr[Max2], Fstr[Max3]).
+/* Die Kombination mit der größten Wahrscheinlichkeit (53 Prozent) ist:
+neonschwarz -> Ikosaeder
+mitternachtsgrün -> Kugel
+himbeerpink -> Pyramide
+CPU time 0.0 seconds, korrekt */

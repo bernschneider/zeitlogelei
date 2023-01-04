@@ -1,0 +1,53 @@
+/* Zeit Logelei 2020/07
+https://www.zeit.de/zeit-magazin/2020/07/spiele-logelei-07 */
+import sat, util.
+main ?=>
+    O = -1,
+	Scnt = {3,4,O,O,5,O,4,O,O,O}, NS = len(Scnt), % Spaltensummen
+	Zcnt = {7,7,4,O,O,O,7},       NZ = len(Zcnt), % Zeilensummen
+	% Nummeriere die betretenen Felder durch: 
+    MaxMax = NS*NZ, Max :: 25..MaxMax,
+    M = new_array(NZ,NS), M :: 0..MaxMax,
+    foreach(Z in 1..NZ, S in 1..NS) M[Z,S] #=< Max end,
+	foreach(S in 1..NS, Scnt[S]>O)
+		Scnt[S] #= sum([(M[Z,S] #> 0) : Z in 1..NZ])
+	end,
+	foreach(Z in 1..NZ, Zcnt[Z]>O)
+		Zcnt[Z] #= sum([(M[Z,S] #> 0) : S in 1..NS])
+	end,
+	MVars = array_matrix_to_list(M), all_different_except_0(MVars),
+	M[1,1] #= 1, M[NZ,NS] #= Max,
+    foreach(Z in 1..NZ, S in 1..NS, {Z,S}!={NZ,NS})
+    	M[Z,S] #> 0 #=> sum([(M[Z,S] + 1 #= M[Z1,S1]) : {Z1,S1} in [{Z,S-1}, {Z,S+1}, {Z-1,S}, {Z+1,S}], 1=<Z1, Z1=<NZ, 1=<S1, S1=<NS]) #= 1
+    end,
+    % Der Tunnel geht nie durch benachbarte Felder, auch nicht diagonal benachbarte:
+    foreach(Z in 1..NZ, S in 1..NS-1) 
+        (M[Z,S] #> 0 #/\ M[Z,S+1] #> 0) #=> abs(M[Z,S] - M[Z,S+1]) #= 1
+    end,
+    foreach(Z in 1..NZ-1, S in 1..NS) 
+        (M[Z,S] #> 0 #/\ M[Z+1,S] #> 0) #=> abs(M[Z,S] - M[Z+1,S]) #= 1 
+    end,
+    foreach(Z in 1..NZ-1, S in 1..NS-1) 
+        (M[Z,S] #> 0 #/\ M[Z+1,S+1] #> 0) #=> abs(M[Z,S] - M[Z+1,S+1]) #= 2,
+        (M[Z,S+1] #> 0 #/\ M[Z+1,S] #> 0) #=> abs(M[Z,S+1] - M[Z+1,S]) #= 2 
+    end,
+    solve([Max|MVars]), % solve([$min(Max)], MVars),
+    foreach(Z in 1..NZ)
+    	foreach(S in 1..NS) printf(" %2d|", M[Z,S]) end, nl
+    end, nl, fail.
+/* 
+  1|  0|  7|  8|  9|  0|  0| 14| 15| 16|
+  2|  0|  6|  0| 10| 11| 12| 13|  0| 17|
+  3|  4|  5|  0|  0|  0|  0|  0|  0| 18|
+  0|  0|  0|  0| 24| 23| 22| 21| 20| 19|
+  0| 28| 27| 26| 25|  0|  0|  0|  0|  0|
+  0| 29|  0|  0|  0|  0| 36| 37| 38| 39|
+  0| 30| 31| 32| 33| 34| 35|  0|  0| 40|
+CPU time 21.053 seconds, no more solutions korrekt:
+TLTTTLLTTT
+TLTLTTTTLT
+TTTLLLLLLT
+LLLLTTTTTT
+LTTTTLLLLL
+LTLLLLTTTT
+LTTTTTTLLT laut ZEIT Lösung */

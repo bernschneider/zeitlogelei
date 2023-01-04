@@ -1,0 +1,91 @@
+/* Zeit Logelei 2021/53 
+https://www.zeit.de/zeit-magazin/2021/53/logelei
+Passe Zeilen 14-42 an! Achtung: Z, S, X werden schon verwendet!
+3 7 3 8 2 9 
+1 6 8 2 6 6 
+2 6 9 8 6 1 
+7 1 8 6 6 7 
+1 9 5 7 6 2 
+8 5 8 3 2 9 
+CPU time 2.166 seconds, korrekt */
+import sat, util.
+main =>
+   A=1, B=2, C=3, D=4, E=5, F=6, G=7, H=8, I=9, J=10, K=11, L=12, M=13, N=14, O=15, P=16, Q=17, R=18, T=19, Max=19,
+   LM = {{A,B,C,D,E,F},
+		 {G,0,0,H,0,0},
+		 {I,0,J,K,0,0},
+		 {L,0,M,0,N,O},
+		 {P,0,Q,R,0,0},
+		 {T,0,0,0,0,0}}, % wir nehmen T statt wie im Original S!
+   WLetter = [A,G,H,I,J,L,N,P,Q,T],   % alle Buchstaben mit waagrechter Bedingung
+   SLetter = [A,B,C,D,E,F,I,K,M,O,R], % alle Buchstaben mit senkrechter Bedingung
+   Wr = new_array(Max,5), Wr :: 1..999999, % Waagrechte Zahlen
+   Sr = new_array(Max,5), Sr :: 1..999999, % Senkrechte Zahlen
+   Squares = [Y**2: Y in 1..31], Primes = primes(99), 
+   NZ = len(LM), NS = len(LM[1]), FWD = 1, REV = 2, QSUM = 3, QPROD = 4, PALIN = 5,
+   X = new_array(NZ,NS), XVars = array_matrix_to_list(X), XVars :: 0..9,
+   % Waagerecht:
+   Wr[A,FWD] #= Sr[C,FWD] * Sr[F,FWD], % A C senkrecht mal F senkrecht
+   multiple(Wr[H,FWD], Wr[P,FWD]), % H Vielfaches von P waagerecht
+   Wr[J,FWD] #= Wr[L,FWD] + Wr[Q,REV], % J L waagerecht plus dem Rückwert von Q waagerecht
+   Wr[N,FWD] :: Primes, % N Primzahl 
+   Wr[P,FWD] :: Primes, % P Primzahl 
+   Wr[Q,FWD] #= Sr[K,FWD] * Wr[N,FWD], % Q K senkrecht mal N waagerecht
+   Wr[T,FWD] #= Sr[E,FWD] + Sr[B,REV], % T E-senkrecht plus dem Rückwert von B senkrecht
+   % Senkrecht:
+   Sr[A,REV] #= Wr[N,QSUM], % A Der Rückwert ist die Quersumme von N waagerecht
+   % foreach(Z in 1..3) X[Z,5] #= X[7-Z,5] end
+   Sr[E,PALIN] #= 2, % E Palindrom (1=nein, 2=ja)
+   Sr[F,FWD] :: Squares, % F Quadratzahl
+   Sr[I,REV] #= Wr[J,FWD] - Wr[J,REV], % I Der Rückwert ist J waagerecht minus dem Rückwert von J waagerecht
+   Sr[K,FWD] #= Wr[P,FWD] + Wr[N,FWD],  % K P waagerecht plus N waagerecht
+   multiple(Sr[M,FWD], Wr[I,FWD]),  % M Vielfaches von I waagerecht
+   Sr[O,FWD] :: Squares, % O Quadratzahl
+   % Jetzt kommt der generische Teil:
+   foreach(Letter in WLetter) % Berechne alle Waagrechten Zahlen aus der Matrix X
+        Row := 0, Col := 0, Len := 0,
+		foreach(Z in 1..NZ)
+			foreach(S in 1..NS, LM[Z,S] = Letter) Row := Z, Col := S end,
+			if Len == 0, Row  > 0 then 
+				foreach(Cn in Col+1..NS, Len == 0, membchk(LM[Z,Cn],WLetter)) Len := Cn - Col end,
+				if Len = 0 then Len := NS+1-Col end 
+		    end 
+		end,
+	    Temp = new_list(Len), Temp :: 0..9,
+   		foreach(Idx in 0..Len-1) X[Row,Col+Idx] #= Temp[Idx+1] end,
+		X[Row,Col] #!= 0,
+        to_num(Temp,Wr[Letter,FWD]), to_num_rev(Temp,Wr[Letter,REV]),
+        Wr[Letter,QSUM] #= sum(Temp), Wr[Letter,QPROD] #= prod(Temp),
+        Wr[Letter,PALIN] #= 1 + (sum([(Temp[Y] #= Temp[Len+1-Y]) : Y in 1..Len//2]) #= Len//2)
+   end,
+   foreach(Letter in SLetter) % berechne alle senkrechte Zahlen aus der Matrix X 
+      Row := 0, Col := 0, Len := 0,
+		foreach(S in 1..NS)
+			foreach(Z in 1..NZ, LM[Z,S] = Letter) Row := Z, Col := S end,
+			if Len == 0, Col > 0 then 
+				foreach(Rn in Row+1..NZ, Len == 0, membchk(LM[Rn,S],SLetter)) Len := Rn - Row end,
+				if Len = 0 then Len := NZ+1-Row end
+			end 
+		end,
+   		Temp = new_list(Len), Temp :: 0..9,
+   		foreach(Idx in 0..Len-1) X[Row+Idx,Col] #= Temp[Idx+1] end,
+		X[Row,Col] #!= 0,
+        to_num(Temp,Sr[Letter,FWD]), to_num_rev(Temp,Sr[Letter,REV]),
+        Sr[Letter,QSUM] #= sum(Temp), Sr[Letter,QPROD] #= prod(Temp),
+        Sr[Letter,PALIN] #= 1 + (sum([(Temp[Y] #= Temp[Len+1-Y]) : Y in 1..Len//2]) #= Len//2)
+   end,
+   solve(XVars ++ vars(Wr) ++ vars(Sr)),
+   foreach(Z in 1..NZ) 
+      foreach(S in 1..NS) printf("%d ", X[Z,S]) end, nl
+   end. 
+
+multiple(X,A) => % X ist Vielfaches von A
+   X mod A #= 0.
+
+to_num(List, Num) => % Num = Wert der Liste
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).
+
+to_num_rev(List, Num) => % Num = Rückwert der Liste
+        Len = length(List),
+        Num #= sum([List[I]*10**(I-1) : I in 1..Len]).

@@ -1,0 +1,37 @@
+/* Zeit Logelei 2020/27
+https://www.zeit.de/zeit-magazin/2020/27/spiele-logelei-27 */
+import util, sat. 
+main ?=> 
+    Pf = 1, Or = 2, Ki = 3, Str = ["  ","Pf","Or","Ki"], % Pflaume, Orange, Kirschpaar
+    Left  = [ _, _,Pf, _, _, _, _],
+    Right = [ _,Ki,Ki,Ki, _,Ki,Ki],
+    Up    = [ _, _, _,Or, _,Or, _],
+    Down  = [Ki, _,Ki, _,Ki, _, _],
+    N = len(Left),
+    M = new_array(N,N), M :: 0..3,
+    foreach(L in M.rows ++ M.columns, F in 1..3)
+        exactly(1, L, F) % jede Frucht kommt genau 1x vor
+    end,
+    foreach({F,L} in zip(Left,M.rows)  ++ zip(Right,map(reverse, M.rows)) 
+                  ++ zip(Up,M.columns) ++ zip(Down,map(reverse, M.columns)))
+        I :: 1..N-2, % Spalte der ersten Frucht
+        foreach(J in 1..N-2) 
+            J #< I #=> L[J] #= 0, % vor I befindet sich keine Frucht
+            J #= I #=> L[J] #= F  % an der I.ten Position liegt die Frucht F
+        end
+    end,
+    solve(vars(M)),
+    foreach(Z in 1..N) 
+      foreach(S in 1..N) 
+		   printf("%s|", Str[1+M[Z,S]])
+	  end, nl
+     end, fail.
+/*
+  |Ki|  |  |  |Or|Pf|
+  |  |Pf|Or|  |Ki|  |
+Pf|  |Or|Ki|  |  |  |
+Or|Pf|Ki|  |  |  |  |
+Ki|  |  |  |Pf|  |Or|
+  |  |  |  |Or|Pf|Ki|
+  |Or|  |Pf|Ki|  |  |
+CPU time 0.031 seconds, nur 1 Lösung, korrekt */

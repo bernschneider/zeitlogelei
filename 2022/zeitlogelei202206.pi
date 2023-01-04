@@ -1,0 +1,21 @@
+/* Zeit Logelei 2022/06 Professor Knusi in Gutamien
+https://www.zeit.de/zeit-magazin/2022/06/logelei 
+Wer lügt, und wer sagt die Wahrheit? */
+import cp.
+main ?=>
+  Str = ["Dappi", "Husi", "Laba", "Muni", "Norba", "Pelle", "Traki", "Wocki", "Yorbi", "Zobi"],
+  Gu = [D, H, L, M, N, P, T, W, Y, Z], Gu :: 0..1, % 0 = lügt, 1 = sagt die Wahrheit
+  D #= (#~(P #=> N)), % Dappi: "Folgende Aussage ist falsch: Wenn Pelle die Wahrheit sagt, dann auch Norba." 
+  H #= (#~Z #^ #~M), % Husi: "Genau einer von Zobi und Muni lügt." 
+  L #= (N #^ T), % Laba: "Genau einer von Norba und Traki sagt die Wahrheit." 
+  M #= (#~W #^ #~D), % Muni: "Genau einer von Wocki und Dappi lügt." 
+  N #= (#~(#~P #=> T)), % Norba: "Folgende Aussage ist falsch: Wenn Pelle lügt, dann sagt Traki die Wahrheit." 
+  T #= (#~M #^ #~H), % Traki: "Genau einer von Muni und Husi lügt." 
+  W #= (P #^ Y), % Wocki: "Genau einer von Pelle und Yorbi sagt die Wahrheit." 
+  Y #= (#~(W #=> M)), % Yorbi: "Folgende Aussage ist falsch: Wenn Wocki die Wahrheit sagt, dann auch Muni." 
+  Z #= (#~(#~M #=> L)), % Zobi: "Folgende Aussage ist falsch: Wenn Muni lügt, dann sagt Laba die Wahrheit." 
+  solve(Gu), 
+  foreach(I in 1..len(Gu), Gu[I] = 1) printf("%s ", Str[I]) end, println("sagen die Wahrheit, die anderen lügen."),
+  fail. /* 
+Laba Norba sagen die Wahrheit, die anderen lügen.
+CPU time 0.0 seconds, no more solutions, korrekt */

@@ -1,0 +1,34 @@
+/* Zeit Logelei 2021/12 Aquarium (nach Janko Wasserspaß)
+https://www.zeit.de/zeit-magazin/2021/12/logelei */
+import sat, util.
+main ?=>
+    Sums = [1,5,1,6,6,6,2, 3,5,4,3,3,4,5], % waagrecht , senkrecht 
+    Geb = {{a,b,i,m,m,t,w},
+           {b,b,j,n,n,t,x},
+           {c,b,k,o,q,u,y},
+           {c,f,k,o,r,r,z},
+           {d,g,k,k,r,v,z},
+           {e,g,k,p,s,v,1},
+           {e,h,l,l,s,s,2}}, N = len(Geb),
+    M = new_array(N,N), M :: 0..1,
+    % Eine Zahl am Rand des Diagramms gibt an, wie viele Felder in der betreffenden Zeile bzw. Spalten Wasser enthalten:
+    foreach({Lst,Sum} in zip(M.rows()++M.columns(), Sums)) sum(Lst) #= Sum end,
+    % Das "Wasser" innerhalb eines Gebiets muss sich "natürlich" verhalten, 
+    % d.h. der Wasserspiegel muss gleich sein:
+    foreach(Z in 1..N, S in 1..N-1, Geb[Z,S]=Geb[Z,S+1]) M[Z,S] #= M[Z,S+1] end, 
+    % ..  und unterhalb eines Wasserfeldes darf es kein Leerfeld geben:
+    foreach(Z in 1..N-1, S in 1..N, Geb[Z,S]=Geb[Z+1,S]) M[Z,S] #= 1 #=> M[Z+1,S] #= 1 end, 
+    solve(vars(M)),
+    foreach(Z in 1..N, S in 1..N)
+        Tilde = cond(M[Z,S]=1, '~', ' '), % '~' = chr(126) = Alt-N
+        printf("%c%w%c ", Tilde, Geb[Z,S], Tilde), if S=N then nl end
+    end, fail.
+/*
+ a   b   i   m   m   t  ~w~ 
+ b   b  ~j~ ~n~ ~n~ ~t~ ~x~ 
+ c  ~b~  k   o   q   u   y  
+~c~ ~f~ ~k~  o  ~r~ ~r~ ~z~ 
+ d  ~g~ ~k~ ~k~ ~r~ ~v~ ~z~ 
+~e~ ~g~ ~k~ ~p~  s  ~v~ ~1~ 
+~e~ ~h~  l   l   s   s   2  
+CPU time 0.035 seconds, no more solutions, korrekt: LLLLLLW, LLWWWWW, LWLLLLL, WWWLWWW, LWWWWWW, WWWWLWW, WWLLLLL */

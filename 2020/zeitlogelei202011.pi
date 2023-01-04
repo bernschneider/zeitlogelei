@@ -1,0 +1,77 @@
+/* Zeit Logelei 2020/11 Rundweg */
+import util,cp.
+main => 
+   N = 7, O = -1,
+   W = new_array(N+1,N),
+   S = new_array(N,N+1),
+   Ecke = new_array(N+1,N+1),
+   MVars = array_matrix_to_list(W) ++ array_matrix_to_list(S) ++ array_matrix_to_list(Ecke),
+   MVars :: [0,1], 
+   Cnt = {{O,3,3,3,O,4,O},
+		  {O,O,O,O,1,O,O},
+		  {O,O,3,1,O,O,2},
+		  {O,3,O,O,2,1,0},
+		  {O,O,O,1,O,O,O},
+		  {2,4,O,O,O,O,O},
+		  {2,O,O,O,1,1,O}},   
+   foreach(R in 1..N, C in 1..N, Cnt[R,C]>=0)
+	 Cnt[R,C] #= Ecke[R,C] + Ecke[R+1,C] + Ecke[R,C+1] + Ecke[R+1,C+1]
+   end,
+   % Erkenne die Ecken ... (drei Fälle)
+   % 1. für die vier Eckpunkte der Matrix:
+   Ecke[1,1] #= W[1,1], Ecke[1,N] #= W[1,N], Ecke[N+1,1] #= W[N+1,1], Ecke[N+1,N+1] #= W[N+1,N],   	
+   % 2. für die Punkte in der ersten und letzten Zeile:
+   foreach(C in 2..N)
+    Ecke[1,C] #= (W[1,C-1] #!= W[1,C]), Ecke[N+1,C] #= (W[N+1,C-1] #!= W[N+1,C])
+   end,
+   % 3. für die Punkte in der ersten und letzten Spalte:
+   foreach(R in 2..N)
+    Ecke[R,1] #= (S[R-1,1] #!= S[R,1]), Ecke[R,N+1] #= (S[R-1,N+1] #!= S[R,N+1])
+   end,
+   % ... für die Punkte im Innern der Matrix:
+   foreach(R in 2..N, C in 2..N)
+	Ecke[R,C] #= (S[R-1,C] #!= S[R,C] #/\ W[R,C-1] #!= W[R,C])
+   end,
+   % Rundweg heißt, an jeder Kreuzung treffen sich 0 oder 2 Linien:
+   foreach(R in 1..N+1, C in 1..N+1)
+	Xcnt #= sum([W[R,C1] : C1 in [C-1,C], C1>0, C1=<N])
+	     + sum([S[R1,C] : R1 in [R-1,R], R1>0, R1=<N]),
+	Xcnt :: [0,2]
+   end,
+   % Keine Einer-Kästchen (kleinster Rundweg):
+   foreach(R in 1..N, C in 1..N)
+   	 W[R,C]+W[R+1,C]+S[R,C]+S[R,C+1] #< 4
+   end,
+   % Magic (erzwingt einen einzigen Rundweg):
+   W[8,4] #= 1, 
+   solve(MVars),
+   foreach(R in 1..N) 
+      foreach(C in 1..N) 
+           if W[R,C]=1 then print(' -') else print('  ') end
+	  end, nl,
+      foreach(C in 1..N) 
+           if S[R,C]=1 then print('|') else print(' ') end,
+		   if Cnt[R,C]>0 then print(Cnt[R,C]) else print(' ') end
+	  end, 
+	  if S[R,N+1]=1 then print('|') end, nl
+   end,
+   foreach(C in 1..N) 
+        if W[N+1,C]=1 then print(' -') else print('  ') end
+   end, nl.
+/*
+   - -   -   -  ZEIT:
+  |3 3|3| |4| | AIIAIAI (I für Innenfeld, A für Außenfeld)
+ -   -     -  
+|   |   |1    | IIAAIII
+     -       -
+|    3|1|   |2  IIIAIIA
+ - -          
+   3| | |2 1|   AAIAIIA
+   -     -    
+  |   |1  | |   AIIAAIA
+   -         -
+ 2 4| |   |   | AAIAAII
+   -   - -    
+ 2|      1 1  | AIIIIII korrekt!
+   - - - - - -
+CPU time 0.001 seconds */   

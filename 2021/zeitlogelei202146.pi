@@ -1,0 +1,27 @@
+/* Zeit Logelei 2021/46
+Familie Quander hat drei weitere Familien zum Adventskalenderbasteln eingeladen. Jede der vier Familien nutzt eine andere Form, um die Geschenke zu verpacken. 
+Am Fenster lauscht der neugierige Ulf. Der würde nämlich gerne wissen, wie die Familie mit den vier Kindern ihre Geschenke verpackt. Er erfährt: ... */
+import cp.
+main ?=>  %      1           2           3          4
+    Fstr   = ["Ewald  ", "Jakob  ",  "Quander",  "Sulfa  "], 
+    Vstr   = ["Dosen",   "Päckchen", "Säckchen", "Türchen"],
+    Kinder = [   2,          3,          4,         6],         % Kinderindex -> Kinderzahl
+    % Sortiere die Familien nach ihrer Kinderzahl 2, 3, 4, 6:
+    Name = new_list(4), Name :: 1..4, assignment(Name, RName), % Kinderindex -> Name,
+    Verp = new_list(4), Verp :: 1..4, assignment(Verp, RVerp), % Kinderindex -> Verpackung,
+    RName[4] #> RVerp[1], % Familie Sulfa (4) hat mehr Kinder als die Familie, die Dosen (1) für ihren Adventskalender benutzt. 
+    Name[2] #!= 1, % Die Familie mit den drei Kindern (Nr. 2) ist nicht Familie Ewald (1). 
+    RVerp[2] - RVerp[3] #= 2, % Die Familie mit den Päckchen (2) hat doppelt so viele Kinder wie die, die Säckchen (3) benutzt. 
+    Verp[1] #!= 1, % Die Familie mit zwei Kindern (1) benutzt keine Dosen (1). 
+    element(RName[2], Verp, VJakob), % Verpackung der Familie Jakob (2)
+    VJakob #!= 3, VJakob #!= 4, % Familie Jakob nutzt keine Säckchen (3) und auch keine Türchen (4). 
+    4 #!= Verp[4], % Die Familie mit den Türchen (4) hat keine sechs Kinder (4).
+    solve(Name ++ RName ++ Verp ++ RVerp),
+    foreach(I in 1..4)
+        printf("Famile %s hat %d Kinder und nutzt %s%n", Fstr[Name[I]], Kinder[I], Vstr[Verp[I]])
+    end, nl, fail. /*
+Famile Ewald   hat 2 Kinder und nutzt Türchen
+Famile Quander hat 3 Kinder und nutzt Säckchen
+Famile Jakob   hat 4 Kinder und nutzt Dosen <- Antwort auf Ulfs Frage
+Famile Sulfa   hat 6 Kinder und nutzt Päckchen
+no more solutions, korrekt */

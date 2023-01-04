@@ -1,0 +1,30 @@
+/* Zeit Logelei 2020/49 Ralf, Zonnja, Ambe und Tim sind Synästhetiker 
+https://www.zeit.de/zeit-magazin/2020/49/logelei */
+import util, cp.
+main ?=>
+    R=1,  Z=2,  A=3,  T=4,  Pstr = ["Ralf", "Zonnja", "Ambe", "Tim"],
+    Ro=1, Gr=2, Bl=3, Ge=4, Fstr = ["Rot", "Grün", "Blau", "Gelb"],
+    Farbe = new_array(4,4), Farbe :: [Ro,Gr,Bl,Ge], % Farbe[Person,Ziffer] = Ro, Gr, Bl oder Ge
+    % Jeder der vier ordnet jeder Ziffer eine andere Farbe zu als die anderen drei:
+    foreach(L in Farbe ++ Farbe.transpose()) all_different(L) end,
+    % Jeder schreibt drei Aussagen auf, von denen genau eine richtig ist und zwei falsch.
+    % Ralf:  3 ist blau.          2 ist rot.            4 ist nicht grün.
+    (Farbe[R,3] #= Bl) + (Farbe[R,2] #= Ro) + (Farbe[R,4] #!= Gr) #= 1,
+    % Zonnja:3 ist nicht gelb.     1 ist rot.           3 ist nicht gelb.
+    (Farbe[Z,3] #!= Ge) + (Farbe[Z,1] #= Ro) + (Farbe[Z,3] #!= Ge) #= 1,
+    % Ambe:  2 ist grün.          2 ist nicht blau.     2 ist nicht grün.
+    (Farbe[A,2] #= Gr) + (Farbe[A,2] #!= Bl) + (Farbe[A,2] #!= Gr) #= 1,
+    % Tim:   4 ist gelb.          3 ist nicht rot.      1 ist grün.
+    (Farbe[T,4] #= Ge) + (Farbe[T,3] #!= Ro) + (Farbe[T,1] #= Gr) #= 1,
+    solve(Farbe),
+    foreach(P in 1..4)
+        printf("%6s: ", Pstr[P]),
+        foreach(Zi in 1..4) printf("%4s| ", Fstr[Farbe[P,Zi]]) end, nl
+    end, 
+    fail.
+/* Ziffer 1     2     3     4
+  Ralf: Blau| Gelb| Grün|  Rot| 
+Zonnja:  Rot| Grün| Gelb| Blau| 
+  Ambe: Grün| Blau|  Rot| Gelb| 
+   Tim: Gelb|  Rot| Blau| Grün| 
+CPU time 0.001 seconds, no more solutions, sieht gut aus */

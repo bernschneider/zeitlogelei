@@ -1,0 +1,21 @@
+/* Zeit Logelei 2022/12 Wie viel verdient Herr Jackobs?
+https://www.zeit.de/zeit-magazin/2022/14/logelei
+"Wie viel verdienen Sie eigentlich im Monat?", wendet sich Frau Haust an Herrn Jackobs.
+Herr Jackobs schüttelt den Kopf: "Das sage ich Ihnen nicht." */
+import sat.
+main ?=> 
+    % "Aber es ist schon sechsstellig, oder?", wendet da Schmidt ein. Jackobs: "Ja, sicher!":
+    Geh :: 100_000..999_999, 
+    % Mein Gehalt ist das Produkt von drei Primzahlen! Und die sind alle zweistellig!":
+    Primes = new_list(3), Primes :: [I : I in 10..99, prime(I)], increasing(Primes),
+    prod(Primes) #= Geh,
+    % Mein Gehalt wäre eine Quadratzahl, wenn ich noch 242.064 Euro draufschlagen würde.":
+    Root :: to_int(sqrt(100_000))..to_int(sqrt(999_999 + 242_064)), 
+    Root * Root #= Geh + 242_064,
+    solve([Geh, Root] ++ Primes),
+    printf("Jackobs Gehalt ist %d €, das Produkt von %w.%n%d * %d = %d + 242.064%n", 
+            Geh, Primes,  Root, Root, Geh),
+    fail. /*
+Jackobs Gehalt ist 104.857 €, das Produkt von [23,47,97].
+589 * 589 = 104.857 + 242.064
+CPU time 0.411 seconds, no more solutions, korrekt */

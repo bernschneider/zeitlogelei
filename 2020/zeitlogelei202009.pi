@@ -1,0 +1,28 @@
+/* Zeit Logelei 2020/09: Wieviele Gäste haben auf einer Feier miteinander angestoßen?
+https://www.zeit.de/zeit-magazin/2020/09/spiele-logelei-09 */
+import cp.
+
+lambda(F,P,G,Res) => % G´s stoßen untereinander an, F´s mit P´s und mit G´s
+    Res #= G * (G-1) // 2 + F * (P + G). 
+
+go1 =>
+    F = 7, P = 11, G = 13,
+    lambda(F,P,G,Res),
+    printf("Sie haben %d mal angestoßen.%n", Res).
+    % Sie haben 246 mal angestoßen. korrekt
+
+go2 ?=>
+    [F,P] :: 1..100, G = 9,
+    lambda(F,P,G,50),
+    solve([F,P]),
+    printf("Es waren %d Felawen und %d Poriwen da.%n", F, P),
+    fail.
+    % Es waren 1 Felawen und 5 Poriwen da. korrekt
+
+go3 ?=>
+    F :: 1..100,
+    lambda(F,F,F,555),
+    solve([F]),
+    printf("Es waren %d Gäste da.%n", F + F + F),
+    fail.
+    % Es waren 45 Gäste da. korrekt

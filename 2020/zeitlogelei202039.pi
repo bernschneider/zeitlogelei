@@ -1,0 +1,38 @@
+/* Zeit Logelei 2020/39 Benachbarte Halbquarks verbinden sich zu Vollquarks
+https://www.zeit.de/zeit-magazin/2020/39/spiele-logelei-39 */
+import sat. 
+main ?=> 
+   A=1, B=2, C=3, D=4, E=5, F=6,
+   Cons = {{C,F,D,F,A,D,C},
+	 	 {D,E,E,E,F,F,D},
+		 {C,C,F,B,E,C,F},
+		 {F,A,E,B,A,A,E},
+		 {D,D,A,C,B,D,C},
+		 {A,B,B,B,E,A,B}}, 
+   NZ = len(Cons), NS = len(Cons[1]),
+   Vals = [10*X+Y : X in 1..6, Y in X..6], % mögliche Kombinationen
+   M = new_array(NZ,NS), M :: Vals, Mvars = vars(M), % Dominos
+   % Jede der 21 möglichen Kombinationen ist genau einmal vorhanden:
+   foreach(V in Vals) count(V, Mvars, 2) end,
+   % Jedes Halbquark hat genau ein verbundenes Halbquark als Nachbarn:
+   foreach(Z in 1..NZ, S in 1..NS)
+        1 #= sum([(M[Z1,S1] #= M[Z,S]) : {Z1,S1} in [{Z,S-1}, {Z,S+1}, {Z-1,S}, {Z+1,S}], 1=<Z1, Z1=<NZ, 1=<S1, S1=<NS])
+   end,
+   % Die Positionen der Halbquarks sind vorgegeben:
+   foreach(Z in 1..NZ, S in 1..NS)
+        Cons[Z,S] #= M[Z,S] div 10 #\/ Cons[Z,S] #= M[Z,S] mod 10
+   end,
+   solve(Mvars), 
+   foreach(Z in 1..NZ) 
+     foreach(S in 1..NS) 
+		printf("%c%c|", chr(64+M[Z,S] div 10), chr(64+M[Z,S] mod 10))
+	end, nl
+   end, fail.
+/*
+CF|CF|DF|DF|AD|AD|CD|
+DE|DE|EE|EE|FF|FF|CD|
+CC|CC|BF|BF|CE|CE|EF|
+AF|AF|BE|BE|AA|AA|EF|
+DD|DD|AC|AC|BD|BD|BC|
+AB|AB|BB|BB|AE|AE|BC|
+CPU time 0.293 seconds, no more solutions, korrekt */

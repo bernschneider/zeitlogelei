@@ -1,0 +1,34 @@
+/* Zeit Logelei Nr. 04/2021 Alphametik */
+import cp, util.
+
+main =>
+    add(["WAHRE", "FREUDE", "EHEMANN"]), /*
+  36081
+ 981541
+-------
+1017622 */
+    add(["HAGERES", "HOCHROT", "GEBRACHT"]). /*
+ 7214840
+ 7367839
+--------
+14582679 CPU time 0.035 seconds, korrekt */
+
+add(L) => % das letzte Element von L ist die Summe der vorherigen Elemente
+   Letter = keys(new_set(flatten(L))), % verwendete Buchstaben
+   Digit = new_list(len(Letter)), Digit :: 0..9, % eine Ziffer je Buchstabe
+   all_different(Digit),
+   Zeilen = len(L) - 1, % Anzahl der Summanden, im Beispiel = 2
+   Num = new_array(len(L)), % numerische Repräsentation der Elemente von L
+   foreach(I in 1..len(L))
+       S = [Digit[find_first_of(Letter, C)] : C in L[I]], % Convert Letter C -> Digit
+       to_num(S, Num[I]), S[1] #!= 0
+   end,
+   sum([Num[I] : I in 1.. Zeilen]) #= Num[len(L)],
+   solve(Digit ++ Num),
+   foreach(I in 1..Zeilen) printf("%6d%n", Num[I]) end,
+   printf("------%n"),
+   printf("%6d%n%n", Num[len(L)]).
+
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).

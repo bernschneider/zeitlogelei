@@ -1,0 +1,16 @@
+/* Zeit Logelei 2020/21 Wie lautet der Code?
+https://www.zeit.de/zeit-magazin/2020/21/spiele-logelei-21 */
+import cp. 
+main =>
+    Code = new_list(8),   to_num(Code, CodeNum), % Wenn man den 8-stelligen Code ..
+    Rev = Code.reverse(), to_num(Rev, RevNum),   % .. rückwärts aufschreibt, ..
+    CodeNum * Faktor #= RevNum, % .. erhält man ein Vielfaches der ursprünglichen Zahl, ..
+    Faktor :: 2..9,  % .. aber nicht die Zahl selbst. -> Faktor != 1
+    Code :: 1..8,     % Und es kommt weder eine 0 noch eine 9 in der Zahl vor. 
+    solve(Code ++ [Faktor] ++ Rev),
+    printf("%d * %d = %d", CodeNum, Faktor, RevNum).
+/* 21782178 * 4 = 87128712 korrekt
+CPU time 1.095 seconds */
+to_num(List, Num) => % Num = Wert der Liste
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).

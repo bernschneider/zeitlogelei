@@ -1,0 +1,17 @@
+/* Zeit Logelei 2022/22
+https://www.zeit.de/zeit-magazin/2022/22/logelei */
+import alphametik.
+main => %                                     v- eine Zwischenrechnung wurde ausgelassen
+   mult(["VIEL", "SONNE", "GZOTOE", "GSGTIE", "", "GLENGE", "SETZLINGE"]). /*
+8507 * 24330
+-----------
+194640
+ 121650
+   170310
+-----------
+206975310 */
+   add(["VIEL", "WIND", "WENDE"]). /*
+  8607
+  1623
+------
+ 10230 */

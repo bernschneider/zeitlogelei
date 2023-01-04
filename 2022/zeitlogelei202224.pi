@@ -1,0 +1,88 @@
+/* Zeit Logelei 2022/24 Crossfigure Puzzle Kreuzzahlrätsel
+https://www.zeit.de/zeit-magazin/2022/24/logelei
+Passe ggfs. Zeilen 6-14 an! Achtung: Z, S, X werden schon verwendet!
+4 1 8 4 1 8 
+2 9 9 2 4 4 
+6 6 2 3 7 6 
+7 6 7 8 6 6 
+8 1 4 3 5 2 
+6 6 4 6 4 2 
+CPU time 1.217 seconds korrekt */
+import sat, util.
+main =>
+   A=1, B=2, C=3, D=4, E=5, F=6, G=7, H=8, I=9, J=10, K=11, L=12, M=13, N=14, O=15, P=16, Q=17, R=18, S_=19, T=20, Max=T,
+   LM = {{A, B,C,D,E,F},
+		 {G, 0,0,0,H,0},
+		 {I, 0,J,0,K,0},
+		 {L, M,0,N,O,0},
+		 {P, 0,0,Q,0,R},
+		 {S_,0,T,0,0,0}},     
+   WLetter = [A,D,G,H,I,J,L,O,P,Q,S_,T], % alle Buchstaben mit waagrechter Bedingung
+   SLetter = [A,B,C,D,E,F,I,J,K,M,N,P,R], % alle Buchstaben mit senkrechter Bedingung
+   Wr = new_array(Max,4), Wr :: 1..999999, Squares = [Y**2: Y in 1..99], % Waagrechte Zahlen
+   Sr = new_array(Max,4), Sr :: 1..9999,   Primes = primes(99), % Senkrechte Zahlen
+   NZ = len(LM), NS = len(LM[1]), 
+   FWD = 1, REV = 2, QSUM = 3, QPROD = 4,
+   X = new_array(NZ,NS), XVars = array_matrix_to_list(X), XVars :: 0..9,
+   % Waagerecht:
+   % Alle waagerechten Zahlen sind Vielfache von R senkrecht:
+   foreach(Letter in WLetter) multiple(Wr[Letter,FWD], Sr[R,FWD])end,
+   % Senkrecht:
+   multiple(Sr[A,FWD], Sr[E,FWD]), % A Vielfaches von E senkrecht 
+   Sr[B,FWD] #= Sr[E,FWD]**2, % B Quadrat von E senkrecht
+   Sr[C,FWD] :: Primes, % C Primzahl
+   Sr[D,REV] :: Squares, % D Der Rückwert ist eine Quadratzahl
+   Sr[E,REV] :: Primes, % E Der Rückwert ist eine Primzahl
+   Sr[F,QSUM] #= Sr[A,REV], % F Die Quersumme ist der Rückwert von A senkrecht
+   Sr[I,FWD] :: Primes, % I Primzahl
+   Sr[J,FWD] #= Sr[B,FWD] * Sr[E,FWD], % J B senkrecht mal E senkrecht
+   Sr[K,FWD] #= Sr[P,FWD] * Sr[C,FWD], % K P senkrecht mal C senkrecht
+   Sr[M,FWD] #= Sr[E,FWD] * Wr[H,FWD], % M E senkrecht mal H waagerecht
+   Sr[N,FWD] #= Sr[R,FWD] + Wr[P,FWD], % N R senkrecht plus P waagerecht
+   Sr[P,FWD] #= Sr[A,FWD] + Wr[H,FWD], % P A senkrecht plus H waagerecht
+   Sr[R,FWD] mod 11 #= 0, % R Palindrom
+   foreach(Letter in WLetter) % Berechne alle Waagrechten Zahlen aus der Matrix X
+        Row := 0, Col := 0, Len := 0,
+		foreach(Z in 1..NZ)
+			foreach(S in 1..NS, LM[Z,S] = Letter) Row := Z, Col := S end,
+			if Len == 0, Row  > 0 then 
+				foreach(Cn in Col+1..NS, Len == 0, membchk(LM[Z,Cn],WLetter)) Len := Cn - Col end,
+				if Len = 0 then Len := NS+1-Col end 
+		    end 
+		end,
+	    Temp = new_list(Len), Temp :: 0..9,
+   		foreach(Idx in 0..Len-1) X[Row,Col+Idx] #= Temp[Idx+1] end,
+		X[Row,Col] #!= 0,
+        to_num(Temp,Wr[Letter,FWD]), to_num_rev(Temp,Wr[Letter,REV]),
+        Wr[Letter,QSUM] #= sum(Temp), Wr[Letter,QPROD] #= prod(Temp)
+   end,
+   foreach(Letter in SLetter) % berechne alle senkrechte Zahlen aus der Matrix X 
+      Row := 0, Col := 0, Len := 0,
+		foreach(S in 1..NS)
+			foreach(Z in 1..NZ, LM[Z,S] = Letter) Row := Z, Col := S end,
+			if Len == 0, Col > 0 then 
+				foreach(Rn in Row+1..NZ, Len == 0, membchk(LM[Rn,S],SLetter)) Len := Rn - Row end,
+				if Len = 0 then Len := NZ+1-Row end
+			end 
+		end,
+   		Temp = new_list(Len), Temp :: 0..9,
+   		foreach(Idx in 0..Len-1) X[Row+Idx,Col] #= Temp[Idx+1] end,
+		X[Row,Col] #!= 0,
+        to_num(Temp,Sr[Letter,FWD]), to_num_rev(Temp,Sr[Letter,REV]),
+        Sr[Letter,QSUM] #= sum(Temp), Sr[Letter,QPROD] #= prod(Temp)
+   end,
+   solve(XVars ++ vars(Wr) ++ vars(Sr)), 
+   foreach(Z in 1..NZ) 
+      foreach(S in 1..NS) printf("%d ", X[Z,S]) end, nl
+   end. 
+
+multiple(X,A) => % X ist Vielfaches von A
+   X mod A #= 0.
+
+to_num(List, Num) => % Num = Wert der Liste
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).
+
+to_num_rev(List, Num) => % Num = Rückwert der Liste
+        Len = length(List),
+        Num #= sum([List[I]*10**(I-1) : I in 1..Len]).

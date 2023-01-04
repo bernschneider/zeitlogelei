@@ -1,0 +1,39 @@
+/* Zeit Logelei 2020/17
+https://www.zeit.de/zeit-magazin/2020/17/spiele-logelei-17
+In Furama gibt es drei Geschlechter: Fam, Dil und Sur.
+Je zwei unterschiedliche der drei können ein Kind des dritten Geschlechts bekommen. 
+Gleiche Geschlechter können keine Kinder bekommen. Professor Knusi hat vier Furamanier interviewt. 
+Welche Geschlechter haben die vier? */
+import cp.
+
+familie(A,B,G) => % A: "Ich kann mit B ein Kind bekommen, und das wäre ein G." 
+    A #= 2 #=> (A #!= B #/\ A #!= G #/\ B #!= G), % falls A die Wahrheit sagt, ...
+    A #= 1 #=> (A #=  B #\/ A #=  G #\/ B #=  G). % falls A lügt, ...
+
+homo(A,B) => % A: "Ich kann mit B keine Kinder bekommen."
+    A #= 2 #=> A #= B,  % falls A die Wahrheit sagt, ...
+    A #= 1 #=> A #!= B. % falls A lügt, ...
+
+main ?=>
+  Fam=1, Dil=2, Sur=3, % Fams lügen immer, Dils sagen immer die Wahrheit, und bei Surs mal so mal so
+  P = [A,B,C,D], P :: 1..3,
+  % Professor Knusi weiß schon, dass jedes der drei Geschlechter mindestens einmal bei den vieren vorkommt:
+  foreach(G in 1..3) at_least(1, P, G) end,
+  familie(A, B, Sur), % Alga: "Ich kann mit Bera ein Kind bekommen, und das wäre ein Sur."
+  familie(B, C, Fam), % Bera: "Ich kann mit Cubi ein Kind bekommen, und das wäre ein Fam."
+  homo(C, D), % Cubi: "Ich kann mit Dama keine Kinder bekommen."
+  homo(D, A), % Dama: "Ich kann mit Alga keine Kinder bekommen." 
+  familie(A, C, Dil), % Alga: "Ich kann mit Cubi ein Kind bekommen, und das wäre ein Dil."
+  solve(P),
+  Name = ["Alga", "Bera", "Cubi", "Dama"], Geschlecht = ["Fam", "Dil", "Sur"], 
+  foreach(I in 1..len(P)) 
+      printf("%s ist %s.%n", Name[I], Geschlecht[P[I]])
+  end,
+  fail.
+/*
+Alga ist Sur.
+Bera ist Dil.
+Cubi ist Sur.
+Dama ist Fam. 
+no more solutions Korrekt! 
+ZEIT: Alga und Cubi sind Sur, Bera ist Dil, und Dama ist Fam.*/

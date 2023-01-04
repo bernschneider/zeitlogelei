@@ -1,0 +1,38 @@
+/* Zeit Logelei 2020/37 
+Prafanier werden groß geboren, wobei die Größe bei der Geburt nicht immer gleich ist, 
+und schrumpfen jedes Jahr um einen Zentimeter.
+https://www.zeit.de/zeit-magazin/2020/37/spiele-logelei-37 */
+import cp.
+main1 ?=>
+    Vars = [Pa, Ba, Pg, Bg], Vars :: 6..10, % P=Peda, B=Bowa, a=Alter, g=Größe - die Domain ist eigentlich egal
+    % Peda: "Lustig: Wenn ich so groß bin, wie du jetzt bist, bist du so alt, wie ich jetzt bin.":
+    Delta1 #= Pg - Bg, Ba + Delta1 #= Pa,
+    % Bowa: "Wenn du so alt bist, wie ich jetzt groß bin, bin ich so alt, wie du jetzt groß bist."
+    Delta2 #= Bg - Pa, Ba + Delta2 #= Pg,
+    solve(Vars ++ [Delta1, Delta2]),
+    printf("Wenn Peda %d Jahre alt ist, ist Bowa %d Jahre alt.%n", Pa, Ba),
+    printf("Wenn Peda %d cm groß ist, ist Bowa %d cm groß.%n", Pg, Bg), nl,
+    fail.
+/* Wenn Peda 6 Jahre alt ist, ist Bowa 6 Jahre alt.
+.. Wenn Peda 7 Jahre alt ist, ist Bowa 7 Jahre alt.
+.. Wenn Peda 6 cm groß ist, ist Bowa 6 cm groß.
+.. Wenn Peda 7 cm groß ist, ist Bowa 7 cm groß. usw.
+M.a.W.: Peda und Bowa sind gleich groß und gleich alt. KORREKT
+Btw: Dies lässt sich auch durch Gleichungsumformung ermitteln. */
+main2 ?=>
+    Vars = [Ea, Aa, Eg, Ag], Vars :: 1..300, % E=Els, A=Anh, a=Alter, g=Größe
+    % Els ist doppelt so groß wie Anh:
+    Eg #= 2 * Ag,
+    % Nächstes Jahr wird Anh doppelt so alt sein, wie Els dann ist:
+    Aa + 1 #= 2 * (Ea + 1),
+    % Übernächstes Jahr ist Els genau einen Meter größer, als Anh vorletztes Jahr war:
+    Eg - 2 #= 100 + (Ag + 2),
+    % Els war bei seiner Geburt dreimal so groß, wie Anh letztes Jahr war:
+    Eg + Ea #= 3 * (Ag + 1),
+    solve(Vars),
+    printf("Els ist %d Jahre alt und  %d cm groß.%n", Ea, Eg),
+    printf("Anh ist %d Jahre alt und  %d cm groß.%n", Aa, Ag), nl,
+    fail.
+/* Els ist 107 Jahre alt und  208 cm groß.
+Anh ist 215 Jahre alt und  104 cm groß. 
+no more solutions, korrekt */

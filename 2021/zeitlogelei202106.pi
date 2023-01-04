@@ -1,0 +1,19 @@
+/* Zeit Logelei Nr. 06/2021 Wann wurdest du denn geboren?"
+https://www.zeit.de/zeit-magazin/2021/06/logelei */
+import cp.
+main ?=>
+    % Jahr JJ   Monat MM    Tag TT
+    J :: 0..99, M :: 1..12, T :: 1..31, % "Irgendwann zwischen 1900 und 2000"
+    S = new_list(6), S :: 0..9, % Format JJMMDD
+    J #= 10 * S[1] + S[2], M #= 10 * S[3] + S[4], T #= 10 * S[5] + S[6],
+    % Wenn man den Tag mit dem Monat multipliziert, erhält man die letzten beiden Stellen der Jahreszahl:
+    T * M #= J,
+    % Wenn ich den Tag und den Monat addiere, erhalte ich die Quersumme der vierstelligen Jahreszahl:
+    T + M #= 1 + 9 + S[1] + S[2],
+    % Wenn ich alle Ziffern des Tages, des Monats und der vierstelligen Jahreszahl addiere, erhalte ich 34:
+    1 + 9 + sum(S) #= 34,
+    solve([J, M, T] ++ S),
+    printf("%02d.%02d.19%02d%n", T, M, J),
+    fail.
+/* 22.04.1988 
+CPU time 0.001 seconds, no more solutions, korrekt */

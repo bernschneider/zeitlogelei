@@ -1,0 +1,21 @@
+/* Zeit Logelei 2021/53 
+https://www.zeit.de/zeit-magazin/2021/53/logelei
+Lola hat diverse Ratschläge zum Christbaumschmücken bekommen: ...
+Wie muss Lola den Baum schmücken, wenn sie sich an alle Ratschläge halten will? */
+import cp.
+main ?=>
+   V = [E, G, K, L, P, R, S, W], V :: 0..1,
+   K #= 1 #=> P #= 1, % In der Zeitung stand, dass man _Printen anhängen soll, wenn man echte _Kerzen benutzt. 
+   W #= 1 #=> L #= 1, % Nina: "Wenn du _weiße Kugeln anhängst, dann solltest du auch _Lametta anbringen! 
+   R #= 1 #=> G #= 1, % Und zu den _roten Kugeln müssen unbedingt auch Weihnachts_gurken!" 
+   S #= 1 #=> K #= 0, % Der Kaminfeger rät: "Zu den _Strohsternen auf keinen Fall echte _Kerzen, ..
+   S #= 1 #=> W #= 1, % .. stattdessen immer _weiße Kugeln zu _Strohsternen!" 
+   E #= 1 #=> S #= 1, % Der Nachbar: "Wenn Sie einen _Engel an der Spitze haben, dann sollten Sie auch _Strohsterne aufhängen." 
+   G #= 1 #=> W #= 1, % Die Oma weiß: "Wenn du Weihnachts_gurken verwendest, dann solltest du auch _weiße Kugeln aufhängen. 
+   L #= 1 #=> K #= 1, % Und wenn du _Lametta verwendest, dann auch echte _Kerzen." 
+   E #= 0 #=> P #= 0,  % Bob meint: "Wenn du keinen _Engel an der Spitze hast, dann solltest du auch auf _Printen verzichten." 
+   solve(V),
+   println(V),
+   fail. /*
+[0,0,0,0,0,0,0,0] d.h. Lola lässt den Baum wie er ist und hängt gar nichts auf.  
+no more solutions, korrekt */

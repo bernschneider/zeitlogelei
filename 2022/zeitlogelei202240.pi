@@ -1,0 +1,40 @@
+/* Zeit Logelei 2020/47 Schreiben Sie in jedes Feld eine Zahl von 1 bis 9  so, dass sich 
+zwischen zwei Schwarzfeldern beziehungsweise zwischen Schwarzfeld und Rand keine Zahl wiederholt
+https://www.zeit.de/zeit-magazin/2022/40/logelei */
+import cp.
+main ?=>
+    C = {{     x,(11,_),(32,_), (6,_),     x,(14,_), (6,_)},
+         {(_,11),     0,     0,     0, (7,7),     0,     0},
+         {(_,28),     0,     0,     0,     0,     0,     0},
+         { (_,5),     0,     0,(7,14),     0,     0,     x},
+         {     x,(12,3),     0,     0, (7,_), (5,_),(13,_)},
+         {(_,24),     0,     0,     0,     0,     0,     0},
+         {(_,13),     0,     0,(_,15),     0,     0,     0}}, N = len(C),
+    M = new_array(N,N), M :: 0..9,
+    foreach(Z in 1..N, S in 1..N) if C[Z,S] = 0 then M[Z,S] #> 0 else M[Z,S] #= 0 end end,
+    foreach(Z0 in 1..N, S in 1..N, C[Z0,S] = (V,H), ground(V))
+        Z = Z0 + 1, while(Z =< N, C[Z,S] = 0) Z := Z + 1 end, % jetzt zeigt Z hinter das letzte Feld
+        L = [M[I,S] : I in Z0+1..Z-1], V #= sum(L), all_different(L)
+    end,  
+    foreach(Z in 1..N, S0 in 1..N, C[Z,S0] = (V,H), ground(H))
+        S = S0 + 1, while(S =< N, C[Z,S] = 0) S := S + 1 end, % jetzt zeigt S hinter das letzte Feld
+        L = [M[Z,I] : I in S0+1..S-1], H #= sum(L), all_different(L)
+    end,
+    solve(M),
+    foreach(Z in 1..N, S in 1..N)
+        if C[Z,S] = x then print("     |")
+        elseif C[Z,S] = (V,H) then printf("%2s\\%2s|", str2(V), str2(H))
+        else printf(" <%d> |", M[Z,S])
+        end, if S = N then nl end
+    end,
+    nl , fail. /* 
+     |11\  |32\  | 6\  |     |14\  | 6\  |
+  \11| <2> | <8> | <1> | 7\ 7| <2> | <5> |
+  \28| <8> | <9> | <5> | <2> | <3> | <1> |
+  \ 5| <1> | <4> | 7\14| <5> | <9> |     |
+     |12\ 3| <2> | <1> | 7\  | 5\  |13\  |
+  \24| <5> | <3> | <6> | <2> | <1> | <7> |
+  \13| <7> | <6> |  \15| <5> | <4> | <6> |
+CPU time 0.001 seconds, no more solutions, korrekt */
+str2(S) = Str =>
+    if var(S) then Str = "  " else Str = S.to_string() end.

@@ -1,0 +1,43 @@
+/* Zeit Logelei 2022/48 (= Cave from puzzle parasite ohne "no four in a row")
+https://www.zeit.de/zeit-magazin/2022/48/spiele-logelei-48 */
+import sat.
+signature(L, K) => % K mal kein Plasma (1), dann Plasma (0):
+    foreach(I in 1..len(L)) I #=< K #=> L[I] #= 1, I #= K+1 #=> L[I] #= 0 end.
+
+main ?=>		 
+    Cnt = { {0,0,5,0,0,6,0},
+    		{0,3,0,0,0,0,2},
+    		{0,0,0,3,0,0,0},
+    		{0,0,0,0,0,0,0},
+    		{5,0,0,0,6,0,0},
+    		{0,2,0,0,2,0,0},
+    		{0,0,0,0,0,0,0} },
+    N = len(Cnt), N2 = 1+N+1, 
+    % Einige der Felder ohne Zahl sind mit Plasma gefüllt und hängen mit dem Rand zusammen:
+	Plasma = new_array(N2,N2), Plasma :: 0..1, scc_grid(Plasma), 
+    foreach(Z2 in 1..N2) Plasma[Z2,1] #= 1, Plasma[Z2,N2] #= 1 end, % lege einen 1er-Rand um die NxN-Matrix
+    foreach(S2 in 1..N2) Plasma[1,S2] #= 1, Plasma[N2,S2] #= 1 end,
+    % Alle Felder ohne Plasma hängen zusammen:
+    M = new_array(N,N), M :: 0..1, scc_grid(M), % M = 1 heißt "kein Plasma"
+    foreach(Z in 1..N, S in 1..N) M[Z,S] #= 1 - Plasma[1+Z,1+S] end,
+    % Die Zahlen geben an, wie viele Felder ohne Plasma man waagerecht oder senkrecht erreichen kann:
+    foreach(Z in 1..N, S in 1..N, Cnt[Z,S] > 0)
+    	M[Z,S] #= 1, % wo eine Zahl steht, ist kein Plasma
+        Top :: 0..Z-1, Down :: 0..N-Z, Left :: 0..S-1, Right :: 0..N-S, % 0..Felder bis zum Rand
+    	Cnt[Z,S] #= 1 + Top + Down + Left + Right, % zähle die Non-Plasma-Felder (Z|S zählt mit)
+        signature([M[I,S] : I in Z-1..-1..1], Top),  signature([M[I,S] : I in Z+1..N], Down), 
+        signature([M[Z,J] : J in S-1..-1..1], Left), signature([M[Z,J] : J in S+1..N], Right)
+    end,
+    solve(vars(Plasma) ++ vars(M)), Chr = "+ ",
+    foreach(Z in 1..N, S in 1..N)
+		if Cnt[Z,S] > 0 then printf("%d ", Cnt[Z,S]) else printf("%c ", Chr[1+M[Z,S]]) end,
+        if S = N then nl end
+    end, nl, fail. /*
++   5     6 +
++ 3 + + +   2
++     3 + + +
++ +   + + + +
+5       6 + +
++ 2 + + 2 + +
++ + + + + + +
+CPU time 0.8 seconds, no more solutions, korrekt */

@@ -1,0 +1,36 @@
+/* Zeit Logelei 2020/05
+https://www.zeit.de/zeit-magazin/2020/05/spiele-logelei-05 */
+import cp.
+go1 =>
+  println("M: 6"),
+  println("G: 9").
+% Gaby ist 9 und Martin ist 6. Korrekt!
+
+go2 ?=>
+  M=1, D=2, T=3, A = new_array(3,1+17), A :: 0..30, % Alter von I vor J-1 Jahren   
+  % A. Tonia zu Molle: "Vor 10 Jahren warst du so alt, wie Dary und ich damals zusammen waren.":
+  A[M,1+10] #= A[D,1+10] + A[T,1+10],
+  % B. Dary zu Tonia: "Vor 2 Jahren warst du doppelt so alt wie ich damals.":
+  A[T,1+2]  #= 2 * A[D,1+2],
+  % C. Molle: "Vor 17 Jahren hatten wir alle Quadratzahlen als Alter.":
+  Squares = [I*I : I in 0..10],
+  foreach(I in 1..3)
+    foreach(J in 1..17)
+        % Ab 30 Jahren altert man nicht mehr, bleibt einfach 30 Jahre alt.
+        % I wird jedes Jahr um 1 Jahr älter, maximal aber 30:
+        A[I,1+J-1] #= min(30, A[I,1+J] + 1)
+    end,
+    A[I,1+17] :: Squares
+  end,
+  solve(vars(A)),
+  Name = ["Molle", "Dary ", "Tonia"],
+  foreach(I in 1..3)
+    printf("%s: ", Name[I]),
+    foreach(J in 0..17) printf("%2d ", A[I,1+J]) end, nl
+  end, nl, fail. 
+/*Constraint A.                      B.                   C.
+        0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 (vor J Jahren)
+Molle: 30 30 30 30 30 30 30 30 30 30 30 30 30 29 28 27 26 25 
+Dary : 17 16 15 14 13 12 11 10  9  8  7  6  5  4  3  2  1  0 
+Tonia: 30 30 30 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16  no more solutions 
+Dary ist 17, Tonia und Molle sind laut Gesetz 30, aber in Wirklichkeit 33 und 42 korrekt */

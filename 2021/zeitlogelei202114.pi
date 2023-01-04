@@ -1,0 +1,30 @@
+/* Zeit Logelei 2021/14
+https://www.zeit.de/zeit-magazin/2021/14/logelei
+Vier Freunde haben sich eine Mutprobe ausgedacht: Sie wollen jeder einen Fluss von der Quelle bis zur Mündung befahren. */
+import cp.
+main ?=> %        1         2       3            4
+    StrPers =  ["Eva",   "Mike", "Nadja",     "Timo"], 
+    StrFluss = ["Donau", "Elbe", "Oder",      "Rhein"],    % Wer fährt auf dem Rhein?
+    StrBoot =  ["Floß",  "Kanu", "Ruderboot", "Stand-Up"], % Wer ist mit dem Floß unterwegs? 
+    % Jeder der vier hat sich einen anderen Fluss und ein anderes Gefährt ausgesucht:
+    Fluss = new_list(4), Fluss :: 1..4, assignment(Fluss, RFluss), 
+    Boot  = new_list(4), Boot  :: 1..4, all_different(Boot), 
+    Fluss[1] :: [1,4], % Eva: "Ich werde weder auf der Elbe (2) noch auf der Oder (3) fahren. 
+    Boot[1] #!= 2, % Und das Kanu ist auch nicht meins." 
+    Fluss[2] :: [2,4], % Mike: "Und ich möchte weder auf der Donau (1) noch auf der Oder (3) fahren." 
+    Boot[3] #!= 2, % Nadja: "Ich mag Kanus nicht." 
+    Boot[4] :: [1,3], % Timo: "Und ich fahre nicht als Stand-up-Paddler (4). Und mit einem Kanu (2) fahre ich auch nicht."
+    % Laut Elbekleinfahrzeugverordnung darf man auf der Elbe (2) weder mit Kanus (2) noch mit Ruderbooten (3) fahren:
+    element(RFluss[2], Boot, BootE), BootE :: [1,4],
+    % Und bei der Donau (1) bekommt man bei der Versickerungsstelle Probleme mit einem Ruderboot (3) und als Stand-up-Paddler (4):
+    element(RFluss[1], Boot, BootD), BootD :: [1,2], 
+    solve(Fluss ++ Boot ++ RFluss ++ [BootE, BootD]),
+    foreach(I in 1..4) 
+        printf("%s fährt mit dem %s auf der %s.%n", StrPers[I], StrBoot[Boot[I]], StrFluss[Fluss[I]]) 
+    end,
+    nl, fail.
+/* Eva fährt mit dem Floß auf der Donau.
+Mike fährt mit dem Kanu auf dem Rhein.
+Nadja fährt mit dem Stand-Up auf der Elbe.
+Timo fährt mit dem Ruderboot auf der Oder.
+no more solutions, korrekt */

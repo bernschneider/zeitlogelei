@@ -1,0 +1,39 @@
+/* Zeit Logelei 2022/44 Unterteilen Sie das Diagramm in Gebiete
+https://www.zeit.de/zeit-magazin/2022/44/logelei */
+import sat. 
+main => 
+    C ={{0,1,0,0,0,4,0},
+		{0,0,0,0,0,0,0},
+		{2,3,0,3,0,0,0},
+		{0,0,3,0,0,2,0},
+		{0,1,0,1,3,0,0},
+		{0,0,0,2,0,3,0},
+		{2,0,0,0,0,0,0}},
+   N = len(C), Max = 4, Gmax = 21, % (Magic)
+   M = new_array(N,N),  M :: 1..Gmax, Mvars = vars(M),
+   Cnt = new_list(Gmax), Cnt :: 0..Max, % wie oft kommt F in M vor? 
+   foreach(Z in 1..N, S in 1..N, C[Z,S]>0) element(M[Z,S], Cnt, C[Z,S]) end,
+   foreach(F in 1..Gmax) count(F, Mvars, Cnt[F]) end, 
+   % Zwei verschiedene Gebiete der gleichen Größe dürfen nicht orthogonal (wohl aber diagonal) benachbart sein:
+   foreach(Z1 in 1..N, S1 in 1..N, Z2 in [Z1,Z1+1], S2 in [S1,S1+1], Z2=<N, S2=<N, Z2-Z1 + S2-S1=1) 
+        element(M[Z1,S1], Cnt, C1), element(M[Z2,S2], Cnt, C2),
+        C1 #= C2 #=> M[Z1,S1] #= M[Z2,S2] 
+   end, 
+   % Alle Gebiete hängen zusammen:
+   foreach(F in 1..Gmax) 
+        Geb = new_array(N,N), Geb :: 0..1, scc_grid(Geb),
+        foreach(Z in 1..N, S in 1..N) Geb[Z,S] #= (M[Z,S] #= F) end        
+   end,
+   solve(Mvars ++ Cnt),
+   foreach(Z in 1..N, S in 1..N) 
+        printf("%2d|", Cnt[M[Z,S]]),
+	    if S = N then nl end
+   end. /*
+ 4| 1| 2| 2| 4| 4| 4|
+ 4| 4| 4| 3| 3| 1| 4|
+ 2| 3| 1| 3| 4| 4| 1|
+ 2| 3| 3| 4| 4| 2| 2|
+ 3| 1| 4| 1| 3| 3| 4|
+ 3| 3| 4| 2| 2| 3| 4|
+ 2| 2| 4| 4| 1| 4| 4|
+CPU time 18.482 seconds (!), sieht gut aus! */

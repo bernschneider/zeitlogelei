@@ -1,0 +1,24 @@
+/* Zeit Logelei Nr. 2021/30
+https://www.zeit.de/zeit-magazin/2021/30/logelei
+Kürzlich wurde aus dem Weltall ein neonbeiges Artefakt mit unergründlicher Form zugestellt. */
+import cp.
+main ?=> 
+    StrF = ["Kegel", "Kleinsche Flasche", "Knoten", "Kugel", "mausförmig", "Pyramide", "Tischtennisschläger", "Torus", "Würfel"],
+    F =    [ Ke,      Kl,                  Kn,       Ku,      Ma,           Py,         Ti,                    To,      Wu], 
+    F :: 0..1, % F[I] = 1 <=> Gegenstand hat Form[I]
+    sum(F) #= 3, % Professor Kuni: "Ich fasse mal zusammen: Das Artefakt hat nicht nur eine Form, sondern drei Formen gleichzeitig."
+    Ke + To #= 1, % Eine der Formen ist entweder ein Kegel oder ein Torus." 
+    Py + Kn + Ma #=< 1, % Professor Ömsi: "Pyramide, Knoten und mausförmig schließen sich jeweils gegenseitig aus. 
+    Kl + Ti #>= 1, % Es ist aber eine Kleinsche Flasche oder ein Tischtennisschläger." 
+    To #= 0 #=> Ti #= 1, % Professor Bruck: "Wenn es kein Torus ist, dann hat es die Form eines Tischtennisschlägers. 
+    Ku #= 0 #=> Ke #= 0, % Und wenn es keine Kugel ist, dann ist es auch kein Kegel." 
+    Kl + To #= 1, % Professor Zuck: "Es ist entweder eine Kleinsche Flasche oder ein Torus, aber nicht beides. 
+    Wu #= 1 #=> Ke #= 0, % Wenn es ein Würfel ist, ist es kein Kegel." 
+    Ku #= 1 #=> Py + Kn #= 1, % Professor Ma: "Wenn es eine Kugel ist, dann auch eine Pyramide oder ein Knoten. 
+    (Ti #= 1 #\/ To #= 0) #=> Ma #= 1, % Wenn es ein Tischtennisschläger oder kein Torus ist, dann ist es sicher mausförmig." 
+    solve(F),
+    foreach(I in 1..len(F), F[I] = 1)
+        printf("%s ", StrF[I])
+    end, nl, fail. /* 
+mausförmig Tischtennisschläger Torus
+CPU time 0.0 seconds, no more solutions, korrekt laut persönlicher Mail von Zweistein vom 10.08.2021 */

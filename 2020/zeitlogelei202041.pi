@@ -1,0 +1,20 @@
+/* Zeit Logelei 2019/29 Proffesso Knusi in Galabien */
+import cp.
+
+main ?=>
+  W = 1, F = 0, % Wahrsager, Falschsager
+  P = [Da,Je,Ma,SS,Si,Te,Tu,Za], P :: [W, F],
+  sum(P) #= 4, % gleich viele Lügner wie Wahrheitssager
+  foreach((A,B,C) in [
+      (Za,SS,Tu), % Zarro: "Sin-Sin würde sagen, dass Tutu nicht die Wahrheit sagt." 
+      (Tu,Za,Si), % Tutu: "Zarro würde sagen, dass Sinka nicht die Wahrheit sagt." 
+      (Da,Ma,Je), % Dari: "Macha würde sagen, dass Jedina nicht die Wahrheit sagt." 
+      (Te,Tu,Si)])% Tessi: "Tutu würde sagen, dass Sinka nicht die Wahrheit sagt."
+        A #= (B #= (C #= F))
+  end,
+  solve(P),
+  Name = ["Dari","Jedina","Macha","Sin-Sin","Sinka","Tessi","Tutu","Zarro"],
+  printf("%w sagen die Wahrheit.%n", [Name[I] : I in 1..8, P[I]=1]),
+  fail.
+/*
+[Sin-Sin,Sinka,Tessi,Zarro] sagen die Wahrheit, korrekt. */

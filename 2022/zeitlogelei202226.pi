@@ -1,0 +1,20 @@
+/* Zeit Logelei 2022/26 Ben hat das Mikrofon des Professors gehackt
+https://www.zeit.de/zeit-magazin/2022/26/logelei */
+import cp.
+main =>
+    L5 = new_list(5), L5 :: 0..8, L5[1] #> 0, to_num(L5, X5), % 5-stellige Zahl
+    L3 = new_list(3), L3 :: 0..8, L3[1] #> 0, to_num(L3, X3), % 3-stellige Zahl
+    X53 #= X5 div X3, X5 mod X3 #= 0, % Die Division geht ohne Rest auf
+    % Wenn ich jede Ziffer der beiden Zahlen, die ja keine 9 enthalten, um eins erhöhe, ...
+    L51 = new_list(5), foreach(I in 1..5) L51[I] #= L5[I] + 1 end, to_num(L51, X51),
+    L31 = new_list(3), foreach(I in 1..3) L31[I] #= L3[I] + 1 end, to_num(L31, X31),
+    X531 #= X51 div X31, X51 mod X31 #= 0, % .. dann geht die Rechnung ebenfalls ohne Rest auf
+    X53 - X531 #= 100, % die Differenz der beiden Ergebnisse beträgt genau 100
+    solve([X5, X3, X53, X51, X31, X531] ++ L5 ++ L3 ++ L51 ++ L31),
+    printf("%d : %d = %d%n", X5,  X3,  X53),  % 33712 : 112 = 301 korrekt
+    printf("%d : %d = %d%n", X51, X31, X531). % 44823 : 223 = 201 korrekt
+% CPU time 0.409 seconds
+
+to_num(List, Num) => % Num = Wert der Liste
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).

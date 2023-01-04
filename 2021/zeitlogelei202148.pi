@@ -1,0 +1,52 @@
+/* Zeit Logelei 2021/48
+https://www.zeit.de/zeit-magazin/2021/48/logelei (Das wesentliche Constraint steht in den Zeilen 19ff!)
+Bert möchte seine sieben Sitzmöbel in seinem neuen Zimmer so platzieren, dass sie sich nicht berühren, auch nicht diagonal. Wo müssen sie hin? */
+import util, sat. 
+main =>  
+   N = 8, M = new_array(N,N), M :: 0..7, % 0 ist ein Leerfeld; 1..7 = die 7 Möbel
+   % Bert hat sich Notizen gemacht, wie viele Felder in jeder Zeile und Spalte von den Möbeln belegt sein sollen.
+   Hcnt = [5,5,1,6,2,2,4,3], Vcnt = [4,4,3,2,5,2,1,7], 
+   foreach({Cnt,L} in zip(Hcnt, M.rows()) ++ zip(Vcnt, M.columns())) Cnt #= sum([(V #> 0) : V in L]) end,
+   % Die Möbel berühren sich nicht:
+   foreach(Z in 1..N, S in 1..N-1) (M[Z,S] #> 0 #/\ M[Z,S+1] #> 0) #=> M[Z,S] #= M[Z,S+1] end,
+   foreach(Z in 1..N-1, S in 1..N) (M[Z,S] #> 0 #/\ M[Z+1,S] #> 0) #=> M[Z,S] #= M[Z+1,S] end,
+   foreach(Z in 1..N-1, S in 1..N-1) % .. auch nicht diagonal:
+       (M[Z,S] #> 0 #/\ M[Z+1,S+1] #> 0) #=> M[Z,S] #= M[Z+1,S+1],
+       (M[Z,S+1] #> 0 #/\ M[Z+1,S] #> 0) #=> M[Z,S+1] #= M[Z+1,S] 
+   end,
+   % Die Möbel sind alle genau vier Felder groß:
+   foreach(F in 1..7) 4 #= sum([(M[Z,S]#=F) : Z in 1..N, S in 1..N]) end, % alles Tetrominos!
+   % Die Möbel haben alle unterschiedliche Formen (gespiegelte Formen zählen als unterschiedlich):
+   Typ = [1,2,2,0,3,4,4], % OLLITSS mit O=1, L=2, I=0, T=3, S=4; L und S gibt es jeweils auch gespiegelt, also zweimal! (das sind dann alle 7 möglichen Formen)
+   % Berechne ONb, die Zahl der orthogonalen Nachbarn gleicher Farbe sowie DNb für die Existenz von diagonalen Nachbarn: 
+   ONb = new_array(N,N), ONb :: 0..3, % Anzahl
+   DNb = new_array(N,N), DNb :: 0..1, % hat diagonalen Nachbar
+   foreach(Z in 1..N, S in 1..N)
+   		F #= M[Z,S],
+   		F #> 0 #=> ONb[Z,S] #= sum([(M[Z1,S1] #= F): {Z1,S1} in [{Z-1,S},{Z,S-1},{Z,S+1},{Z+1,S}], Z1 > 0, Z1 =< N, S1 > 0, S1 =< N]),
+   		F #> 0 #=> DNb[Z,S] #= (sum([(M[Z1,S1] #= F): {Z1,S1} in [{Z-1,S-1},{Z-1,S+1},{Z+1,S-1},{Z+1,S+1}], Z1 > 0, Z1 =< N, S1 > 0, S1 =< N]) #> 0)
+   end,
+   foreach(F in 1..7)
+        SumONb #= sum([ONb[Z1,S1] * (M[Z1,S1]#=F): Z1 in 1..N, S1 in 1..N]),
+        SumDNb #= sum([DNb[Z1,S1] * (M[Z1,S1]#=F): Z1 in 1..N, S1 in 1..N]),
+        SumONb :: [6,8],
+   		Typ[F] #= 1      #<=> SumONb #= 8, % O=1 (O-Tetrominos haben in der Summe 8 orthogonale Nachbarn)
+   		Typ[F] #= SumDNb #<=> SumONb #= 6  % I=0, L=2, T=3, S=4
+   end, 
+   M[1,4] #= 0, % kleiner Trick: Damit erreichen wir, dass die beiden S-Tetrominos gespiegelt, also verschieden sind!
+   solve(vars(M) ++ vars(ONb) ++ vars(DNb)),
+   Code = "IOLTS",
+   foreach(Z in 1..N) 
+      foreach(S in 1..N) 
+          if M[Z,S] = 0 then print(" |") else printf("%c|", Code[1 + Typ[M[Z,S]]]) end
+	  end, nl
+   end. /*
+O|O| | |S|S| |I|
+O|O| |S|S| | |I|
+ | | | | | | |I|
+L|L|L| |L|L| |I|
+L| | | |L| | | |
+ | | | |L| | |T|
+ |S|S| | | |T|T|
+ | |S|S| | | |T|
+CPU time 3.02 seconds, korrekt */

@@ -1,0 +1,41 @@
+/* Zeit Logelei 2021/28 Bauer Krovinger
+https://www.zeit.de/zeit-magazin/2021/28/logelei
+"Wo soll ich die Vogelscheuchen aufstellen?", schimpft Bauer Krovinger. "In jedem eingezäunten Acker müssen mindestens zwei stehen, 
+sonst merken die Vögel den Betrug. Und aus dem gleichen Grund dürfen sie sich nicht in benachbarten Planquadraten befinden, 
+noch nicht einmal in diagonal benachbarten." Weiter schimpft er: "Und das größte Problem ist das Ordnungsamt. Die schreiben mir vor, 
+dass ich nur maximal zwei Vogelscheuchen pro Zeile und pro Spalte aufstellen darf, damit die Landschaft nicht verschandelt wird." */
+import util, cp.
+main ?=> 
+    Geb = {{1,1,1, 4,6,6, 6,6,6},
+           {1,1,1, 4,4,6, 6,4,6},
+           {1,1,4, 4,4,4, 4,4,9},
+           {2,2,4, 4,4,4, 4,4,9},
+           {2,2,2, 4,4,7, 4,4,9},
+           {2,2,2, 5,5,7, 4,8,8},
+           {2,2,2, 2,5,7, 8,8,8},
+           {3,3,3, 5,5,7, 8,8,8},
+           {3,3,3, 3,5,7, 7,8,8}},
+    N = 9, M = new_array(N,N), M :: 0..1, % 1 = Vogelscheuche
+    foreach(L in M.rows() ++ M.columns() ++ [ [M[Z,S] : Z in 1..N, S in 1..N, Geb[Z,S]=G ] : G in 1..N])
+        sum(L) #= 2
+    end,
+    % Die Vogelscheuchen sind nicht benachbart:
+    foreach(Z in 1..N, S in 1..N-1)   M[Z,S] + M[Z,S+1] #< 2 end,
+    foreach(Z in 1..N-1, S in 1..N)   M[Z,S] + M[Z+1,S] #< 2 end,
+    foreach(Z in 1..N-1, S in 1..N-1) M[Z,S] + M[Z+1,S+1] #< 2, M[Z,S+1] + M[Z+1,S] #< 2 end,
+    solve(M), Chr = " *",
+    foreach(Z in 1..N, S in 1..N)
+        printf("%c%c|", Chr[1+M[Z,S]], chr(64+Geb[Z,S])),
+        if S = N then nl end
+    end,
+    fail. /*
+ A| A| A| D|*F| F|*F| F| F|
+*A| A|*A| D| D| F| F| D| F|
+ A| A| D| D| D| D|*D| D|*I|
+ B|*B| D|*D| D| D| D| D| I|
+ B| B| B| D| D|*G| D| D|*I|
+ B|*B| B|*E| E| G| D| H| H|
+ B| B| B| B| E|*G| H|*H| H|
+*C| C|*C| E| E| G| H| H| H|
+ C| C| C| C|*E| G| G|*H| H|
+CPU time 0.006 seconds, no more solutions  */

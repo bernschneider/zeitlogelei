@@ -1,0 +1,19 @@
+/* Zeit Logelei 2021/42 Professor Knusi auf Ubasi
+https://www.zeit.de/zeit-magazin/2021/42/logelei */
+import cp.
+main ?=>
+  Str = ["Barotoso", "Gumubafo", "Hobasitti", "Muleblaba", "Oponogo", "Supamaro", "Taboleno", "Zubunori"],
+  U = [B, G, H, M, O, S, T, Z], U :: 0..1, % 0 = lügt, 1 = sagt die Wahrheit
+  foreach( {X0, X1,W1, X2, W2} in [
+    {H, S,0, O,1}, % Hobasitti tritt vor und sagt: "Wenn Supamaro lügt, dann sagt Oponogo die Wahrheit." 
+    {B, O,1, Z,1}, % Barotoso hebt die Hand und sagt: "Wenn Oponogo die Wahrheit sagt, dann sagt Zubunori die Wahrheit." 
+    {S, B,1, H,0}, % Als Nächstes ist Supamaro dran: "Wenn Barotoso die Wahrheit sagt, dann lügt Hobasitti." 
+    {Z, T,0, B,0}, % Zuletzt erhebt Zubunori das Wort: "Wenn Taboleno lügt, dann lügt Barotoso." 
+    {S, M,0, G,1}])% Dann sagt Supamaro noch schnell: "Wenn Muleblaba lügt, dann sagt Gumubafo die Wahrheit."
+      X0 #= (X1 #= W1 #=> X2 #= W2)
+  end,
+  solve(U), 
+  foreach(I in 1..8, U[I] = 0) printf("%s ", Str[I]) end, println("lügen, die anderen sagen die Wahrheit."),
+  fail. /* 
+Gumubafo Muleblaba Supamaro lügen, die anderen sagen die Wahrheit.
+no more solutions, korrekt */

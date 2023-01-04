@@ -1,0 +1,34 @@
+/* Zeit Logelei 2021/10  Proffesso Knusi in Frambozen
+Auf einem Platz stehen sieben Frambozianer zusammen. Professor Knusi befragt sie, zu welcher Gruppe sie gehören. */
+import cp.
+
+main ?=>
+  % In Frambozen gibt es Urwallen, die (fast) immer lügen, und Befullen, die immer die Wahrheit sagen:
+  N = 7, Urw = 0,  Bef = 1, % 0 = Urwalle, 1 = Befulle
+  Gr = new_list(N), Gr :: [Urw, Bef], 
+  Wh = new_list(N), Wh :: 0..1, % 1 = sagt die Wahrheit
+  foreach(I in 1..N)  Gr[I] #= Bef #=> Wh[I] #= 1 end, 
+  A=1, B=2, C=3, D=4, E=5, F=6, G=7,  
+  Str = ["Amber", "Bember", "Cumber", "Dimber", "Emmer", "Fimmer", "Gommer"],
+  foreach((X, Y, Z) in [
+      (A, B, Urw), % Amber:  Bember ist Urwalle. 
+      (B, D, Bef), % Bember: Dimber ist Befulle. 
+      (C, A, Bef), % Cumber: Amber  ist Befulle. 
+      (D, G, Bef), % Dimber: Gommer ist Befulle. 
+      (E, F, Urw), % Emmer:  Fimmer ist Urwalle. 
+      (F, C, Urw), % Fimmer: Cumber ist Urwalle. 
+      (G, F, Bef)])% Gommer: Fimmer ist Befulle.
+        Wh[X] #= (Gr[Y] #= Z)
+  end,
+  % Einer der Befragten ist ein Urwalle, hat sich aber vertan hat und eine wahre Aussage gemacht:
+  sum(Wh) #= sum(Gr) + 1, % Wahrheitssager = alle Befullen + ein Urwalle, der sich vertan hat
+  solve(Gr ++ Wh), 
+  println(gr=Gr), println(wh=Wh),
+  foreach(I in 1..N, Gr[I]=Bef) printf("%s ", Str[I]) end, print("sind Befullen, die anderen Urwallen. "),
+  foreach(I in 1..N, Gr[I]=Urw, Wh[I]=1) printf("%s hat sich vertan.%n", Str[I]) end,
+  nl, fail.
+/* 
+gr = [1,0,1,0,0,0,0]
+wh = [1,0,1,0,1,0,0]
+Amber Cumber sind Befullen, die anderen Urwallen. Emmer hat sich vertan.
+CPU time 0.0 seconds, korrekt */

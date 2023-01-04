@@ -1,0 +1,26 @@
+/* Zeit Logelei Nr. 38/2021 Alphametik */
+import cp, util.
+
+main ?=>
+    divi(["MITTERNACHT", "MACHEN", "OMHECT", "H"]). /*
+28559473605 / 236097 = 120965 Rest 0
+CPU time 11.376 seconds, no more solutions, korrekt! */
+
+divi(L) => % L[1] / L[2] = L[3] Rest L[4]
+   Letter = keys(new_set(flatten(L))), % verwendete Buchstaben
+   Digit = new_list(len(Letter)), Digit :: 0..9, % eine Ziffer je Buchstabe
+   all_different(Digit),
+   Num = new_array(len(L)), % numerische Repräsentation der Elemente von L
+   foreach(I in 1..len(L))
+       S = [Digit[find_first_of(Letter, C)] : C in L[I]], % Convert Letter C -> Digit
+       to_num(S, Num[I]), 
+       if I < 4 then S[1] #!= 0 end % der Rest H darf = 0 sein! 
+   end,
+   Num[1] #= Num[2] * Num[3] + Num[4], % Hauptgleichung 
+   solve(Digit ++ Num),
+   printf("%w / %d = %d Rest %d%n", Num[1], Num[2], Num[3], Num[4]),
+   fail. 
+
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).

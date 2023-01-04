@@ -1,0 +1,39 @@
+/* Zeit Logelei 2022/12 Sofas platzieren */
+import sat, util.
+main => 
+    Scnt = [3,0,1,0,1,0,0,0,4,2], Zcnt = [5,0,5,0,0,5],
+    NS = len(Scnt), NZ = len(Zcnt),
+    M = new_array(NZ,NS), M :: 0..5, Mvars = vars(M),
+    foreach({Cnt,L} in zip(Scnt, M.columns()), Cnt > 0) Cnt #= sum([(V #> 0) : V in L]) end,
+    foreach({Cnt,L} in zip(Zcnt, M.rows()),    Cnt > 0) Cnt #= sum([(V #> 0) : V in L]) end,
+    Sitz = new_array(NZ,NS), Sitz :: 0..5, Sitzvars = vars(Sitz), % Sofa-Sitz Nr. 1 bis 5
+    foreach(J in 1..5) count(J, Sitzvars, 1) end,
+    % die Sofas sind jeweils genau fünf Felder groß und U-förmig:
+    foreach(J in 1..5) count(J, Mvars, 5) end,
+    foreach(Z in 1..NZ, S in 1..NS) 
+        Nb = [cond((0<Z1,Z1=<NZ, 0<S1,S1=<NS), M[Z1,S1], 0)
+              : {Z1,S1} in [{Z-1,S-1},{Z-1,S},{Z-1,S+1},{Z,S+1},{Z+1,S+1},{Z+1,S},{Z+1,S-1},{Z,S-1}]],
+        V #= Sitz[Z,S],     %                           v- |012|
+        Start :: [1,3,5,7], % Start Index in Nb (ab 0) -+  |7 3|
+        foreach(I in 0..4)  % die 5 Felder eines Sofas  ^- |654|
+            J #= (Start + I) mod 8 + 1, % J (gezählt ab 1)
+            element(J, Nb, V1),
+            V #> 0 #=> V1 #= V
+        end
+    end,
+    % Die Sofas dürfen sich nicht berühren dürfen, auch nicht diagonal:
+    foreach(Z in 1..NZ, S in 1..NS, Z1 in [Z, Z+1], S1 in [S, S+1], Z1 =< NZ, S1 =< NS)
+        M[Z,S] #= M[Z1,S1] #\/ M[Z,S] #= 0 #\/ M[Z1,S1] #= 0
+    end,
+    solve(vars(Sitz) ++ Mvars),
+    foreach(Z in 1..NZ, S in 1..NS) 
+        printf("%s|", cond(Sitz[Z,S] > 0, ".", cond(M[Z,S] > 0, "X", " "))), 
+        if S=NS then nl end 
+    end. /*
+X|X| | | | | |X|X|X|
+X|.| |X|.|X| |X|.|X|
+X|X| |X|X|X| | | | |
+ | | | | | | |X|X| |
+ |X|.|X| | | |.|X| |
+ |X|X|X| | | |X|X| |
+CPU time 1.652 seconds, korrekt */

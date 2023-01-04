@@ -1,0 +1,46 @@
+% ZEIT Logelei 2020/15
+import util, sat.
+
+neib(1, X, Y) => 1 #= abs(X - Y).           % 1 = gelber Kreis
+neib(2, X, Y) => 2 * X #= Y #\/ 2 * Y #= X. % 2 = lila Kreis
+neib(0, X, Y) => 1 #!= abs(X - Y) #/\ 2 * X #!= Y #/\ 2 * Y #!= X. % 0 = no circle
+	
+main ?=>
+   N = 9, M = new_array(N,N), MVars = array_matrix_to_list(M), MVars :: 1..N,
+   foreach(Z in 1..N) all_different( [M[Z,S] : S in 1..N] ) end,
+   foreach(S in 1..N) all_different( [M[Z,S] : Z in 1..N] )  end,
+   G = 1, L = 2, % Gelber Kreis = 1, Lila Kreis = 2, kein Kreis = 0
+   HN = {{0,0,0,0,0,0,0,0}, % Horizontal Neighbours
+   		 {0,0,0,L,0,0,0,0},
+   		 {0,0,0,L,L,L,0,0},
+   		 {0,0,0,0,0,L,0,0},
+   		 {0,L,0,0,0,0,0,L},
+   		 {0,0,G,L,0,L,L,0},
+   		 {0,0,0,L,0,0,0,0},
+   		 {0,0,L,0,0,0,0,0},
+   		 {L,G,0,0,0,0,L,0}},
+   foreach(Z in 1..N, S in 1..N-1) neib(HN[Z,S], M[Z,S], M[Z,S+1]) end,
+   VN = {{L,0,0,G,G,G,0,0,0}, % Vertical Neighbours (row-wise)
+   		 {0,0,0,0,0,L,0,0,0},
+   		 {0,0,G,0,L,0,0,0,0},
+   		 {0,0,0,0,G,G,0,L,L},
+   		 {G,0,G,0,0,G,0,L,0},
+   		 {0,0,0,L,L,G,L,0,G},
+   		 {L,0,0,0,0,0,0,0,0},
+   		 {L,0,0,0,0,0,0,0,0}},
+   foreach(Z in 1..N-1, S in 1..N) neib(VN[Z,S], M[Z,S], M[Z+1,S]) end,
+   solve(MVars),
+   foreach(Z in 1..N) 
+      foreach(S in 1..N) printf(" %i", M[Z,S]) end, nl
+   end, fail.
+/* 
+ 6 2 8 5 9 3 7 1 4
+ 3 7 1 4 8 2 5 9 6
+ 7 5 3 1 2 4 8 6 9
+ 5 9 2 7 4 6 3 8 1
+ 8 3 6 9 5 7 1 4 2
+ 9 1 5 6 3 8 4 2 7
+ 1 4 7 3 6 9 2 5 8
+ 2 6 4 8 1 5 9 7 3
+ 4 8 9 2 7 1 6 3 5
+CPU time 1.255 seconds, no more solutions, korrekt */
