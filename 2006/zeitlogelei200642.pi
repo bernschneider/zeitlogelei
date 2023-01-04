@@ -1,0 +1,41 @@
+/* Zeit Logelei Nr. 2006/42 
+https://www.zeit.de/2006/42/Spielen-Logelei-42
+1. In einer Gruppe sind acht Personen, die entweder immer lügen oder immer die Wahrheit sagen. Alle acht behaupten, dass genau sechs Personen lügen.
+Wie viele lügen? */
+import util, cp.
+main1 ?=> 
+    Wahr = new_list(8), Wahr :: 0..1,
+    foreach(I in 1..8)
+        Wahr[I] #= (sum(Wahr) #= 2)
+    end,
+    solve(Wahr),
+    println(Wahr), fail. /* 
+[0,0,0,0,0,0,0,0], d.h. alle lügen, no more solutions, korrekt */
+/* Bei 2. feht das Bild :-(
+3. Was ergibt sich, wenn man Farben und Formen addiert? Diese bilden ein Tandem, behauptet das Alphametik-Orakel mit der nicht ganz einfachen Alphametik:
+FARBEN + FORMEN = TANDEM */
+main3 =>
+    add(["FARBEN", "FORMEN", "TANDEM"]). /*
+386102
+396402
+------
+782504, korrekt */
+add(L) => % das letzte Element von L ist die Summe der vorherigen Elemente
+   Letter = keys(new_set(flatten(L))), % verwendete Buchstaben
+   Digit = new_list(len(Letter)), Digit :: 0..9, % eine Ziffer je Buchstabe
+   all_different(Digit),
+   Zeilen = len(L) - 1, % Anzahl der Summanden, im Beispiel = 2
+   Num = new_array(len(L)), % numerische Repräsentation der Elemente von L
+   foreach(I in 1..len(L))
+       S = [Digit[find_first_of(Letter, C)] : C in L[I]], % Convert Letter C -> Digit
+       to_num(S, Num[I]), S[1] #!= 0
+   end,
+   sum([Num[I] : I in 1.. Zeilen]) #= Num[len(L)],
+   solve(Digit ++ Num),
+   foreach(I in 1..Zeilen) printf("%6d%n", Num[I]) end,
+   printf("------%n"),
+   printf("%6d%n%n", Num[len(L)]).
+
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).

@@ -1,0 +1,44 @@
+/* Zeit Logelei Nr. 2005/01 (www.zeit.de/2004/53/Spielen_2fLogelei_53 existiert nicht, wohl aber https://www.zeit.de/2004/52/Spielen_2fLogelei_52/komplettansicht!)
+https://www.zeit.de/2005/01/Spielen_2fLogelei_01/komplettansicht
+Professor Knusi ist bei seinem Freund Gowenin, einem Lehrer aus Kumalunien, zu Besuch. Dieser hat ein Problem mit einigen seiner Schüler.
+In Kumalunien ist es nämlich üblich, dass ein Bürger immer lügt oder immer die Wahrheit sagt. 
+Knusi möchte Gowenin helfen und hat deshalb die Schüler interviewt. Hier folgen die Aussagen der Schüler. ... 
+Knusi denkt kurz nach und sagt zu seinem Freund: »Jetzt weiß ich, wer die beiden sind, und ich weiß sogar von den anderen fünf, ob sie immer lügen oder immer die Wahrheit sagen.«
+Wissen Sie es auch? */
+import cp.
+main ?=> %     1           2          3          4           5          6          7
+    Str = ["Anhorni",  "Buwenin", "Komachun", "Moffin", "Psachelio", "Roxila", "Sechona"],
+    StrG = ["lügen immer", "sagen immer die Wahrheit", "lügen mal, mal sagen sie die Wahrheit"],
+    L=0, W=1, U=2, % L=lügt immer, W=sagt immer die Wahrheit, U=mal so, mal so
+    Gr = [A,B,K,M,P,R,S], Gr :: [L,W,U], % Gruppe von P
+    /* Aus dem Verhalten seiner Schüler hat er bisher herausgefunden, dass zwei dieser Schüler, die wohl in einer Trotzphase sind, sich nicht an diese 
+    gesellschaftlichen Konventionen halten, das heißt, mal sagen sie die Wahrheit, und mal lügen sie wild durcheinander. Er weiß aber nicht, welche zwei das sind: */
+    count(U, Gr, 2),
+    foreach((G, Aussage) in [
+        (A, (B #= W #/\ K #= W)), % Anhorni: »Sowohl Buwenin als auch Komachun sagen immer die Wahrheit.«
+        (K, (A #= L #=> M #= W)), % Komachun: »Wenn Anhorni immer lügt, dann sagt Moffin immer die Wahrheit.«
+        % Roxila: »Von Buwenin, Moffi und Psachelio sagt genau einer immer die Wahrheit, und genau einer lügt immer.«:
+        (R, (sum([(Gr[I] #= W) : I in [2,4,5]]) #= 1 #/\ sum([(Gr[I] #= L) : I in [2,4,5]]) #= 1)), 
+        (S, (B #= W #^ K #= W)), % Sechona: »Entweder Buwenin oder Komachun sagt immer die Wahrheit, aber auf keinen Fall beide.«
+        (M, (R #= P)), % Moffin: »Roxila und Psachelio verhalten sich gleich, was das Wahrheitsagen anbelangt.«
+        (P, (sum([(G #= L) : G in Gr]) #= 3)), % Psachelio: »Genau drei von uns sieben lügen immer.«
+        (K, (R #= L #=> B #!= U)), % Komachun: »Wenn Roxila lügt, dann sagt Buwenin entweder immer die Wahrheit, oder er lügt immer.«
+        (S, (A #= L #\/ P #= W)), % Sechona: »Entweder Anhorni lügt, oder Psachelio sagt die Wahrheit, oder beides ist der Fall.«
+        (A, (B #= W #=> K #= L)), % Anhorni: »Wenn Buwenin immer die Wahrheit sagt, dann ist Komachun eine Lügnerin.«
+        (M, (sum([(G #= W) : G in Gr]) mod 2 #= 0)), % Moffin: »Die Anzahl derjenigen von uns, die immer die Wahrheit sagen, ist gerade.«
+        (B, (K #= U #=> P #= W)), % Buwenin: »Wenn Komachun mal lügt und mal die Wahrheit sagt, dann sagt Psachelio immer die Wahrheit.«
+        (P, (S #!= M)) % Psachelio: »Sechona und Moffin verhalten sich verschieden, was das Wahrheitsagen anbelangt.«
+        ]) 
+            G #= U #\/ G #= Aussage
+    end,
+    solve(Gr),
+    foreach(G in 0..2)
+        foreach(I in 1..7, Gr[I] = G) printf("%s ", Str[I]) end,
+        printf("%s.%n", StrG[1+G])
+    end, nl, fail. /*
+Moffin Sechona lügen immer.
+Buwenin Komachun Roxila sagen immer die Wahrheit.
+Anhorni Psachelio lügen mal, mal sagen sie die Wahrheit. 
+CPU time 0.002 seconds, no more solutions, korrekt */
+/* Auflösung aus Nr. 53, aber www.zeit.de/2004/53/Spielen_2fLogelei_53 existiert nicht!
+Die vier Urlaubsziele, die zusammen alle Wünsche erfüllen, sind das Mare Azul, das Viva Vacancia, das Palm Beach Hotel und das Sabiadoro */

@@ -1,0 +1,79 @@
+/* Zeit Logelei 2007/52 Kreuzzahlrätsel und Alphametik (bei 2008/51 ist das Bild abgeschnitten)
+https://www.zeit.de/leben/spielen/logelei/logelei_52.pdf */
+import cp. % interessant: sat terminiert nicht!
+main =>
+   LM = {{ 1, 2, 3, 4, 5, 6, 7}, % nummeriere die Felder mit einer Q- oder P-Bedingung durch
+		 { 8, 0, 9, 0, 0,10, 0},
+		 {11,12, 0, 0, 0,13, 0},
+		 {14, 0, 0,15, 0,16, 0},
+		 {17, 0, 0, 0,18, 0, 0},
+		 {19,20,21,22, 0,23, 0},
+		 {24, 0, 0, 0, 0, 0, 0}}, Max = 24, NZ = len(LM), NS = len(LM[1]),
+   Qs = [1,3,4,5,6,7,9,11,12,13,14,17,18,19,24], % in diesen Feldern steht ein Q, in den anderen Bedingungsfeldern ein P
+   WLetter = [1,4,8,9,10,11,13,14,15,16,17,18,19,22,23,24], % Felder mit waagrechter Bedingung (rechts von einem fetten |)
+   SLetter = [1,2,3,4,5,6,7,12,14,15,16,18,20,21,22,23],    % Felder mit senkrechter Bedingung (unter einem fetten -)
+   % Gleiche Symbole stehen für gleiche Ziffern, unterschiedliche Symbole für unterschiedliche Ziffern:
+   % Baum, Engel, Flocke, Glocke, Herz, Kerze, Stern, Weihnachtskugel, Zweig
+   Symb = [SB, SE, SF, SG, SH, SK, SS, SW, SZ], Symb :: 1..9, all_different(Symb),
+   X = {{SW,SK, _, _,SF, _,SB},
+        {SK,SE,SK,SK, _,SZ,SH},
+        { _,SK, _, _, _, _,SH},
+        { _,SK, _,SF,SH,SW, _},
+        {SS, _, _,SW,SS, _,SS},
+        { _,SG, _,SB, _,SF, _},
+        {SG,SE,SW, _,SS, _,SS}}, 
+   X :: 0..9,
+   Wr = new_list(Max), Wr :: 1..9999999, % Waagrechte Zahlen
+   Sr = new_list(Max), Sr :: 1..9999999, % Senkrechte Zahlen
+   Squares = [Y**2: Y in 1..3162], % Q bedeutet Quadratzahl, floor(sqrt(9999999)) = 3162
+   Primes  = primes(99),           % P bedeutet Primzahl
+   foreach(I in WLetter) % Waagerecht
+       if membchk(I,Qs) then Wr[I] :: Squares else Wr[I] :: Primes end
+   end,
+   foreach(I in SLetter) % Senkrecht
+       if membchk(I,Qs) then Sr[I] :: Squares else Sr[I] :: Primes end
+   end,
+   foreach(Letter in WLetter) % Berechne alle Waagrechten Zahlen aus der Matrix X
+        Row := 0, Col := 0, Len := 0,
+		foreach(Z in 1..NZ)
+			foreach(S in 1..NS, LM[Z,S] = Letter) Row := Z, Col := S end,
+			if Len == 0, Row  > 0 then 
+				foreach(Cn in Col+1..NS, Len == 0, membchk(LM[Z,Cn],WLetter)) Len := Cn - Col end,
+				if Len = 0 then Len := NS+1-Col end 
+		    end 
+		end,
+	    Temp = new_list(Len), Temp :: 0..9,
+   		foreach(Idx in 0..Len-1) X[Row,Col+Idx] #= Temp[Idx+1] end,
+		X[Row,Col] #!= 0,
+        to_num(Temp,Wr[Letter])
+   end,
+   foreach(Letter in SLetter) % berechne alle senkrechte Zahlen aus der Matrix X 
+      Row := 0, Col := 0, Len := 0,
+		foreach(S in 1..NS)
+			foreach(Z in 1..NZ, LM[Z,S] = Letter) Row := Z, Col := S end,
+			if Len == 0, Col > 0 then 
+				foreach(Rn in Row+1..NZ, Len == 0, membchk(LM[Rn,S],SLetter)) Len := Rn - Row end,
+				if Len = 0 then Len := NZ+1-Row end
+			end 
+		end,
+   		Temp = new_list(Len), Temp :: 0..9,
+   		foreach(Idx in 0..Len-1) X[Row+Idx,Col] #= Temp[Idx+1] end,
+		X[Row,Col] #!= 0,
+        to_num(Temp,Sr[Letter])
+   end,
+   solve(Symb ++ vars(X) ++ Wr ++ Sr),
+   foreach(Z in 1..NZ) 
+      foreach(S in 1..NS) printf("%d ", X[Z,S]) end, nl
+   end. 
+/*
+1 2 1 7 7 4 4 
+2 3 2 2 5 8 9 
+1 2 9 9 6 4 9 
+5 2 9 7 9 1 9 
+6 5 6 1 6 7 6 
+2 5 6 4 7 7 9 
+5 3 1 7 6 3 6 
+CPU time 3.364 seconds, korrekt */
+to_num(List, Num) => % Num = Wert der Liste
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).

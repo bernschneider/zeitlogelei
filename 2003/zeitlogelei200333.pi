@@ -1,0 +1,41 @@
+/* Zeit Logelei Nr. 2003/33
+https://www.zeit.de/2003/33/Spielen_2fLogelei_33
+1. Als ich unlängst mit der Bahn fuhr, stiegen in Bremen drei Teenager zu, ein Junge und zwei Mädchen. Der Junge erkundigte sich bei seinen Begleiterinnen 
+– sie hießen Olga und Petra –, wer von den 14 Jungen aus ihrer Klasse an einer geplanten "Superparty" teilnehmen würde.
+Das war offensichtlich ein heißes Thema, denn die Mädchen schienen geradezu begierig zu sein, es zu diskutieren. ...
+Der Zug erreichte Osnabrück, wo die drei Teenager ausstiegen. Der Junge, der das Abteil als Letzter verließ, drehte sich noch einmal um und raunte mir zu: 
+"Unser Gespräch wird Sie ein wenig verwirrt haben. Sie müssen dabei bedenken, dass eines der beiden Mädchen stets die Wahrheit sagt, 
+hingegen das andere nie eine Aussage über die Lippen bringt, die der vollen Wahrheit entspricht."
+Ehe ich mich erkundigen konnte, wer die Lügnerin sei, hatte der Junge den Zug schon verlassen. 
+Seither grüble ich darüber nach, wer wohl zu der Superparty kommen wird und wer nicht. Wer? */
+import util, cp, alphametik.
+main1 ?=> 
+    Str = ["Axel", "Bernd", "Christian", "Dieter", "Elgar", "Fabian", "Gerd", "Hag", "Ingo", "Jürgen", "Kai", "Lars", "Martin", "Norbert"], 
+    Max = len(Str),
+    Tl = [A,B,C,D,E,F,G,H,I,J,K,L,M,N], Tl :: 0..1, % 1 = nimmt an der Party teil
+    Wh = [O, P], Wh :: 0..1, O + P #= 1, % O = 1 <=> Olga sagt die Wahrheit, P = 1 <=> Petra sagt die Wahrheit 
+    O #= ((#~B #/\ #~C) #=> #~N), % Olga begann mit der Auskunft: "Wenn weder Bernd noch Christian kommt, dann nimmt auch Norbert nicht an der Party teil."
+    P #= ((D #/\ N) #=> E), % Darauf Petra: "Wenn Dieter und Norbert kommen, dann wird auch Elgar erscheinen."
+    O #= ((I #/\ #~G) #=> H), % Olga: "Nimmt Ingo teil, dann feiert, sofern Gerd nicht kommt, Haug ebenfalls mit."
+    P #= ((#~F #/\ M) #=> #~J), % Petra: "Falls Fabian nicht teilnimmt, wird Jürgen, sofern Martin mitmacht, nicht kommen."
+    O #= ((H #/\ A) #=> #~C), % Olga: "Kommen sowohl Haug als auch Axel, dann bleibt Christian der Party fern."
+    P #= (I #=> #~J), % Petra: "Wenn Ingo kommt, wird Jürgen nicht teilnehmen."
+    O #= (K #=> L), % Olga: "Aber wenn Kai kommt, wird auch Lars kommen."
+    P #= ((M #/\ #~L)#=> B), % Petra: "Feiert Martin mit, wird, sofern Lars nicht kommt, Bernd an der Party teilnehmen."
+    O #= ((#~A #/\ #~K) #=> #~C), % Olga: "Kommen weder Axel noch Kai, so wird auch Christian der Party fern bleiben."
+    solve(Tl ++ Wh),
+    if O = 0 then println("Olga lügt, Petra sagt die Wahrheit.") else println("Olga sagt die Wahrheit, Petra lügt.") end,
+    foreach(X in 1..Max, Tl[X] = 1) 
+        printf("%s ", Str[X]) 
+    end, println("nehmen an der Party teil."), fail. /* 
+Olga sagt die Wahrheit, Petra lügt.
+Axel Christian Dieter Gerd Ingo Jürgen Martin Norbert nehmen an der Party teil.
+no more solutions, korrekt */
+
+/* 2. Und eine sehr passende Alphametik:
+PARTY = ZU • LAUT */
+main2 =>
+    mult(["ZU", "LAUT", "PARTY"]). /*
+13 * 6734 = 87542, no more solutions, sieht gut aus! */
+
+/* Aufl"sung aus Nr. 32: 1. Frau Morkmann ist 35, ihr Sohn 13 und ihr Vater 65 2. Susi ist 45 3. Der Bruder ist 3, der Vater 51 4. Ruth ist 25, Lena ist 22, und Judith ist 23 5. 856 • 319 = 273064 */

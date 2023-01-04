@@ -1,0 +1,43 @@
+/* Zeit Logelei Nr. 2005/22
+https://www.zeit.de/2005/22/Spielen_2fLogelei_22
+"Schau mal", sagt die kleine Clara zu Papi, "ich hab ganz viele Bilder gemalt." ...
+"Nanu", ruft Papi aus, jetzt wirklich erstaunt, "wie hast du das denn gemacht?" – "Das ist doch ganz einfach. Auf jedem Blatt sind zwei Bilder: 
+eins auf der Vorderseite und eins auf der Rückseite. Und jetzt musst du herausfinden, wo der Fisch ist." – "Der Fisch?" – "Ja, ich hab auch einen Fisch gemalt. 
+Hinter welchem Bild ist er?" Wissen Sie, wo der Fisch ist? Und finden Sie auch heraus, welches Bild auf der Rückseite von welchem anderen ist? */
+import cp.
+main ?=>
+    Apf=1, Blu=2, Eis=3, Ele=4, Fam=5, _Fis=6, Kat=7, Kin=8, Mar=9, Pfe=10, Sta=11, Ste=12, N = 12,
+    Str = ["Apfel-Birnen-Bananen-Baum", "Blumenwiese", "Eisenbahn", "Elefant mit Maus", "Familie beim Essen", "Fisch",
+            "Katze", "Kinder im Sandkasten", "Marsmensch", "Pferd", "Stadt", "Sternenhimmel"], 
+    Rs = new_list(N), Rs :: 1..N, assignment(Rs, Rs), % Rückseite
+    foreach(Bilder in [ 
+        /* Dabei zeigt sie auf drei Bilder, die vor ihr auf dem Tisch liegen:  eins mit einem grünen Marsmenschen, eins mit einer Stadt mit Hochhäusern 
+        und eins mit einem Elefanten, der vor einer Maus wegrennt. "Oh, hübsch", findet Papi. "Da hast du dir ja ganz schön viel Mühe gegeben." */
+        [Mar, Sta, Ele],
+        /*  – "Ich hab noch mehr gemalt. Schau mal kurz weg." Als Papi wieder hinschauen darf, liegt der Marsmensch immer noch da, aber statt der anderen 
+        zwei Bilder liegen drei neue Bilder auf dem Tisch: ein schwarz-weiß-braun geflecktes Pferd, eine Blumenwiese mit Bienen und Kinder im Sandkasten.
+        "Nanu, das sind ja plötzlich andere Bilder", sagt Papi ganz erstaunt (obwohl er schon bemerkt hat, dass Clara weitere Bilder hinter ihrem Rücken versteckt). */
+        [Mar, Pfe, Blu, Kin],
+        /* "Schau noch mal weg", bittet Clara. Als Papi zum dritten Mal schauen darf, sind fünf Bilder zu sehen: die Blumenwiese und die Stadt 
+        und außerdem noch eine Eisenbahn, eine Katze mit Wollknäuel und eine Familie beim Essen. "Wow, du bist ja eine richtige Zauberin. */
+        [Blu, Sta, Eis, Kat, Fam],
+        % Kannst du das noch mal?" – "Ja." Wieder liegen fünf Bilder auf dem Tisch: die Eisenbahn, die Katze, das Pferd, der Elefant mit der Maus und außerdem ein Sternenhimmel.
+        [Eis, Kat, Pfe, Ele, Ste],
+        /* Toll, gell?", prahlt Clara. – "Also ich glaube, du versteckst was hinter deinem Rücken." – "Ich? Nööö!", tut Clara ganz unschuldig. "Schau noch mal weg."  Als Papi wieder 
+        herschaut, sind die Katze und der Elefant mit Maus verschwunden; dafür sind die Stadt und die Familie beim Essen wieder da und zusätzlich ein Apfel-Birnen-Bananen-Baum.
+        Außerdem steht "Clara" auf, sodass Papi sehen kann, dass sie wirklich nichts versteckt hat. */
+        [Eis, Pfe, Ste, Sta, Fam, Apf] ]) 
+            all_different(Bilder ++ [Rs[Bild] : Bild in Bilder])
+    end,
+    solve(Rs),
+    Found = [0 : _ in 1..N], 
+    foreach(I in 1..N, Found[I] = 0)
+        printf("%25s <=> %18s%n", Str[I], Str[Rs[I]]), Found[Rs[I]] := 1
+    end, nl, fail. /* 
+Apfel-Birnen-Bananen-Baum <=>              Katze
+              Blumenwiese <=>      Sternenhimmel
+                Eisenbahn <=>         Marsmensch
+         Elefant mit Maus <=> Familie beim Essen
+                    Fisch <=>              Pferd
+     Kinder im Sandkasten <=>              Stadt
+CPU time 0.0 seconds, no more solutions, korrekt */

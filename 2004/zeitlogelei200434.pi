@@ -1,0 +1,51 @@
+/* Zeit Logelei Nr. 2004/34 (2004/33 und 2004/35 sind Kreuzzahlrätsel!)
+https://www.zeit.de/2004/34/Spielen_2fLogelei_34/komplettansicht
+Vier Damen des Damentratschvereins Klusewitz waren heute morgen um acht, neun, zehn oder elf Uhr bei ihrem Friseur 
+(jede bei einem anderen und um eine andere Uhrzeit) und haben sich ihre Haare neu einfärben lassen (jede selbstverständlich in einer anderen Farbe).
+Hier ein paar Ausschnitte aus den nachmittäglichen Gesprächen beim Kaffeeklatsch von Frau Haufenmörgel, wo die vier Damen nicht anwesend sind, dafür aber Herr Haufenmörgel:
+... Herr Haufenmörgel, der bisher eher gelangweilt dem Gespräch folgte, meint plötzlich: "Ah, dann ist ja alles klar!" Ihnen auch? */
+import util, cp.
+main ?=> 
+    Pstr = ["Damisch", "Klemens", "Schmalfuß", "Neumann"], D=1, K=2, S=3, N=4,
+    %            1               2                3              4 
+    Dstr = [[" 8",           " 9",            "10",          "11"],
+            ["bananenblond", "höllenschwarz", "pfeffergrün", "tomatenrot"],
+            ["Lockemüller",  "Muster",        "Wartlang",    "Wechselwelle"]],
+    M = new_array(3,4), M :: 1..4, Z=1, F=2, S=3, % M[Z,D] = Zeit, M[F,D] = Farbe, M[S,D] = Salon von Dame D
+    Rev = new_array(3,4), Rev :: 1..4,            % Rev[Dim,Val] = die Dame, die in Dimension Dim den Wert Val hat
+    foreach(Dim in 1..3) assignment(M[Dim], Rev[Dim]) end, 
+    % "Weder Frau Neumann noch Frau Schmalfuß haben sich die Haare pfeffergrün färben lassen."
+    M[F,N] #!= 3, M[F,S] #!= 3,
+    % "Wenn die Dame, die sich die Haare bananenblond hat färben lassen, um 11 Uhr beim Friseur war, dann wurden bei Salon Wechselwelle die Haare höllenschwarz gefärbt."
+    element(Rev[S,4], M[F], FWechselwelle), (Rev[F,1] #= Rev[Z,4]) #=> FWechselwelle #= 2,
+    % "Frau Klemens war vor Frau Schmalfuß beim Friseur, .. 
+    M[Z,K] #< M[Z,S],
+    % ..und Frau Schmalfuß hat sich die Haare nicht tomatenrot färben lassen."
+    M[F,S] #!= 4,
+    % "Frau Damisch trägt jetzt bananenblond."
+    M[F,D] #= 1,
+    % "Haare um elf Uhr in Tomatenrot färben zu lassen, bringt bekanntlich Unglück. Deshalb macht das auch kein Friseur."
+    element(Rev[Z,4], M[F], F11), F11 #!= 4, 
+    % "Stell dir vor, bei Salon Muster haben sie kein Tomatenrot, wenn du die Farbe haben willst, musst du zu einem anderen Friseur gehen."
+    element(Rev[S,2], M[F], FMuster), FMuster #!= 4,
+    % "Die Frau, die bei Salon Wechselwelle war, war dort später als die Frau, die bei Salon Lockemüller ihre Haare hat färben lassen."
+    element(Rev[S,4], M[Z], ZWechselwelle), element(Rev[S,1], M[Z], ZLockemueller), ZWechselwelle #> ZLockemueller, 
+    % "Wenn Frau Neumann bei Salon Lockemüller war, dann wurden bei Salon Wartlang Haare in Tomatenrot gefärbt."
+    element(Rev[S,3], M[F], FWartlang), M[S,N] #= 1 #=> FWartlang #= 4,
+    % "Frau Neumann war nicht um acht Uhr beim Friseur, da sie um diese Zeit ihre Kinder zur Schule gebracht hat."
+    M[Z,N] #!= 1,
+    % "Friseursalon Lockemüller macht erst um zehn Uhr auf."
+    ZLockemueller #>= 3, % siehe Zeile 32
+    % "Frau Damisch kann Friseur Muster nicht ausstehen; sie war auf keinen Fall bei Friseursalon Muster."
+    M[S,D] #!= 2,
+    solve(vars(M) ++ vars(Rev)),
+    foreach(Zeit in 1..4) 
+        I = Rev[Z,Zeit],
+        printf("%s Uhr: Frau %s lässt sich bei Salon %s die Haare %s färben.%n", Dstr[Z,M[Z,I]], Pstr[I], Dstr[S,M[S,I]], Dstr[F,M[F,I]] ) 
+    end,
+    nl, fail. /* 
+ 8 Uhr: Frau Klemens lässt sich bei Salon Muster die Haare pfeffergrün färben.
+ 9 Uhr: Frau Neumann lässt sich bei Salon Wartlang die Haare tomatenrot färben.
+10 Uhr: Frau Damisch lässt sich bei Salon Lockemüller die Haare bananenblond färben.
+11 Uhr: Frau Schmalfuß lässt sich bei Salon Wechselwelle die Haare höllenschwarz färben.
+no more solutions, sieht gut aus! */

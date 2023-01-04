@@ -1,0 +1,50 @@
+/* Zeit Logelei Nr. 2005/03 (2005/04 ist ein Kreuzzahlrätsel)
+https://www.zeit.de/2005/03/Spielen_2fLogelei_03/komplettansicht
+1. "Ratet mal, was ich in meiner Handtasche habe", ruft Helga in die Kaffeerunde. Einen Moment grübeln die Damen und meinen dann: "Keine Ahnung, woher sollen wir das auch wissen?"
+"Na, dann werde ich euch ein paar Tipps geben!", fährt Helga fort und fängt auch schon an: .. 
+"Na dann ist ja klar, was du dabeihast!", meint Monika, die bei solchen Aufgaben immer sehr schnell ist. 
+Während die anderen Damen noch rumgrübeln, können Sie, lieber Leser, sicherlich auch schon sagen, welche der genannten Gegenstände sich in der Tasche von Helga befinden! */
+import util, cp.
+main1 ?=> 
+    G = [P, R, S, T, W], G :: 0..1, % G[I] = 1 <=> Gegenstand I ist in der Tasche
+    StrG = ["Parfüm", "Radiowecker", "Schokolade", "Tortenheber", "Wattestäbchen"],
+    foreach((X,Y,Z) in [
+        (W,T,R), % Wenn ich silbrige Wattestäbchen in meiner Tasche habe, dann entweder auch einen Tortenheber aus Japan oder einen kugelrunden Radiowecker, aber nicht beides. 
+        (R,W,S), % Wenn ich einen kugelrunden Radiowecker in meiner Tasche habe, dann auch entweder silbrige Wattestäbchen oder eine original Schwarzwälder Schokolade, aber nicht beides. 
+        (1,S,P), % Ich habe entweder eine original Schwarzwälder Schokolade oder ein golden glänzendes Parfüm in meiner Tasche, aber nicht beides. 
+        (1,W,P), % Ich habe entweder silbrige Wattestäbchen oder ein golden glänzendes Parfüm in meiner Tasche, aber nicht beides. 
+        (1,W,T)])% Ich habe entweder silbrige Wattestäbchen oder einen Tortenheber aus Japan in meiner Tasche, aber nicht beides."    
+             X #= 1 #=> Y + Z #= 1
+    end,
+    solve(G),
+    foreach(I in 1..len(G), G[I] = 1)
+        printf("%s ", StrG[I])
+    end, nl, fail. /* 
+Parfüm Tortenheber 
+CPU time 0.001 seconds, no more solutions, sieht gut aus! */
+/* 2. Der Juwelier Tnamaid besitzt einen Safe, der mit einer sechsstelligen Ziffernkombination versehen ist. Leider hat er den Zettel, 
+auf dem er sich die Kombination notiert hatte, im Safe liegen lassen. Er kann sich nur noch daran erinnern, dass die Zahl keine Null enthielt und dass man, 
+wenn man sie rückwärts aufschrieb, genau das Vierfache der ursprünglichen Zahl erhielt. Wer kann Herrn Tnamaid helfen? */
+main2 =>
+    L = new_list(6), L :: 1..9, to_num(L,Zahl),
+    Lrev = L.reverse(), to_num(Lrev,Rev),
+    Rev #= 4 * Zahl,
+    solve(L ++ Lrev ++ [Zahl, Rev]),
+    println(Zahl), fail.
+/* 219978, no more solutions, korrekt */
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).
+/* 3. Wie alt sind Charly und Jordan? */
+main3 ?=>
+    Alter = [C,J], Alter :: 1..100, % J #< C,
+    Delta1 #= C - (J - Delta2), % Charly zu Jordan: "Als ich so alt war, wie du warst, 
+    Delta2 #= C - (J + 1), % .. als ich ein Jahr älter war, als du jetzt bist, ..
+    (J - Delta1) * 2 #= C - Delta1, % .. warst du gerade mal halb so alt wie ich."
+    J + Delta3 #= 10 + C, % Jordan zu Charly: "Wenn ich zehn Jahre älter sein werde, als du jetzt bist, ..
+    C + Delta3 #= 2 * J, % ..wirst du doppelt so alt sein, wie ich jetzt bin."
+    solve(Alter),
+    printf("Charly ist %d und Jordan ist %d Jahre alt%n", C, J), print([Delta1,Delta2,Delta3]),
+    fail.
+/* Charly ist 43 und Jordan ist 32 Jahre alt (Delta = [21,10,21])
+no more solutions, korrekt */

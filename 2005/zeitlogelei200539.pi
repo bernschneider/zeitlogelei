@@ -1,0 +1,36 @@
+/* Zeit Logelei Nr. 2005/39
+https://www.zeit.de/2005/39/Spielen 2fLogelei 39
+Herr Fink braucht ein Medikament gegen Seitenohrentzündung. Gegen die möglichen Nebenwirkungen möchte er auch etwas nehmen 
+und gegen die Nebenwirkungen davon auch. Et cetera. */
+import cp.
+main ?=>
+    Mstr = ["Antigrüb", "Calmel", "Dermagesen", "Gel d’Absan", "Glatzewo", "Implosyl", "Pedizin", "Schausan", "Schnuffol", "Verdause"], 
+    % Seitenohrentzündung Gewichtsstörungen Guckreiz Hautgrünungen Nasensausen Stirnrunzeln Völlegefühl Wahnschmerzen Zehstörungen
+    %          1                 2              3          4            5           6            7            8            9
+    %     123456789
+    C = {"   -++   ", % Antigrüb: Hilft gegen Stirnrunzeln und Nasensausen; verursacht jedoch Hautgrünungen.
+         "+ -  - +-", % Calmel: hilft gegen Seitenohrentzündungen und gegen Wahnschmerzen, verursacht aber Zehstörungen, Guckreiz und Stirnrunzeln. 
+         " - + ++- ", % Dermagesen: ist gegen Völlegefühl, Hautgrünungen und Stirnrunzeln, führt aber zu Gewichtsstörungen und Wahnschmerzen.
+         "+-+-  + -", % Gel d’Absan: hilft gegen Seitenohrentzündung, Völlegefühl und Guckreiz, verursacht aber Zehstörungen, Hautgrünungen und Gewichtsstörungen
+         "   +  ++ ", % Glatzewo: hilft ohne Nebenwirkungen gegen Völlegefühl, Hautgrünungen und Wahnschmerzen. 
+         " +  +--+ ", % Implosyl: hilft bei Gewichtsstörungen, Wahnschmerzen oder Nasensausen; davon bekommt man jedoch Stirnrunzeln und Völlegefühl
+         "      --+", % Pedizin: hilft gegen die Zehstörungen, kann aber Völlegefühl und Wahnschmerzen verursachen
+         "  ++   +-", % Schausan: ist ideal gegen Guckreiz, Hautgrünungen und Wahnschmerzen, verursacht aber oft Zehstörungen
+         "  + + -  ", % Schnuffol: hilft Gegen Nasensausen und Guckreiz; verursacht aber Völlegefühl
+         " ++ - +  "},% Verdause: hilft gegen Völlegefühl, Gewichtsstörungen und Guckreiz; es verursacht jedoch Nasensausen
+    NM = len(C), NK = len(C[1]),
+    Sel = new_list(NM), Sel :: 0..1, % Sel[I] = 1 <=> Herr Fink nimmt Medikament I 
+    sum(Sel) #=< 4, % Allerdings sollen es insgesamt maximal vier Medikamente sein.
+    sum([Sel[I] : I in 1..NM, C[I,1] = '+' ]) #> 0, % Herr Fink nimmt ein Medikament gegen Seitenohrentzündung.
+    foreach(J in 1..NK) % Hat eins der gewählten Medikamente J als Nebenwirkung, wurde auch ein Medikament gegen J ausgewählt:
+        sum([Sel[I] : I in 1..NM, C[I,J]= '-' ]) #> 0 #=> sum([Sel[I] : I in 1..NM, C[I,J]= '+' ]) #> 0
+    end,
+    solve(Sel),
+    foreach(I in 1..NM, Sel[I]=1) printf("%11s: %w%n", Mstr[I], C[I]) end,
+    fail.
+/*           123456789
+ Dermagesen:  - + ++- 
+Gel d’Absan: +-+-  + -
+   Implosyl:  +  +--+ 
+    Pedizin:       --+
+no more solutions, korrekt: in Spalte 1 steht ein +, in jeder Spalte mit einem - gibt es auch ein + */

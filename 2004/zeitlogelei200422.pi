@@ -1,0 +1,44 @@
+/* Zeit Logelei Nr. 2004/22 (Achtung: 2004/23 ist ein Kreuzzahlrärtsel)
+https://www.zeit.de/2004/22/Spielen_2fLogelei_22/komplettansicht
+Im Flur der Akademie für moderne Künste sollen neue Gemälde aufgehängt werden. "Man kann’s aber auch nie allen recht machen", jammert Hausmeister Fillbach 
+angesichts der vielen Wünsche – er nämlich soll die Gemälde aufhängen. */
+import cp.
+main ?=> 
+    Pstr = ["Drehmansen", "Gamstein", "Welsch", "Wenigladen"], 
+    Recht = [Dre,          Gam,        Wel,      Wen], Recht :: 0..1, % Der Hausmeister macht es Herrn .. recht
+    sum(Recht) #= 3, % Können Sie ihm helfen, es wenigstens drei Leuten recht zu machen?
+    Bstr = ["Elch", "Kochtopf", "Porträt", "Sonnenuntergang", "Tomate", "Traum"], % die Bilder ..
+    Pos = [  Elch,   Kochtopf,   Portraet,  Sonnenuntergang,   Tomate,   Traum], N = len(Pos), % .. und ihre Position von links nach rechts  
+    Pos :: 1..N, assignment(Pos, Bild), 
+    % Herr Wenigladen: "Das Blau einer ramifizierten _Tomate ist einfach herrlich blau. Es muss unbedingt ganz ans rechte Ende des Ganges, direkt neben meine Bürotür."
+    Wen #=> Tomate #= N,
+    % Dr. Gamstein: "Beachten Sie jedoch, dass dieses Gemälde nicht mehr so wirkt, wenn ein benachbartes Gemälde auch Blau enthält. 
+    % Man sollte deshalb weder das _Porträt eines Spiegelbilds noch den _Sonnenuntergang nach einer üppigen Mahlzeit direkt daneben hängen."
+    Gam #=> (abs(Tomate - Portraet) #> 1 #/\ abs(Tomate - Sonnenuntergang) #> 1),
+    % Frau Welsch: "Einen beeindruckenden Effekt kann man erzielen, wenn man den _Traum Nr. 12 rechts neben den _Sonnenuntergang nach einer üppigen Mahlzeit hängt; 
+    % dann scheinen die Steinskulptur am rechten Rand des Sonnenuntergangs und das Wesen am linken Rand des Traums ein Ganzes zu bilden."
+    Wel #=> Sonnenuntergang + 1 #= Traum,
+    % Dr. Gamstein: "Der störende _Elch muss ganz an das linke Ende, direkt neben die Eingangstür; 
+    % so werden zukünftige Besucher gleich vom ersten Gemälde aus ihren Gedanken gerissen."
+    Gam #=> Elch #= 1,
+    % Herr Wenigladen: "Und um den Besuchern das Verstehen der Werke zu erleichtern, sollte man die Gemälde so aufhängen, 
+    % dass man, wenn man links von der Eingangstür kommt, den erotischen _Kochtopf vor dem _Traum Nr. 12 sieht."
+    Wen #=> Kochtopf #< Traum,
+    % Professor Drehmansen: "Beachten Sie bitte, dass der erotische _Kochtopf das Bindeglied zwischen dem _Porträt eines Spiegelbilds und dem _Traum Nr. 12 bildet. 
+    % Er sollte deshalb direkt zwischen den letztgenannten Gemälden hängen."
+    Dre #=> (abs(Traum - Portraet) #= 2 #/\ min(Traum, Portraet) + 1 #= Kochtopf),
+    % Herr Wenigladen: "Wenn man den _Sonnenuntergang nach einer üppigen Mahlzeit direkt neben das _Porträt eines Spiegelbilds hängt, wirkt das irgendwie merkwürdig, finde ich… 
+    % vermutlich weil die Sonne im Spiegel nicht zu sehen ist. Das sollten wir vermeiden."
+    Wen #=> abs(Sonnenuntergang - Portraet) #> 1,
+    solve(Recht ++ Pos ++ Bild),
+    foreach (I in 1..4, Recht[I] = 0) printf("Hausmeister Fischbach kann es allen bis auf Herrn %s rechtmachen.%n", Pstr[I]) end,
+    print("Die Gemälde von links nach rechts: "),
+    foreach (P in 1..N) printf("%s ", Bstr[Bild[P]]) end,
+    nl, fail. /*
+Hausmeister Fischbach kann es allen bis auf Herrn Drehmansen rechtmachen.
+Die Gemälde von links nach rechts: Elch Porträt Kochtopf Sonnenuntergang Traum Tomate 
+no more solutions, sieht gut aus! */
+
+/* Auflösung aus Nr. 21:
+1. Nur Robert Räuber sagt die Wahrheit, alle anderen lügen 2. Die Leute sollten in der folgenden Reihenfolge um den Tisch sitzen: 
+rechts von Herrn Wuttkewitz Oma, dann der kleine Thomas, dann Tante Marlene, Opa, Elfride, Tante Caroline, der Onkel Otto und schließlich Frau Wuttkewitz */

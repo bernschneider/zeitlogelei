@@ -1,0 +1,38 @@
+/* Zeit Logelei 2007/22 Vier Berge
+https://www.zeit.de/2007/22/Spielen-Logelei-22
+Claudia musste für den Erdkundeunterricht vier Berge auswendig lernen. Am nächsten Tag in der Klassenarbeit kann sie sich noch an Folgendes erinnern:
+Wie heißen die vier Berge, wie hoch sind sie, in welchem Land sind sie, und welche Beso_nderheit findet man auf den vier Gipfeln? */
+import cp.
+main ?=> %         1            2            3            4
+    StrBerg = ["Borken",   "Felderer", "Schneehorn", "Weidberg"], % Es gab einen Weldberg; die anderen Berge werden unten erwähnt
+    StrLand = ["Barunien", "Gorabien", "Lusanien",   "Seborien"],    
+    StrBeso = ["Felsen",   "Hütte",    "See",        "Steinhaufen"], % Auf einem der Berge war ein gigantischer Felsen.
+    StrHoeh = ["2128",     "2222",     "2317",       "2581"],        
+    Land = new_list(4), Land :: 1..4, assignment(Land, RLand),
+    Beso = new_list(4), Beso :: 1..4, assignment(Beso, RBeso), 
+    Hoeh = new_list(4), Hoeh :: 1..4, assignment(Hoeh, RHoeh),
+    Beso[2] #!= 4, % Auf dem Felderer findet sich kein Steinhaufen.
+    BergB #= RLand[1], BergB #!= 3, % Der Berg in Barunien heißt weder Schneehorn, ..
+    element(BergB, Hoeh, HoehB), HoehB #!= 3, % ..noch ist er 2317 Meter hoch. 
+    element(RLand[2], Hoeh, HoehG), HoehG #!= 4,  % Weder der Berg in Gorabien ..
+    Hoeh[2] #!= 4, % .. noch der Felderer ist 2581 Meter hoch.
+    element(RLand[4], Hoeh, 1),  % Der Berg in Seborien ist 2128 Meter hoch.
+    Hoeh[3] #!= 2, % Das Schneehorn ist nicht 2222 Meter hoch.
+    BergH #= RBeso[2], element(BergH, Hoeh, HoehH), HoehH #!= 2, % Der Berg mit der Hütte darauf ist weder 2222 Meter hoch ..
+    BergH #!= 1, % .. noch der Borken,..
+    element(BergH, Land, LandH), LandH #!= 4, % ..noch in Seborien.
+    element(RLand[2], Hoeh, HoehG), HoehG #!= 3, % Der Berg in Gorabien ist nicht 2317 Meter hoch.
+    element(RHoeh[2], Beso, Beso2222), Beso2222 #!= 3, % Weder auf dem 2222 Meter hohen Berg gibt es einen See ...
+    Beso[1] #!= 3, % .. noch auf dem Borken
+    RLand[3] #= 1, % In Lusanien steht der Borken.
+    solve(Land ++ Beso ++ Hoeh ++ RLand ++ RBeso ++ RHoeh ++ [BergB, BergH, HoehB, HoehG, Beso2222]), 
+    foreach(I in 1..4) 
+        printf("Der %s steht in %s, hat einen %s und ist %s Meter hoch.%n", StrBerg[I], StrLand[Land[I]], StrBeso[Beso[I]], StrHoeh[Hoeh[I]]) 
+    end,
+    nl, fail.
+/* 
+Der Borken steht in Lusanien, hat einen Steinhaufen und ist 2317 Meter hoch.
+Der Felderer steht in Gorabien, hat einen Felsen und ist 2222 Meter hoch.
+Der Schneehorn steht in Seborien, hat einen See und ist 2128 Meter hoch.
+Der Weidberg steht in Barunien, hat eine Hütte und ist 2581 Meter hoch.
+CPU time 0.001 seconds, no more solutions */

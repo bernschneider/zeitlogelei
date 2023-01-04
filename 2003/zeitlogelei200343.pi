@@ -1,0 +1,52 @@
+/* Zeit Logelei Nr. 2003/43
+https://www.zeit.de/2003/43/Spielen_2fLogelei_43
+1. Heimgekehrt aus dem Urlaub, hat Ulli und Digne nun der Alltag wieder. Sie sitzen beisammen und wissen nicht so recht, worüber sie reden sollen.
+Da fällt Ulli etwas ein. "Ich habe mir Gedanken über unsere Zukunft gemacht", sagt er und führt aus: ..
+"Na und?", erwidert Digne, offensichtlich gelangweilt. Unsereiner aber wüsste doch gern, wie alt Ulli ist. */
+import cp, alphametik.
+main1 ?=>
+    Vars = [Delta1, Delta2, U, D], Vars :: 1..100, 
+    3 * Delta1 #= D, % Ulli: "Wenn ich um ein Drittel deines jetzigen Alters älter als jetzt sein werde, ..
+    2* (D + Delta1) + U #= 2* (U + Delta1 + 3),  % ..wirst du um die Hälfte meines gegenwärtigen Alters jünger sein als ich drei Jahre danach sein werde.
+    3 * Delta2 #= U, % Aber wenn du um ein Drittel meines gegenwärtigen Alters älter als jetzt sein wirst, ..
+    U + Delta2 - Delta1 #= D + Delta2, % dann werde ich um ein Drittel deines gegenwärtigen Alters älter sein als du acht Jahre danach sein wirst."
+    solve(Vars),
+    printf("Ulli ist %d, Digne %d Jahre alt.%n", U, D), 
+    fail. /* Ulli ist 12, Digne 9 Jahre alt.
+no more solutions, sieht gut aus! */
+
+/* 2. Hier gibt’s eine Menge Konjunktive: ... Wie alt ist Lothar? */
+main2 ?=>
+    Vars = [Delta1, Delta2, Delta3, Delta4, L, A], Vars :: 1..100, 
+    L + Delta4 - 2 #= A + Delta3, % Wäre Lothar zwei Jahre jünger als Alois sein würde,  
+    2* (A + Delta3 + 2) #= L + Delta2, % ..wenn Alois zwei Jahre älter als halb so alt wie Lothar sein würde, ..
+    L + Delta2 - 2 #= 2* (A + Delta1), % .. wenn Lothar zwei Jahre jünger als doppelt so alt wie Alois wäre, 
+    A + Delta1 #= 2* L, % .. wenn Alois doppelt so alt wäre, wie Lothar jetzt ist, ..
+    Delta4 #= 10, % .. dann würde Lothar zehn Jahre älter sein, als er jetzt ist.
+    solve(Vars),
+    printf("Lothar ist %d Jahre alt.%n", L), fail. /* Lothar ist 9 Jahre alt.
+no more solutions, sieht gut aus! */
+
+/* 3. Herr Klugmann behauptet, .. Wie alt ist Elke? */
+main3 ?=>
+    Vars = [Delta, K, E, S], Vars :: 1..100, 
+    E - 13 #= K - Delta, % .. seine Schwester Elke sei 13 Jahre älter, als er war, 
+    2* (S - Delta) #= K, % .. als seine Schwester Susanne halb so alt war, wie er heute ist. 
+    E - 5 #= S, E + 2 #= K, % Elke sei fünf Jahre älter als Susanne, aber zwei Jahre jünger als er. 
+    solve(Vars),
+    printf("Elke ist %d Jahre alt, Susanne %d und Herr Klugmann %d Jahre.%n", E, S, K), 
+    fail. /* Elke ist 42 Jahre alt, Susanne 37 und Herr Klugmann 44 Jahre.
+no more solutions, sieht gut aus! */
+
+/* 4. Und noch zwei Alphametiken:
+WER • IST = AELTER */
+main4 => mult(["WER", "IST", "AELTER"]). /* 708 * 426 = 30160 korrekt */
+
+/* 5. AAAA  9999
+    + BBBB  1111
+    + CCCC  8888
+    ------ -----
+     BAAAC 19998 KORREKT! */
+main5 => add(["AAAA", "BBBB", "CCCC", "BAAAC"]). % siehe oben ^
+
+/* Auflösung aus Nr. 42: 1. siehe Grafik 2. 192 • 4306 = 826752 */ 

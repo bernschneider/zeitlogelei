@@ -1,0 +1,59 @@
+/* Zeit Logelei Nr. 2003/37
+https://www.zeit.de/2003/37/Spielen_2fLogelei_37
+1. "Wir sollten etwas unternehmen, statt nur hier herumzusitzen und wieder einmal über die Jungs aus unserer Klasse zu quatschen", befindet Gabi. 
+Ihre vier Freundinnen, Maria, Nora, Petra und Renate, stimmen dem zu, doch was sollen sie unternehmen? Nora blättert in der Zeitung und studiert den Veranstaltungskalender, 
+"Ich hab’s!", ruft sie, "im Excelsior gibt’s eine Modenschau." Die Gruppe begibt sich gemeinsam in das Luxushotel.
+Nach der Veranstaltung erhält jede Zuschauerin einen Fragebogen mit der Liste der insgesamt 25 gezeigten Kleider. Darauf soll sie das Kleid ankreuzen, das ihr am besten gefallen hat. 
+Nur ein Kreuz ist erlaubt. Fünf Kategorien waren vorgestellt worden: kurzes Kleid, Abendkleid, Sommerkleid, Winterkleid und Partydress, 
+und in jeder Kategorie gab es je eines in Schwarz, Rot, Blau, Gelb und Grün.
+Die fünf Freundinnen haben ihr Kreuzchen gemacht. Auf dem Heimweg wollen sie von einander wissen, wer sich für welches Kleidungstück entschieden hat. Das kommt heraus:
+Wer von den Mädchen hat was angekreuzt? */
+import cp, alphametik.
+main1 ?=>  
+    Nstr = ["Gabi",     "Maria",  "Nora",    "Petra",   "Renate"], Gabi = 1, Maria = 2, Nora = 3, Petra = 4, Renate = 5,
+    Kstr = ["kurze K",  "Abendk", "Sommerk", "Winterk", "Partyk"], KurzesKleid = 1, Abendkleid = 2, Sommerkleid = 3, Winterkleid = 4, Partydress = 5,
+    Fstr = ["schwarze", "rote",   "blaue",   "gelbe",   "grüne"],  Schwarz = 1, Rot = 2, Blau = 3, _Gelb = 4, Gruen = 5,
+    K = new_list(5), K :: 1..5, 
+    F = new_list(5), F :: 1..5,
+    % Klist #= [5 * K[I] + F[I] - 1 : I in 1..5], all_different(Klist), % Keine zwei der Freundinnen haben sich für das gleiche Kleid entschieden
+    assignment(K,Krev), % mehr noch: Keine zwei wählten ein Kleid der gleichen Kategorie.
+    % Das Mädchen, das Blau gewählt, und ihre Freundin, die für ein Sommerkleid votiert hatte, waren weder Maria noch Renate. 
+    NB :: 1..5, element(NB, F, Blau),
+    F[Maria] #!= Blau, F[Renate] #!= Blau, K[Maria] #!= Sommerkleid, K[Renate] #!= Sommerkleid, 
+    % Von der, die das Winterkleid gewählt, und der, die den Partydress angekreuzt hat, entschied sich eine für die Farbe Schwarz, und die andere heißt Petra. 
+    element(Krev[Winterkleid], F, FW), element(Krev[Partydress], F, FP), F[Petra] #!= Schwarz,
+    (FW #= Schwarz #/\ K[Petra] #= Partydress) #^ (FP #= Schwarz #/\ K[Petra] #= Winterkleid),
+    % Maria hat weder den Partydress gewählt noch ein rotes Kleid gewählt. 
+    K[Maria] #!= Partydress, F[Maria] #!= Rot, 
+    % Nora, Petra und diejenige, die das kurze Kleid angekreuzt hatten, haben sich weder für Schwarz noch für Blau entschieden. 
+    element(Krev[KurzesKleid], F, FK), [F[Nora], F[Petra], FK] :: [2,4,5], 
+    % Von Gabi und Petra hat eine das Abendkleid und die andere ein grünes Kleid gewählt.
+    [NA, NG] :: [Gabi, Petra], NA #!= NG, 
+    element(NA, K, KA), element(NG, K, KG), 
+    element(NA, F, FA), element(NG, F, FG),
+    (KA #= Abendkleid #/\ FG #= Gruen) #^ (KG #= Abendkleid #/\ FA #= Gruen), 
+    solve(K ++ Krev ++ F ++ [NB, FW, FP, FK, NA, NG, KA, KG, FA, FG]), % Klist ++ 
+    foreach(I in 1..5)
+        printf("%s hat das %s %sleid gewählt.%n", Nstr[I], Fstr[F[I]], Kstr[K[I]])
+    end, nl, fail. /* 
+Lösung laut ZEIT: 1. Gabi hat das blaue Abendkleid gewählt, Maria das kurze Kleid in Gelb, Nora das rote Sommerkleid, 
+_Petra das grüne _Winterkleid und _Renate den |/|roten _Party-Dress. 
+Laut Zeile 23 folgt dann aus K[Petra] = Winterkleid => F[Renate] = Schwarz => Widerspruch zur angegebenen Lösung! 
+Meine Lösungen:
+Gabi hat das blaue Abendkleid gewählt.
+Maria hat das gelbe kurze Kleid gewählt.
+Nora hat das rote Sommerkleid gewählt.
+Petra hat das grüne Winterkleid gewählt.
+Renate hat das schwarze Partykleid gewählt.
+...  (sehr viele Lösungen, aber alle angeblich falsch wegen Zeile 23 :-() */
+
+/* 2. Eine Alphametik mit zwei Lösungen, aber in beiden ist die entsprechende Zahl für DAME die gleiche:
+"Magst du das Kleid?", fragt eine Dame ihren Gatten während der Modenschau. Der antwortet: "Ich…
+MAG • DAS = MODEL */
+main2 ?=>
+    mult(["MAG", "DAS", "MODEL"]), fail. /* 
+    607 * 104 = 63128 => DAME = 1062,
+    603 * 108 = 65124 => DAME = 1062
+    CPU time 0.708 seconds, korrekt.
+
+/* Aufl"sung aus Nr. 36: 1. Norbert ist unschuldig, denn h"tte er Andreas verpr"gelt, w"ren zwei seiner Aussagen falsch gewesen. Angenommen, Karl hat es getan, dann w"re seine erste Aussage falsch, die anderen beiden aber wahr. Ebenfalls h"tte Malte mit seiner ersten Antwort die Wahrheit gesagt, jedoch mit seiner dritten gelogen, ergo m"sste seine zweite wahr sein. Aber Karls zweite und Maltes zweite Aussage widersprechen einander. Mithin ist Karl nicht der T"ter. Das kann nur Malte gewesen sein und f"hrt nicht zum Widerspruch. 2. 278 • 1785 = 496230 */

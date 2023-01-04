@@ -1,0 +1,48 @@
+/* Zeit Logelei Nr. 2003/40
+https://www.zeit.de/2003/40/Spielen_2fLogelei_40
+1. Endlich ist wieder ein Brief aus Knusiland gekommen. Unser dorthin entsandter Forscher schreibt uns: "Wie inzwischen wohl jeder weiß, gibt es hier drei Volksstämme, 
+die Abianer, die stets die Wahrheit sagen, die Bebianer, deren Aussagen immer falsch sind, und die Cebianer, die abwechselnd wahre und falsche beziehungsweise falsche und wahre Aussagen machen.
+Weil ich einen Assistenten brauche, hatte ich sieben knusische Herren zur Vorstellung bestellt. Sie alle kamen aus Abebi, einem Ort, in dem nur Abianer und Bebianer wohnen.
+Ich hatte von jedem der Herren einen guten Eindruck bekommen. Aber meine Schwierigkeit lag darin, dass ich nicht wusste, welcher Herr Abianer und welcher Bebianer war.
+Allerdings war mein Nachbar, Herr Knasi, bei den Bewerbungsgesprächen zugegen gewesen, und der wusste genau, wer von den sieben Määnern Abianer und wer Bebianer war. 
+Doch Knasi pflegt sich immer etwas umständlich auszudrücken. So auch diesmal, als er mir diese acht Auskünfte gab: ..
+Wer kann mir dies und die Stammeszugehörigkeit der Bewerber verraten?" */
+import cp, alphametik.
+main1 ?=>
+    Kstr = ["B", "D", "F", "G", "N", "P", "S"], Ks = [B, D, F, G, N, P, S], WB = 0, WA = 1, Ks :: [WB, WA], % 0=Bebianer, 1=Abianer
+    % "Leider weiß ich nicht, von welchem Stamm Knasi ist":
+    W = new_list(8), W :: 0..1, % Wahrheit der I-ten Aussage von Knasi
+    Alt :: 0..1, % 1=alternierend wahr und falsch, 0=alle sind gleich
+    foreach(I in 2..8) 
+          Alt #=> W[I] #= 1 - W[I-1],   % alternierend wahr und falsch
+        #~Alt #=> W[I] #= W[I-1]        % alle sind gleich
+    end,
+    W[1] #= (N #= WB #/\ (F #= WA #=> (D #= WA #/\ S #= WB))), % ›Nosi ist Bebianer, und wenn Flosi Abianer ist, dann ist Drosi Abianer und Sosi Bebianer.‹ – 
+    W[2] #= (#~(P #= WA #/\ S #= WB #/\ N #= WB)), % ›Es trifft nicht zu, dass Pnosi Abianer sei, aber sowohl Sosi als auch Nosi Bebianer seien.‹ – 
+    W[3] #= (N #= WA #/\ (D #= WA #\/ G #= WA)), % ›Herr Nosi ist Abianer, und das trifft auch auf mindestens einen der Herren Drosi und Glosi zu.‹ – 
+    W[4] #= (B #= WA #=> G #= WB), % ›Wenn Brosi Abianer ist, dann ist Glosi Bebianer.‹ – 
+    W[5] #= (D #= WB #/\ P #= B), % ›Drosi ist Bebianer, und Pnosi ist vom selben Stamm wie Brosi.‹ – ›
+    W[6] #= (S #= WB #=> P #= WB), % Wenn Sosi Bebianer ist, dann ist auch Pnosi Bebianer.‹ – 
+    W[7] #= (D #= WB #/\ G #= WB #/\ B #= WA), % ›Drosi und Glosi sind Bebianer, aber Brosi ist Abianer.‹ – 
+    W[8] #= (S #= WA #=> F #= WB), % ›Ist Sosi Abianer ist, dann ist Flosi Bebianer.‹
+    solve(Ks ++ W ++ [Alt]),
+    printf("W[1]=%d, Alt=%d%n", W[1], Alt), % W[1]=0, Alt=1, d.h. Knasi ist Cebianer
+    foreach(I in 1..7, Ks[I] = WA) printf("%sosi ", Kstr[I]) end,
+    println("sind Albianer, der Rest Bebianer."),
+    fail. /* 
+Nosi Posi Sosi sind Albianer, der Rest Bebianer.
+no more solutions, sieht gut aus! */
+
+/* 2. Und die passende Alphametik (Die "schriftliche" Ausrechnung macht diese Alphametik eindeutig):
+KNU • SI    328 * 15
+--------    --------
+LI          45
+ KD          30
+ SND         120
+----        ----
+LAND        4920 */
+main2 ?=>
+    mult(["KNU", "SI", "LI", "KD", "SND", "LAND"]). /*
+no more solutions, sieht gut aus! */
+
+/* Aufl"sung aus Nr. 39: 1. Zeile 1: 163524; Zeile 2: 624153; Zeile 3: 342615; Zeile 4: 235461; Zeile5: 451236; Zeile6: 516342. 2. Wenn x die Anzahl der Masten ist, die Morps pro Minute gez"hlt hat, dann ist die Geschwindigkeit des Autos 10x km/h. W"rde das Fahrzeug eine Stunde lang mit diesem konstanten Tempo an der "berlandleitung entlangfahren, dann m"sste es w"hrend dieser Zeit 10x Kilometer zur"cklegen und dabei 60x Masten passieren; folglich stehen auf einem Kilometer 60x/10x, also sechs Masten. Der gesuchte Abstand ist 1/6 Kilometer, rund 167 Meter */

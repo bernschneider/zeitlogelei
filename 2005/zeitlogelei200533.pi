@@ -1,0 +1,28 @@
+/* Zeit Logelei Nr. 2005/33
+https://www.zeit.de/2005/33/Spielen_2fLogelei_33
+Herr Maier wohnt genau an der Kilometermarkierung 54 des Nord-Ostsee-Kanals. Seine Nichte Nicole ist zu Besuch. 
+Die beiden brechen zu einer Wanderung entlang des Kanals auf. ... (s.u.) ... Er überlegt einen Moment. 
+»Das heißt, dass du doppelt so schnell warst wie ich.« Wenn man davon ausgeht, dass die beiden sich mit 
+konstanter Geschwindigkeit bewegt haben, bei welchem Kilometer befindet sich dann die Fähre?
+Km 54 ...... K2 ..... Km 42 .........F (Fähre)
+Nicole: -----------------------------> 54 - F
+             <------------------------ K2 - F
+Maier: ----->                          54 - K2 
+Nicole:      ------------------------> K2 - F
+                        <------------- 42 - F
+Maier:       --------->                K2 - 42 */
+import cp.
+main ?=>
+    [K2, F] :: 0..54000, % K2 = Kanal-Km beim 1. Wiedertreffen, F = Kanal-Km der Fähre
+    /* Nicole will allerdings schneller rennen, als Herr Maier geht, und so vereinbaren die beiden, 
+    dass Nicole vorausrennt, bis sie bei der Fähre angekommen ist, und dann wieder zurück zu Herrn Maier rennt. So machen die beiden das auch. 
+    Nach einer Weile kommt Nicole zurückgerannt. »Puh!«, ruft sie, hat aber noch nicht genug. */
+    (54000 - F) + (K2 - F)  #= 2 * (54000 - K2), % Nicole hin + zurück = 2 * Herr Maier
+    /* Sie rennt noch ein weiteres Mal zur Fähre und kommt wieder zu Herrn Maier zurück. 
+    »Schau mal«, sagt der, »wir sind genau bei Kilometer 42.« */
+    (K2 - F) + (42000 - F)  #= 2 * (K2 - 42000),
+    solve([K2, F]),
+    printf("Die Fähre befindet sich bei KM %3.1f, K2 = %3.1f.%n", F/1000, K2/1000),
+    fail.
+/* Die Fähre befindet sich bei KM 40.5, K2 = 45.0.
+no more solutions, sieht gut aus! */

@@ -1,0 +1,40 @@
+/* Zeit Logelei Nr. 2005/41
+https://www.zeit.de/2005/41/Spielen_2fLogelei_41
+Tanja Schärle hat einen Friseur-Salon eröffnet. Im Laufe des ersten Tags haben fünf Freundinnen zur Eröffnung Blumen vorbeigebracht. 
+Jetzt, wo der Tag rum ist, will Tanja Dankesbriefe schreiben und versucht, sich zu erinnern, wer wann welche Blumen gebracht hat.
+Sie kann sich jedoch nur noch an Folgendes erinnern: ... Können Sie Tanja helfen? */
+import cp.
+main ?=> 
+    A=1, B=2, G=3, L=4, S=5, Fstr = ["Anette", "Birgit", "Gudrun", "Lydia", "Sonja"],
+    Gl=1, Lo=2, Ro=3, So=4, Zi=5, Bstr = ["Gladiolen", "Löwenmäulchen", "Rosen", "Sonnenblume", "Zinien"], N = len(Fstr),
+    Freundin = new_list(N), Freundin :: 1..5, assignment(Freundin, RFreundin),
+    Blumen =   new_list(N), Blumen   :: 1..5, assignment(Blumen, RBlumen),
+    % Die Rosen wurden als Erstes oder Zweites gebracht; ..
+    RBlumen[Ro] :: 1..2, % Blumen[1] #= Ro #\/ Blumen[2] #= Ro,
+    % .. aber weder von Lydia noch von Annette; die mögen keine Rosen. 
+    RBlumen[Ro] #!= RFreundin[L], RBlumen[Ro] #!= RFreundin[A],  
+    % Und Lydia war nicht als Erste da; so früh steht sie nicht auf. 
+    Freundin[1] #!= L,
+    % Sonja hat die vielen Farben im Löwenmäulchenstrauß bewundert, als sie gekommen ist. 
+    RFreundin[S] #> RBlumen[Lo],
+    % Lydia hätte das sicher auch getan, wenn der Strauß zu diesem Zeitpunkt schon da gewesen wäre. 
+    RFreundin[L] #< RBlumen[Lo],
+    % Die vorletzte Besucherin kam gegen zwei Uhr an; das kann nicht Gudrun gewesen sein, da sie um diese Zeit immer ihren Mittagsschlaf hält. 
+    Freundin[N-1] #!= G,
+    % Aber Gudrun war es, die in ihrer stürmischen Art beinah den Gladiolen-Strauß umgeworfen hätte, den jemand anderes gebracht hatte. 
+    RFreundin[G] #> RBlumen[Gl],
+    % Als die Sonnenblume gebracht wurde, musste Tanja die Zinien zur Seite stellen, um Platz zu machen. 
+    RBlumen[So] #> RBlumen[Zi],
+    % Birgit hat von Annettes neuem Freund erzählt. Zu dem Zeitpunkt war aber Annette schon da gewesen, sonst hätte Tanja Annette noch selbst darauf ansprechen können.
+    RFreundin[B] #> RFreundin[A],
+    solve(Freundin ++ RFreundin ++ Blumen ++ RBlumen),
+    foreach(I in 1..N)
+        printf("%d. %s hat die %s gebracht.%n", I, Fstr[Freundin[I]], Bstr[Blumen[I]])
+    end, nl, fail.
+/* 
+1. Anette hat die Gladiolen gebracht.
+2. Gudrun hat die Rosen gebracht.
+3. Lydia hat die Zinien gebracht.
+4. Birgit hat die Löwenmäulchen gebracht.
+5. Sonja hat die Sonnenblume gebracht.
+CPU time 0.0 seconds, no more solutions, korrekt */

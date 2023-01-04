@@ -1,0 +1,51 @@
+/* Zeit Logelei 2007/02 Doppelpyramide
+https://www.zeit.de/2007/02/Spielen-Logelei-02 */
+import cp.
+to_num(List, Num) => % Num = Wert der Liste
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).
+/* 1. Tragen Sie die Ziffern folgendermaßen in die Doppelpyramide ein: 
+Die mittlere Zahl ist Vielfaches sowohl von der darüber als auch von der darunter stehenden Zahl. 
+Einige Ziffern sind bereits vorgegeben. BILD fehlt, deshalb Vorgabezahlen durch Probieren ermittelt */
+main1 ?=>
+    M = {{0,0,0,0,3},
+         {0,0,0,5,_},
+         {0,0,_,9,_},
+         {0,_,_,_,7},
+         {_,_,6,_,_},
+         {0,1,_,_,_},
+         {0,0,9,_,_},
+         {0,0,0,2,_},
+         {0,0,0,0,6}},
+    M :: 0..9, Mvars = vars(M), N = len(M),
+    % foreach(Z in 1..N, S in 1..5, var(M[Z,S])) M[Z,S] #> 0 end,
+    Zahl = new_list(N), Zahl :: 1..99999,
+    foreach(Z in 1..N)  to_num(M[Z], Zahl[Z]) end,
+    % In der oberen Hälfte ist jede waagerecht entstehende Zahl ein Vielfaches der darüber stehenden Zahl:
+    foreach(Z in 1..4)  Zahl[Z+1] mod Zahl[Z] #= 0 end,
+    % In der unteren Hälfte ist jede Zahl ein Vielfaches der darunter stehenden Zahl:
+    foreach(Z in 5..N-1)  Zahl[Z] mod Zahl[Z+1] #= 0 end,
+    solve(Mvars ++ Zahl),
+    foreach(Z in 1..N) println(Zahl[Z]) end. /* 
+3
+57
+399
+1197
+76608
+1824
+912
+24
+6
+CPU time 0.003 seconds, korrekt */
+/* 2. »Wie alt sind eigentlich deine beiden Töchter?«, fragt Bettina Rudolf. */
+main2 ?=> 
+    Alter = [E, B, R], Alter :: 2..99, % R #> 10,
+    % »Eine Doppelpyramide, die an der breitesten Stelle so viele Kästchen hat, wie Elise alt ist, hat insgesamt so viele Kästchen, wie ich alt bin. 
+    E * E #= R, % = Zweimal E * (E-1) für die Teilpyramiden ohne die breiteste Zeile + E für die breiteste Zeile
+    % Eine einfache Pyramide, die an der breitesten Stelle so viele Kästchen hat, wie Benita alt ist, hat insgesamt genauso viele Kästchen.« 
+    B * (B + 1) // 2 #= R,
+    % Wie alt sind Elise, Benita und Rudolf?
+    solve(Alter),
+    printf("Elise ist %d Jahre alt, Benita %d und Rudolf %d", E, B, R). */
+/* Elise ist 6 Jahre alt, Benita 8 und Rudolf 36
+CPU time 0.0 seconds, korrekt */

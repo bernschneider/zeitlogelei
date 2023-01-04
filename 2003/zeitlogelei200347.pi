@@ -1,0 +1,58 @@
+/* Zeit Logelei Nr. 2003/47
+https://www.zeit.de/2003/47/Spielen_2fLogelei_47
+Herr Liebmann hat eine Wohnung zu vermieten, und weil er sozial empfindet, bevorzugt er eine alleinerziehende, kinderreiche Mutter. 
+Sechs Frauen waren nacheinander zur Besichtigung erschienen. Nun soll sich Liebmann für eine entscheiden. Seine Frau möchte wissen, wer gekommen war.
+"Das ist es ja", klagt ihr Mann, "ich kriege die Namen und Daten nicht mehr zusammen." Frau Liebmann: "Woran erinnerst du dich denn noch?" ...
+Aus alledem", meint Frau Liebmann, "kannst du leicht ermitteln, welche Dame als wievielte zur Besichtigung kam, wie sie mit vollem Namen heißt, 
+welche Haarfarbe und wie viele sie Kinder hat." Dies wollen wir auch wissen. */
+import cp.
+main ?=>  %     1          2         3       4         5        6
+    Vstr = ["Barbara", "Birgit", "Elke", "Heidi", "Ingrid", "Kathrin"], 
+    Nstr = ["Abel",    "Bock",   "Groß", "Heise", "Jessel", "Meyer"],  % Er: "Eine Frau hieß Bock. 
+    % Nenne Vor- und Nachnamen in der Reihenfolge des Kommens:
+    Vorname = new_list(6), Vorname :: 1..6,   assignment(Vorname, RVorname),   % RVorname[I] = Index von I
+    Nachname = new_list(6), Nachname :: 1..6, assignment(Nachname, RNachname),
+    Hstr = ["blond", "brünett", "schwarzhaarig"], Bl=1, Br=2, Sh=3,
+    Haar   = new_list(6), Haar :: 1..3,
+    Kinder = new_list(6), Kinder :: 1..10,
+    % Mindestens eine brünette Dame hatte sich die Wohnung bereits angesehen, als Frau Groß (3) kam:
+    Br1 :: 1..5, element(Br1, Haar, Br), Br1 #< RNachname[3], 
+    Sh1 :: 3..6, element(Sh1, Haar, Sh), RNachname[3] #< Sh1, % nach dieser erschien mindestens eine schwarzhaarige Frau. 
+    % Eine – Birgit (2) mit Vornamen – war weder die Frau Meyer (6) noch die Frau Abel (1), ..:
+    element(RVorname[2], Nachname, NBirgit), NBirgit #!= 6, NBirgit #!= 1, 
+    % ... die ein Kind weniger als Frau Meyer (6) hat:
+    element(RNachname[1], Kinder, KAbel), element(RNachname[6], Kinder, KMeyer), KAbel #= KMeyer - 1, 
+    I11 :: 1..2, % Die folgenden fünf Damen haben sich unmittelbar nacheinander die Wohnung angesehen: 
+    I12 #= I11+1, I13 #= I12+1, I14 #= I13+1, I15 #= I14+1,
+    % die schon erwähnte Birgit (2), eine schwarzhaarige Dame, eine Frau Heise (4), eine Mutter von sechs Kindern und eine, die Heidi (4) mit Vornamen heißt:
+    element(I11, Vorname, 2), element(I12, Haar, Sh), element(I13, Nachname, 4), element(I14, Kinder, 6), element(I15, Vorname, 4),   
+    Br2 :: 1..5, Bl2 #= Br2 + 1, element(Br2, Haar, Br), element(Bl2, Haar, Bl), % Eine brünette Frau kam unmittelbar vor einer Blondine zur Besichtigung. 
+    % Elke (3) war der Rufname der – nicht brünetten – Dame, die unmittelbar vor Frau Abel (1) erschien:
+    IElke #= RVorname[3], element(IElke, Haar, HElke), HElke #!= Br, IElke + 1 #= RNachname[1], 
+    RNachname[1] #< RVorname[5], % nach Frau Abel kam eine mit dem Vornamen Ingrid (5). ??? ODER UNMITTELBAR NACH ???
+    % Eine andere Bewerberin hat ebenso viele Kinder wie eine Bewerberin, die Kathrin (6) mit Vornamen heißt:
+    I3 :: 1..6, element(I3, Vorname, VI3), VI3 #!= 5, VI3 #!= 6, element(I3, Kinder, KI3), element(RVorname[6], Kinder, KI3), 
+    % Die erste Schwarzhaarige unter den Bewerberinnen hat ebenso viele Kinder wie die letzte Blondine, nämlich zwei mehr als die letzte brünette Frau, die sich bewarb.
+    ESh :: 1..6, foreach(I in 1..6) I #< ESh #=> Haar[I] #!= Sh, I #= ESh #=> Haar[I] #= Sh  end,
+    LBl :: 1..6, foreach(I in 1..6) I #= LBl #=> Haar[I] #= Bl,  I #> LBl #=> Haar[I] #!= Bl end,
+    LBr :: 1..6, foreach(I in 1..6) I #= LBr #=> Haar[I] #= Br,  I #> LBr #=> Haar[I] #!= Br end,
+    element(ESh, Kinder, KESh), element(LBl, Kinder, KLBl), element(LBr, Kinder, KLBr), KESh #= KLBl, KLBl #= 2 + KLBr,  
+    % Die folgenden vier Damen erschienen unmittelbar nacheinander: 
+    I21 :: 1..3, I22 #= I21+1, I23 #= I22+1, I24 #= I23+1, 
+    % eine Barbara (1), eine Mutter von acht Kindern, eine Blondine und Frau Jessel (5)."
+    element(I21, Vorname, 1), element(I22, Kinder, 8), element(I23, Haar, Bl), element(I24, Nachname, 5),
+    solve(Vorname ++ RVorname ++ Nachname ++ RNachname ++ Haar ++ Kinder), 
+    % solve(Vorname ++ RVorname ++ Nachname ++RNachname ++ Haar ++ Kinder ++ [Br1, Sh1, I11, I12, I13, I14, I15, Br2, Bl2, IElke, I3, ESh, LBl, LBr, I21, I22, I23, I24]), 
+    foreach(I in 1..6)
+        printf("%s %s ist %s und hat %d Kinder%n", Vstr[Vorname[I]], Nstr[Nachname[I]], Hstr[Haar[I]], Kinder[I])
+    end,
+    nl, fail. /*
+Birgit Bock ist brünett und hat 6 Kinder
+Barbara Groß ist schwarzhaarig und hat 7 Kinder
+Elke Heise ist schwarzhaarig und hat 8 Kinder
+Kathrin Abel ist blond und hat 6 Kinder
+Heidi Jessel ist brünett und hat 5 Kinder
+Ingrid Meyer ist blond und hat 7 Kinder
+CPU time 0.002 seconds, no more solutions, SIEHT GUT AUS (leichte Zweifel bestehen bei Zeile 32) */
+
+/* Auflösung aus Nr. 46: Parf- und Borwulpstoldine g?lsern, Wonk- und Gadelstoldine heudeln und die Kluffstoldine merfelt */

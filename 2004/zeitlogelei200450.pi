@@ -1,0 +1,65 @@
+/* Zeit Logelei Nr. 2004/50 (Achtung: 2004/51 ist ein Kreuzzahlrätsel!)
+https://www.zeit.de/2004/50/Spielen_2fLogelei_50/komplettansicht
+1. Bei einer Expedition auf die Farbinseln trifft Professor Knusi auf einen Stamm von Ureinwohnern. Von diesen ist bekannt, dass einige lügen, während die anderen die Wahrheit sagen.
+Eine Befragung ergab folgendes Protokoll: ... Wer sagt jetzt die Wahrheit, und wer lügt? */
+import cp.
+main1 ?=>
+    N = 10,
+    Str = ["Aquamarinblau", "Cadmiumgelb",  "Edelgold", "Elfenbeinschwarz", "Hochhausfassadengrau", "Neonrot", "Purpur", "Schneeweiß", "Spinatgrün", "Ultraviolett"], 
+    W = [Ab, Cg, Eg, Es, Hg, Nr, Pp, Sw, Sg, Uv] , W :: 0..1, % 1 = sagt die Wahrheit
+    foreach((P, L) in [
+        (Uv, [(Cg,0), (Es,1)]), % Ultraviolett: "Cadmiumgelb lügt, und Elfenbeinschwarz sagt die Wahrheit."
+        (Nr, [(Es,1), (Uv,1)]), % Neonrot: "Elfenbeinschwarz sagt die Wahrheit, und Ultraviolett sagt die Wahrheit."
+        (Hg, [(Sw,0)]), % Hochhausfassadengrau: "Schneeweiß lügt."
+        (Es, [(Cg,0)]), % Elfenbeinschwarz: "Cadmiumgelb lügt."
+        (Sw, [(Nr,0), (Sg,1)]), % Schneeweiß: "Neonrot lügt, und Spinatgrün sagt die Wahrheit."
+        (Sg, [(Hg,0), (Pp,1)]),  % Spinatgrün: "Hochhausfassadengrau lügt, und Purpur sagt die Wahrheit."
+        (Eg, [(Ab,0)]), % Edelgold: "Aquamarinblau lügt."
+        (Pp, [(Eg,0), (Cg,1)]),  % Purpur: "Edelgold lügt, und Cadmiumgelb sagt die Wahrheit."
+        (Cg, [(Sg,0)]), % Cadmiumgelb: "Spinatgrün lügt."
+        (Ab, [(Nr,1)])])% Aquamarinblau: "Neonrot sagt die Wahrheit."
+            Len = len(L),
+            P #= (sum([(Pi #= Wi) : (Pi,Wi) in L]) #= Len)
+    end,
+    solve(W),
+    foreach(P in 1..N, W[P] = 1) printf("%s ", Str[P]) end, 
+    println("sagen die Wahrheit, die anderen lügen."), 
+    fail. /*
+Cadmiumgelb Edelgold Hochhausfassadengrau sagen die Wahrheit, die anderen lügen.
+no more solutions, sieht gut aus! */
+
+/* 2. Bei der Verleihung des Zuckmayer-Preises für die interessanteste Ferienlektüre wurden drei Damen geehrt.
+Ein Reporter, der bei der Preisverleihung anwesend war, hatte sich ein paar Notizen gemacht. Als er den Bericht über den Event schreiben will, 
+bekommt er nicht mehr zusammen, wer jetzt was geschrieben hat. Hier seine Notizen: ..
+Können Sie anhand dieser Notizen vielleicht rekonstruieren, wer womit welchen Platz belegt hatte? */
+main2 ?=>
+    Vn=1, Nn=2, Lf=3, La=4,
+    %          1                     2              3
+    Str = [["Gerda",             "Heidi",       "Martina"],    % Vn: Die Damen heißen Gerda, Heidi und Martina mit Vornamen .. 
+           ["Dichsler",          "Jäger",       "Kachelmann"], % Nn: .. und mit Nachnamen Dichsler, Jäger und Kachelmann. 
+           ["den Kriminalroman", "das Märchen", "die Novelle"],% Lf: Eine der drei hatte einen Kriminalroman geschrieben, eine ein Märchen und eine eine Novelle, ..
+           ["China",             "Japan",       "Korea"]],     % La: . welche in China, Japan beziehungsweise in Korea spielen.
+    E = new_array(4,3), E :: 1..3, % (Eigenschaft, Platz) -> Wert 
+    foreach(I in 1..4) all_different(E[I]) end,
+    foreach(J in 1..3)
+        % Die Novelle, die nicht in China spielt, schrieb Frau Jäger:
+        E[Lf,J] #= 3 #=> (E[La,J] #!= 1 #/\ E[Nn,J] #= 2),
+        % Der Kriminalroman erreichte nicht den ersten Platz und wurde nicht von Frau Dichsler geschrieben:
+        E[Lf,J] #= 1 #=> (J #!= 1 #/\ E[Nn,J] #!= 1)
+    end,
+    E[Vn,2] #= 2, % Den zweiten Platz belegte Heidi
+    % Den dritten Platz belegte das Buch, das in Korea spielt. Dieses wurde weder von Frau Kachelmann noch von Gerda geschrieben und ist auch keine Novelle:
+    E[La,3] #= 3, E[Nn,3] #!= 3, E[Vn,3] #!= 1, E[Lf,3] #!= 3, 
+    solve(vars(E)),
+    foreach(P in 1..3)
+        printf("Platz %d: %s %s schrieb %s; das Buch spielt in %s.%n", P, Str[Vn,E[Vn,P]], Str[Nn,E[Nn,P]], Str[Lf,E[Lf,P]], Str[La,E[La,P]] )
+    end,
+    nl, fail. /*
+Platz 1: Gerda Jäger schrieb die Novelle; das Buch spielt in Japan.
+Platz 2: Heidi Kachelmann schrieb den Kriminalroman; das Buch spielt in China.
+Platz 3: Martina Dichsler schrieb das Märchen; das Buch spielt in Korea.
+no more solutions, sieht gut aus! */
+
+/* Auflösung aus Nr. 49:
+1. Eine gesunde Mahlzeit besteht aus Kuyamaras, Granatpflaumen und Sinquats. 
+2. 7986 • 365 = 2914890 3. 925 + 9356 = 10281 */

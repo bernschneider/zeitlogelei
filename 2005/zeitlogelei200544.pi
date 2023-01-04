@@ -1,0 +1,23 @@
+/* Zeit Logelei Nr. 2005/44
+https://www.zeit.de/2005/44/Spielen_2fLogelei_44
+Erich von Knallersberg möchte zu Ehren seiner Gäste, der Familie von Halfenburg, ein Festmahl geben. 
+Um diese zu überraschen, hat er Ihnen davon nichts erzählt und klammheimlich andere Gäste eingeladen.
+Die Überraschung bei den von Halfenburgs ist dann auch tatsächlich groß. Frau von Halfenburg fragt erstaunt: 
+"Aber woher wussten Sie denn, dass heute sowohl mein Mann, dessen Vater als auch unsere Tochter Geburtstag haben?"
+Davon wiederum hatte Erich von Knallersberg nichts gewusst, lässt sich jedoch nichts anmerken 
+und gibt einem Diener heimlich den Auftrag, noch drei Geschenke zu besorgen. 
+Als er diese den Geburtstagskindern überreicht, will er wissen, wie alt die drei geworden sind. */
+import cp.
+main => 
+    Pers = [Maria, Karl2, Opa], Pers :: 1..100,
+    sum(Pers) #= 3 * 37, % Die Tochter, Maria von Halfenburg, antwortet: "Im Schnitt sind wir heute 37 Jahre alt geworden."
+    % Daraufhin überlegt ihr Vater, Karl von Halfenburg der Zweite, kurz und meint dann: 
+    Delta1 #= 4 * Maria, % "Das ist ja interessant, wenn du fünfmal so alt sein wirst, wie du jetzt bist, ..
+    Karl2 + Delta1 #= Opa, % .. dann werde ich (Karl2) gerade so alt sein, wie mein Vater (Maria´s Opa) jetzt geworden ist."
+    Delta2 #= Opa - Karl2, % Worauf dieser (Opa) erwidert: "Jaja, als ich noch so alt war, wie du (Karl2) jetzt bist, .. 
+    Karl2 - Delta2 #= 3 + Maria, % .. da warst du (Karl2) gerade mal drei Jahre älter, als Maria jetzt ist." */
+    solve(Pers),
+    printf("Maria ist %d, Karl der Zweite %d und sein Vater %d Jahre alt geworden.%n", Maria, Karl2, Opa),
+    fail. /*
+Maria ist 7, Karl der Zweite 38 und sein Vater 66 Jahre alt geworden.
+no more solutions, korrekt */ 

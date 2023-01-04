@@ -1,0 +1,40 @@
+/* Zeit Logelei Nr. 2005/14 (2005/15 ist ein Kreuzzahlrätsel)
+https://www.zeit.de/2005/14/Spielen_2fLogelei_14/komplettansicht
+Auf der Hochzeit von Brigitte und Siegfried soll es ein buntes Abendprogramm geben, und Christoph hat sich bereit erklärt, die Planung zu übernehmen. Eigentlich hatte 
+er sich das ganz einfach vorgestellt: Jeder, der einen Programmpunkt anbieten möchte, teilt ihm das mit, und er bringt die Programmpunkte dann in irgendeine Reihenfolge. 
+Zunächst war alles gut gelaufen. Sieben Programmpunkte waren angemeldet worden: ein Hochzeitsquiz, ein Männerchor, Bauchtanz, die Rede des Brautvaters, ein noch nicht 
+näher genanntes Spiel mit dem Brautpaar, Luftballons steigen lassen und Jonglage. Aber dann kamen die Sonderwünsche: ...
+Wer kann Christoph helfen, die Programmpunkte so anzuordnen, dass alle zufrieden sind? */
+import util, cp.
+main ?=>  
+    H=1, M=2, B=3, R=4, S=5, L=6, J=7, 
+    Str = ["Hochzeitsquiz", "Männerchor", "Bauchtanz", "Redes des Brautvaters", "Spiel mit dem Brautpaar", "Luftballons steigen lassen", "Jonglage"], 
+    Nr = new_list(7), Nr :: 1..7, all_different(Nr), % Nr[I] = lfd. Programmnummer des Programmpunkts I
+    assignment(Nr, Seq), % Abfolge der Programmpunkte
+    % Der Brautvater möchte nicht, dass seine _Rede direkt vor oder nach dem _Bauchtanz oder dem _Hochzeitsquiz stattfindet, weil er von diesen beiden Programmpunkten Fotos machen möchte.
+    abs(Nr[R] - Nr[B]) #> 1, abs(Nr[R] - Nr[H]) #> 1, 
+    % Aus nicht genannten Gründen soll weder direkt vor noch direkt nach dem noch nicht näher genannten _Spiel mit dem Brautpaar ein anderer Programmpunkt stattfinden, 
+    % in den das Brautpaar involviert ist. Durch Rückfragen fand Christoph heraus, dass die _Jonglage, der _Männerchor und die _Rede des Brautvaters die einzigen Programmpunkte sind, 
+    % in die das Brautpaar nicht involviert ist.
+    foreach(I in 1..6) Nr[S] #= I #=> Seq[I+1] :: [J,M,R] end,
+    foreach(I in 2..7) Nr[S] #= I #=> Seq[I-1] :: [J,M,R] end,
+    % Der Gast, der das Steigenlassen der _Luftballons plant, wünscht, dass sein Programmpunkt vor dem noch nicht näher genannten _Spiel mit dem Brautpaar und auch vor dem _Hochzeitsquiz 
+    % stattfindet, weil er befürchtet, dass das Brautpaar nach diesen beiden Programmpunkten keine Lust mehr auf größere Aktionen hat.
+    Nr[L] #< Nr[S], Nr[L] #< Nr[H], 
+    % Der _Männerchor möchte nach der _Rede des Brautvaters singen, da er in seinen Texten Anspielungen auf die Rede eingeplant hat.
+    Nr[M] #> Nr[R], 
+    % Die _Bauchtanzgruppe hält es für eine gute Idee, wenn ihr Auftritt vor der _Rede des Brautvaters stattfindet, damit die Stimmung im Publikum während der Rede schon aufgelockerter ist. 
+    % (Es muss aber nicht direkt davor sein.)
+    Nr[B] #< Nr[R], 
+    % Die _Jonglierer haben Angst, dass die _Bauchtänzer viel besser sind als sie und möchten deshalb lieber vorher dran sein.
+    Nr[J] #< Nr[B], 
+    solve(Nr ++ Seq), 
+    foreach(I in 1..7)  printf("%d: %s%n", I, Str[Seq[I]]) end, fail.  /* 
+1: Jonglage
+2: Bauchtanz
+3: Luftballons steigen lassen
+4: Redes des Brautvaters
+5: Spiel mit dem Brautpaar
+6: Männerchor
+7: Hochzeitsquiz
+CPU time 0.0 seconds, no more solutions, siehtgut aus! */

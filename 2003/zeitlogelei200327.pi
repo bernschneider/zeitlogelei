@@ -1,0 +1,46 @@
+/* Zeit Logelei Nr. 2003/27
+https://www.zeit.de/2003/27/Spielen_2fLogelei_27
+1. "Süße Eier?", fragt Britta ein wenig irritiert, "die sind wohl noch von Ostern übrig geblieben."
+Dies weist Britta, die Gastgeberin, pikiert von sich und erklärt: "Der Süßwarenladen an der Ecke hat das Angebot des Großhandels genutzt, 
+die zum Osterfest nicht mehr abgesetzten süßen Ostereier jetzt billig einzukaufen. Dasselbe tut das Zuckerlädchen neben Peters Büro in der Stadt.
+Davon haben wir Anfang der Woche profitiert – jeder in ›seinem‹ Laden. Britta: "Was haben eure verspäteten Osterfreuden gekostet?" 
+"Mich interessieren die Preise", wirft Britta ein. Britta: "Natürlich hat jedes Ei einen vollen Cent-Betrag gekostet. 
+Britta: "Mithin waren die Preise für die Eiersorten in beiden Läden gleich, und jeder hat von jeder Sorte gleich viel Eier gekauft."
+"Das ist keineswegs so", belehrt Britta die Freundin, "aber die einzelnen Preisunterschiede waren geringfügig." Wie viele mehr? */
+import util, cp, alphametik.
+main1 ?=> 
+    Britta=1, Peter=2,  Marzipan=1, Nougat=2, Likoer=3, 
+    Anz = new_array(2,3), Anz :: 0..100, % Anz(P,E) = Anzahl der Eier vom Typ E, die P gekauft hat
+    Epr = new_array(2,3), Epr :: 1..200, % Epr(P,E) = Preis eines Eis vom Typ E im Laden von P
+    % Britta:  |Peter:
+    % Marzipan |Likör       Montag besorgte ich nur Marzipaneier, während sich Peter auf Liköreier beschränkte.
+    % Nougat   |Nougat      Dienstag erwarb jeder von uns nur Nougateier, .. 
+    % Likör    |Marzipan    Mittwoch nahm ich nur Liköreier, Peter hingegen nur Marzipaneier."
+    Anz[Britta, Nougat]   #= Anz[Britta, Marzipan] - 1, % Britta: "Ich hatte am Dienstag ein Ei weniger als am Montag gekauft .. 
+    Anz[Britta, Likoer]   #= Anz[Britta, Nougat]   - 1, % .. und am Mittwoch ein Ei weniger als Dienstag. 
+    Anz[Peter,  Nougat]   #= Anz[Peter,  Likoer]   + 1, % Peter hat am Dienstag ein Ei mehr als am Montag ..
+    Anz[Peter,  Marzipan] #= Anz[Peter,  Nougat]   + 1, % .. und Mittwoch eines mehr als am Dienstag besorgt."
+    foreach(P in 1..2) 
+        Epr[P, Nougat] #= 20 + Epr[P, Marzipan], % In beiden Läden kostete ein Nougatei 20 Cent mehr als ein Marzipanei ..
+        Epr[P, Likoer] #= 20 + Epr[P, Nougat]    % .. und ein Likörei 20 Cent mehr als ein Nougatei:
+    end,
+    scalar_product(Anz[Britta], Epr[Britta], 2867), % Am Ende hatte jeder 28,67 Euro für all seine Eier bezahlt." 
+    scalar_product(Anz[Peter],  Epr[Peter],  2867),
+    TBritta #= sum(Anz[Britta]), 
+    TPeter  #= sum(Anz[Peter]), 
+    TPeter #> TBritta, % Peter hat übrigens mehr Eier als ich gekauft.
+    solve(vars(Anz) ++ vars(Epr) ++ [TBritta, TPeter]),
+    foreach(P in 1..2, E in 1..3) 
+        printf("%2d * %2d %s", Anz[P,E], Epr[P,E], cond(E<3, "+ ", " = 2867\n"))
+    end,
+    printf("Britta kaufte %d, Peter %d Eier.%n", TBritta, TPeter), fail. /*
+18 * 37 + 17 * 57 + 16 * 77  = 2867
+20 * 31 + 19 * 51 + 18 * 71  = 2867
+Britta kaufte 51, Peter 57 Eier.
+CPU time 0.946 seconds, no more solutions, korrekt */
+
+/* 2. Und eine alphametische Anfeuerung im Auto: GIB • GAS = TRAUTE */
+main2 ?=>
+    mult(["GIB", "GAS", "TRAUTE"]). /* 615 * 642 = 394830 */
+
+/* Aufl"sung aus Nr. 26: 1. 681 • 584 = 397704 2. 19832 = 536 • 37 3. 614 • 614 = 376996 4. 569 • 768 = 436992 */

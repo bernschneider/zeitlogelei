@@ -1,0 +1,37 @@
+/* Zeit Logelei Nr. 2005/29
+https://www.zeit.de/2005/29/Spielen_2fLogelei_29
+Marta weiß nicht, wen sie zu ihrer Party einladen soll. Am Telefon bespricht sie sich mit ihrer Freundin Yasmin: ..
+Wen muss Marta einladen? */
+import cp.
+main ?=> 
+    A=1, B=2, C=3, D=4, E=5, F=6, G=7, H=8, I=9, J=10, N = 10,
+    Pstr = ["Agathe", "Birgit", "Christian", "Doreen", "Erik", "Frank", "Gudrun", "Hans", "Ingo", "Jürgen"], 
+    X = new_list(N), X :: 0..1, % X[Pers] = 1 <=> Pers ist eingeladen
+    % "Wenn Christian und Hans zusammen sind, reden sie nur über Computer. Frank und Ingo regen sich darüber immer so auf. 
+    % Wenn ich also sowohl Christian als auch Hans einlade, sollte ich weder Frank noch Ingo einladen." –
+    X[C] + X[H] #= 2 #=> X[F] + X[I] #= 0, 
+    % "Birgit und Christian bringen immer einen leckeren Nachtisch mit. Du solltest mindestens einen von beiden einladen." – 
+    X[B] + X[C] #>= 1,
+    % "Wenn ich Birgit einlade, dann muss ich auch Agathe einladen, sonst ist sie sauer." 
+    X[B] #= 1 #=> X[A] #= 1,
+    % "Weißt du, dass sich Christian und Erik verkracht haben?" "Dann sollte ich höchstens einen von beiden einladen. 
+    X[C] + X[E] #=< 1,
+    % Und Jürgen verträgt sich nicht mit Doreen und Frank. Also: Wenn Jürgen, dann weder Doreen noch Frank." – 
+    X[J] #= 1 #=> (X[D] + X[F] #= 0),
+    % "Mir fällt ein: Frank hat gar kein Auto. Wenn du ihn einlädst, solltest du auch Hans einladen, damit der ihn mitnehmen kann." –
+    X[F] #= 1 #=> X[H] #= 1,
+    % "Und wenn ich sowohl Hans als auch Agathe einlade, sollte ich auch Jürgen einladen; sonst kommt er sich ausgeschlossen vor." – 
+    X[H] + X[A] #= 2 #=> X[J] #= 1, 
+    % "Tust du mir einen Gefallen? Lädst du Frank, Jürgen und Erik ein? Oder wenigstens ein, zwei von den dreien? Die sind so süüß!" – 
+    X[F] + X[J] + X[E] #>= 1,
+    % "Klar, mache ich. Mir geht es mit Frank, Christian und Ingo ähnlich. Mindestens einen von ihnen werde ich einladen." – 
+    X[F] + X[C] + X[I] #>= 1,
+    % "Wenn du Gudrun einlädst, solltest du auch Doreen einladen. Die kann auf Gudrun aufpassen, damit sie sich nicht wieder besäuft." – "
+    X[G] #= 1 #=> X[D] #= 1,
+    % Ach, ich habe noch ein Buch von Gudrun. Ich sollte sie einladen, damit ich es ihr zurückgeben kann. 
+    % Oder ich lade Frank ein und gebe ihm das Buch mit." 
+    X[G] + X[F] #>= 1,
+    solve(X),
+    foreach(Pers in 1..N, X[Pers] = 1) printf("%s ", Pstr[Pers]) end, println("sind eingeladen."), fail.
+/* Agathe Birgit Doreen Erik Gudrun Ingo sind eingeladen.
+no more solutions, sieht gut aus! */

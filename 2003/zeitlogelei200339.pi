@@ -1,0 +1,51 @@
+/* Zeit Logelei Nr. 2003/39
+https://www.zeit.de/2003/39/Spielen_2fLogelei_39
+1. In jedes Kästchen des Schemas ist eine der Ziffern 1 bis 6 so einzutragen, dass jede Zahl genau einmal in jeder Reihe und einmal in jeder Spalte steht. 
+Überdies sollen folgende Gleichungen gelten, wobei die Kästchen des Schemas mit ihren Koordinaten bezeichnet sind: .. */
+import cp, util.
+main1 ?=> % das vorgebene Schema nummeriert die Zeilen durch und bezweichnet die Spalten mit A..F (leider nicht abgebildet)
+     M = {{A1, A2, A3, A4, A5, A6}, % M.transpose() ist das Schema.
+          {B1, B2, B3, B4, B5, B6}, % M ist falsch geraten, macht aber nix (wird im Printout zurücktransponiert)
+          {C1, C2, C3, C4, C5, C6}, 
+          {D1, D2, D3, D4, D5, D6}, 
+          {E1, E2, E3, E4, E5, E6}, 
+          {F1, F2, F3, F4, F5, F6}},
+     N = len(M), M :: 1..N,
+     foreach(L in M.rows() ++ M.columns()) all_different(L) end,
+     A1 + B1 + C1 #= 10,
+	 A3 + B3 #= 7,
+	 A5 + B5 #= 9,
+	 B4 + C4 #= 8,
+	 C1 + D1 #= 8,
+	 D3 + D4 + D5 #= 12,
+	 E1 + E2 + E3 #= 8,
+	 E6 + F6 #= 6,
+	 F5 + F6 #= 8,
+     solve(M),
+     foreach(Z in 1..N, S in 1..N)
+         printf("%d|", M[S,Z]), % M muss transponiert werden
+         if S = N then nl end 
+     end,
+    fail. /* 
+1|6|3|5|2|4|
+6|2|4|1|5|3|
+3|4|2|6|1|5|
+2|3|5|4|6|1|
+4|5|1|2|3|6|
+5|1|6|3|4|2|
+no more solutions, korrekt */
+
+/* 2. Das Ehepaar Morps ist mit dem Auto unterwegs. Da fragt Frau Morps: "Welchen Abstand haben wohl diese großen Masten der Überlandleitung voneinander, 
+die diese schnurgerade Chaussee säumen?" Ihr Gatte, der mit gleich bleibender Geschwindigkeit dahinfährt, schaut bisweilen auf seine Uhr und antwortet schließlich: 
+"Merkwürdig, wenn man die Anzahl der Masten, an denen wir pro Minute vorbeikommen, mit zehn malnimmt, kommt exakt unsere Geschwindigkeit in Kilometern pro Stunde heraus."
+Frau Morps schweigt eine Weile und überrascht dann ihren Mann mit dieser Bemerkung: "Angenommen, die Masten haben den gleichen Abstand voneinander und die Minute, 
+die du gestoppt hast, fing an und endete, als wir uns genau in der Mitte zwischen zwei Masten befanden, dann kann ich dir sagen, wie weit je zwei Masten voneinander entfernt sind." 
+Wie weit? */
+main2 =>
+printf("Der Abstand der Maten beträgt %d m.", round(1000 / 6)). /* 
+Der Abstand der Maten beträgt 167 m.
+Erklärung: Wenn x die Anzahl der Masten ist, die Morps pro Minute gez"hlt hat, dann ist die Geschwindigkeit des Autos 10x km/h. 
+Würde das Fahrzeug eine Stunde lang mit diesem konstanten Tempo an der "berlandleitung entlangfahren, dann m"sste es w"hrend dieser Zeit 10x Kilometer zur"cklegen 
+und dabei 60x Masten passieren; folglich stehen auf einem Kilometer 60x/10x, also sechs Masten. Der gesuchte Abstand ist 1/6 Kilometer, rund 167 Meter */
+
+/* Aufl�sung aus Nr. 38: 1. 7 und 5 Schafe. 2. 16 Schlager-, 4 Swing- und 2 Jazzplatten. 3. Mit der Zahl 10 klappt es. 4. Die Hochzeit muss ausfallen, denn in einem Schaltjahr beginnen Jan., Feb., M�rz, Mai, Juni, Sept. und Okt. an voneinander verschiedenen Wochentagen, im Nichtschaltjahr Jan., Feb., April, Mai, Juni, Aug. und Sept.. Darum hat jedes Jahr mindestens einen Freitag, den 13. 5. Mit 10 bleibt das M�dchen �brig. 6. Weil das Quadrat von S gleich S ist, kann S nur 0, 1, 5 oder 6 sein. Auch muss das Quadrat von US mit US enden, ergo: U = 0. Folglich kommen f�r AUS nur 101, 401, 601 oder 701 in Betracht, davon aber ist nur 601 eine Primzahl. Die L�sung: 6012 = 361201 */

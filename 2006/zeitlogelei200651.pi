@@ -1,0 +1,44 @@
+/* Zeit Logelei 2006/51 
+https://www.zeit.de/2006/51/Spielen-Logelei-51
+Bei der deutschen Weitsprungmeisterschaft der Herren erreichten gleich vier Teilnehmer aus Waddenbrande 
+ziemlich gute Ergebnisse. Was sollte Roland Rolinger auf die Web-Seite schreiben? */
+import cp.
+main ?=>
+    BB=1, MM=2, _OO=3, UU=4, Tstr = ["Bob Bariton", "Martin Muster", "Oliver Ochs", "Ulrich Ulfson"],
+    Alter   = new_list(4), Alter   :: 1..4, assignment(Alter, RAlter),
+    Groesse = new_list(4), Groesse :: 1..4, assignment(Groesse, RGroesse),
+    Weite   = new_list(4), Weite   :: 1..4, assignment(Weite, RWeite),
+    ValAlter =   [ 25,  26,  27,  28], % Sie sind 25, 26, 27 und 28 Jahre alt ..
+    ValGroesse = [179, 184, 187, 197], % .. und 179, 184, 187 und 197 Zentimeter groß. 
+    ValWeite =   [831, 835, 838, 839], % Sie erreichten Weiten von 831, 835, 838 und 839 Zentimetern.
+    % Roland Rolinger ist für die Web-Seite von Waddenbrande zuständige und soll jetzt die Ergebnisse veröffentlichen. 
+    % Bislang weiß er aber nur, dass der Größte der vier jünger ist als Martin Muster:
+    element(RGroesse[4], Alter, Alter1), Alter1 #< Alter[MM],
+    % Und der Vorsitzende des örtlichen Leichtathletikverbandes gibt ihm folgende Auskunft: 
+    % »Derjenige, der 1,79 Meter groß ist, ist jünger als Ulrich Ulfson, ..:
+    element(RGroesse[1], Alter, Alter2), Alter2 #< Alter[UU],
+    % .. aber hat einen Namen, der alphabetisch später kommt als derjenige, der 8,38 Meter gesprungen ist, 
+    RGroesse[1] #> RWeite[3],
+    % .. welcher wiederum kleiner ist als Martin Muster.«
+    element(RWeite[3], Groesse, Groesse1), Groesse1 #< Groesse[MM],
+    % Roland Rolinger stöhnt. Da erzählt ihm eine Kollegin: »Ich war am Wochenende dabei und habe zugeschaut. 
+    % Ich weiß noch, dass Bob Bariton nicht so weit gesprungen ist wie der 27-Jährige, .. 
+    element(RAlter[3], Weite, Weite1), Weite[BB] #< Weite1,
+    % .. welcher kleiner ist als der, der 8,35 Meter gesprungen ist.«
+    element(RAlter[3], Groesse, Groesse2), element(RWeite[2], Groesse, Groesse3), Groesse2 #< Groesse3,
+    solve(Alter ++ Groesse ++ Weite ++ [Alter1, Alter2, Groesse1, Groesse2, Groesse3, Weite1]),
+    foreach(I in 1..4)
+        printf("%s: %4.2f Meter groß, %d Jahre, springt %4.2f Meter.%n", 
+                Tstr[I], ValGroesse[Groesse[I]]/100, ValAlter[Alter[I]], ValWeite[Weite[I]]/100)
+    end, nl, fail.
+/* 
+Bob Bariton: 1.84 Meter groß, 28 Jahre, springt 8.38 Meter.
+Martin Muster: 1.87 Meter groß, 27 Jahre, springt 8.39 Meter.
+Oliver Ochs: 1.79 Meter groß, 25 Jahre, springt 8.31 Meter.
+Ulrich Ulfson: 1.97 Meter groß, 26 Jahre, springt 8.35 Meter.
+CPU time 0.002 seconds, no more solutions, korrekt */
+
+/* Auflösung aus Nr. 50:
+1. Die Zahlen von links oben nach rechts unten (»•« steht für ein schwarzes Feld): 
+432•5•76; ••427513; 523•14•7; 751•3264; 36•4•12•; 67•34•52; 2•716345; ••562731 
+2. 571 • 4179 = 2386209 */

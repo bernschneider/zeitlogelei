@@ -1,0 +1,42 @@
+/* Zeit Logelei Nr. 2004/39
+https://www.zeit.de/2004/39/Spielen_2fLogelei_39/komplettansicht
+1. Frau Feudel hat eine Himbeertorte gebacken und ruft ihre fünf Kinder zu sich. Diese wollen auch sofort anfangen, die Torte zu schlachten.
+»Moooment! Wer von euch hat sein Zimmer schon aufgeräumt?«, fragt Frau Feudel in die Runde.
+Die Kinder drucksen zuerst etwas rum, dann plötzlich beginnen sie, wie wild durcheinander zu reden. ...
+Frau Feudel weiß genau, dass ihre Kinder immer rein logisch denken und deshalb, wenn sie »entweder … oder« sagen, immer meinen, dass es nicht sein kann, dass beides zutrifft.
+Deshalb ruft sie: »Na dann mal husch! Alle, die ihr Zimmer nicht aufgeräumt haben, an die Arbeit. Sonst gibt es keine leckere Himbeertorte.«
+Welche der fünf Kinder müssen ihr Zimmer noch aufräumen? */
+import util, cp, alphametik.
+main1 ?=>
+    Str = ["Gaby", "Moni", "Ralfi", "Toni", "Susi"], 
+    Hatschon  = [G, M, R, T, S], N = 5, Hatschon :: 0..1, % 1 = HAT SEIN/IHR ZIMMER SCHON AUFGERÄUMT
+    foreach((K1,W1,  K2,W2, K3,W3) in [        
+        (M,1, R,1, S,0), % Toni: »Wenn Moni ihr Zimmer aufgeräumt hat, dann hat entweder Ralfi sein Zimmer aufgeräumt, oder Susi hat ihr Zimmer nicht aufgeräumt.«
+        (T,0, G,1, S,0), % Gaby: »Wenn Toni sein Zimmer nicht aufgeräumt hat, dann hab entweder ich mein Zimmer aufgeräumt oder Susi ihres nicht.«
+        (R,1, G,1, T,0), % Moni: »Wenn Ralfi sein Zimmer aufgeräumt hat, dann hat entweder Gaby ihr Zimmer aufgeräumt, oder Toni hat noch einen Saustall.«
+        (M,1, S,0, T,0), % Ralfi: »Wenn Moni ihr Zimmer aufgeräumt hat, dann hat entweder Susi oder Toni einen Saustall.«
+        (T,1, R,0, S,0), % Toni: »Wenn ich mein Zimmer aufgeräumt habe, dann hat entweder Ralfi sein oder Susi ihr Zimmer auch aufgeräumt.«
+        (M,0, S,1, R,0)])% Susi: »Wenn Moni ihr Zimmer nicht aufgeräumt hat, dann hat entweder Susi ihr Zimmer aufgeräumt, oder Ralfi hat sein Zimmer nicht aufgeräumt.«
+            K1 #= W1 #=> (K2 #= W2 #^ K3 #= W3)
+    end,
+    solve(Hatschon),
+    foreach(I in 1..N, Hatschon[I] = 0) printf("%s ", Str[I]) end,
+    println("müssen ihr Zimmer noch aufräumen."), fail. /* 
+Gaby Moni Ralfi Toni Susi müssen ihr Zimmer noch aufräumen.
+no more solutions, korrekt */
+
+main2 =>
+    mult(["ZWEI", "ZEHN", "DWEHN", "EKKHN", "IDHNN", "ZEHN", "DREIZEHN"]).
+/* 2. »Wer weiß, was zwei mal zehn ergibt?«, fragt der Lehrer in der Schule. »Dreizehn!« ruft Klaus. Er hat nämlich die Alphametik ausgerechnet:
+ZWEI • ZEHN
+-----------
+DWEHN
+ EKKHN
+  IDHNN
+   ZEHN
+--------
+DREIZEHN */
+/* 2. 9321 • 9250 = 86219250 korrekt */
+
+/* Auflösung aus Nr. 38:
+Bettina muss das knappe schwarze Top, die orange Cordhose und die eleganten Sandalen anziehen, die Nägel weiß lackieren und die schwarze Handtasche mitnehmen */

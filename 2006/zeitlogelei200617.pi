@@ -1,0 +1,30 @@
+/* Zeit Logelei Nr. 2006/17
+https://www.zeit.de/2006/17/Spielen_2fLogelei_17/komplettansicht
+Professor Knusi ist zu Gast in Goro-Goro. Dort ist es üblich, dass die Einwohner entweder immer lügen oder immer die Wahrheit sagen. 
+Er hat neun Einwohner befragt und neun Antworten erhalten. Wer kann Professor Knusi helfen? */
+import util, cp.
+main ?=> 
+    Wahr = [A, B, C, D, E, F, G, H, I], Wahr :: 0..1, Ustr = ["Ag", "B", "C", "D", "Eg", "F", "G", "H", "Ig"], N = len(Wahr),
+    % Agoro: »Wenn Igoro lügt, dann sagt Boro die Wahrheit.« 
+    A #= (I #= 0 #=> B #= 1),
+    % Boro: »Agoro sagt die Wahrheit, und Horo lügt.«
+    B #= (A #= 1 #/\ H #= 0),   
+    % Coro: »Wenn Egoro und Boro die Wahrheit sagen, dann lügt Agoro.«
+    C #= (E + B #= 2 #=> A #= 0),
+    % Doro: »Coro und Goro lügen beide.«
+    D #= (C + G #= 0),
+    % Egoro: »Doro und Coro lügen beide oder sagen beide die Wahrheit.«
+    E #= (D #= C),
+    % Foro: »Wenn Boro die Wahrheit sagt, dann lügt Egoro.«
+    F #= (B #= 1 #=> E #= 0),
+    % Goro: »Entweder Egoro sagt die Wahrheit, und Foro lügt, oder Foro sagt die Wahrheit, und Egoro lügt.«
+    G #= (E + F #= 1),
+    % Horo: »Von Agoro und Foro lügt genau einer.« 
+    H #= (A + F #= 1), 
+    % Igoro: »Wenn Horo die Wahrheit sagt, dann lügt Doro.« 
+    I #= (H #= 1 #=> D #= 0),
+    solve(Wahr),
+    foreach(X in 1..N, Wahr[X]=0) printf("%soro ", Ustr[X]) end, println("lügen, die anderen sagen die Wahrheit."),
+    nl, fail. 
+/* Doro Egoro Horo lügen, die anderen sagen die Wahrheit.
+CPU time 0.001 seconds, no more solutions, sieht gut aus */

@@ -1,0 +1,25 @@
+/* Zeit Logelei Nr. 2005/47
+https://www.zeit.de/2005/47/Spielen_2fLogelei_47/komplettansicht
+Kürzlich war ich beim Marktstand und wurde Zeuge folgenden Gesprächs */ 
+main =>
+    Ware = new_list(3), % Bauer Werner übergibt Ware an Otto
+    Geld = new_list(3), % Otto zahlt Geld an Bauer Werner
+    % Bauer Werner: »Das macht dann 5,90 Euro!«
+    Ware[1] = 5.90,
+    % Herr Otto: »Hier sind 20 Euro.« (Herr Otto gibt dem Bauern den 20-Euro-Schein.)
+    Geld[1] = 20.00,
+    % Bauer Werner: »Haben Sie vielleicht einen Euro klein?« Herr Otto: »Nein, das nicht, aber zwei Euro habe ich.« (Herr Otto gibt dem Bauern die zwei Euro.) 
+    Geld[2] = 2.00,
+    % »Ach, da fällt mir ja ein, ich habe der Frau Kowalzki versprochen, noch ein Kilo Rongo-Rüben mitzubringen.« Bauer Werner: »Kein Problem. 
+    % Das macht dann 2,50 Euro für die Rüben.«
+    Ware[2] = 2.50,
+    % Herr Otto: »Gut, dann sind hier noch mal 40 Cent.«
+    Geld[3] = 0.40,
+    % Bauer Werner: »Moment, da fällt mir auf, dass die Äpfel ja im Sonderangebot sind. Die kosten nur 1,50 Euro anstelle der 2,70 Euro, die ich Ihnen berechnet habe.«
+    Ware[3] = 1.50 - 2.70,
+    % An dieser Stelle mischte sich die Tochter des Kunden in das Gespräch ein: »Du Papi, du hast doch letzte Woche eine Rabattmarke bekommen, 
+    % mit der du zehn Prozent Rabatt bei deinem nächsten Einkauf bekommst.« Herr Otto: »Oh ja, mein Schatz, da hast du Recht,
+    % aber jetzt habe ich völlig den Überblick verloren, wie viel Geld ich noch rausbekomme…«
+    printf("Herr Otto bekommt noch %4.2f Euro raus", sum(Geld) - sum(Ware) * 0.90).
+/* Herr Otto bekommt noch 15.92 Euro raus, korrekt */
+/* Auflösung aus Nr. 46: 876 + 811 = 1687 */

@@ -1,0 +1,72 @@
+/* Zeit Logelei 2007/16 Besonderes Kreuzzahlrätsel
+https://www.zeit.de/2007/16/Spielen-Logelei-16 
+Ein Kreuzzahlrätsel einmal andersherum: Zeichnen Sie Wände zwischen die einzelnen Kästchen des Diagramms, sodass sich ein "Anagramm-Kreuzzahlrätsel" ergibt.
+Die entstehenden Zahlen (waagerecht und senkrecht) sollen sich zu Paaren gruppieren lassen, sodass die beiden Zahlen eines Paars aus den gleichen Ziffern 
+bestehen, aber möglicherweise in einer anderen Reihenfolge. Es ist nicht erlaubt, Wände so einzuzeichnen, dass einstellige Zahlen entstehen. */
+import sat, util.
+main => 
+   % Auf der Webseite ist das Bild abgeschnitten; nehme hierfür https://img.zeit.de/bilder/2007/16/leben/logelei-410.gif
+   M = {{3,3,5,4,1},
+        {4,6,1,3,5},
+        {1,4,6,5,2},
+        {5,3,4,3,6},
+        {6,4,1,3,4}},
+   % Gebiet 2*I-1 und Gebiet 2*I sind jeweils ein Paar:
+   Zs =   {{ _, _, _, _, _}, % Zeile 1
+           { _, _, _, _, _}, % Zeile 2 ..
+           {17,17,17,17,17}, % 17-18 sind das einzige 5er-Paar (magic!)
+           { _, _, _, _, _},
+           { _, _, _, _, _}},
+   Ss =   {{ _, _, _, _, _}, % Spalte 1
+           { _, _, _, _, _}, % Spalte 2 ..
+           { _, _, _, _, _},
+           { _, _, _, _, _},
+           {18,18,18,18,18}},% Spalte 5
+   Zs ++ Ss :: 1..18, Gvars = vars(Zs) ++ vars(Ss), 
+   foreach(G in 1..8)  count(G, Gvars, 2) end, % die Gebiete 1..8 sind 2er
+   foreach(G in 9..16) count(G, Gvars, 3) end, % die Gebiete 9..16 sind 3er
+   % Platziere die 2er und 3er-Gebiete:
+   foreach(Z in [1,2,4,5]) 
+      L = Zs[Z], L :: 1..16, % Zeile
+      L[1] #=< 8 #=> L[1] #= L[2] #/\ L[3] #= L[4] #/\ L[4] #= L[5], % beginnt mit 2er, dann 3er
+      L[1] #> 8  #=> L[1] #= L[2] #/\ L[2] #= L[3] #/\ L[4] #= L[5]  % beginnt mit 3er, dann 2er
+   end,   
+   foreach(S in [1,2,3,4]) 
+      L = Ss[S], L :: 1..16, % Spalte
+      L[1] #=< 8 #=> L[1] #= L[2] #/\ L[3] #= L[4] #/\ L[4] #= L[5], % beginnt mit 2er
+      L[1] #> 8  #=> L[1] #= L[2] #/\ L[2] #= L[3] #/\ L[4] #= L[5]  % beginnt mit 3er
+   end,
+   foreach(G in 1..2..15, V in 1..6)
+           sum([(Zs[Z,S] #= G)   + (Ss[S,Z] #= G)   : Z in 1..5, S in 1..5, M[Z,S] = V])
+        #= sum([(Zs[Z,S] #= G+1) + (Ss[S,Z] #= G+1) : Z in 1..5, S in 1..5, M[Z,S] = V])
+   end,
+   solve(Gvars),
+   foreach(Z in 1..5) 
+       foreach(S in 1..4) printf("%d%c", M[Z,S], cond(Zs[Z,S]=Zs[Z,S+1], ' ', '|')) end,
+       println(M[Z,5]),
+       if Z<5 then foreach(S in 1..5) print(cond(Ss[S,Z]=Ss[S,Z+1], "  ", "- ")) end, nl end
+   end,
+   foreach(Z in 1..5) foreach(S in 1..5) printf("%2d|", Zs[Z,S]) end, nl end, nl,
+   foreach(Z in 1..5) foreach(S in 1..5) printf("%2d|", Ss[S,Z]) end, nl end. /*
+3 3 5|4 1
+          
+4 6 1|3 5
+-     -   
+1 4 6 5 2
+  - -     
+5 3|4 3 6
+          
+6 4 1|3 4
+Die Gebiete 2*I-1 und 2*I sind jeweils ein Paar:
+16|16|16| 6| 6|
+ 9| 9| 9| 3| 3|
+17|17|17|17|17|
+ 4| 4|12|12|12|
+10|10|10| 2| 2|
+
+ 1|11|14| 8|18|
+ 1|11|14| 8|18|
+13|11|14|15|18|
+13| 7| 5|15|18|
+13| 7| 5|15|18|
+CPU time 2.191 seconds, sieht gut aus!. */

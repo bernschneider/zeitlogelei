@@ -1,0 +1,50 @@
+/* Zeit Logelei Nr. 2005/43
+https://www.zeit.de/2005/43/Spielen_2fLogelei_43
+Auf einem bisher unbekannten Archipel interviewt Professor Knusi ein paar Eingeborene, um Daten über die drei Inseln zu sammeln.
+...
+Knusi grübelt: Das ergibt alles keinen Sinn. Doch dann hat er einen Geistesblitz: Das ist wieder so eine Insel, auf der die Einwohner 
+entweder immer oder nie lügen! Dummerweise hat er vergessen, die Eingeborenen danach zu befragen. Wer kann ihm helfen? */
+import cp.
+main ?=>
+    Worfien=1, Domanien=2, Begatien=3, InsStr = ["Worfien", "Domanien", "Begatien"],
+    Sprache = new_list(3), Sprache :: 1..3, assignment(Sprache, RSprache),
+    Semnisch=1, Molungo=2, Kinawisch=3, SprStr = ["Semnisch", "Molungo", "Kinawisch"],
+    Speise  = new_list(3), Speise  :: 1..3, assignment(Speise, RSpeise),
+    Nurum=1, Somfa=2, Pengo=3, SpeStr = ["Nurum", "Somfa", "Pengo"],
+    Straende = new_list(3), Straende :: 1..3, assignment(Straende, RStraende), 
+    Fuenf=1, Sieben=2, Zwoelf=3, StrStr = ["5", "7", "12"],
+    Wahr = [A, M, U, B, S], Wahr :: 0..1, % 1 = sagt immer die Wahrheit, 0 = lügt immmer
+    % Afundel: Die semnische Sprache wird nicht auf der Insel gesprochen, auf der Nurum die Nationalspeise ist. – 
+    A #= (RSpeise[Nurum] #!= RSprache[Semnisch]),
+    % Mongel: Die Anzahl der Sandstrände in Worfien ist nicht 7. – 
+    M #= (Straende[Worfien] #!= Sieben),
+    % Unaan: Auf der Insel, die 12 Sandstrände hat, wird kein Semnisch gesprochen. – 
+    U #= (RStraende[Zwoelf] #!= RSprache[Semnisch]),
+    % Boreber: Auf der Insel, die 5 Sandstrände hat, wird Molungo gesprochen. – 
+    B #= (RStraende[Fuenf] #= RSprache[Molungo]),
+    % Solfeb: In Domanien wird semnisch gesprochen. – 
+    S #= (Sprache[Domanien] #= Semnisch),
+    % Afundel: Auf der Insel mit 5 Sandstränden ist Somfa die Nationalspeise. – 
+    A #= (RStraende[Fuenf] #= RSpeise[Somfa]),
+    % Mongel: Semnisch wird nicht in Domanien gesprochen. – 
+    M #= (Sprache[Domanien] #!= Semnisch),
+    % Unaan: Die Begaten haben nicht 12 Sandstrände. – 
+    U #= (Straende[Begatien] #!= Zwoelf),
+    % Boerber: Pengo ist nicht die Nationalspeise auf der Insel mit 5 Sandstränden. – 
+    B #= (RSpeise[Pengo] #!= RStraende[Fuenf]),
+    % Solfeb: Auf der Insel mit 7 Sandstränden spricht man kein Kinawisch.
+    S #= (RStraende[Sieben] #!= RSprache[Kinawisch]),
+    solve(Wahr ++ Sprache ++ Speise ++ Straende ++ RSprache ++ RSpeise ++ RStraende),
+    println(Wahr),
+    foreach(I in 1..3)
+        printf("Auf %s spricht man %s, die Nationalspeise ist %s und es gibt %s Strände.%n", InsStr[I], SprStr[Sprache[I]], SpeStr[Speise[I]], StrStr[Straende[I]])
+    end, nl, fail.
+/* [1,1,0,1,0] % d.h. Afundel, Mongel und Boerber sagen die Wahrheit, während Unaan und Solfeb lügen
+Auf Worfien spricht man Molungo, die Nationalspeise ist Somfa und es gibt 5 Strände.
+Auf Domanien spricht man Kinawisch, die Nationalspeise ist Nurum und es gibt 7 Strände.
+Auf Begatien spricht man Semnisch, die Nationalspeise ist Pengo und es gibt 12 Strände.
+NO MORE SOLUTIONS, korrekt! */
+
+/*Auflösung aus Nr. 42:
+1. Wie die Zahlen im Quadrat verteilt werden müssen, zeigt die Grafik.
+2. 102744 - 4084 = 98660 */

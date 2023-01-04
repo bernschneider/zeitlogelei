@@ -1,0 +1,48 @@
+/* Zeit Logelei Nr. 2005/07
+https://www.zeit.de/2005/07/Spielen_2fLogelei_07/komplettansicht
+Bei einer Geburtstagsfeier schlägt Manfred ein Spiel vor: Von den 10 Spielern wird jeweils ausgelost, ob sie eine wahre oder eine falsche 
+Aussage machen müssen. Ein elfter Spieler (Konrad), der nicht erfährt, wer lügt und wer nicht, bekommt nur die Aussagen zu hören und soll 
+dann herausfinden, wer gelogen hat und wer nicht. Gesagt, getan: Die folgenden Aussagen bekommt Konrad zu hören: ..
+Als versierter Logeleilöser können Sie sicher Konrad helfen, herauszufinden, wer hier die Wahrheit gesprochen hat und wer nicht. Oder? */
+import util, cp.
+main1 ?=> 
+    Str = ["Horst", "Johann", "Karl", "Kurt", "Lars", "Manfred", "Martin", "Michael", "Ralf", "Simon"], N = len(Str),
+    L = [Hor, Joh, Kar, Kur, Lar, Man, Mar, Mic, Ral, Sim], L :: 0..1, % L[I] = 1 <=>  I sagt die Wahrheit
+    Man #= (Mar + Kur #= 0), % Manfred: "Martin und Kurt lügen."
+    Sim #= (Joh #= 1 #^ Hor #= 0), % Simon: "Entweder Johann sagt die Wahrheit, oder Horst lügt, aber nicht beides."
+    Hor #= (Man #= 1), % Horst: "Manfred sagt die Wahrheit."
+    Lar #= (Mar + Man + Sim #< 3), % Lars: "Martin oder Manfred oder Simon oder mehrere von diesen dreien lügen."
+    Joh #= (Hor #= 1 #=> Kur #= 1), % Johann: "Wenn Horst die Wahrheit sagt, dann auch Kurt."
+    Mar #= (Mic #= 1 #=> Man + Lar #> 0), % Martin: "Wenn Michael die Wahrheit sagt, dann auch Manfred oder Lars oder beide." 
+    Mic #= (Lar #= 0 #/\ Man #= 1), % Michael: "Lars lügt, und Manfred sagt die Wahrheit."
+    Kar #= (Sim #= 1 #/\ Ral #= 0), % Karl: "Simon sagt die Wahrheit, und Ralf lügt."
+    Kur #= (Man #= 0 #=> Mic + Lar #< 2), % Kurt: "Wenn Manfred lügt, dann auch Michael oder Lars oder beide."
+    Ral #= (Kar #= 1 #/\ Mar #= 0), % Ralf: "Karl sagt die Wahrheit, und Martin lügt."
+    solve(L),
+    foreach(I in 1..N, L[I] = 1) printf("%s ", Str[I]) end, println("haben die Wahrheit gesagt, alle anderen haben gelogen."),
+    fail. /* 
+Johann Kurt Lars Martin haben die Wahrheit gesagt, alle anderen haben gelogen.
+CPU time 0.001 seconds, no more solutions, korrekt */
+/* 2. "Mami, Mami, weißt du, was ein Löwe ist?" "Na klar, das ist wildes Tier mit einer Mähne!" "Aber nein, das ist ein Elefant, 
+der durch einen Zoo läuft!" "Wie kommst du denn darauf?" "Hier schau, ich habe die Alphametik ausgerechnet:"
+ELEFANT : ZOO = LÖWE (Teilrechnungen entfernt) */
+main2 =>
+    division(["ELEFANT", "ZOO", "LÖWE"]).
+/* 6760518 : 933 = 7246
+CPU time 0.009 seconds, korrekt */
+division(L) => % L[1] : L[2] = L[3]
+   Letter = keys(new_set(flatten(L))), % verwendete Buchstaben
+   Digit = new_list(len(Letter)), Digit :: 0..9, % eine Ziffer je Buchstabe
+   all_different(Digit),
+   Num = new_array(len(L)), % numerische Repräsentation der Elemente von L
+   foreach(I in 1..len(L))
+       S = [Digit[find_first_of(Letter, C)] : C in L[I]], % Convert Letter C -> Digit
+       to_num(S, Num[I]), S[1] #!= 0
+   end,
+   Num[1] #= Num[3] * Num[2], % Hauptgleichung Num[1] : Num[2] #= Num[3]
+   solve(Digit ++ Num),
+   printf("%d : %d = %d%n", Num[1], Num[2], Num[3]).
+
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).

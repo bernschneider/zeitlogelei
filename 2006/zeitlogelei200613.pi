@@ -1,0 +1,35 @@
+/* Zeit Logelei Nr. 2006/13 (2006/12 ist ein Kreuzzahlrätsel, 2006/14 ist ohne Bild)
+https://www.zeit.de/2006/13/Spielen_2fLogelei_13
+In Bolwarien leben sechs verschiedene Arten von Einwohnern, und jede Art hat ihr eigenes Hobby */
+import util, cp.
+main ?=> 
+    ArtStr = ["bejobende Mochochen", "frumbendende Kwendel", "karumbende Wotender", "querbelnde Simbundel", "simbundende Verbansen", "wotorekende Geremse"],
+    BM=1, FK=2, KW=3, QS=4, SV=5, WG=6,
+    HobbyStr = ["honbugeln", "santulfen", "sentiffen", "tenilen", "walfalfen", "zohfrenen"],
+    HO=1, SA=2, SE=3, TE=4, WA=5, ZO=6, 
+    Hobby = new_list(6), Hobby :: 1..6, all_different(Hobby),
+    foreach((A1,H1, H2,A2) in [
+       (SV,HO, TE,KW), % Wenn simbundende Verbansen honbugeln dann tenilen karumbende Wotender. 
+       (QS,SA, HO,WG), % Wenn querbelnde Simbundel santulfen dann honbugeln wotorekende Geremse. 
+       (KW,SE, SA,FK), % Wenn karumbende Wotender sentiffen dann santulfen frumbendende Kwendel. 
+       (SV,WA, SA,WG), % Wenn simbundende Verbansen walfalfen dann santulfen wotorekende Geremse. 
+       (BM,TE, ZO,SV), % Wenn bejobende Mochochen tenilen dann zohfrenen simbundende Verbansen. 
+       (QS,SE, HO,SV), % Wenn querbelnde Simbundel sentiffen dann honbugeln simbundende Verbansen. 
+       (SV,ZO, SA,QS), % Wenn simbundende Verbansen zohfrenen dann santulfen querbelnde Simbundel. 
+       (FK,WA, SA,QS), % Wenn frumbendende Kwendel walfalfen dann santulfen querbelnde Simbundel.
+       (SV,TE, WA,FK), % Wenn simbundende Verbansen tenilen dann walfalfen frumbendende Kwendel. 
+       (KW,TE, WA,WG), % Wenn karumbende Wotender tenilen dann walfalfen wotorekende Geremse. 
+       (SV,SA, TE,BM), % Wenn simbundende Verbansen santulfen dann tenilen bejobende Mochochen. 
+       (WG,WA, TE,BM), % Wenn wotorekende Geremse walfalfen dann tenilen bejobende Mochochen.
+       (SV,WA, ZO,BM), % Wenn simbundende Verbansen walfalfen dann zohfrenen bejobende Mochochen. 
+       (QS,SA, TE,WG), % Wenn querbelnde Simbundel santulfen dann tenilen wotorekende Geremse. 
+       (SV,SE, WA,FK)])% Wenn simbundende Verbansen sentiffen dann walfalfen frumbendende Kwendel. 
+            Hobby[A1] #= H1 #=> Hobby[A2] #= H2
+    end,
+    solve(Hobby),
+    foreach(I in 1..6)
+        printf("%s %s, ", ArtStr[I], HobbyStr[Hobby[I]])
+    end,
+    nl, fail. 
+/* bejobende Mochochen zohfrenen, frumbendende Kwendel sentiffen, karumbende Wotender honbugeln, querbelnde Simbundel tenilen, simbundende Verbansen walfalfen, wotorekende Geremse santulfen
+no more solutions, korrekt */

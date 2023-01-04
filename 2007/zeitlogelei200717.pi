@@ -1,0 +1,36 @@
+/* Zeit Logelei 2007/17 (2007/18 ist ein Kreuzzahlrätsel)
+https://www.zeit.de/2007/24/Spielen-Logelei-24
+In Zumbada gibt es Zumdoten, die immer die Wahrheit sagen, und Zumbesen, die immer lügen. 
+Wenn sie betrunken sind, ist es genau umgekehrt: Dann lügen die Zumdoten immer, und die Zumbesen sagen immer die Wahrheit. 
+Aber welche? Jetzt möchte er noch wissen, welcher der Anwesenden zu den Zumbesen gehört und wer zu den Zumdoten. 
+Hier die Antworten: .. Jetzt ist Professor Knusi alles klar. Ihnen auch? */
+import cp.
+main ?=> 
+    Zumdote = 1, Zumbese = 0,
+    % Professor Knusi unterhält sich mit sechs Zumbadanern ...
+    Name = ["Ambada", "Bumbada", "Cimbada", "Dambada", "Embada", "Fombada"], N = len(Name),
+    A = 1, B = 2, C = 3, D = 4, E = 5, F = 6,
+    Grup = new_list(N), Grup :: [Zumdote, Zumbese],
+    Klar = new_list(N), Klar :: 0..1, % 0 = betrunken, 1 = klar im Kopf 
+    sum(Klar) + 2 #= N, % .. und konnte bislang schon herausfinden, dass genau zwei davon betrunken sind.
+    foreach( (Z1, Z2, Z3, G) in [
+        (A, B, C, Zumbese), % Ambada: "Bumbada würde Ihnen sagen, dass Cimbada ein Zumbese ist." 
+        (B, F, E, Zumdote), % Bumbada: "Fombada würde Ihnen sagen, dass Embada ein Zumdote ist." 
+        (C, D, A, Zumbese), % Cimbada: "Dambada würde Ihnen sagen, dass Ambada ein Zumbese ist." 
+        (D, E, B, Zumbese), % Dambada: "Embada würde Ihnen sagen, dass Bumbada ein Zumbese ist." 
+        (E, A, D, Zumdote), % Embada: "Ambada würde Ihnen sagen, dass Dambada ein Zumdote ist." 
+        (F, C, F, Zumdote), % Fombada: "Cimbada würde Ihnen sagen, dass Fombada ein Zumdote ist." 
+        (A, F, D, Zumbese), % Ambada: "Fombada würde sagen, dass Dambada ein Zumbese ist." 
+        (B, D, C, Zumdote), % Bumbada: "Dumbada würde sagen, dass Cimbada ein Zumdote ist." 
+        (C, E, B, Zumdote)])% Cimbada: "Embada würde sagen, dass Bumbada ein Zumdote ist." 
+            % Z sagt die Wahrheit <=> (Z ist klarer Zumdote oder betrunkener Zumbese) <=> Grup[Z] = Klar[Z]:
+            (Grup[Z1] #= Klar[Z1]) #= ((Grup[Z2] #= Klar[Z2]) #= (Grup[Z3] #= G))
+    end,
+    solve(Grup ++ Klar), 
+    foreach(I in 1..N, Klar[I] = 0) printf("%s ", Name[I]) end, print("sind betrunken. "),
+    foreach(I in 1..N, Grup[I] = 0) printf("%s ", Name[I]) end, println("ist Zumbese, alle Anderen sind Zumdoten."),
+    fail.
+/* A B C D E F
+W= 1 0 1 0 1 0 (1 = sagt die Wahrheit)
+Bumbada und Dambada sind betrunken. Fombada ist Zumbese, alle Anderen sind Zumdoten.
+no more solutions, sieht gut aus! */

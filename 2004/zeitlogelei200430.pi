@@ -1,0 +1,39 @@
+/* Zeit Logelei Nr. 2004/30
+https://www.zeit.de/2004/30/Spielen_2fLogelei_30/komplettansicht
+Herr Lehmberger möchte auf dem Markt Pampelsinen kaufen. Er hätte gerne süße, aber da er sich nicht auskennt, sieht er ihnen nur an, 
+ob sie _rund_ oder _eiförmig_ sind. Als ihn die umstehenden Leute grübeln sehen, fangen sie an, Tipps zu geben. ...
+»Jetzt wissen Sie alles über meine Pampelsinen«, meint die Verkäuferin. Was für Pampelsinen muss Herr Lehmberger kaufen, wenn er sicher gehen 
+will, dass die Früchte _süß_ sind? Und was für Arten von Pampelsinen gibt es an diesem Stand überhaupt? */
+import cp.
+main => %     1       2        3      4
+    Prop = [Rund, Eifoermig, Suess, Sauer, Hart, Weich, DuenneSchale, DickeSchale, Grossporig, Kleinporig, Trocken, Saftig, WenigKerne, VieleKerne], 
+    Prop :: 0..1,
+    Rund #!= Eifoermig, Suess #!= Sauer, Hart #!= Weich, DuenneSchale #!= DickeSchale, Grossporig #!= Kleinporig, Trocken #!= Saftig, WenigKerne #!= VieleKerne, 
+    (Hart #/\ DickeSchale) #=> Rund, % Eine Frau: »Harte Pampelsinen mit dicker Schale sind immer rund.«
+    (Saftig #/\ Rund) #=> DuenneSchale, % Ihre Freundin: »Ja, aber _saftige_, runde Pampelsinen haben eine dünne Schale.«
+    Eifoermig #=> Saftig, % Ein Vater rät: »Eiförmige Pampelsinen sind besonders _saftig_.«
+    Eifoermig #=> Hart, % Das Kind ergänzt trotzig: »Eiförmige Pampelsinen sind so _hart_, dass man damit Fußball spielen kann.«
+    Trocken #=> VieleKerne, % Der Mann vom Käsestand weiß: »_Trockene_ Pampelsinen haben viele Kerne; 
+    (Grossporig #/\ DuenneSchale) #=> WenigKerne, % _großporige_ Pampelsinen mit dünner Schale hingegen haben wenig Kerne.«
+    (Suess #/\ WenigKerne) #=> Weich, % Die Verkäuferin meldet sich auch mal zu Wort: »An diesem Stand sind süße Pampelsinen _mit wenig Kernen_ immer weich.«
+    (Kleinporig #/\ VieleKerne) #=> Hart, % Eine vorbeikommende Schülerin doziert: »_Kleinporige_ Pampelsinen mit vielen Kernen sind hart. Das hat unser Biologielehrer gesagt.«
+    % Der Frau, die vor Herrn Lehmberger an der Reihe war, ist gerade eine Pampelsine weggerollt, hinuntergefallen und kaputtgegangen. 
+    Rund #=> Weich, % Daraufhin meint sie: »Das war ja mal wieder klar: Pampelsinen, die so rund sind, dass sie _wegrollen_, sind auch so weich, dass sie _kaputtgehen_.«
+    % »Aber woran erkenne ich denn jetzt, ob Pampelsinen süß sind?«, wirft Herr Lehmberger ein.
+    (DuenneSchale #/\ WenigKerne) #=> Suess, % Darauf weiß der Mann vom Käsestand auch eine Antwort: »_Dünnschalige_ Pampelsinen mit wenig Kernen sind immer süß. 
+    (Weich #/\ WenigKerne) #=> Sauer, % Weiche Pampelsinen mit wenig Kernen hingegen sind nie süß.«
+    % Der Vater des Kindes, das zwischenzeitlich versucht, mit der kaputten Pampelsine Fußball zu spielen, ergänzt: 
+    (Saftig #/\ Sauer) #=> Weich, % »Und saftige Pampelsinen, die nicht süß sind, sind immer weich.«
+    Sols = solve_all(Prop), 
+    Str = ["Rund", "Eiförmig"],
+    foreach(I in 1..2)
+        Cnt = sum( [Sol[4]: Sol in Sols, Sol[I] = 1] ), % wieviele Pampelsinen-Arten der Form Str[I] sind sauer?
+        printf("%se Pampelsinen sind %s.%n", Str[I], cond(Cnt > 0, "manchmal sauer", "immer süß")) 
+    end. /*
+Runde Pampelsinen sind manchmal sauer.
+Eiförmige Pampelsinen sind immer süß.
+sieht gut aus! */
+
+/* Auflösung aus Nr. 29:
+1. Helga und Klaus haben noch drei Kilometer zu fahren und werden um 18.15 Uhr in Mörwisch ankommen
+2. Törfel, Görfel und Sörfel lügen, die anderen nicht */

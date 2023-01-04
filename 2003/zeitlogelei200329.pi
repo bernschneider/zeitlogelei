@@ -1,0 +1,55 @@
+/* Zeit Logelei Nr. 2003/29
+https://www.zeit.de/2003/29/Spielen_2fLogelei_29
+1. Unser in Knusiland tätiger Völkerkundler ist in Schwierigkeiten. Er schreibt: "Im November hatte ich die Insel Kasinien besucht. 
+Auf der Insel traf ich eine Gruppe von fünf Einwohnern mit Namen Aplin, Beplin, Ceplin, Deplin und Eplin. Ich interviewte sie und notierte ihre Aussagen. Hier mein Protokoll:
+.. Leider habe ich vergessen, am wievielten und an welchem Wochentag das Interview stattgefunden hat. Dies aber ist für mich ebenso wichtig wie zu erfahren, 
+wer von den fünf Insulanern welchem Stamm angehört. Ob mir da jemand helfen kann?" Helfen wir ihm! Wer gehört welchem Stamm an, und wann fand das Interview statt? */
+import util, cp, alphametik.
+main1 => 
+    A=1, B=2, C=3, D=4, E=5,  Max = 4, % Aplin, Beplin, Ceplin, Deplin und Eplin; Max=maximale Zahl der Antworten
+    W = new_array(5,Max), W :: 0..1, % W[P,J] = 1 <=> P´s J.te Aussage ist wahr
+    % Jeder Bewohner dieses Eilands gehört einem von vier kasinischen Stämmen an:
+    Ef=1, Ge=2, Ha=3, Is=4, StrSt = ["Ef", "Ge", "Ha", "Is"], % Efsiner, Gesiner usw.
+    St = new_list(5), St :: [Ef,Ge,Ha,Is], 
+    Tag :: 12..15, 
+    Wtag :: 1..6, _Montag=1, Dienstag=2, Mittwoch=3, Donnerstag=4, Freitag=5, Samstag=6,
+    StrWtag = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"],
+    W[A,1] #= (Tag   #=  12),       % Aplin: ›Heute ist der 12.‹
+    W[B,1] #= (St[A] #!= Is),       % Beplin: ›Aplin ist kein Isiner.‹
+    W[C,1] #= (Wtag  #!= Mittwoch), % Ce-plin: ›Morgen ist nicht Donnerstag.‹
+    W[D,1] #= (Tag   #=  13),       % Deplin: ›Heute ist der 13.‹
+    W[E,1] #= (Wtag  #=  Dienstag), % Eplin: ›Heute ist Dienstag.‹
+    W[A,2] #= (St[C] #=  Ef),       % Aplin: ›Ceplin ist Efsiner.‹
+    W[B,2] #= (Tag   #=  15),       % Beplin: ›Gestern war der 14.‹
+    W[C,2] #= (St[D] #!= Is),       % Ceplin: ›Deplin ist kein Isiner.‹
+    W[D,2] #= (St[A] #=  Ge),       % Deplin: ›Aplin ist Gesiner.‹
+    W[E,2] #= (St[C] #=  Ha),       % Eplin: ›Ceplin ist Hasiner.‹
+    W[A,3] #= (St[A] #=  Ge),       % Aplin: ›Ich bin Gesiner.‹ ok
+    W[B,3] #= (St[E] #=  Ha),       % Beplin: ›Eplin ist Hasiner.‹
+    W[C,3] #= (St[D] #=  St[B]),    % Ceplin: ›Deplin gehört dem gleichen Stamm an wie Beplin.‹
+    W[E,3] #= (St[A] #=  Ha),       % Eplin: ›Aplin ist Hasiner.‹
+    W[B,4] #= (Wtag  #=  Dienstag), % Beplin: ›Heute ist Dienstag.‹ 
+    foreach(J in 1..5, K in 1..Max)                                  % Diese vier Stämme gibt es:
+        St[J] #= Ef #=> #~ W[J,K],                                   % Efsiner, die nie die Wahrheit sagen.
+        St[J] #= Ge #=> (W[J,K] #<=> Tag mod 2 #= 0),                % Gesiner, die nur an den Tagen die Wahrheit sagen, deren Tagesdatum gerade ist.
+        St[J] #= Ha #=> (W[J,K] #<=> Wtag :: [Donnerstag, Samstag]), % Hasinern, die nur donnerstags und samstags die Wahrheit sagen.
+                        WK #= (W[J,1] + K - 1) mod 2,                % Isiner, die abwechselnd wahre und falsche Aussagen machen, ..
+        St[J] #= Is #=> (W[J,K] #<=> (WK #\/ Wtag notin [Dienstag, Freitag]) ) % .. aber nur dienstags und freitags; sonst sagen sie immer die Wahrheit
+    end, 
+    solve(vars(W) ++ St ++ [Tag, Wtag]), 
+    printf("Heute ist %s, der %d.%n", StrWtag[Wtag], Tag),         % v- füge bei B..D ein e ein:
+    foreach(J in 1..5) printf("%c%splin ist %ssiner%n", chr(64+J), cond((J=1;J=5), "", "e"), StrSt[St[J]]) end. /*
+Heute ist Freitag, der 13.
+Aplin ist Efsiner
+Beplin ist Issiner
+Ceplin ist Issiner
+Deplin ist Issiner
+Eplin ist Hasiner
+no more solutions, korrekt */
+
+/* 2. Alphametische Vorliebe: TOM * MAG = LOGIK */
+main2 ?=>
+    mult(["TOM", "MAG", "LOGIK"]). /*
+184 * 429 = 78936, no more solutions, korrekt */
+
+/* Aufl�sung aus Nr. 28: 1. Hat eine AG 70 und die andere 75 Prozent, dann ist die minimale �berlappung 70 + 75 – 100= 45 Prozent. Kommt die n�chste mit 80 Prozent dazu, betr�gt sie 45 + 80 – 100 = 25 Prozent und schlie�lich 25 + 85 – 100 = 10 Prozent f�r alle vier AGs. Zehn Prozent machen Mengenlehre. 2. Es werden 21 Spieltage gebraucht */

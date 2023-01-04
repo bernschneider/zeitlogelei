@@ -1,0 +1,119 @@
+/* Zeit Logelei Nr. 2005/12
+https://www.zeit.de/2005/12/Spielen_2fLogelei_12/komplettansicht
+1. In Ebendingen treffen sich die drei Bauern Alois, Bertl und Josef zum alljährlichen Kuhhandel. Jeder der drei bringt dazu ein paar seiner Kühe mit, 
+die er gerne tauschen würde. Der Alois hat die Elsa, die Moni und die Ilsa dabei. Bertl kommt mit der Lisa und der Sana, und Josef bringt die Susi und die Leni mit.
+Die drei überlegen eine Weile und führen dann einige dieser Tausche – möglicherweise auch mehrfach – durch. Alle drei sind zufrieden, da fällt dem Alois ein, 
+dass er noch drei Gulden Schulden bei Bertl hat. Nachdem er seine Schulden bezahlt hat, stellen die drei fest, dass jeder genauso viel Gulden hat wie vor dem Handel.
+Welche Tausche haben die drei durchgeführt, und wer hat jetzt welche Kuh? */
+import planner, util, cp.
+main1 =>    %   1        2        3
+    Bstr = ["Alois", "Bertl", "Josef"],  
+    %  ([El,Il,Le,Li, Mo,Sa,Su], [GA,GB,GJ])    Wem gehört die Kuh?         Wer hat wieviele Gulden Startkapital? 
+    S0=([1, 1, 3, 2,  1, 2, 3],  [ 6, 6, 6]), % 1=Alois, 2=Bertl, 3=Josef   GA=Alois, GB=Bertl, GJ=Josef] (die Gulden sind egal, müssen nur zu Z. 23 passen)
+    best_plan(S0, 10, Plan),
+    foreach((Format, S1, P) in Plan)  printf(Format, S1, Bstr[P]) end. /* 
+ ElIlLeLiMoSaSu GA,GB,GJ
+[1,1,3,2,2,2,3],[12,0,6]	Alois - Bertl: > Moni, 6
+[2,1,3,1,2,2,3],[10,2,6]	Alois - Bertl: < Lisa > Elsa, -2
+[2,1,3,3,2,2,1],[12,2,4]	Josef - Alois: < Lisa > Susi, -2
+[2,2,3,3,1,1,2],[11,3,4]	Bertl - Alois: < Ilsa Susi > Moni Sana, 1
+[1,2,3,3,2,1,2],[11,3,4]	Bertl - Alois: > Elsa < Moni, 0
+[3,2,3,1,2,1,2],[9,3,6]	Alois - Josef: < Lisa > Elsa, -2
+CPU time 0.002 seconds, sieht gut aus. */
+final(([_,_,_,_, _,_,_], [9,3,6])) => true. % Zuletzt zahlt Alois seine 3 Gulden Schulden an Bertl -> [6,6,6] -> wie in Zeile 12
+
+% Josef1: »Ich würde für die Lisa die Susi hergeben und noch zwei Gulden draufzahlen.«:
+action(([El,Il,Le,P, Mo,Sa,3], [GA,GB,GJ]), S1, Action, Cost) ?=>
+    (P = 1; P = 2),
+    Cost = 1,      
+    Owner = [El,Il,Le,3, Mo,Sa,P], 
+    Gulden = cond(P == 1, [GA+2,GB,GJ-2], [GA,GB+2,GJ-2]),
+    S1 = (Owner,Gulden),
+    Action = ("%w\tJosef - %s: < Lisa > Susi, -2%n", S1, P).
+
+% Bertl1: »Ich würde Moni und Sana gegen Ilsa und Susi hergeben, wenn ich noch einen Gulden dazubekäme … wenn mir Moni gehören würde.«
+action(([El,P,Le,Li, 2,2,P], [GA,GB,GJ]), S1, Action, Cost) ?=>
+    (P = 1; P = 3),
+    Cost = 1,      
+    Owner = [El,2,Le,Li, P,P,2], 
+    Gulden = cond(P = 1, [GA-1,GB+1,GJ], [GA,GB+1,GJ-1]),
+    S1 = (Owner,Gulden),
+    Action = ("%w\tBertl - %s: < Ilsa Susi > Moni Sana, 1%n", S1, P).
+
+% Alois1: »Die Moni gibt immer viel Milch. Für sie würde ich schon sechs Gulden verlangen.«  [6, -6, 0]
+action(([El,Il,Le,Li, 1,Sa,Su], [GA,GB,GJ]), S1, Action, Cost) ?=>
+    (P = 2; P = 3),
+    S1 = (Owner,Gulden),
+    Cost = 1,      
+    Owner = [El,Il,Le,Li, P,Sa,Su], 
+    Gulden = cond(P = 2, [GA+6,GB-6,GJ], [GA+6,GB,GJ-6]),
+    Action = ("%w\tAlois - %s: > Moni, 6%n", S1, P).
+
+% Bertl2: »Ich würde die Elsa für die Moni geben.«
+action(([2,Il,Le,Li, P,Sa,Su], [GA,GB,GJ]), S1, Action, Cost) ?=>
+    (P = 1; P = 3),
+    Cost = 1,      
+    Owner = [P,Il,Le,Li, 2,Sa,Su], 
+    Gulden = [GA,GB,GJ],
+    S1 = (Owner,Gulden),
+    Action = ("%w\tBertl - %s: > Elsa < Moni, 0%n", S1, P).
+
+% Josef2: »Die Elsa und die Sana würde ich gerne haben. Dafür würde ich die Ilsa abgeben und noch drei Gulden draufzahlen. Meine Ilsa hat ein ganz schönes Gewicht, die ist das wert.«
+action(([P,3,Le,Li, Mo,P,Su], [GA,GB,GJ]), S1, Action, Cost) ?=>
+    (P = 1; P = 2),
+    Cost = 1,      
+    Owner = [3,P,Le,Li, Mo,3,Su], 
+    Gulden = cond(P = 1, [GA+3,GB,GJ-3], [GA,GB+3,GJ-3]),
+    S1 = (Owner,Gulden),
+    Action = ("%w\tJosef - %s: < Elsa Sana > Ilsa, -3%n", S1, P).
+
+% Alois2: »Wenn ich die Lisa bekomme, so gebe ich dafür die Elsa und zudem noch zwei Gulden.«
+action(([1,Il,Le,P, Mo,Sa,Su], [GA,GB,GJ]), S1, Action, Cost) ?=>
+    (P = 2; P = 3),
+    Cost = 1,      
+    Owner = [P,Il,Le,1, Mo,Sa,Su], 
+    Gulden = cond(P = 2, [GA-2,GB+2,GJ], [GA-2,GB,GJ+2]),
+    S1 = (Owner,Gulden),
+    Action = ("%w\tAlois - %s: < Lisa > Elsa, -2%n", S1, P).
+
+% Bertl3: »Für Leni würde ich sogar zwei Kühe abgeben, die Lisa und die Ilsa. Dafür möchte ich dann aber noch fünf Gulden dazuhaben.«
+action(([El,2,P,2, Mo,Sa,Su], [GA,GB,GJ]), S1, Action, Cost) ?=>
+    (P = 1; P = 3),
+    Cost = 1,      
+    Owner = [El,P,2,P, Mo,Sa,Su], 
+    Gulden = cond(P = 1, [GA-5,GB+5,GJ], [GA,GB+5,GJ-5]),
+    S1 = (Owner,Gulden),
+    Action = ("%w\tBertl - %s: > Lisa Ilsa < Leni, 5%n", S1, P).
+
+/* 2. Bei einem anderen Kuhhandel der drei hat Alois einen Bullen dabei. Auf die Frage, wie viel er für diesen Bullen haben möchte, antwortet er mit folgender Alphametik:
+  ELSA 
++ ILSA 
++ LISA 
+------ 
+ BULLE */
+main2 =>
+    add(["ELSA", "ILSA", "LISA", "BULLE"]). /*
+  8726
+  3726
+  7326
+------
+ 19778 */
+add(L) => % das letzte Element von L ist die Summe der vorherigen Elemente
+   Letter = keys(new_set(flatten(L))), % verwendete Buchstaben
+   Digit = new_list(len(Letter)), Digit :: 0..9, % eine Ziffer je Buchstabe
+   all_different(Digit),
+   Zeilen = len(L) - 1, % Anzahl der Summanden, im Beispiel = 2
+   Num = new_array(len(L)), % numerische Repräsentation der Elemente von L
+   foreach(I in 1..len(L))
+       S = [Digit[find_first_of(Letter, C)] : C in L[I]], % Convert Letter C -> Digit
+       to_num(S, Num[I]), S[1] #!= 0
+   end,
+   sum([Num[I] : I in 1.. Zeilen]) #= Num[len(L)],
+   solve(Digit ++ Num),
+   foreach(I in 1..Zeilen) printf("%6d%n", Num[I]) end,
+   printf("------%n"),
+   printf("%6d%n%n", Num[len(L)]).
+
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).

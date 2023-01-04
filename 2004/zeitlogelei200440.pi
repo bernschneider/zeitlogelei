@@ -1,0 +1,35 @@
+/* Zeit Logelei Nr. 2004/40 Achtung 2004/41 ist ein Kreuzzahlrätsel!)
+https://www.zeit.de/2004/40/Spielen_2fLogelei_40/komplettansicht
+»Wie kommt es eigentlich«, fragt Professor Knusi seinen Freund Tüttel (einen Palmat von der Insel Palmatien), »dass alle Palmaten ständig unnütze Dinge tun?«
+»Das sind die gesellschaftlichen Regeln«, antwortet Tüttel, »wer das nicht tut, gilt als unhöflich.« »Gesellschaftliche Regeln für unnützes Zeug? Wo gibt’s denn so was?«
+»Na, ihr Menschen habt so was doch auch: Wer begrüßt, muss Hände schütteln, und wer trinkt, muss zuprosten. Auch völlig nutzlose Regeln!« »Finde ich nicht. 
+Aber was sind denn nun eure Regeln?« ... Nach einer kurzen Denkpause meint Knusi: »Aber da kann man sich ja überhaupt nicht mehr aussuchen, was man tut.«
+»Unsere Zivilisation ist eben schon sehr alt. Da haben sich viele Regeln entwickelt. Warte nur mal ab, bis eure Zivilisation auch so alt ist.«
+Können Sie in der Zwischenzeit herausfinden, was man auf Palmatien tun und lassen muss, wenn man nicht als unhöflich gelten möchte? */
+import util, cp.
+main ?=> 
+    Str = ["astubliefen", "bussieren", "delieren", "eulieben", "kalifen", "lustern", "mutaboren", "piluten", "schwattern", "tengeln", "verlaggen", "wossern"], 
+    Regel  = [A, B, D, E, K, L, M, P, S, T, V, W], N = len(Regel), Regel :: 0..1, % 1 = dies muss man in Palmatien tun
+    L #= 1 #=> S #= 1, % »Beim Lustern muss geschwattert werden. 
+    L #= 0 #=> P #= 0, % Wer jedoch nicht lustert, darf auch nicht piluten.
+    T #= 0 #=> K #= 1, % Wer nicht tengelt, muss kalifen.
+    (T #= 1 #/\ V #= 1) #=> S #= 0, % Wer gleichzeitig tengelt und verlaggt, darf nicht auch noch schwattern.
+    L #= 1 #=> (S #= 0 #\/ W #= 0), % Wer lustert, darf nicht gleichzeitig schwattern und wossern.
+    (M #= 1 #/\ T #= 1) #=> K #= 0, % Wer mutabort und tengelt, darf nicht auch noch kalifen.
+    (S #= 1 #/\ W #= 0) #=> L #= 0, % Für schwatternde Palmaten gilt: Wer nicht wossert, lustert auch nicht.
+    D #= 0 #=> L #= 1, % Wer nicht deliert, sollte wenigstens lustern.
+    (K #= 1 #/\ D #= 1) #=> B #= 0, % Man bussiert nicht, wenn man schon dabei ist, gleichzeitig zu kalifen und zu delieren.
+    P #= 0 #=> (S #= 1 #/\ V #= 1), % Wenn man schon nicht pilutet, dann sollte man wenigstens schwattern und verlaggen.
+    (T #= 0 #/\ E #= 0) #=> K #= 0, % Palmaten, die weder tengeln noch eulieben, dürfen auch nicht kalifen.
+    W #= 0 #=> B #= 1, % Wer nicht wossert, muss bussieren.
+    K #= 1 #=> M #= 1, % Wer kalift, muss mutaboren.
+    (V #= 0 #/\ A #= 0) #=> T #= 1, % Wenn man nicht verlaggt, gehört es sich nicht zu astubliefen, ohne zu tengeln.
+    E #= 1 #=> A #= 1, % Euliebt wird nur, wenn auch astublieft wird.«
+    solve(Regel),
+    foreach(I in 1..N, Regel[I] = 1) printf("%s ", Str[I]) end,
+    nl, fail. /* 
+astubliefen delieren eulieben kalifen mutaboren schwattern verlaggen wossern 
+no more solutions, sieht gut aus! */
+/* Auflösung aus Nr. 39:
+1. Alle Kinderzimmer sehen noch wie ein Saustall aus. Alle Kinder müssen noch aufräumen.
+2. 9321 • 9250 = 86219250 */    

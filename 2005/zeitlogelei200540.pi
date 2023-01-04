@@ -1,0 +1,42 @@
+/* Zeit Logelei Nr. 2005/40
+https://www.zeit.de/2005/40/Spielen_2fLogelei_40
+Hans, Ralf und Peter spielen Karten. Auf dem Tisch liegen die Zwei, die Drei, die Fünf und die Acht 
+in Kreuz, Pik, Herz und Karo – verdeckt und gut gemischt. Jeder der drei zieht fünf Karten, eine bleibt auf dem Tisch übrig.
+Welche Karte liegt auf dem Tisch? Welche Karten haben die drei Jungs? */
+import cp.
+main ?=> 
+    H=1, R=2, P=3, Pstr = ["Hans", "Ralf", "Peter", "Tisch"],
+    Zwei=1, Drei=2, Fuenf=3, Acht=4, Wert = [2, 3, 5, 8],
+    Kz=1, Pk=2, Hz=3, Ko=4, Fstr = ["Kreuz", "Pik", "Herz", "Karo"],
+    Hat = new_array(4,4), Hat :: 1..4, Hvars = vars(Hat), % wer hat die Karte F,W gezogen?
+    global_cardinality(Hvars, $[1-5,2-5,3-5,4-1]), % jeder hat 5 Karten gezogen
+    % Hans: »Meine Pik-Karten ergeben zusammen den Wert 13.« – 
+    sum([(Hat[Pk,W] #= H) * Wert[W] : W in 1..4]) #= 13,
+    % Ralf: »Ich habe genau zwei Fünfen.« – 
+    sum([(Hat[F,Fuenf] #= R) : F in 1..4]) #= 2,
+    % Peter: »Ich habe entweder drei Zweien oder drei Herz.« –
+     sum([(Hat[F,Zwei] #= P) : F in 1..4]) #= 3 #^ sum([(Hat[Hz,W] #= P) : W in 1..4]) #= 3,
+    % Hans: »Ich habe genau eine rote Karte.« –
+    sum([(Hat[Hz,W] #= H) + (Hat[Ko,W] #= H) : W in 1..4]) #= 1,
+    % Ralf: »Wenn ich die Kreuz Drei habe, dann habe ich auch die Karo Fünf.« – 
+    Hat[Kz,Drei] #= R #=> Hat[Ko,Fuenf] #= R,
+    % Peter: »Die Summe meiner Karten beträgt 22.« –
+    sum([(Hat[F,W] #= P) * Wert[W] : F in 1..4, W in 1..4]) #= 22,
+    % Hans: »Ich habe mindestens zwei Karten Achten, aber nicht die Herz Acht.« – 
+    sum([(Hat[F,Acht] #= H) : F in 1..4]) #>= 2, Hat[Hz,Acht] #!= H,
+    % Ralf: »Entweder ich habe von jeder Farbe oder von jeder Zahl mindestens eine Karte.« – 
+    AnzFarben #= sum([ (sum([(Hat[F,W] #= R) : W in 1..4]) #> 0) : F in 1..4]), 
+    AnzWert #= sum([ (sum([(Hat[F,W] #= R) : F in 1..4]) #> 0) : W in 1..4]),
+    AnzFarben #= 4 #^ AnzWert #= 4, 
+    % Peter: »Meinen Kreuz-Karten ergeben zusammengezählt mehr als acht.«
+    sum([(Hat[Kz,W] #= P) * Wert[W] : W in 1..4]) #> 8,
+    solve(Hat),
+    foreach(I in 1..4)
+        printf("%5s: ", Pstr[I]),
+        foreach(F in 1..4, W in 1..4, Hat[F,W] = I) printf("%s %d, ", Fstr[F], Wert[W]) end, nl
+    end, nl, fail.
+/* Tisch: Herz 5 
+Hans: Kreuz 5, Pik 2, Pik 3, Pik 8, Karo 8
+Ralf: Kreuz 3, Pik 5, Herz 3, Karo 3, Karo 5
+Peter: Kreuz 2, Kreuz 8, Herz 2, Herz 8, Karo 2
+CPU time 0.006 seconds, no mire solutions, korrekt */

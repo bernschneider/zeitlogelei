@@ -1,0 +1,39 @@
+/* Zeit Logelei Nr. 2003/45 (44 ist ein Kreuzzahlrätsel)
+https://www.zeit.de/2003/45/Spielen_2fLogelei_45
+Diesmal wird’s ein bisschen mathematisch:
+1. "Wenn alle 497 Männer da wären, müsste es in Siebenerreihen aufgegangen sein", mault der Feldwebel, "aber es ist ja immer so: 
+Ein Teil ist krank, einer auf Urlaub, einer abkommandiert. .. Jetzt plagt ihn die Frage, wie viele Männer angetreten waren. */ 
+import cp, alphametik.
+main1 ?=>
+    N :: 1..497, 
+    % "In Marschkolonne zu dritt angetreten!", kommandiert der Feldwebel. Die Soldaten stellen sich in Reihen zu je drei Personen hintereinander auf. 
+    N mod 3 #= 1, % Aber ein Soldat bleibt übrig, er müsste als Einzelner hinter den anderen hermarschieren. Das missfällt dem Feldwebel. 
+    N mod 5 #= 2, % Er befiehlt: "In Marschkolonne zu fünft antreten!" Nun bleiben zwei Soldaten übrig. 
+    N mod 7 #= 3, % Darum lässt der Feldwebel seine Männer in Reihen zu sieben antreten. Jetzt bleiben drei Soldaten übrig. 
+    N mod 11 #= 4, % Also dann in Marschkolonne zu elf angetreten!" Die Leute gehorchen. 
+    % Als nunmehr vier Männer übrig bleiben, verliert der Feldwebel die Lust und lässt wegtreten. 
+    solve([N]),
+    printf("Es sind %d Männer angetreten.%n", N), 
+    fail. /* Es sind 367 Männer angetreten.
+CPU time 0.0 seconds, no more solutions, korrekt */
+
+/* 2. "So so, du wohnst in der Weidetstraße", sagte der Polizist, der Susi Morps angehalten hat, weil sie mit ihrem Fahrrad auf dem Fußweg gefahren ist. 
+"Und wie ist deine Hausnummer?", begehrt der Gesetzeshüter zu wissen. ...
+Artig ruft sie noch "Auf Wiedersehen!" und radelt davon. Wer kann dem Polizisten helfen? */
+main2 ?=>
+    N :: 100..999, N mod 10 #= 4, % Susi: "Die Nummer ist dreistellig und hat die Endziffer 4. 
+    N1 #= 400 + N div 10, % Aber wenn man diese 4 wegnimmt und an den Anfang meiner Hausnummer stellt, ..
+    N1 - 400 #= 400 - N, % .. wird diese Zahl um so viel größer als 400 sein, wie meine Hausnummer kleiner als 400 ist."
+    solve([N, N1]),
+    printf("Die Hausnummer lautet %d.%n", N),
+    fail. /* Die Hausnummer lautet 364.
+CPU time 0.001 seconds, no more solutions, korrekt */
+
+/* 3. Davon ist der Polizist überzeugt:
+HAUS • HAT = NUMMER */
+main3 ?=>
+    mult(["HAUS", "HAT", "NUMMER"]), fail. /*
+1537 * 154
+-----------
+236698
+CPU time 0.864 seconds, no more solutions, korrekt */

@@ -1,0 +1,57 @@
+/* Zeit Logelei Nr. 2005/10 (2005/09 ist ein Kreuzzahlrätsel)
+https://www.zeit.de/2005/10/Spielen_2fLogelei_10/komplettansicht
+1. Sabrina ist seit neuestem Fan von Green Floyd, und wie immer, wenn sie Fan von etwas ist, dann richtig: Am liebsten möchte sie sich gleich alle sieben CDs kaufen, 
+die zurzeit erhältlich sind. Ihr Geld reicht jedoch nur für vier CDs. Um sich leichter entscheiden zu können, macht sie sich eine Liste aller erhältlichen CDs, 
+wobei sie zu jeder CD aufschreibt, welche der darauf befindlichen Lieder sie besonders mag: ..
+Nach einigem Grübeln fällt Sabrina auf, dass sie durch geschickte Wahl von vier dieser CDs sämtliche Lieder bekommen kann, die sie besonders mag.
+Können Sie, während Sabrina schon unterwegs ins Musikgeschäft ist, herausfinden, um welche vier CDs es sich handelt? */
+import util, cp.
+main1 =>
+    L = ["Listen to This: Wonderful Weather, Yellow Substitute, Dogs in the Rain, When the Rain falls, Write like an Egyptian",
+         "Sliver Disc: Time Oddity, Wonderful Weather, Escalator to Heaven, Breakfast in Asia, Green Sugar, Money’s my first Love",
+         "Sounds from the Box: Green Sugar, Lay Back in the Chair of Someone, When the Rain falls, Leaving a Jet Plane, Bridge over salty Water",
+         "A Snatch of Music: Yellow Substitute, Money’s my first Love, Roof Party, Leaving a Jet Plane, Never do that again, Breakfast in Asia",
+         "Rhyme & Rhythm: Roof Party, Lay Back in the Chair of Someone, Write like an Egyptian, Escalator to Heaven, The long Way to Alabama",
+         "Twelve Beats per Minute: The long Way to Alabama, Time Oddity, Bridge over salty Water, Wonderful Weather, Never do that again, Breakfast in Asia",
+         "Play it back: Money’s my first Love, Dogs in the Rain, Green Sugar, Roof Party, Lay Back in the Chair of Someone, Time Oddity, The long Way to Alabama, Never do that again"],
+    N0 = len(L), CDs = [], Lieder = [], 
+    % Parse die Strings aus L:
+    foreach(I in 1..N0) 
+         [CD, L1] = split(L[I],  ":"), CDs := CDs ++ [CD], 
+         L2 = split(L1, ","), L3 = [drop(Str,1) : Str in L2], % lösche das Blank nach dem Komma!
+         % Füge bislang nicht erwähnte Lieder zur Liste hinzu:
+         foreach(Lied in L3, find_first_of(Lieder, Lied) < 0) Lieder := Lieder ++ [Lied] end
+    end, 
+    NL = len(Lieder), 
+    % Erstelle die Matrix der Constrains: C[I,J] = 1 <=> Auf CD I befindet sich das Lied J
+    C = {{0 : _ in 1..NL} : _ in 1..N0},
+    foreach(I in 1..N0) 
+         [CD, L1] = split(L[I],  ":"), I = find_first_of(CDs, CD),
+         L2 = split(L1, ","), L3 = [drop(Str,1) : Str in L2],
+         foreach(Lied in L3) C[I,find_first_of(Lieder, Lied)] := 1 end
+    end,
+    Sel = new_list(N0), Sel :: 0..1, sum(Sel) #= 4, % wähle 4 CDs aus
+    % Jedes Lied J kommt auf mindestens einer CD I vor:
+    foreach(J in 1..NL) sum([Sel[I] : I in 1..N0, C[I,J] = 1]) #> 0 end,
+    solve(Sel), 
+    foreach(I in 1..N0, Sel[I] = 1) println(CDs[I]) end. /* 
+Listen to This
+Sliver Disc
+Sounds from the Box
+Play it back
+CPU time 0.002 seconds, korrekt. */
+/* 2. Als Sabrina wieder zu Hause ist, muss sie ihre CDs – von denen sie eine zweistellige Anzahl besitzt – neu aufräumen: 
+Vorher hatte sie fünf gleich hohe Stapel daraus gemacht; jetzt geht das nicht mehr. Nach einigem Probieren stellt sie fest: 
+Wenn sie nicht einen großen Stapel machen möchte und auch nicht alle CDs einzeln nebeneinander legen, bleibt ihr nur eine einzige Möglichkeit, 
+lauter gleich hohe Stapel zu machen. Wie viele CDs besitzt sie jetzt? */
+main2 ?=>
+    N0 :: 10..5..95, % zweistellig, durch 5 teilbar
+    N1 #= N0 + 4,
+    % N1 hat genau eine nicht-triviale Zerlegung in zwei Faktoren F1, F2.
+    % Außerdem ist F1 = F2, denn sonst wären F1 Stapel á F2 CDs und F2 Stapel á F1 CDs möglich!
+    [F] :: 2..10, N1 #= F * F,
+    solve([N0, N1, F]), 
+    printf("Nach dem Kauf besitzt sie %d CDs, die sie in %d Stapeln mit je %d CDs anordnen kann.", N1, F, F), 
+    fail.
+/* 2. Nach dem Kauf besitzt sie 49 CDs, die sie in 7 Stapeln mit je 7 CDs anordnen kann.
+CPU time 0.0 seconds, no more solutions, korrekt */

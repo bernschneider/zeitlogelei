@@ -1,0 +1,52 @@
+/* Zeit Logelei Nr. 2004/43
+https://www.zeit.de/2004/43/Spielen_2fLogelei_43/komplettansicht
+1. Die Kanguren gehen in ihrer Freizeit genau einer von drei Beschäftigungen nach. 
+Entweder sie rolsinken kurende Humen oder sie goren norgelnde Hinginen oder sie kalfuren gurbelnde Wurensen.
+Der wissbegierige Assistent Flusi hat einen achtköpfigen Stamm der Kanguren besucht. Als er zurückkommt, lesen sich seine Aufzeichnungen so:
+Wer kann Flusi helfen und herausfinden, welcher der Kanguren welchem Hobby nachgeht? */
+import util, cp, alphametik. % alphametik ist ein eigenes Modul von PB und liegt im Logelei-Verzeichnis
+main1 ?=> 
+    HStr = ["gort norgelnde Hinginen", "rolsinkt kurende Humen", "kalfurt gurbelnde Wurensen"], Hi=1, Hu=2, Wu=3, NH = len(HStr),
+    PStr = ["Der chulchende Cholching", "Der gawende Gurpel", "Der kaudende Kubang", "Der nowende Nureng", 
+            "Der rosende Rusel", "Der sudende Songing", "Der tengende Tanging", "Der zonide Zurbel"], NP = len(PStr),
+    Hobby  = [C, G, K, N, R, S, T, Z], Hobby :: [Hi, Hu, Wu], 
+    foreach(I in 1..NH) at_least(2, Hobby, I) end, % Jedes Hobby wird von mindestens zwei der besuchten Kanguren ausgeführt.
+	R #!= Hu, % Der rosende Rusel rolsinkt keine kurenden Humen.
+	T #!= Hi, % Der tengende Tanging gort keine norgelnden Hinginen.
+	S #!= Hu, % Der sudende Songing rolsinkt keine kurenden Humen.
+	T #=  Hu #=> R #= Hu, % Wenn der tengende Tanging kurende Humen rolsinkt, dann rolsinkt auch der rosende Rusel kurende Humen.
+	C #!= Wu #=> G #= Wu, % Wenn der chulchende Cholching keine gurbelnden Wurensen kalfurt, dann kalfurt aber der gawende Gurpel gurbelnde Wurensen.
+	R #!= Wu #=> (N #= Wu #\/ G #= Hu), % Wenn der rosende Rusel keine gurbelnden Wurensen kalfurt, dann kalfurt der nowende Nureng 
+                                        % gurbelnde Wurensen, oder der gawende Gurpel rolsinkt kurende Humen oder beides.
+	Z #=  Hi #=> N #!= Hu, % Wenn der zonide Zurbel norgelnde Hinginen gort, dann rolsinkt der nowende Nureng keine kurenden Humen.
+	N #= Hi #^ S #= Hi, % Entweder der nowende Nureng oder der sudende Songing gort norgelnden Hinginen, aber nicht beides.
+	T #= Hi #^ K #= Wu, % Entweder der tengende Tanging gort norgelnde Hinginen, oder der kaudende Kubang kalfurt gurbelnde Wurensen, aber nicht beides.
+	C #= Hu #^ Z #= Hi,  % Entweder der chulchende Cholching rolsinkt kurende Humen, oder der zonide Zurbel gort norgelnde Hinginen, aber nicht beides.
+    solve(Hobby),
+    foreach(H in 1..NH, P in 1..NP, Hobby[P]=H) printf("%s %s.%n", PStr[P], HStr[H]) end,
+    nl, fail. /* 
+Der rosende Rusel gort norgelnde Hinginen.
+Der sudende Songing gort norgelnde Hinginen.
+Der chulchende Cholching rolsinkt kurende Humen.
+Der zonide Zurbel rolsinkt kurende Humen.
+Der gawende Gurpel kalfurt gurbelnde Wurensen.
+Der kaudende Kubang kalfurt gurbelnde Wurensen.
+Der nowende Nureng kalfurt gurbelnde Wurensen.
+Der tengende Tanging kalfurt gurbelnde Wurensen.
+no more solutions, korrekt */
+
+/* 2. »Was hast du eingekauft?« »Och, dies und das« »Darf ich mal sehen?« Es stellt sich heraus:
+ DIES
+  DAS
+-----
+KEKSE */
+main2 =>
+    add(["DIES", "DAS", "KEKSE"]). /*
+  9205
+   945
+------
+ 10150
+korrekt */
+
+/* Auflösung aus Nr. 42:
+Ganz links kommt die Spülmaschine hin, daneben der Geschirrschrank, dann der Kühlschrank, dann der Herd und ganz rechts unter das Fenster das Spülbecken */ 

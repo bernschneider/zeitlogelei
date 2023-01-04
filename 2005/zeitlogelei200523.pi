@@ -1,0 +1,26 @@
+/* Zeit Logelei Nr. 2005/23
+https://www.zeit.de/2005/23/Spielen_2fLogelei_23
+Beim Kasperletheater gibt es ein großes Durcheinander um einen verloren gegangenen Schatz. Um Ruhe und Ordnung wiederherzustellen, 
+taucht der Polizist auf und verhört die Versammelten. Er bekommt die folgenden Antworten: ...
+"Aha, ihr seid alle überführt!", ruft empört der Polizist und will schon alle einsperren. 
+Da ruft jemand aus dem Publikum: Aber das stimmt doch gar nicht! Wer hat gelogen und wer nicht? */
+import cp.
+main ?=> 
+    P = [Fee, Gre, Gro, Hex, Kas, Pri, Rae, Sep, Zau], P :: 0..1, % 0 = lügt, 1 = sagt die Wahrheit
+    Str = ["Fee", "Gretl", "Großmutter", "Hexe", "Kasperle", "Prinzessin", "Räuber", "Sepp", "Zauberer"], N = len(Str),
+    Kas #= (Pri #= 1 #^Hex #= 1), % Kasperle: Von Prinzessin und Hexe sagt genau eine die Wahrheit.
+    Sep #= (Fee + Gre #= 2 #=> Gro #= 1), % Seppl: Wenn die Fee und Gretl die Wahrheit sagen, dann auch die Großmutter.
+    Hex #= (Zau + Fee #= 2), % Hexe: Sowohl der Zauberer als auch die Fee sagen die Wahrheit.
+    Zau #= (Fee #= 1), % Zauberer: Die Fee sagt die Wahrheit.
+    Fee #= (Sep #= 1 #=> Gro #= 0), % Fee: Wenn Seppl die Wahrheit sagt, dann lügt die Großmutter.
+    Gro #= (Rae #^ Gre), % Großmutter: Der Räuber und die Gretl, von denen beiden lügt einer, und der andere sagt die Wahrheit.
+    Rae #= (Gro #= 0 #=> Kas #= 1), % Räuber: Wenn die Großmutter lügt, dann sagt Kasperle die Wahrheit.
+    Kro #= (Rae + Gro #= 0), % Krokodil: Der Räuber und die Großmutter lügen beide.
+    Pri #= (Kro #= 1 #=> Rae #= 0), % Prinzessin: Wenn das Krokodil die Wahrheit sagt, dann lügt der Räuber.
+    Gre #= (Rae #= Pri), % Gretl: Entweder lügen der Räuber und die Prinzessin, oder beide sagen die Wahrheit.
+    solve(P),
+    foreach(I in 1..N, P[I] = 0) printf("%s ", Str[I]) end,
+    println("haben gelogen, der Rest hat die Wahrheit gesagt."), 
+    nl, fail.
+/* Gretl Großmutter Kasperle Räuber haben gelogen, der Rest hat die Wahrheit gesagt.
+CPU time 0.0 seconds, no more solutions, korrekt */

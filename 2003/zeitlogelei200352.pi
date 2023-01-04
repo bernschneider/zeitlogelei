@@ -1,0 +1,34 @@
+/* Zeit Logelei Nr. 2003/52 (Die Ausgaben 2004/01 bis /21 wurden nicht gefunden)
+https://www.zeit.de/2003/52/Spielen_2fLogelei_52/komplettansicht
+»Ich verstehe die Welt nicht mehr«, klagt der pnümmige Bauzel, während er seine Hupalap sömmelt, »ich meine die Mömse. 
+Jeder Möms ist entweder ein Drausenflutz oder ein Hersenknautz. Aber wer von den sechs Mömsen nun ein Drausenflutz und wer ein Hersenknautz ist, das weiß man leider nicht mehr.«
+»Das weißt du nicht mehr«, verbessert ihn die teutelige Saginse, »ich zum Beispiel weiß das sehr wohl.«
+Doch die teutelige Saginse erwidert schnippisch: »Das könnte dir so passen, du denkfauler Bauzel, du. Aber ich will noch einmal ein Einsehen haben und dir sechs Hinweise geben. 
+... Verwirrt schaut der pnümmige Bauzel drein. Wie sehr er auch sein Hupalap sömmelt, er kann sich aus den sechs Hinweisen nichts zusammenreimen. 
+Dabei ist es doch – wie wir alle wissen – so einfach. Freilich muss man bedenken, dass die teutelige Saginse – wie wir ebenfalls alle wissen – eine gemeine Lügnerin ist 
+und jeder ihrer sechs Hinweise unwahr ist. Wer aber dies berücksichtigt, dem wird ein wenig Nachdenken erschließen, welcher Möms was ist. Nämlich? */
+import cp.
+main ?=> 
+    Df=1, Hk=2, % Drausenflutz, Hersenknautz
+    Pstr = ["Aknitz", "Buffel", "Chröllduf", "Dintel", "Eiku", "Flüpo"], 
+    Art = [A, B, C, D, E, F], Art :: [Df, Hk], N = len(Art),
+    % Erstens: Sowohl der Aknitzmöms als auch der Buffelmöms sind Hersenknautze.
+    #~(A #= Hk #/\ B #= Hk), 
+    % Zweitens: Der Flüpomöms ist ein Drausenflutz, und wenn der Eikumöms ein Drausenflutz ist, dann ist auch der Chröllduffmöms einer.
+    #~(F #= Df #/\ (E #= Df #=> C #= Df)), 
+    % Drittens: Der Dintelmöms ist ein Hersenknautz, und wenn der Flüpomöms ein Drausenflutz ist, dann ist auch der Aknitzmöms ein Drausenflutz.
+    #~(D #= Hk #/\ (F #= Df #=> A #= Df)), 
+    % Viertens: Aknitzmöms und Eikumöms sind beide Drausenflutze.
+    #~(A #= Df #/\ E #= Df), 
+    % Fünftens: Der Dintelmöms ist ein Drausenflutz und der Eikumöms ist ein Hersenknautz, und wenn der Chröllduffmöms ein Drausenflutz ist, dann ist der Buffelmöms ein Hersenknautz.
+    #~(D #= Df #/\ E #= Hk #/\ (C #= Df #=> B #= Hk)), 
+    % Sechstens: Der Dintelmöms und der Buffelmöms sind beide Drausenflutze.«
+    #~(D #= Df #/\ B #= Df), 
+    solve(Art),
+    foreach (I in 1..N, Art[I] = D) printf("%s ", Pstr[I]) end, println("sind Drausenflutze, die anderen Hersenknautze"),
+    nl, fail. /*
+Aknitz Chröllduf Dintel sind Drausenflutze, die anderen Hersenknautze
+no more solutions, sieht gut aus */
+
+/* Auflösung aus Nr. 51
+Britta Kunz ist schwarzhaarig; Celina Meier ist rothaarig; Dagmar Normann ist blond; Frauke Lohmann ist brünett */

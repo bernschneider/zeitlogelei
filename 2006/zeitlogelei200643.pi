@@ -1,0 +1,54 @@
+/* Zeit Logelei Nr. 2006/43 (Achtung: 2006/44 ist ein Kreuzzahlrätsel)
+https://www.zeit.de/2006/43/Spielen-Logelei-43 */
+import util, cp.
+main ?=> 
+   A=1, B=2, C=3, D=4, E=5, F=6, G=7,
+   Person = ["Antoinette", "Bernd", "Carla", "Dimitris", "Eleonore", "Fatom", "Gudrun"], NP = len(Person),
+   DE=1, EN=2, FR=3, IT=4, SP=5,
+   Sprache = ["deutsch", "englisch", "französisch", "italienisch", "spanisch"], NS = len(Sprache),
+   M = new_array(NP,NS), M :: 0..1, Mt = M.transpose(), % M[P,S] = 1 <=> P spricht S <=> Mt[S,P]
+   % Fünf von sieben Leuten aus Carlas Arbeitsgruppe sprechen Englisch, drei sprechen Spanisch, vier sprechen Französisch, 
+   % zwei sprechen Italienisch, und fünf sprechen Deutsch.
+   sum(Mt[EN]) #= 5, sum(Mt[SP]) #= 3, sum(Mt[FR]) #= 4, sum(Mt[IT]) #= 2, sum(Mt[DE]) #= 5, 
+   foreach(P in 1..NP)
+       Cnt #= sum(M[P]),
+       Cnt #>= 2, % Jeder spricht mindestens zwei verschiedene Sprachen
+       if P = A then Cnt #= 4 else Cnt #=< 4 end % Antoinette ist die Einzige, die sogar vier Sprachen spricht:
+   end,
+   % »Ist es da nicht schwierig, sich zu unterhalten?«, fragt ihre Freundin Nicole. »Es geht«, antwortet Carla, 
+   % »jeder hat mit jedem anderen mindestens eine Sprache gemeinsam:
+   foreach(P1 in 1..NP-1, P2 in P1+1..NP) sum([(M[P1,S] #= 1 #/\ M[P2,S] #= 1) : S in 1..NS]) #> 0 end,
+   % Wenn man sich zu dritt unterhalten will, wird es schwierig: Mit Elenore und Fatom kann ich mich nicht gleichzeitig unterhalten:
+   sum([(M[C,S] #= 1 #/\ M[E,S] #= 1 #/\ M[F,S] #= 1) : S in 1..NS]) #= 0,
+   % .. und mit Dimitris und Bernd auch nicht:
+   sum([(M[C,S] #= 1 #/\ M[D,S] #= 1 #/\ M[B,S] #= 1) : S in 1..NS]) #= 0,
+   % Wenn ich mit Dimitris und Elenore sprechen will, geht das nur auf Deutsch:
+   M[C,DE] #= 1, M[D,DE] #= 1, M[E,DE] #= 1,
+   foreach(S in 1..NS, S != DE) sum([(M[C,S] #= 1 #/\ M[D,S] #= 1 #/\ M[E,S] #= 1) : S in 1..NS]) #= 0 end,
+   % Und wenn sich Gudrun, Fatom und Antoinette unterhalten, darf niemand dazukommen, sonst gibt es keine gemeinsame Sprache mehr.«:
+   foreach(P in [B,C,D,E]) sum([(M[G,S] #= 1 #/\ M[F,S] #= 1 #/\ M[A,S] #= 1 #/\ M[P,S] #= 1) : S in 1..NS]) #= 0 end,
+   % »Wie sprachbegabt ist eigentlich Fatom?« – »Er spricht genauso viele Sprachen wie Elenore:
+   sum(M[F]) #= sum(M[E]),
+   % Mit Gudrun hat er zwei Sprachen gemeinsam.«
+   sum([(M[F,S] #= 1 #/\ M[G,S] #= 1) : S in 1..NS]) #= 2,
+   /* »Sicher passiert es, dass mitten in einer Unterhaltung die Sprache gewechselt wird, oder?« »In der Tat: 
+   Als sich Antoinette und Elenore unterhielten und Dimitris hinzukam, mussten sie die Sprache wechseln, .. */
+   sum([(M[A,S] #= 1 #/\ M[E,S] #= 1) : S in 1..NS]) #> 2, 
+   sum([(M[A,S] #= 1 #/\ M[E,S] #= 1 #/\ M[D,S] #= 1) : S in 1..NS]) #> 1, 
+   % .. und als Gudrun dazukam, musste wiederum gewechselt werden.«
+   sum([(M[A,S] #= 1 #/\ M[E,S] #= 1 #/\ M[D,S] #= 1 #/\ M[G,S] #= 1) : S in 1..NS]) #> 0,
+   % Wer spricht welche Sprachen?
+   solve(M),
+   foreach(P in 1..NP)
+       printf("%s spricht ", Person[P]),
+       foreach(S in [EN,SP,DE,FR,IT], M[P,S]=1) printf("%s ", Sprache[S]) end, nl
+   end, 
+   nl, fail. /* 
+Antoinette spricht englisch spanisch deutsch italienisch 
+Bernd spricht englisch französisch 
+Carla spricht deutsch französisch 
+Dimitris spricht englisch deutsch 
+Eleonore spricht englisch deutsch italienisch 
+Fatom spricht englisch spanisch französisch 
+Gudrun spricht spanisch deutsch französisch 
+CPU time 0.015 seconds, no more solutions, korrekt */

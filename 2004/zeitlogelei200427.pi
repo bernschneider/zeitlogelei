@@ -1,0 +1,61 @@
+/* Zeit Logelei Nr. 2004/27 (Achtung 2004/28 ist ein Kreuzzahlrätsel!)
+https://www.zeit.de/2004/27/Spielen_2fLogelei_27/komplettansicht
+1. Der Händel-Chor (Sopran: Bianca, Claudia, Josephine und Magda; Alt: Juliane, Michaela und Renate; 
+Tenor: Armin, Holger und Norbert; Bass: Jonathan, Theo, Volker) macht ein Probenwochenende in einer Hütte im Schwarzwald. 
+Allerdings haben nur Jonathan, Bianca und Renate ein Auto, und irgendwie müssen jetzt alle Chormitglieder auf die Autos verteilt werden. 
+Dabei gilt es natürlich Sonderwünsche zu beachten: .. Können Sie, lieber Leser, die Chormitglieder auf die Autos verteilen? */
+import cp, alphametik.
+main1 ?=>
+    Str = ["Bianca", "Claudia", "Josephine", "Magda", "Juliane", "Michaela", "Renate", "Armin", "Holger", "Norbert", "Jonathan", "Theo", "Volker"],
+    Bia=1, Cla=2, Jos=3, Mag=4, Jul=5, Mic=6, Ren=7, _Arm=8, Hol=9, Nor=10, Jon=11, The=12, Vol=13, N = 13,
+    Auto = new_list(N), Auto :: 1..3, 
+    S=1, A=2, T=3, B=4, Stimme = [S,S,S,S, A,A,A, T,T,T, B,B,B], % Sopran/ Alt/ Tenor/ Bass
+    Auto[Jon] #= 1, Auto[Bia] #= 2, Auto[Ren] #= 3, 
+    % In jedem Auto soll mindestens ein Sänger aus jeder Stimme sein, damit man sich während der Fahrt die Zeit durch singen vertreiben kann:
+    foreach(Au in 1..3, St in 1..4) sum([(Auto[P] #= Au)*(Stimme[P] #= St) : P in 1..N]) #> 0 end,
+    % In jedem Auto muss jemand sitzen, der den Weg kennt; den Weg kennen aber nur Bianca, Josephine und Theo.
+    all_different([Auto[Bia], Auto[Jos], Auto[The]]),
+    % Holger möchte nicht darauf verzichten, während der Autofahrt zu rauchen; Claudia, Magda und Volker vertragen jedoch keinen Rauch im Auto 
+    % und möchten deshalb in einem anderen Auto sitzen.
+    foreach(P in [Cla, Mag, Vol]) Auto[P] #!= Auto[Hol] end,
+    % Juliane hat so viel Gepäck dabei, dass in das Auto, in dem sie mitfährt, nur noch drei weitere Personen passen.
+    AutoJul :: 1..3, element(Jul, Auto, AutoJul), at_most(4, Auto, AutoJul),
+    % Magda und Norbert haben sich zerstritten und wollen nicht im selben Auto fahren.
+    Auto[Mag] #!= Auto[Nor],
+    % Michaela und Volker haben beide eine Gitarre dabei, und die Gitarren passen nicht gemeinsam in einen Kofferraum. 
+    % Deshalb müssen die beiden in verschiedenen Autos fahren.
+    Auto[Mic] #!= Auto[Vol],
+    solve(Auto ++ [AutoJul]),
+    foreach (Au in 1..3)
+        printf("%d. Auto: ", Au),
+        foreach(P in 1..N, Auto[P] = Au) printf("%s ", Str[P]) end, nl
+    end, nl, fail. /*
+1. Auto: Josephine Michaela Holger Jonathan 
+2. Auto: Bianca Juliane Norbert Volker 
+3. Auto: Claudia Magda Renate Armin Theo 
+CPU time 0.008 seconds, no more solutions, sieht gut aus! */
+
+/* 2./3. Wie nennt man Menschen, die gute Laune haben? Die folgende Alphametik verrät es Ihnen:
+   GUTE
++ LAUNE
+------------
+   ENGEL
+Und hier noch eine Alphametik für die Anhänger von Tolkien:
+   EIN
++ RING
+---------
+   HÜTET */
+main23 =>
+    add(["GUTE", "LAUNE", "ENGEL"]), /*
+  6379
+ 85319
+------
+ 91698 sieht gut aus! */
+    add(["EIN", "RING", "HÜTET"]). /*
+   568
+  9684
+------
+ 10252 sieht gut aus! */   
+
+/* Auflösung aus Nr. 26:
+Herr Huttkewitz sollte die einkommensfreien Kapitalbezüge geltend machen, die Steuerersatzleistungen zurückfordern, die Solidaritätspauschale angeben, ein Kreuz bei "Geringfügige Vermögenskosten" machen, eine Arbeitslohnveranlagung einreichen, sich die begünstigten Mehraufwendungen erstatten lassen und Anspruch auf Saldo-Vorsorge erheben. Er sollte nicht die Anlage GSF ausfüllen, keine Bescheinigung über Werbungszinsen beilegen und auch die zuzurechnende Organgesellschaft nicht veranlagen */

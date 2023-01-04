@@ -1,0 +1,44 @@
+/* Zeit Logelei Nr. 2004/25
+https://www.zeit.de/2004/25/Spielen_2fLogelei_25/komplettansicht
+Simon ist gerade eben von einer langen Weltreise zurückgekommen, und nun wollen alle seine Freunde von ihm wissen, in welchen Ländern der Welt er gewesen ist. 
+Simon macht es ihnen nicht gerade leicht und erklärt es folgendermaßen: ... In welchen der 20 genannten Länder ist Simon jetzt gewesen? */
+import cp.
+main ?=> 
+    Str = ["Argentinien", "Australien", "Brasilien", "Brunei", "China",  "Estland", "Griechenland", "Japan", "Lettland", "Littauen", 
+           "Kanada", "Kenia", "Kongo", "Madagaskar", "Mexiko",           "Neuseeland", "Pakistan", "Paraguay", "Russland", "Tansania"],
+    W =    [AR,            AUS,          BR,          BRU,      CHN,      EST,       GR,             J,       LV,         LT,   
+            CDN,      EAK,     RCB,     RM,           MEX,                NZ,           PK,         PY,         RUS,        EAT], % Länderkennzeichen 
+    W :: 0..1, % W[I] = 1 <=> Simon war in Str[I]
+    RCB + RM + EAT #> 0, % Ich war in mindestens einem der Länder Kongo, Madagaskar und Tansania, 
+    PK + GR #> 0,% .. in mindestens einem der Länder Pakistan und Griechenland,
+    AR + MEX #> 0,% in mindestens einem der Länder Argentinien und Mexiko 
+    LT + CDN #> 0, % .. und in mindestens einem der Länder Lettland und Kanada.
+    BR + NZ + RCB #< 3, % Dafür war ich aber in mindestens einem der Länder Brasilien, Neuseeland und Kongo nicht.
+    LT #=> RUS, % Wenn ich in Lettland war, dann auch in Russland, 
+    AUS #=> NZ, % .. und wenn ich in Australien war, dann auch in Neuseeland.
+    EAK #=> EAT, % Wenn ich in Kenia war, dann auch in Tansania, 
+    EAT #=> RM, % .. und wenn ich in Tansania war, dann auch in Madagaskar.
+    AR #=> PY, % Wenn ich in Argentinien war, dann auch in Paraguay, 
+    PY #=> BR, % .. und wenn ich in Paraguay war, dann auch in Brasilien.
+    EST #/\ LT #=> LV, % Wenn ich in Estland und in Lettland war, dann auch in Littauen, 
+    BRU #=> #~ RCB, % .. und wenn ich in Brunei war, dann nicht im Kongo.
+    RUS #/\ EST #=> CHN, % Wenn ich in Russland und Estland war, dann auch in China, 
+    BR #/\ MEX #=> CDN, % .. und wenn ich in Brasilien und Mexiko war, dann auch in Kanada.
+    RM #=> (EAK #\/ (EST #/\ AR)), % Wenn ich in Madagaskar war, dann war ich auch in Kenia oder in Estland und Argentinien oder in allen dreien.
+    CDN #=> EAK #\/ PY, % Wenn ich in Kanada war, dann war ich auch in mindestens einem der Länder Kenia und Paraguay.
+    BR #=> AUS #\/ EAT, % Wenn ich in Brasilien war, dann war ich auch in mindestens einem der Länder Australien und Tansania.
+    GR #=> (#~ RM #/\ #~ RUS), % Wenn ich in Griechenland war, dann war ich weder in Madagaskar noch in Russland.
+    RUS #=> GR #\/ BRU, % Wenn ich in Russland war, dann auch in mindestens einem der Länder Griechenland und Brunei.
+    % Wenn ich in Pakistan war, war ich nicht sowohl in Kenia als auch Mexiko, nicht sowohl in Argentinien als auch in Japan, 
+    % nicht sowohl in Brasilien als auch in Tansania und nicht sowohl in Neuseeland als auch in Kanada:
+    PK #=> (EAK + MEX #< 2 #/\ AR + J #< 2 #/\ BR + EAT #< 2 #/\ NZ + CDN #< 2), 
+    solve(W),
+    printf("Simon war in diesen %d Ländern:%n", sum(W)),
+    foreach (I in 1..20, W[I] = 1) printf("%s, ", Str[I]) end,
+    nl, fail. /*
+Simon war in diesen 13 Ländern:
+Argentinien, Australien, Brasilien, Brunei, China, Estland, Lettland, Littauen, Madagaskar, Neuseeland, Pakistan, Paraguay, Russland
+no more solutions, korrekt */
+
+/* Auflösung aus Nr. 24:
+In den Kuchen kommen Gras, Gänseblümchen, Blätter und Steine – aber keine Erde, kein Wasser und keine Zweige */

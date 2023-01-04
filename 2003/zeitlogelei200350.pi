@@ -1,0 +1,52 @@
+/* Zeit Logelei Nr. 2003/50 
+https://www.zeit.de/2003/50/Spielen_2fLogelei_50
+1. Morps und seine Gattin sind mit dem Auto unterwegs zu den Kindern in Süddeutschland, um dort ihre Weihnachtsgeschenke abzuladen. 
+Wie alle Jahre wieder werden die beiden im Rasthaus an der Autobahn mit Namen Schönblick ihr Mittagsmahl einnehmen.
+Auf dem Weg dorthin, um elf Uhr, fragt Frau M. ihren Mann (F1): Wie weit sind wir schon von zu Hause fort? Herr M.: Wir sind Punkt zehn Uhr losgefahren ,
+und nach einem Blick auf den Kilometerzähler: Wir haben genau die Hälfte der Strecke zurückgelegt, die wir noch bis zum ›Schönblick‹ fahren müssen. 
+Im Restaurant (S) nimmt man sich viel Zeit. Dann geht es weiter. Um 17 Uhr, als sie 200 Kilometer von der Stelle entfernt sind, an der Frau M. ihre erste Frage gestellt hatte, 
+erkundigt sie sich (F2): Wie weit ist es noch bis zur Wohnung unserer Kinder? Ihr Mann antwortet: Halb so weit, wie jetzt das ›Schönblick‹ von uns entfernt ist. 
+Das Ehepaar kommt um Punkt 19 Uhr an. Wie war die Reise? möchten die Kinder wissen. Kein Kinderspiel bei den vielen Baustellen, klagt Morps, mal ging es ganz schnell,
+mal musste man kriechen. Wie viele Kilometer sind es denn von Haus zu Haus? wird Morps gefragt. Wie viele? */
+import cp, alphametik.
+main1 =>
+  Vars = [Total, A, B], Vars :: 1..1000,
+  %          F1    S     F2
+  Total #= A + 2*A + 2*B + B,
+  2*A + 2*B #= 200,
+  solve(Vars), 
+  printf("Die Gesamtstrecke beträgt %d km.%n", Total). % 300 km, korrekt
+/* 2. Wie viele Leute haben gestern an deiner Männerparty teilgenommen?, fragt Bob seinen Freund Karl. Dieser antwortet: 
+Ich habe die Anzahl nicht mehr im Kopf, aber an eines erinnere mich noch: Jeder Anwesende hatte jedem anderen Anwesenden 
+– mich eingeschlossen – genau einmal die Hand geschüttelt. Insgesamt hat 45-mal so ein Händeschütteln stattgefunden. 
+Wie viele Leute hatten an Karls Männerparty teilgenommen? */
+main2 =>
+  N :: 1..100,
+  N * (N-1) // 2 #= 45, % N über 2 = 45
+  solve([N]),
+printf("%d Personen.%n", N). % 10 Personen, korrekt
+/* 3. Ein trauriger Befund:
+  GELD
++ GELD
+------
+ FEHLT
+– OWEH
+------
+  UUUH */
+main3 =>
+  add(['+', '+', '=', '-', '='], ["GELD", "GELD", "FEHLT", "OWEH", "UUUH"]). /*
+  7403
+  7403
+------
+ 14806
+ -9248
+------
+  5558 korrekt */
+/* 4. Kein Wunder, dass unsere Mannschaft verloren hat, denn KURT • WAR = TORWART */
+main4 =>
+  mult(["KURT", "WAR", "TORWART"]). /*
+3712 * 651
+-----------
+2416512 korrekt */
+
+/* Auflösung aus Nr. 49: 1. Oecker hat die intermittierende Nasophobie, den Gummikauzwang, die Denkinsuffizienz und die periphere Hockanomalie, jedoch kein mentales Gro zehsyndrom, keine Hirnversalzung und keine Riechneurose */

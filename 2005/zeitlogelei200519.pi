@@ -1,0 +1,53 @@
+/* Zeit Logelei Nr. 2005/19
+https://www.zeit.de/2005/19/Spielen_2fLogelei_19/komplettansicht
+Professor Knusi ist zu Gast bei Lord Alphons von Herzenheim in Nogansien. Im Zentrum von Nogansien befindet sich ein sechseckiger Platz, der Hexagon, 
+und an jeder der sechs Seiten dieses Platzes befindet sich eine Villa. In einer dieser Villen wohnt Lord Alphons von Herzenheim. 
+Dieser erzählt gerade Knusi von Nogansien: »Hier am Hexagon wohnen genau sechs Edelleute, die das Schicksal hier zusammenbrachte.«
+Knusi, neugierig, wie er ist, unterbricht den Vortrag und fragt: »Wer wohnt denn in welcher der Villen?« »Das ist ganz einfach«, erwidert Lord Alphons von Herzenheim und fährt fort:
+»Ich wohne neben einem Nachbarn von Lord Elbamund dem Dritten. 
+Von Lord Elbamund dem Dritten, Sir Sirgan of Wilcot und Freiherr Parval zu Löwenberg wiederum wohnen zwei direkt gegenüber. 
+Wenn neben mir Sir Sirgan of Wilcot wohnt, dann wohnt Freiherr Parval zu Löwenberg nicht neben mir. 
+Wenn Freiherr Parval zu Löwenberg neben Lord Elbamund dem Dritten wohnt, dann wohnen Sir Sirgan of Wilcot und Lord Nordengal von Westenuch nicht nebeneinander. 
+Wenn Freiherr Konrad zu Schnaufenburg nicht rechts neben Freiherr Parval zu Löwenberg wohnt, so wohnen sich Sir Sirgan of Wilcot und Lord Elbamund der Dritte nicht gegenüber. 
+Wenn Lord Nordengal von Westenuch nicht neben mir wohnt, dann wohnt Freiherr Konrad zu Schnaufenburg nicht gegenüber von Sir Sirgan of Wilcot. 
+Wenn Freiherr Konrad zu Schnaufenburg nicht neben mir wohnt, dann wohnt Lord Elbamund der Ditte neben Freiherr Parval zu Löwenberg.«
+Mit hochrotem Kopf macht Lord Alphons von Herzenheim eine kurze Pause. Währenddessen denkt Knusi nach und meint dann: 
+»Jetzt weiß ich zwar schon recht viel, aber es gibt immer noch etliche Möglichkeiten, wo die Herrschaften wohnen können.«
+Daraufhin Lord Alphons von Herzenheim: »Oh, entschuldige, ich vergaß: Von den folgenden drei Aussagen ist genau eine richtig:
+Freiherr Parval zu Löwenberg wohnt neben Lord Nordengal von Westenuch. 
+Freiherr Konrad zu Schnaufenburg wohnt neben Lord Elbamund dem Dritten. 
+Neben mir wohnt Sir Sirgan of Wilcot.«
+Knusi nickt kurz und ist mit dieser Antwort zufrieden. Wer wohnt wo? */
+import cp.
+main ?=> % tbd
+    Apf=1, Blu=2, Eis=3, Ele=4, Fam=5, _Fis=6, Kat=7, Kin=8, Mar=9, Pfe=10, Sta=11, Ste=12, N = 12,
+    Str = ["Apfel-Birnen-Bananen-Baum", "Blumenwiese", "Eisenbahn", "Elefant mit Maus", "Familie beim Essen", "Fisch",
+            "Katze", "Kinder im Sandkasten", "Marsmensch", "Pferd", "Stadt", "Sternenhimmel"], 
+    Rs = new_list(N), Rs :: 1..N, assignment(Rs, Rs), % Rückseite
+    foreach(Bilder in [ 
+        /* Dabei zeigt sie auf drei Bilder, die vor ihr auf dem Tisch liegen:  eins mit einem grünen Marsmenschen, eins mit einer Stadt mit Hochhäusern 
+        und eins mit einem Elefanten, der vor einer Maus wegrennt. "Oh, hübsch", findet Papi. "Da hast du dir ja ganz schön viel Mühe gegeben." */
+        [Mar, Sta, Ele],
+        /*  – "Ich hab noch mehr gemalt. Schau mal kurz weg." Als Papi wieder hinschauen darf, liegt der Marsmensch immer noch da, aber statt der anderen 
+        zwei Bilder liegen drei neue Bilder auf dem Tisch: ein schwarz-weiß-braun geflecktes Pferd, eine Blumenwiese mit Bienen und Kinder im Sandkasten.
+        "Nanu, das sind ja plötzlich andere Bilder", sagt Papi ganz erstaunt (obwohl er schon bemerkt hat, dass Clara weitere Bilder hinter ihrem Rücken versteckt). */
+        [Mar, Pfe, Blu, Kin],
+        /* "Schau noch mal weg", bittet Clara. Als Papi zum dritten Mal schauen darf, sind fünf Bilder zu sehen: die Blumenwiese und die Stadt 
+        und außerdem noch eine Eisenbahn, eine Katze mit Wollknäuel und eine Familie beim Essen. "Wow, du bist ja eine richtige Zauberin. */
+        [Blu, Sta, Eis, Kat, Fam],
+        % Kannst du das noch mal?" – "Ja." Wieder liegen fünf Bilder auf dem Tisch: die Eisenbahn, die Katze, das Pferd, der Elefant mit der Maus und außerdem ein Sternenhimmel.
+        [Eis, Kat, Pfe, Ele, Ste],
+        /* Toll, gell?", prahlt Clara. – "Also ich glaube, du versteckst was hinter deinem Rücken." – "Ich? Nööö!", tut Clara ganz unschuldig. "Schau noch mal weg."  Als Papi wieder 
+        herschaut, sind die Katze und der Elefant mit Maus verschwunden; dafür sind die Stadt und die Familie beim Essen wieder da und zusätzlich ein Apfel-Birnen-Bananen-Baum.
+        Außerdem steht "Clara" auf, sodass Papi sehen kann, dass sie wirklich nichts versteckt hat. */
+        [Eis, Pfe, Ste, Sta, Fam, Apf] ]) 
+            all_different(Bilder ++ [Rs[Bild] : Bild in Bilder])
+    end,
+    solve(Rs),
+    Found = [0 : _ in 1..N], 
+    foreach(I in 1..N, Found[I] = 0)
+        printf("%25s <=> %18s%n", Str[I], Str[Rs[I]]), Found[Rs[I]] := 1
+    end, nl, fail. /* 
+ */
+/* Auflösung aus Nr. 18:
+Es wird Sonnenschein bei 27 Grad geben, leicht bewölkt sein bei Südwestwind der Stärke 4 */

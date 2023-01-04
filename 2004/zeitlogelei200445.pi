@@ -1,0 +1,34 @@
+/* Zeit Logelei Nr. 2004/45
+https://www.zeit.de/2004/45/Spielen_2fLogelei_45/komplettansicht
+1. Herr von Offengurt wurde als Projektleiter bei einer Firma eingestellt und soll dort ein bereits begonnenes Projekt fortsetzen. 
+In der Firma arbeiten zehn Angestellte, aber nur einige davon arbeiten beim Projekt mit. Dummerweise hat der Vorgänger von Herrn von Offengurt 
+keine brauchbaren Mitarbeiterlisten in seinen Ordnern hinterlassen. Das Einzige, was sich finden ließ, waren folgende Informationen: ...
+Können Sie mit Herrn von Offengurt herausfinden, wer seine Projektmitarbeiter sind? */
+import util, cp.
+main ?=> 
+    Str = ["Frau Klemp", "Frau Norching", "Frau Ronaldi", "Frau Schurbel", 
+           "Herr Gensendorf", "Herr Kleinmuth", "Herr Rasenbauer", "Herr Sommerbruch", "Herr Sonntag", "Herr Zudorf-Kettenmayer"],
+    P = [FK, FN, FR, FS, HG, HK, HR, HSh, HSg, HZ], P :: 0..1, % P[I] = 1 <-> I arbeitet am Projekt mit 
+    HR #= 1 #=> HG #= 0, % »Wenn Herr Rasenbauer am Projekt mitarbeitet, dann aber nicht Herr Gensendorf. 
+    HZ #= 1 #=> (FS #= 1 #\/ HG #= 1), % Wenn Herr Zudorf-Kettenmayer am Projekt mitarbeitet, dann auch Frau Schurbel oder Herr Gensendorf oder beide. 
+    HSg #= 1 #=> FN #= 1, % Wenn Herr Sonntag mitarbeitet, dann auch Frau Norching. 
+    HK #= 0 #=> (HSh + HR #= 1), % Wenn Herr Kleinmuth nicht am Projekt beteiligt ist, dann aber genau einer von Herrn Sommerbruch und Herrn Rasenbauer.
+    HSg #= 1 #\/ HK #= 1, % Herr Sonntag oder Herr Kleinmuth oder beide arbeiten beim Projekt mit. 
+    HSh #= 1 #=> (FN + FS #= 1), % Wenn Herr Sommerbruch beim Projekt mitarbeitet, dann auch entweder Frau Norching oder Frau Schnurbel, nicht jedoch beide.«
+    % Zudem ist noch eine Liste von Paaren beigefügt, mit der Bemerkung: »Von diesen Paaren arbeiten entweder beide beim Projekt mit oder beide nicht.« Die Liste lautet:
+    FR #= HZ, % Frau Ronaldi/Herr Zudorf-Kettenmayer
+    HK #= FK, % Herr Kleinmuth/Frau Klemp
+    FR #= HR, % Frau Ronaldi/Herr Rasenbauer
+    HG #= FS, % Herr Gensendorf/Frau Schnurbel
+    HZ #= FK, % Herr Zudorf-Kettenmayer/Frau Klemp
+    solve(vars(P)),
+    foreach(I in 1..10, P[I] = 1) printf("%s ", Str[I]) end,
+    println("arbeiten am Projekt mit."),
+    fail. /*
+Frau Norching Herr Sommerbruch Herr Sonntag arbeiten am Projekt mit.
+CPU time 0.0 seconds, no more solutions, korrekt */
+
+/* 2. Ein Klassiker: Ein Wanderer möchte nach Balbenhausen wandern. Er kommt auf seinem Weg an eine Weggabelung, an der ein Haus steht, in welchem Zwillingsbrüder wohnen. Von den Zwillingen ist bekannt, dass einer immer die Wahrheit spricht und der andere immer lügt. Einer der Zwillinge, es ist aber nicht klar, welcher der beiden es ist, steht vor dem Haus und grüßt freundlich.
+Wie kann der Wanderer mit nur einer Frage an diesen herausfinden, welcher Weg nach Balbenhausen führt? */
+/* Auflösung aus Nr. 45:
+2. Der Wanderer sollte fragen: "Würde dein Bruder sagen, dass dieser Weg nach Balbenhausen führt?" Lautet die Antwort "Nein", so führt der Weg nach Balbenhausen, lautet die Antwort "Ja", so führt der andere Weg dorthin */

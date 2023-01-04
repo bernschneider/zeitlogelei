@@ -1,0 +1,55 @@
+/* Zeit Logelei Nr. 2004/47 (Achtung 2004/46 ist ein Kreuzzahlrätsel!)
+https://www.zeit.de/2004/47/Spielen_2fLogelei_47/komplettansicht
+Professor Knusi ist bei den Walagasen zu Besuch. Die Walagasen haben eine besondere Eigenheit, wenn es darum geht, Fragen zu beantworten: 
+Sie machen immer genau drei Aussagen. Nun gibt es aber zwei Arten von Walagasen: Die, die börsen, und die, die roffen. Bei 
+Walagasen, die börsen, ist immer genau eine der drei Aussagen richtig. Bei den Walagasen, die roffen, sind null, zwei oder drei Aussagen richtig, aber niemals nur eine.
+Als Professor Knusi eine Gruppe von Walagasen fragt, wer denn nun börst und wer rofft, bekommt er ein wildes Durcheinander an Antworten:
+Wer der acht Walagasen rofft nun, und wer börst? Da Assistent Flusi diese Aufgabe zu schwer war, hat er noch ein paar Nachforschungen bei den Walagasen angestellt. 
+Mit Hilfe dieser Nachforschungen konnte er herausfinden, dass Nurfel börst. Damit war es ihm dann ein Leichtes, die Aufgabe zu lösen. 
+Diese zusätzliche Information ist aber nicht notwendig. Professor Knusi konnte das Rätsel auch ohne sie lösen. */
+import util, cp.
+main ?=> 
+    Str = ["Alfel", "Börf", "Gerfel", "Hurfel", "Knarf", "Nurfel", "Querf", "Surf"],
+    A=1, B=2, G=3, H=4, K=5, N=6, Q=7, S=8,
+    M = new_array(8,3), M :: 0..1, % M[W,I] = 1 <-> W´s I.te Aussage ist richtig 
+    Cnt = [0,0,0,0,0,0,0,0], % zählt die Aussagen von W
+    foreach((W1, W2,V2) in [
+        (Q,G,1), % Querf: »Gerfel börst.«
+        (A,B,1), % Alfel: »Börf börst.«
+        (K,G,0), % Knarf: »Gerfel rofft.«
+        (K,B,0), % Knarf: »Börf rofft.«
+        (G,S,1), % Gerfel: »Surf börst.«
+        (S,K,1), % Surf: »Knarf börst.«
+        (A,Q,0), % Alfel: »Querf rofft.«
+        (Q,K,0), % Querf: »Knarf rofft.«
+        (N,A,0), % Nurfel: »Alfel rofft.«
+        (A,H,0), % Alfel: »Hurfel rofft.«
+        (N,Q,1), % Nurfel: »Querf börst.«
+        (B,S,0), % Börf: »Surf rofft.«
+        (Q,H,0), % Querf: »Hurfel rofft.«
+        (B,A,1), % Börf: »Alfel börst.«
+        (G,A,1), % Gerfel: »Alfel börst.«
+        (S,B,1), % Surf: »Börf börst.«
+        (H,S,1), % Hurfel: »Surf börst.«
+        (G,N,0), % Gerfel: »Nurfel rofft.«
+        (N,B,1), % Nurfel: »Börf börst.«
+        (H,Q,0), % Hurfel: »Querf rofft.«
+        (K,Q,1), % Knarf: »Querf börst.«
+        (S,H,1), % Surf: »Hurfel börst.«
+        (H,K,0), % Hurfel: »Knarf rofft.«
+        (B,Q,1)])% Börf: »Querf börst.«        
+            Cnt[W1] := Cnt[W1] + 1,
+            %  V2=1 <-> eine der drei Aussagen ist richtig, V2=0 <-> 0, 2 oder 3 Aussagen sind richtig:
+            M[W1,Cnt[W1]] #= ((sum(M[W2]) #= 1) #= V2)
+    end,
+    solve(vars(M)),
+    foreach(W in 1..8, sum(M[W]) = 1) printf("%s ", Str[W]) end,
+    println("börsen, die anderen roffen."),
+    fail. /*
+Gerfel Knarf Nurfel Surf börsen, die anderen roffen.
+CPU time 0.001 seconds, no more solutions, korrekt  */
+
+/* Auflösung aus Nr. 45:
+In der ZEIT Nr. 46/04 haben wir durch ein Versehen leider die falsche Auflösung abgedruckt. Hier ist die richtige:
+1. An dem Projekt arbeiten mit: Frau Norching, Herr Sonntag und Herr Sommerbruch.
+2. Der Wanderer sollte fragen: "Würde dein Bruder sagen, dass dieser Weg nach Balbenhausen führt?" Lautet die Antwort "Nein", so führt der Weg nach Balbenhausen, lautet die Antwort "Ja", so führt der andere Weg dorthin */

@@ -1,0 +1,76 @@
+/* Zeit Logelei Nr. 2004/44
+https://www.zeit.de/2004/44/Spielen_2fLogelei_44/komplettansicht
+1. Frauen fragt man nicht nach ihrem Alter. Und wenn doch, dann kann man nie wissen, ob sie die Wahrheit sagen. 
+So zumindest ist es Norbert ergangen, der von fünf Freundinnen wissen wollte, wer wie alt ist. Er hat die folgenden Antworten erhalten: ...
+Norbert ist sich zwar sicher, dass jede der Freundinnen entweder immer lügt oder nie, und außerdem weiß er, dass sie alle verschieden alt sind. 
+Trotzdem findet er nicht heraus, wer die Älteste ist, wer die Zweitälteste und so weiter. */ 
+import util, cp, alphametik. % alphametik ist ein eigenes Modul von PB; liegt im Logelei-Verzeichnis
+main1 ?=> 
+    Str = ["Antonia", "Dorothee", "Miriam", "Susanne", "Verena"], N = len(Str),
+    A=1, D=2, M=3, S=4, V=5,  I=0, % I = ich
+    Jue=1, Ael=(-1), % jünger, älter
+    W  = new_list(N), W :: 0..1, StrW = ["lügt", "sagt die Wahrheit"], % W[I] = 1 <=> I sagt die Wahrheit
+    Al = new_list(N), Al :: 1..N, all_different(Al), % Altersrang (1 = die Jüngste, 5 = die Älteste)
+    foreach((F1, F2,Rel,F3) in [ 
+       (S, I,Ael,A), % Susanne: »Ich bin älter als Antonia.« 
+       (D, I,Ael,M), % Dorothee: »Ich bin älter als Miriam.« 
+       (M, I,Ael,D), % Miriam: »Ich bin älter als Dorothee.« 
+       (S, V,Jue,D), % Susanne: »Verena ist jünger als Dorothee.« 
+       (D, S,Ael,V), % Dorothee: »Susanne ist älter als Verena.« 
+       (V, I,Jue,M), % Verena: »Ich bin jünger als Miriam.« 
+       (M, I,Ael,A), % Miriam: »Ich bin älter als Antonia.« 
+       (D, A,Jue,V), % Dorothee: »Antonia ist jünger als Verena.« 
+       (A, I,Jue,D), % Antonia: »Ich bin jünger als Dorothee.« 
+       (V, D,Ael,S)])% Verena: »Dorothee ist älter als Susanne.«
+       if F2 = I then F2 := F1 end, % Auflösung von "ich"
+       W[F1] #= (Rel * Al[F2] #< Rel * Al[F3])
+    end,
+    /* Später erzählt er seinem Freund Henning die Geschichte. »Vielleicht sollte ich die Freundinnen noch weiter befragen«, 
+       meint er schließlich. Darauf Henning: »Das wird dir nichts nützen. Egal, wie viele Aussagen dieser Art du von den Frauen bekommst, 
+       so wirst du nie die Altersreihenfolge bestimmen können.« »Was kann ich dann machen?« */
+    Al[S] #> Al[M], % Ich weiß zufällig, dass Susanne älter ist als Miriam.
+    % Mit dem, was du bereits weißt, hast du jetzt genug Information, um die Altersreihenfolge erschließen zu können.«  
+    solve(W ++ Al), % Können Sie es auch? Wer lügt, und wer sagt die Wahrheit?
+    Ranking = [(Al[F], F) : F in 1..N].sort(),
+    foreach((R,F) in Ranking) printf("%d. %s %s%n", R, Str[F], StrW[1+W[F]]) end,
+    nl, fail. /* 
+1. Miriam lügt (und ist die Jüngste)
+2. Antonia sagt die Wahrheit
+3. Verena lügt
+4. Dorothee sagt die Wahrheit
+5. Susanne sagt die Wahrheit
+no more solutions, korrekt
+Und woher weiß Henning, dass es nichts bringt, die Freundinnen weiter zu befragen? 
+PB: Es gib dann zwei Lösungen. In der Zweiten ist die Wahrheitsliebe der Freundinnen jeweils genau umgekehrt wie in der Ersten. 
+Die zweite Lösung:
+1. Susanne lügt
+2. Dorothee lügt
+3. Verena sagt die Wahrheit
+4. Antonia lügt
+5. Miriam sagt die Wahrheit
+Ich erhalte damit zwar eine Altersreihenfolge der Freundninnen, nicht aber das Wissen, ob diese aufwärts oder abwärts geht! */
+
+/* 2. Und hier ist die Moral, die Norbert aus dieser Geschichte gezogen hat, in Form einer Alphametik:
+FRAU • ALT 
+---------- 
+AAÜG 
+ ATÜA 
+   ALT 
+    RRN 
+------- 
+ANLÜGEN */
+main2 =>
+       mult(["FRAU", "ALT", "AAÜG", "ATÜA", "ALT", "RRN", "ANLÜGEN"]). /*
+6714 * 193
+-----------
+1158
+ 1351
+   193
+    772
+-----------
+1295802
+no more solutions, korrekt */
+
+/* Auflösung aus Nr. 43:
+1. Der rosende Rusel und der sudende Songing goren norgelnde Hinginen, der zonide Zurbel und der chulchende Cholching rolsinken kurende Humen, und alle anderen kalfuren gurbelnde Wurensen
+2. 9205 + 945 = 10150 */

@@ -1,0 +1,69 @@
+/* Zeit Logelei Nr. 2003/35
+https://www.zeit.de/2003/35/Spielen_2fLogelei_35
+1. "Wenn ich nur wüsste, an welchem Wochentag ich in unser Dorf fahren soll, um all meine Einkäufe zu erledigen", stöhnt die B"uerin, 
+"ich muss zum Uhrmacher, zur Drogerie und zum Fleischer." Ihr Mann erwidert mitfühlend: "Ja, in dieser gottverlassenen Gegend hat es eine Hausfrau nicht einfach."
+Bekümmert fragt die Bäuerin: "Ob es wohl überhaupt einen Einkaufstag gibt, der meinen Wünschen entspricht?"
+Darauf der Bauer: "Ja, es gibt genau einen Wochentag, an dem die drei Läden geöffnet sind." Welchen? */
+import util, cp, alphametik.
+main1 ?=>  
+    Str = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"], 
+    Mo=1, _Di=2, _Mi=3, _Do=4, _Fr=5, Sa=6, So=7,  Dr=1, Fl=2, Uh=3, % Drogerie, Fleischer, Uhrmacher
+    O = new_array(3,7), O :: 0..1, % O[L,T] = Laden L hat an Tag T offen
+    Ot = transpose(O),
+    sum(Ot[So]) #= 0, % 1 Die Bäuerin überlegt nun laut: "Am Sonntag sind natürlich alle drei Geschäfte geschlossen.  ...
+    foreach(T in [Sa, Mo]) at_most(2, Ot[T], 1) end, % Samstag und Montag fallen aus, weil an diesen beiden Tagen mindestens einer der drei Läden geschlossen ist."
+    sum(O[Fl]) #= 5, % 2 Der Bauer ergänzt: "Der Fleischer öffnet seinen Laden an fünf Tagen der Woche. 
+    foreach(T1 in 1..3) sum([O[Fl,T] : T in T1..T1+3]) #< 4 end,  % Aber er ist nicht an vier aufeinander folgenden Tagen der Woche offen."
+    sum(O[Dr]) #= 4, % 3 Die Bäuerin fügt hinzu: "Die Drogerie ist an vier Tagen der Woche offen. 
+    sum(O[Uh]) #= 3, % 4 Der Uhrmacher hält sein Geschäft aber nur an drei Tagen der Woche offen. 
+    foreach(T in 1..4) O[Dr,T] + O[Dr,T+1] + O[Dr,T+2] #< 3 end,  % Die Drogerie ist nicht an drei aufeinander folgenden Tagen offen…"
+    % 5 Der Bauer fällt ihr ins Wort: "An drei aufeinander folgenden Tagen ist dies die Situation: 
+    TU :: 0..6, TD #= (TU + 1) mod 7, TF #= (TU + 2) mod 7, TU1 #= TU+1, TD1 #= TD+1, TF1 #= TF+1, 
+    % 6 Der Uhrmacher hat seinen Laden am ersten Tag geschlossen, 7 die Drogerie ist am zweiten Tag und 8 die Fleischerei am dritten Tag geschlossen. 
+    element(TU1, O[Uh], 0), element(TD1, O[Dr], 0), element(TF1, O[Fl], 0), 
+    foreach(T in 1..5) O[Uh,T] + O[Uh,T+1] #< 2 end, % 9 Übrigens hat der Uhrmacher seinen Laden nicht an zwei aufeinander folgenden Tagen geöffnet."
+    1 #= sum([(sum(Ot[T]) #= 3)  : T in 1..6]), % 10 es gibt genau einen Wochentag, an dem die drei Läden geöffnet sind
+    solve(vars(O) ++ [TU,TD,TF,TU1,TD1,TF1]), 
+    foreach(T in 1..6, sum(Ot[T]) = 3) 
+        printf("Am %s haben alle drei Geschäfte offen.%n", Str[T]) 
+    end, nl, fail. /* 
+Am Dienstag haben alle drei Geschäfte offen.
+no more solutions, korrekt */
+
+/* 2. An die Stelle der drei Fragezeichen sollen drei Zahlen so eingesetzt werden, dass sie von oben nach unten gelesen eine Folge bilden, 
+die nach demselben Gesetz gebildet worden ist wie die – ebenfalls von oben nach unten zu lesenden – Dreierkolonnen vor dieser Spalte.
+Wie muss diese fünfte Kolonne aussehen?
+ 5  1  9  1 ?
+ 4  3  5  7 ?
+ 2  7  3 11 ? */
+ main2 ?=>
+    C = {{5,1,9, 1, _},
+         {4,3,5, 7, _},
+         {2,7,3,11, _}}, Ct = transpose(C),
+    Sign = {{1,_,_}, {1,_,_}, {1,_,_}}, % the 1´s are breaking symmetry
+    Sign :: [-1,1],
+    foreach(Z in 1..3, S in 2..5)
+        C[Z,S] #= abs(X),                   % jede Zahl in einer neuen Spalte ergibt sich als Absolutwert ..
+        scalar_product(Sign[Z], Ct[S-1], X) % .. einer -1/+1-Linearkombination der vorherigen Spalte
+    end,
+    solve(vars(Sign) ++ vars(C)),
+    println(sign=Sign), println(spalte5=Ct[5]), fail. /* 
+    sign = {{1,-1,-1},{1,-1,1},{1,1,-1}}
+    spalte5 = {17,5,3}, no more solutions, korrekt */
+
+/* 3. Und wieder einmal eine Alphametik:
+ZU • VIEL
+LUZIX
+IIIEN
+ZAHLEN */
+main3 ?=>
+    mult(["ZU", "VIEL", "LUZIX", "IIIEN", "ZAHLEN"]). /* 
+58 * 9714
+-----------
+48570
+ 77712
+-----------
+563412
+korrekt */
+
+/* Aufl"sung aus Nr. 34: Im Haus wohnen: Axel, Anna und Astrid Appen. Erich, Irmgard und Inge Erben. Ingo, Elisabeth und Elke Ickel. Oscar, Olga und Ortrud Otto */

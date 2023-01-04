@@ -1,0 +1,39 @@
+/* Zeit Logelei Nr. 2006/31 (Achtung: 2006/32 ist nicht vorhanden)
+https://www.zeit.de/2006/31/Spielen-Logelei-31
+Professor Knusi ist auf Forschungsreise in Barumbien. Dort leben drei Arten von Einwohnern: die Borts, die Sorit und die Otosi, 
+was man diesen aber äußerlich nicht ansehen kann. Zudem ist es dort üblich, entweder immer die Wahrheit zu sagen oder immer zu lügen.
+In Hoskent, der Hauptstadt von Barumbien, trifft Knusi auf eine Gruppe von Barumbianern, von denen er wissen möchte, wer zu welcher Art gehört. 
+Hier die Antworten: .. Wer ist was, und wer lügt? */
+import cp.
+main ?=> 
+    D=1, H=2, Q=3, W=4, Z=5, 
+    Estr = ["D", "H", "Q", "W", "Z"], N = len(Estr), % die Einwohner von Barumbien
+    Wahr = new_list(N), Wahr :: 0..1, % 1 = sagt die Wahrheit
+    Art  = new_list(N), B=1, O=2, S=3, Art :: [B, O, S], 
+    Astr = ["Borts", "Otosi", "Sorit"], % gehört zur Art Borts, Otos bzw. Sorit 
+    foreach((E0,E1,A1) in [
+        (Z,W,B), % Zusel: »Wusel ist ein Borts.« true
+        (W,Q,O), % Wusel: »Qusel ist ein Otosi.« false
+        (H,Z,S), % Husel: »Zusel ist ein Sorit.« false
+        (Q,D,S), % Qusel: »Dusel ist ein Sorit.« false
+        (Z,D,O), % Zusel: »Dusel ist ein Otosi.« true
+        (W,H,S), % Wusel: »Husel ist ein Sorit.« false
+        (H,Q,B), % Husel: »Qusel ist ein Borts.« false
+        (Q,Z,B), % Qusel: »Zusel ist ein Borts.« false
+        (D,W,O), % Dusel: »Wusel ist ein Otosi.« false
+        (W,H,O), % Wusel: »Husel ist ein Otosi.« false
+        (H,D,B), % Husel: »Dusel ist ein Borts.« false
+        (Q,Z,S)])% Qusel: »Zusel ist ein Sorit.« false
+            Wahr[E0] #= (Art[E1] #= A1)
+    end,
+    solve(Wahr ++ Art),
+    foreach(I in 1..N)
+        printf("%susel ist %s und %s.%n", Estr[I], Astr[Art[I]], cond(Wahr[I] = 1, "sagt die Wahrheit", "lügt"))
+    end,
+    nl, fail. /* 
+Dusel ist Otosi und lügt.
+Husel ist Borts und lügt.
+Qusel ist Sorit und lügt.
+Wusel ist Borts und lügt.
+Zusel ist Otosi und sagt die Wahrheit.
+no more solutions, sieht gut aus! */

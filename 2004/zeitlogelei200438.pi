@@ -1,0 +1,41 @@
+/* Zeit Logelei Nr. 2004/38
+https://www.zeit.de/2004/38/Spielen_2fLogelei_38/komplettansicht
+»Was soll ich bloß anziehen?«, klagt Bettina, die in die Disko möchte. »Das meiste ist in der Wäsche. Ich habe nur noch das knappe schwarze Top, 
+das rot glänzende Top und den grünen Pulli für oben und den kurzen blauen Rock, die schwarze Leggings und die orangefarbene Cordhose für unten....
+Nach kurzem Nachdenken meint Hannes: »Dann fällt mir nur noch eine einzige Möglichkeit ein.« Ihnen auch? */
+import util, cp, alphametik.
+main ?=> 
+    Oben=1, Unten=2, Schuhe=3, Handtasche=4, Naegel=5,
+    %                   1                         2                            3                          4
+    Str = [["das knappe schwarze Top,", "das rot glänzende Top,",      "den grünen Pulli,"],                         % oben
+           ["den kurzen blauen Rock,",  "die schwarze Leggings,",      "die orangefarbene Cordhose,"],               % unten
+           ["die eleganten Sandalen",   "die schwarzen Stöckelschuhe", "die weißen Stiefel",         "Turnschuhe"], % Schuhe 
+           ["die rote Handtasche",      "die schwarze Handtasche"],                                                 % Handatsche
+           ["nicht lackieren",          "rot lackieren",               "weiß lackieren"]],                          % Nägel 
+    L = new_list(5), 
+    foreach(I in 1..5) L[I] :: 1..len(Str[I]) end,
+    L[Unten] #= 1 #=> L[Oben] notin [1,2], % Aber der kurze blaue Rock passt weder zum knappen schwarzen noch zum rot glänzenden Top.« 
+    % »Und wo ist das Problem?«, meint ihr Freund Hannes. »Na ja, ich brauche auch noch Schuhe, aber ..
+    L[Unten] #= 1  #=> L[Schuhe] #!= 4, % .. ich kann unmöglich Turnschuhe zum kurzen blauen Rock tragen, 
+    L[Schuhe] #= 1 #=> (L[Unten] #!= 2 #/\ L[Oben] #!= 3), % und die eleganten Sandalen passen weder zu den schwarzen Leggings noch zum grünen Pulli.«
+    % »Aber du hast doch auch noch die schwarzen Stöckelschuhe und die weißen Stiefel.« »Aber ich brauche auch eine Handtasche, ..
+    L[Handtasche] #= 1 #=> L[Schuhe] notin [2,3], % .. und weder die Stöckelschuhe noch die Stiefel passen zur roten Handtasche. 
+    L[Handtasche] #= 1 #=> L[Unten] #!= 3, % Und die orangefarbene Cordhose passt übrigens auch nicht zur roten Handtasche.«
+    % »Und was ist mit deiner anderen Handtasche, der schwarzen?« »Na gut, die habe ich auch noch. Aber wie lackiere ich mir die Fingernägel?«
+    L[Schuhe] #= 4 #=> L[Naegel] #= 1, % »Müssen die denn lackiert werden? Zu Turnschuhen passt das sowieso nicht, und außerdem finde ich, du siehst auch so elegant genug aus.«
+    L[Unten] #>= 2 #=> L[Naegel] #> 1, % »Nicht, wenn ich die schwarze Leggings oder die orangefarbene Cordhose anhabe; dann müssen die Nägel lackiert werden.«
+    L[Naegel] #= 2 #=> L[Handtasche] #!= 2, % »Welche Nagellackfarben hast du denn?« »Nur noch den roten, der nicht zur schwarzen Handtasche passt, 
+    L[Naegel] #= 3 #=> L[Oben] #!= 2, % und den weißen, der nicht zum rot glänzenden Top passt.«
+    L[Handtasche] #= 2 #=> L[Schuhe] #!= 2, % Hannes versucht, hilfreich zu sein: »Du könntest die schwarze Handtasche nehmen und die schwarzen Stöckelschuhe anziehen…«
+    % »Diese Kombination hatte ich schon letzte Woche!« »Na gut, dann eben die schwarze Handtasche und die weißen Stiefel…« »Dann sähe ich ja genauso aus wie Verena!«:
+    L[Handtasche] #= 2 #=> L[Schuhe] #!= 3, 
+    solve(L),
+    print("Bettina muss "), foreach(I in 1..3) printf("%s ", Str[I,L[I]]) end,
+    printf("anziehen, die Nägel %s und die %s mitnehmen.", Str[5,L[5]], Str[4,L[4]]),
+    nl, fail. /* 
+Bettina muss das knappe schwarze Top, die orangefarbene Cordhose, die eleganten Sandalen anziehen, 
+die Nägel weiß lackieren und die die schwarze Handtasche mitnehmen.
+no more solutions, korrekt */
+/* Auflösung aus Nr. 37:
+1. Ein Menü besteht aus Hühnercremesuppe, paniertem Rehrücken, Kaiserrisotto mit Speck, Getreide-Rohkost-Salat und Kokos-Vanille-Joghurt. Das zweite Menü besteht aus klarer Gemüsebrühe, Hähnchen-Cordon-Rouge, Rahmspätzle »Hausfrauen-Art«, Bauernsalat mit Putenbruststreifen und Apfel Helène. Und als vegetarisches Menü gibt es kanadische Frühlingssuppe, Broccoli-Mais-Medaillon, Tiroler Blattspinat, bunten Sommersalat und Waldmeisterpudding
+2. 271 • 296570 = 80370470 */

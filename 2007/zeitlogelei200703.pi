@@ -1,0 +1,34 @@
+/* Zeit Logelei 2007/03 Sechs Freunde im Hotel
+https://www.zeit.de/2007/03/Spielen-Logelei-03
+1. Sechs Freunde sind gemeinsam in Urlaub gefahren und gerade im Hotel angekommen. Nachdem jeder seine Sachen auf sein Zimmer 
+gebracht hat, treffen sie sich wieder in der Lobby und tauschen aus, wer welche Zimmernummer hat. »Das ist ja ein Zufall!«, 
+bemerkt Karen. »Unsere Zimmernummern sind sechs verschiedene dreistellige Zahlen, die alle aus den gleichen Ziffern bestehen.« 
+Daraufhin schauen alle ihre Zimmerschlüssel an und kommentieren die Nummern: .. Wer hat welche Zimmernummer?
+2. Zwei Wochen später erzählt Susanne einem Kollegen die Geschichte. »Wo wart ihr denn in Urlaub?«, fragt dieser. 
+Susanne antwortet mit einer Alphametik: BILD fehlt*/
+import cp.
+main1 ?=>
+    B=1, K=2, H=3, S=4, T=5, W=6,
+    Str = ["Birgit", "Karen", "Holger", "Susanne", "Theresia", "Wolfgang"], % usw.
+    M = new_array(6,3), M :: 1..9, Mvars = vars(M), % die dreistelligen Zimmernummern der 6 Freunde
+    nvalue(3, Mvars), % die Zimmernummern bestehen alle aus den gleichen drei Ziffern 
+    Nr = new_list(6), Nr :: 1..999,
+    foreach(F in 1..6) 
+        to_num(M[F], Nr[F]),
+        all_different(M[F]) % jede Zimmernummer besteht aus diesen drei Ziffern
+    end,
+    all_different(Nr),
+    Nr[S] mod 3 #= 0, % Susanne: »Meine Zimmernummer ist durch drei teilbar.«
+    Nr[W] mod 11 #= 0, % Wolfgang: »Meine durch elf.«
+    Nr[H] mod 8 #= 0, % Holger: »Und meine durch acht.«
+    Nr[T] #= 450 + Nr[K], % Theresia: »Meine Zimmernummer ist um 450 größer als die von Karen.«
+    Nr[B] mod 2 #= 1, % Birgit: »Die Nummer von meinem Zimmer ist ungerade.«
+    Nr[K] #= min(Nr), % Karen: »Und ich bin diejenige von uns sechs mit der kleinsten Zimmernummer.«
+    solve(Mvars ++ Nr),
+    foreach(F in 1..6) printf("%s: %d, ", Str[F], Nr[F]) end, 
+    nl, fail. 
+/* Birgit: 927, Karen: 279, Holger: 792, Susanne: 972, Theresia: 729, Wolfgang: 297.
+CPU time 0.579 seconds, no more solutions, sieht gut aus */
+to_num(List, Num) => % Num = Wert der Liste
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).

@@ -1,0 +1,58 @@
+/* Zeit Logelei Nr. 2005/16 (2005/15 ist ein Kreuzzahlrätsel)
+https://www.zeit.de/2005/16/Spielen_2fLogelei_16/komplettansicht
+Papi, wer sind eigentlich die Vorfahren von Susi?", will Konstantin wissen; Susi ist die Katze, die er letztes Jahr zum Geburtstag bekommen hat. 
+"Das weiß ich auch nicht. Aber vielleicht können wir es herausfinden. Ich werde mal einen Brief an Familie Schenck schicken, von denen wir Susi bekommen haben." 
+Gesagt, getan. Und eine Woche später kommt auch schon die Antwort mit Fotos von sämtlichen Eltern, Großeltern und Urgroßeltern von Susi.
+"Oh, toll", freut sich Konstantin, "und schau mal, auf der Rückseite stehen die Namen. Dann kann ich jetzt einen Stammbaum von Susi malen." – 
+"Da gibt es noch ein Problem", gibt Papi zu bedenken, "du weißt nicht, welche dieser Katzen die Eltern von wem sind." – "Ach, das finde ich schon heraus. 
+Was heißt eigentlich das m und das w hinter den Namen?" – "Vermutlich männlich oder weiblich." – "Na dann ist es ja noch viel einfacher", 
+freut sich Konstantin und beginnt, die Fotos sorgfältig zu studieren. Purr hat den gleichen Fleck auf der Schnauze wie Katja; also ist Katja die Mutter oder die Großmutter von Purr." – 
+"Könnte es nicht auch umgekehrt sein?" – "Nein, bei Katja ist der Fleck deutlicher. Wenn es umgekehrt wäre, wäre der Fleck bei Purr deutlicher." 
+Nach einiger Zeit hat Konstantin eine ganze Liste von Katzenabstammungen zusammengestellt: */
+import util, cp.
+main ?=>      % 1           2        3        4          5          6           7
+    Str = ["Aristoteles", "Cäsar", "Fritz", "Michou", "Peterle", "Romeo",    "Wirbelwind", % 1..7 männlich
+              % 8           9       10       11         12         13          14      15
+           "Cleopatra",  "Julia", "Katja", "Miezi",  "Purr",    "Rapunzel", "Tapsi", "Susi"],     % 8..14 weiblich
+    Kind = new_list(14), Kind :: 1..15,
+    Level = new_list(15), Level :: 0..3, % 0=Susi, 1=ihre Eltern, 2=Großeltern, 3=Urgroßeltern
+    foreach(I in 1..14) element(Kind[I], Level, L1), Level[I] #= L1 + 1 end,
+    foreach(I1 in 1..7,  I2 in 1..7,  I1 != I2) Kind[I1] #!= Kind[I2] end, % die Väter sind eindeutig
+    foreach(I1 in 8..14, I2 in 8..14, I1 != I2) Kind[I1] #!= Kind[I2] end, % die Mütter sind eindeutig
+    foreach((X,Y) in [ % X ist Nachfahre von Y
+        (12,10), % Purr (w) stammt von Katja (w) ab, 
+        ( 9,11), % Julia (w) von Miezi (w), 
+        ( 5, 3), % Peterle (m) von Fritz (m), 
+        ( 9, 2), % Julia (w) von Cäsar (m), 
+        (12, 7), % Purr (w) von Wirbelwind (m), 
+        ( 1,13), % Aristoteles (m) von Rapunzel (w), 
+        ( 6, 4), % Romeo (m) von Michou (m), 
+        ( 9, 8), % Julia (w) von Cleopatra (w), 
+        (14, 2), % Tapsi (w) von Cäsar (m) und 
+        ( 1, 4)])% Aristoteles (m) von Michou (m).
+            K :: 1..14, element(K, Kind, Enkel),
+            Kind[Y] #= X #\/ (Kind[Y] #= K #/\ Enkel #= X)
+    end, 
+    /* "Jetzt kann ich auch noch etwas beitragen", meint der Vater: "Romeo und Julia waren ein Katzenpaar, und Cäsar und Cleopatra auch." "Wieso das denn?" – "Weil das 
+    auch mal Menschenpaare waren." – "Aber nein Papa, Katzen sind doch anders als Menschen! */
+    sum([(Kind[6] #= K) * (Kind[9] #= K) : K in 1..15]) #= 0, % Ich bin mir sicher, dass Romeo und Julia kein Katzenpaar waren, ..
+    sum([(Kind[2] #= K) * (Kind[8] #= K) : K in 1..15]) #= 0, % .. und Cäsar und Cleopatra auch nicht."
+    % Mit diesen Informationen gelingt es Konstantin schließlich, einen Stammbaum von Susi zu rekonstruieren. Gelingt es Ihnen auch? */
+    solve(Kind  ++ Level), % ++ Cnt
+    L = [15], % beginne mit Susi
+    foreach(_ in 1..3) % verfolge ihre Vorfahren über 3 Generationen
+        L1 = [], 
+        foreach(I in L)
+            Vater = find_first_of(Kind[1..7],I), Mutter = 7 + find_first_of(Kind[8..14],I), 
+            printf("%s´s Eltern sind %s und %s.%n", Str[I], Str[Vater], Str[Mutter]),
+            L1 := L1 ++ [Vater, Mutter]
+        end, L := L1 
+    end, fail.  /* 
+Susi´s Eltern sind Aristoteles und Julia.
+Aristoteles´s Eltern sind Romeo und Purr.
+Julia´s Eltern sind Peterle und Tapsi.
+Romeo´s Eltern sind Michou und Rapunzel.
+Purr´s Eltern sind Wirbelwind und Katja.
+Peterle´s Eltern sind Fritz und Cleopatra.
+Tapsi´s Eltern sind Cäsar und Miezi.
+CPU time 0.096 seconds, no more solutions, korrekt */

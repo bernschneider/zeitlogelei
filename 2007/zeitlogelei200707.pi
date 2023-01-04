@@ -1,0 +1,41 @@
+/* Zeit Logelei 2007/07 Kommissar Werner (2007/06 und 2007/08 sind Kreuzzahlrätsel)
+https://www.zeit.de/2007/07/Spielen-Logelei-07
+Gestern hat mich Annemarie angerufen, sie wollte Hilfe beim Umräumen ihrer Wohnung und möchte nur drei Möbel umstellen: 
+das Sofa an die gegenüberliegende Wand, den Schrank auf die andere Seite der Tür und den Tisch um 90 Grad drehen. */
+import cp.
+main ?=> 
+    Schrank = 1, % 0 = links der Tür, 1 = rechts der Tür
+    Sofa = 2,    % 0 = Westwand, 1 = Ostwand
+    Tisch = 3,   % 0 = quer, 1 = längs
+    Str = [["links der Tür", "rechts der Tür"],  ["Westwand", "Ostwand"], ["quer", "längs"]],
+    /* "Was ich erst bei ihr erfahren habe: Davor wollte sie noch sämtliche Kombinationen von Schrank, Tisch und Sofa 
+    einmal sehen«, sagte Bruno zu seiner Freundin. "O je, das macht ja acht Möglichkeiten!" */
+    M = new_array(8,3), M :: 0..1,
+    Code = new_list(8), Code :: 0..7, all_different(Code),
+    foreach(I in 1..8) Code[I] #= 4 * M[I,1] + 2 * M[I,2] + M[I,3] end,
+    /* »Na ja, ich habe es so gemacht, dass ich möglichst wenig Möbel verrücken musste.«
+    »Lass mich raten: Die Ausgangskombination kannte sie schon. Danach hast du für jede neue Kombination nur ein Möbelstück 
+    verrückt, .. */
+    foreach(I in 1..7) sum([(M[I,J] #!= M[I+1,J]) : J in 1..3]) #= 1 end,
+    % und die letzte Kombination war bereits so, wie sie es am Ende haben wollte (alle drei umgestellt):
+    foreach(J in 1..3) M[1,J] #!= M[8,J] end, 
+    % »Ob das Sofa am Anfang an der Ostwand oder an der Westwand stand, verrate ich nicht, ..
+    M[2, Sofa] #= 0, % .. aber bei der zweiten Kombination, stand es an der Westwand ..
+    M[6, Sofa] #= 0, % .. und bei der sechsten Kombination auch. 
+    M[3, Schrank] #= 0, % Der Schrank stand bei der dritten Kombination links der Tür
+    M[4, Tisch] #= 0, M[5, Tisch] #= 1, % Um aus der vierten die fünfte Kombination zu machen, habe ich den Tisch von quer nach längs gedreht
+    solve(vars(M) ++ Code),
+    println("       Schrank      Sofa   Tisch"),
+    foreach(I in 1..8)
+        printf("%d: %15s %8s %s%n", I, Str[1,1+M[I,1]], Str[2,1+M[I,2]], Str[3,1+M[I,3]])
+    end, nl, fail. /*
+       Schrank      Sofa   Tisch
+1: rechts der Tür Westwand quer
+2:  links der Tür Westwand quer
+3:  links der Tür  Ostwand quer
+4: rechts der Tür  Ostwand quer
+5: rechts der Tür  Ostwand längs
+6: rechts der Tür Westwand längs
+7:  links der Tür Westwand längs
+8:  links der Tür  Ostwand längs
+CPU time 0.001 seconds, no more soluions, sieht gut aus! */

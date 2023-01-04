@@ -1,0 +1,32 @@
+/* Zeit Logelei Nr. 2006/05 (2006/04 ist ein Kreuzzahlrätsel)
+https://www.zeit.de/2006/05/Spielen_2fLogelei_05
+Im Wilden Wolf sitzen Hartmut, Tobias und Holger am Stammtisch bei einem Bier. Wie jeden Freitag sind sie dabei, 
+Wetten über die Fußballspiele am nächsten Tag abzuschließen. Dabei ist es Ehrensache, dass man jede Wette annimmt, die einem angeboten wird.
+Am nächsten Abend treffen sich die drei wieder und stellen fest, dass jeder von ihnen gegen jeden der beiden anderen eine Wette gewonnen hat.
+Wie gingen die Fußballspiele aus?  */ 
+import util, cp.
+main ?=> 
+    % Spiele (Gastgeber, Gast):
+    Sp = [("CSC", "FC Berg"), ("TSV Hüttendorf", "SV Unterwald"), ("Union Korb", "TSV Nordring"), ("SV Zahn", "Magern")],
+    Pkt = new_list(4), Pkt :: 0..2, % 0 = der Gastgeber verliert, 1 = unentschieden, 2 = der Gastgeber gewinnt
+    % Holger zu Hartmut: »Ich wette mit dir, dass der CSC gegen den FC Berg unentschieden spielen wird.« -> links vom +
+    % Holger zu Hartmut: »Ich wette mit dir, dass die beiden TSV nicht gewinnen.«                        -> rechts vom +
+    (Pkt[1] #= 1) + (Pkt[2] #!= 2 #/\ Pkt[3] #!= 0) #= 1, % links + rechts #= 1
+    % Holger zu Tobias: »Ich wette mit dir, dass es morgen kein Unentschieden geben wird.«               -> links vom +
+    % Holger zu Tobias: »Ich wette mit dir, dass es morgen die folgenden beiden Ergebnisse geben wird: 
+    % Der TSV Hüttendorf gewinnt gegen den SV Unterwald, und Union Korb gewinnt gegen den TSV Nordring.« -> rechts vom +
+    (sum([(Pkt[I] #= 1) : I in 1..4]) #= 0) + (Pkt[2] #= 2 #/\ Pkt[3] #= 2) #= 1, % links + rechts #= 1
+    % Tobias zu Hartmut: »Ich wette mit dir, dass genau zwei der vier Spiele unentschieden ausgehen.«                               -> LHS
+    % Hartmut zu Tobias: »Ich wette mit dir, dass der SV Zahn gegen Magern oder der SV Unterwald gegen den TSV Hüttendorf gewinnt.« -> RHS
+    (sum([(Pkt[I] #= 1) : I in 1..4]) #= 2) #= (Pkt[4] #= 2 #\/ Pkt[2] #= 0), % LHS #= RHS
+    solve(Pkt),
+    Erg = ["verliert", "spielt unentschieden", "gewinnt"],
+    foreach(I in 1..4) 
+        printf("%s %s gegen %s%n", Sp[I,1], Erg[1+Pkt[I]], Sp[I,2])
+    end, 
+    fail. 
+/* CSC spielt unentschieden gegen FC Berg
+TSV Hüttendorf gewinnt gegen SV Unterwald
+Union Korb gewinnt gegen TSV Nordring
+SV Zahn verliert gegen Magern
+no more solutions, korrekt */

@@ -1,0 +1,34 @@
+/* Zeit Logelei Nr. 2006/45 (Achtung: auf 2006/46 fehlt das Bild)
+https://www.zeit.de/2006/45/Spielen-Logelei-45
+Britta will sich die Fingernägel lackieren. Sie kann sich jedoch nicht entscheiden, welcher Finger welche Farbe bekommen soll. */
+import cp.
+main ?=>   
+   Finger = new_array(2,5), Finger :: 1..5, % Finger[H,F] = Farbe des Fingers F (Daumen = 1, usw.) der Hand H (linke Hand = 1, rechte = 2)
+   % An jeder Hand will sie jede der Farben Grün, Hellblau, Orange, Pink und Gold einmal verwenden:
+   Gr=1, _Hb=2, Or=3, Pi=4, Go=5, foreach(H in 1..2) all_different(Finger[H]) end,
+   Str = ["Gruen", "Hellblau", "Orange", "Pink", "Gold"],
+   % »Das letzte Mal hatte ich mir die Finger symmetrisch lackiert«, sagt Britta, »diesmal soll kein Finger die gleiche Farbe haben wie der entsprechende Finger der anderen Hand.« – 
+   foreach(F in 1..5) Finger[1,F] #!= Finger[2,F] end,
+   % »Zeig mal, welche Farben du hast«, bittet ihre Freundin Tina. »Hm, Grün und Orange passen aber nicht zusammen.« – 
+   Kombi = new_list(8), Kombi :: 8..34, % Liste aller Farbkombinationen (6 * kleinere + größere)
+   foreach(H in 1..2, F in 1..4) 
+       Kombi[4 * (H-1) + F] #= 6 * min(Finger[H,F], Finger[H,F+1]) + max(Finger[H,F], Finger[H,F+1]) 
+   end,
+   count(6 * Gr + Or, Kombi, 0), % »Stimmt. Dann sollte ich weder einen grünen neben einem orange Fingernagel haben .. 
+   count(6 * Pi + Go, Kombi, 0), % .. noch einen goldenen neben einem pinkfarbenen
+   % Und damit es schön bunt wirkt, sollte von den restlichen Farbkombinationen auch keine doppelt vorkommen.« 
+   all_different(Kombi),
+   % Nachdem Britta ein Weilchen abwechselnd auf ihre Finger und auf den Nagellack geschaut hat, meint sie schließlich: 
+   Finger[2,4] #= Go, % »Der Finger mit dem Ehering (der rechte Ringfinger) sollte golden werden. Alles andere passt nicht.« 
+   % Tina meint: »Rolf sagt doch immer, du hättest einen grünen Daumen. Findest du nicht, dass du einen der Daumen grün lackieren solltest?« – »Gute Idee. 
+   Finger[1,1] #= Gr #\/ Finger[2,1] #= Gr,
+   solve(Finger),
+   % Und dann steht jetzt auch fest, wie ich die Finger lackiere.« Wie? 
+   foreach(H in 1..2)
+       printf("%s Hand (vom Daumen aus): ", cond(H = 1, "Linke ", "Rechte")),
+       foreach(F in 1..5) printf("%8s|", Str[Finger[H,F]]) end, nl
+   end, 
+   nl, fail. /*
+Linke  Hand (vom Daumen aus):    Gruen|    Pink|  Orange|Hellblau|    Gold|
+Rechte Hand (vom Daumen aus):     Pink|Hellblau|   Gruen|    Gold|  Orange|
+CPU time 0.003 seconds, no more solutions, korrekt */

@@ -1,0 +1,43 @@
+/* Zeit Logelei Nr. 2005/02
+https://www.zeit.de/2005/02/Spielen_2fLogelei_02/komplettansicht
+Maxim und Sophia bauen ein tolles Schienennetz mit ihrer neuen Holzeisenbahn. Leider sind ihnen die Brückenstützpfeiler ausgegangen, 
+sodass sie auf Bücher aus Papis Regal zurückgreifen müssen. Nach einer Weile haben sie genug gespielt und wollen die Bücher zurückstellen 
+– am besten wieder genau so, wie sie vorher standen, damit Papi nichts merkt. Die acht Bücher standen zwar alle nebeneinander auf dem 
+untersten Regalbrett, aber leider erinnern sich weder Maxim noch Sophia so richtig daran, in welcher Reihenfolge sie standen.
+Während sie gemeinsam versuchen, die Reihenfolge zu rekonstruieren, und dabei die Bücher immer wieder umsortieren, fallen die folgenden Aussagen:
+... In dem Moment ruft Kirstin, die große Schwester, die vom Nebenzimmer aus alles gehört hat: »Ich weiß, wie die Bücher standen!« Wissen Sie es auch? */
+import cp.
+neben(Pos,X,Y) => abs(Pos[X] - Pos[Y]) #= 1.
+main ?=>
+    Pos = new_list(8), Pos :: 1..8, assignment(Pos, Buch), % Pos = Position der 8 Bücher auf dem Regal, Buch = Buch auf Position X
+    %                           1                                              2                                        3                                       4
+    StrB = ["das antike Buch mit den vergilbten Seiten",  "das blaue, auf dem außen gar nichts steht", "das Buch, was breiter ist als hoch", "das Buch, das noch gar nicht ausgepackt ist", 
+    %                           5                                          6                                      7                                      8
+            "das Buch, das schon fast auseinander fällt", "das Buch mit dem Baum vorne drauf",         "das kleine dünne gelbe",             "der fette schwarze Wälzer"],
+    neben(Pos,2,5), % Maxim: »Ich bin mir sicher, dass das blaue Buch, auf dem außen überhaupt nichts steht (2), neben dem Buch stand, das schon fast auseinander fällt (5).«
+    % Sophia (während sie ein Buch wieder umsortiert, das Maxim gerade erst ins Regal gestellt hat): 
+    Pos[6] #!= Pos[1] + 1, % »Das Buch mit dem Baum vorne drauf (6) war doch gar nicht direkt rechts neben dem antiken Buch mit den vergilbten Seiten (1). 
+    Pos[6] #< Pos[4], % Außerdem war es (6) weiter links als das Buch, das noch gar nicht ausgepackt ist (4).«
+    Pos[1] #< Pos[3], % Maxim: »Das antike Buch mit den vergilbten Seiten (1) stand weiter links im Regal als das, was breiter ist als hoch (3).«
+    Pos[6] #> Pos[8], % Sophia: »Und das Buch mit dem Baum darauf (6) war weiter rechts als der fette schwarze Wälzer (8).«
+    Pos[8] #!= Pos[1] + 1, % Maxim: »Wenn der fette schwarze Wälzer (8) neben dem Buch mit den vergilbten Seiten (1) stand, dann aber links davon und nicht rechts.« => nicht direkt rechts davon:
+    Pos[4] #> Pos[2], % Sophia: »Das noch verpackte Buch (4) stand weiter rechts als das blaue, auf dem außen gar nichts steht (2), ..
+    Pos[4] #< Pos[7], % .. aber weiter links als das kleine dünne gelbe (7).« (Sie stellt ein Buch um.)
+    abs(Pos[3] - Pos[4]) #!= 1, % Maxim: »Aber neben dem Buch, das breiter ist als hoch (3), war es (4) nicht.« (Er nimmt es wieder heraus.)
+    neben(Pos,5,3), % Sophia: »Von dem Buch, das schon fast auseinander fällt (5), weiß ich aber, dass es neben dem stand, das breiter als hoch ist (3).« (Sie stellt ein anderes Buch in die Lücke.)
+    Pos[6] + 1 #!= Pos[4], % Maxim: »Moment! Das unausgepackte Buch (4) stand nicht rechts neben dem mit dem Baum (6).« PB: gemeint ist "nicht direkt rechts"    
+    solve(Pos ++ Buch),
+    foreach(I in 1..8)
+        println(StrB[Buch[I]])
+    end, nl, fail. /* 
+der fette schwarze Wälzer
+das Buch mit dem Baum vorne drauf
+das antike Buch mit den vergilbten Seiten
+das Buch, was breiter ist als hoch
+das Buch, das schon fast auseinander fällt
+das blaue, auf dem außen gar nichts steht
+das Buch, das noch gar nicht ausgepackt ist
+das kleine dünne gelbe
+CPU time 0.0 seconds, no more solutiions, korrekt */
+/* Auflösung aus Nr. 1:
+Anhorni und Psachelio sind die beiden Kumalen, die mal lügen und mal die Wahrheit sagen. Sechona und Moffin lügen immer, die anderen drei sagen immer die Wahrheit */

@@ -1,0 +1,46 @@
+/* Zeit Logelei Nr. 2006/37 Nasenwärmer
+https://www.zeit.de/2006/37/Spielen-Logelei-37
+Welche Nasenwärmer können die Mädels bei wem erwarten? */
+import util, cp.
+main ?=> 
+    % Klaus, Martin, Daniel und Roland haben sich je einen dieser neuen Nasenwärmer gekauft, auf die die Mädels neuerdings so stehen. 
+    PK=1, PM=2, PD=3, PR=4, N = 4, SP = ["Klaus", "Martin", "Daniel", "Roland"],
+    % Einer der Nasenwärmer ist rosa, einer grünlich, einer beige und einer weiß.
+    FR=1, FG=2, FB=3, FW=4, SF =  ["rosa", "grünlichen", "beigen", "weißen"], 
+    Farbe = new_list(N), Farbe :: 1..4, assignment(Farbe,RFarbe),
+    % Auch die Materialien der Nasenwärmer sind alle unterschiedlich: Einer ist aus Leder, einer aus Hanfgarn, einer aus Seide und einer aus Baumwolle. 
+    ML=1, MH=2, MS=3, MB=4, SM = ["Leder", "Hanfgarn", "Seide", "Baumwolle"], 
+    Material = new_list(N), Material :: 1..4, assignment(Material,RMaterial),
+    % Und jeder der Nasenwärmer hat eine besondere Eigenschaft: Einer hat nach außen abstehende Dornen, einer ist größenverstellbar, 
+    % einer ist innen wattiert, und einer ist mit einer Vorrichtung ausgestattet, damit man damit auch Brillen tragen kann. 
+    ED=1, EG=2, EW=3, EB=4, SE = ["nach außen abstehende Dornen", "größenverstellbar", "innen wattiert", "brillengeeignet"], 
+    Eigenschaft = new_list(N), Eigenschaft :: 1..4, assignment(Eigenschaft,REigenschaft),
+    % Der Nasenwärmer aus Baumwolle wurde weder von Klaus gekauft, noch ist er beige. Er ist auch nicht wattiert. 
+    PBaumwolle #= RMaterial[MB], PBaumwolle #!= PK, 
+    element(PBaumwolle, Farbe, FBaumwolle), FBaumwolle #!= FB, 
+    element(PBaumwolle, Eigenschaft, EBaumwolle), EBaumwolle #!= EW, 
+    % Der Nasenwärmer mit abstehenden Dornen ist aus Hanfgarn gefertigt. Er ist aber weder von grünlicher Farbe, noch wurde er von Klaus gekauft. 
+    PDornen #= REigenschaft[ED], 
+    element(PDornen, Material, MH),  
+    element(PDornen, Farbe, FDornen), FDornen #!= FG, 
+    PDornen #!= PK,
+    % Der beige Nasenwärmer wurde weder von Martin gekauft, noch hat er Dornen. 
+    Pbeige #= RFarbe[FB], Pbeige #!= PM, 
+    element(Pbeige, Eigenschaft, Ebeige), Ebeige #!= ED, 
+    % Klaus hat weder den beigefarbenen Nasenwärmer noch den aus Leder gekauft. 
+    Farbe[PK] #!= FB, Material[PK] #!= ML,
+    % Der wattierte Nasenwärmer ist nicht aus Seide.
+    Pwattiert #= REigenschaft[EW], 
+    element(Pwattiert, Material, Ewattiert), Ewattiert #!= MS,  
+    % Daniel hat sich den weißen Nasenwärmer gekauft, aber weder den mit Brillenhalter noch den aus Hanfgarn. 
+    Farbe[PD] #= FW, Eigenschaft[PD] #!= EB, Material[PD] #!= MH, 
+    solve(Farbe ++ Material ++ Eigenschaft ++ RFarbe ++ RMaterial ++ REigenschaft),
+    foreach(P in 1..N)
+       printf("%s hat sich den %s Nasenwärmer aus %s gekauft (%s).%n", SP[P], SF[Farbe[P]], SM[Material[P]], SE[Eigenschaft[P]])
+    end, 
+    nl, fail. /* 
+Klaus hat sich den grünlichen Nasenwärmer aus Seide gekauft (brillengeeignet).
+Martin hat sich den rosa Nasenwärmer aus Hanfgarn gekauft (nach außen abstehende Dornen).
+Daniel hat sich den weißen Nasenwärmer aus Baumwolle gekauft (größenverstellbar).
+Roland hat sich den beigen Nasenwärmer aus Leder gekauft (innen wattiert).
+CPU time 0.001 seconds, no more solutions, sieht gut aus! */

@@ -1,0 +1,34 @@
+/* Zeit Logelei Nr. 2003/28
+https://www.zeit.de/2003/28/Spielen_2fLogelei_28
+1. "Wir haben Grund zum Feiern", erklärt der Musiklehrer stolz, "denn 70 Prozent der Schüler und Schülerinnen unseres Gymnasiums nehmen an meinem gemischten Chor teil."
+"Dann hätte ich mehr Grund zu einem Fest", erwidert die Kunsterzieherin, spitz wie immer, "denn 75 Prozent unserer Schüler und Schülerinnen sind in meiner 
+Arbeitsgemeinschaft für Batik – und zwar mit Freude." "Das ist noch gar nichts", meint die Lehrerin für den Werkunterricht, "denn 80 Prozent unserer Schüler und Schülerinnen 
+nehmen an meinem Töpferkurs teil." "Nun gebt mal nicht so an", wirft der Sportlehrer ein, "85 Prozent der Schülerschaft sind Mitglieder unseres Ruderclubs."
+Der Mathelehrer kann da natürlich nicht mithalten. Dafür rächt er sich so. "Falls Ihre Prozentzahlen stimmen, kann ich Ihnen dies verraten: 
+Der kleinstmögliche Prozentsatz der Schüler und Schülerinnen unserer Anstalt, die an allen vier der von Ihnen genannten Arbeitsgemeinschaften teilnehmen, 
+ist exakt so groß wie jener der Teilnehmer an meiner AG Mengenlehre." Seither zerbrechen sich die anderen Pädagogen den Kopf darüber, wie viel Prozent der 
+Schülerschaft an dieser Arbeitsgemeinschaft teilnehmen. Nämlich? */
+import util, cp, alphametik.
+main1 => 
+    P = [70, 75, 80, 85], % die Prozentsätze die vier Lehrer
+    while(len(P) > 1) % wiederhole rekursiv:
+        S := P[1] + P[2] - 100,   % die minimale Überlappung der ersten beiden AGs aus der Liste
+        P := [S] ++ tail(tail(P)) % ersetzt die ersten beiden Elemente der Liste
+    end,
+    printf("%d Prozent machen Mengenlehre.%n", P[1]). /*
+10 Prozent machen Mengenlehre, korrekt */
+
+/* 2. Vier Aufstellung – sie sind allesamt begeisterte Tischtennisspieler – haben ein Turnier für gemischte Doppel geplant und dafür die folgenden, etwas verschrobenen Regeln aufgestellt:
+An jedem Turniertag sollen genau zwei Spiele stattfinden. Allerdings sind sie besser beim Tischtennisspielen als beim logischen Denken. 
+Deshalb brauchen Sie Hilfe: Wie viele schweißtreibende Spieltage müssen sie für das Turnier insgesamt vorsehen? */
+main2 ?=>
+    % Mann 1 ist mit Frau 1 verheiratet, Mann 2 mit Frau 2, usw.:
+    Aufstellung = [M1, F1, M2, F2], Aufstellung :: 1..4, % M1 & F1 spielen gegen M2 & F2
+    M1 #!= F1, M2 #!= F2, % Kein Ehepaar darf als ein Team antreten. 
+    % Aber jeder Mann muss mit jeder der drei anderen Ehefrauen als Partnerin je einmal gegen jedes ebenso zusammengesetzte Paar spielen:
+    M1 #< M2, F1 #!= F2, % #< is removing symmetry
+    Sols = solve_all(Aufstellung),
+    printf("Es werden %.1f Spieltage gebraucht.", len(Sols) / 2). /*
+Es werden 21.0 Spieltage gebraucht, korrekt */
+
+/* Aufl"sung aus Nr. 27: 1. Peter erwarb 6 Eier mehr als Britta: Dienstag hat eine Person x Nougateier f"r y Cent gekauft, also f"r alle Eier 2867=(x+1)(y-20)+xy+(x-1)(y+20) Cent bezahlt; xy=969 ist 3 mal 17 mal 19. Da die Unterschiede "gering" waren, kauften f"r je 28,67 Euro Britta 51 und Peter 57 Eier. 2. 615 • 642 = 394830 */

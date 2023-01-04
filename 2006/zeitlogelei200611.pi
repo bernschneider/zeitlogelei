@@ -1,0 +1,49 @@
+/* Zeit Logelei Nr. 2006/11 (2006/12 ist ein Kreuzzahlrätsel)
+https://www.zeit.de/2006/11/Spielen_2fLogelei_11
+Trucker Bob ist mit seinem Schwertransporter von Alice Springs aus unterwegs zum 340 Kilometer entfernten Ayers Rock. 
+Sein Freund Ron fährt heute genau dieselbe Strecke, allerdings in entgegengesetzter Richtung. 
+Wie üblich fahren die beiden die gesamte Strecke mit konstanter Geschwindigkeit; allerdings sind die beiden Trucks unterschiedlich schnell. 
+Die beiden haben eine kleine GPS-Funk-Anlage in ihrem Truck, sodass Sie immer wissen, wo sich der jeweils andere aufhält. 
+Wer von den beiden wird zuerst am jeweiligen Zielort sein?
+Alice Springs .......................... 195 km (T[1]).................... Ayers Rock (340 km) */
+import cp.
+main ?=>
+    Len = 340 * 1000, % 1 km = 1000 m
+    T  = new_list(7), T  :: 0..10000, % Zeit in Zehntel-Minuten nach Start von Bob
+    TR0 :: 0..10*1000,                % Ron startet TR0 Zehntel-Minuten nach Bob
+    SB = new_list(7), SB :: 1..1000*1000, % Bob´s Entfernung von Alice Springs in m zum Zeitpunkt I
+    SR = new_list(7), SR :: 1..1000*1000, % Ron´s Entfernung von Ayers Rock in m zum Zeitpunkt I
+    VB = 60 * 1000 // 60 // 10,       % Bobs Truck fährt 60 Kilometer pro Stunde = 100 m/(min/10): 
+    VR :: 1..1000,                    % Ron fährt konstant die Geschwindigkeit VR (in m/(min/10))
+    DT = new_list(7),                 % Delta Ron - Bob (von Alice Springs gezählt; Abstand mit Vorzeichen)
+    foreach(I in 1..7)
+        SB[I] #= VB * T[I],           % Strecke = Geschwindigkeit * Zeit
+        SR[I] #= VR * (T[I] - TR0), 
+        DT[I] #= Len - SR[I] - SB[I], % = Ron - Bob (Ron´s Entfernung con Alice Springs = Len - SR[I])
+        SB[I] + DT[I] + SR[I] #= Len  % nachdem Bob und Ron sich getroffen haben, wird DT negativ
+    end,
+    T[1] #= 10 * (3 * 60 + 15),   % Als Bob genau 3 1/4 Stunden unterwegs ist, funkt er Ron (der auch schon unterwegs ist) an ..
+    SB[2] + SR[1] #= Len,         % T=2: »Wenn ich an dem Ort bin, wo du dich gerade aufhältst, ...
+    abs(DT[2]) #= 4 * abs(DT[3]), % ..werden wir genau den vierfachen Abstand voneinander haben ...
+    SB[1] + SR[3] #= Len,         % T=3: wie zu dem Zeitpunkt, an dem du an dem Ort bist, wo ich mich gerade aufhalte.«
+    T[4] #= T[1] + 10 * 15,       % T=4: Genau 15 Minuten später funkt Ron zurück: »Du hast Recht!
+    SB[5] + SR[4] #= Len,         % T=5: Und wenn du da sein wirst, wo ich mich jetzt befinde, werde ich ..
+    SR[5] + abs(DT[5]) #= Len,    % .. genauso weit von Alice Springs entfernt sein, wie du dann von mir entfernt bist.«
+    SB[6] #= Len,                 % bei I=6 kommt Bob beim Ayers Rock an
+    SR[7] #= Len,                 % bei I=7 kommt Ron in Alice Springs an
+    solve([VR, TR0] ++ T ++ SB ++ SR ++ DT),
+    printf("Ron fährt %3.1f Minuten nach Bob los und zwar mit %.0f km/h%n", TR0 / 10, VR * 600 / 1000),
+    foreach(I in 1..7) 
+        printf("T = %5.1f Minuten: Bob %5.1f km, Ron %5.1f km, Abstand %6.1f km%n", T[I]/10, SB[I]/1000, SR[I]/1000, DT[I]/1000)
+    end,
+    nl, fail. 
+/* 
+Ron fährt 180.0 Minuten nach Bob los und zwar mit 120 km/h
+T = 195.0 Minuten: Bob 195.0 km, Ron  30.0 km, Abstand  115.0 km
+T = 310.0 Minuten: Bob 310.0 km, Ron 260.0 km, Abstand -230.0 km
+T = 252.5 Minuten: Bob 252.5 km, Ron 145.0 km, Abstand  -57.5 km
+T = 210.0 Minuten: Bob 210.0 km, Ron  60.0 km, Abstand   70.0 km
+T = 280.0 Minuten: Bob 280.0 km, Ron 200.0 km, Abstand -140.0 km
+T = 340.0 Minuten: Bob 340.0 km, Ron 320.0 km, Abstand -320.0 km
+T = 350.0 Minuten: Bob 350.0 km, Ron 340.0 km, Abstand -350.0 km
+CPU time 0.307 seconds, no more solutions, korrekt */

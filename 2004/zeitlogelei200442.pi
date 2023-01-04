@@ -1,0 +1,29 @@
+/* Zeit Logelei Nr. 2004/42 Achtung 2004/41 ist ein Kreuzzahlrätsel!)
+https://www.zeit.de/2004/42/Spielen_2fLogelei_42/komplettansicht
+Herr und Frau Treborn möchten ihre Küche völlig neu einrichten. Die Küchenzeile soll aus einem Herd, einem Kühlschrank, einem Geschirrschrank (mit Arbeitsplatte), 
+einer Spülmaschine und einem Spülbecken bestehen, die alle in einer Reihe stehen. Ganz rechts (von der Tür aus gesehen) in der noch leeren Küche befindet sich ein Fenster.
+... Wissen Sie, an welche Küchenanordnung Frau Treborn denkt? */    
+import util, cp.
+main ?=> % tbd
+    Str = ["Geschirrschrank", "Herd", "Kühlschrank", "Spülbecken", "Spülmaschine"], N = len(Str),
+    Nr  = [Gs, Hd, Ks, Sb, Sm], Nr :: 1..N, all_different(Nr), % Reihenfolge von links nach rechts
+    abs(Sm - Gs) #= 1, % Frau Treborn meint: »Die Spülmaschine und der Geschirrschrank sollten nebeneinander stehen, damit man eine große Arbeitsplatte hat.«
+    Gs #< Sb, % Herr Treborn aber kocht auch gern und möchte ein Wörtchen mitreden: »Der Geschirrschrank muss unbedingt weiter links hinkommen als das Spülbecken. Das war schon in unserer vorigen Küche so, daran habe ich mich gewöhnt.«
+    % Man wälzt Kataloge, man besucht Möbelhäuser. Schließlich fällt die Entscheidung für das eine oder andere Stück. Doch Herr Treborn kommt schon wieder ins Grübeln: 
+    Ks #< Hd, % »Der neue Kühlschrank ist so hoch. Wenn er weiter rechts stünde als der Herd, hätte man beim Kochen gar kein Licht vom Fenster. So kann ich nicht arbeiten!«
+    abs(Ks - Sm) #> 1, % Frau Treborn: »Allerdings sollte der Kühlschrank auch nicht neben der Spülmaschine stehen, weil Spülmaschinen immer so viel Feuchtigkeit machen und das nicht gut für Kühlschränke ist.«
+    Sm #< Sb #=> Sb #> Hd, % Herr Treborn: »So rein gefühlsmäßig finde ich: Wenn die Spülmaschine weiter weg vom Fenster steht als das Spülbecken, dann sollte nicht auch noch das Spülbecken weiter weg vom Fenster stehen als der Herd.«
+    % Als Herr und Frau Treborn nach einiger Überlegung keine weiteren Bedingungen mehr finden, denen die Küche genügen muss, legen sie eine Reihenfolge für die Einrichtung fest.
+    % Aber gerade als sie dem Handwerker Bescheid geben wollen, platzt die kleine Emelie mit ein paar skurrilen Sonderwünschen rein: 
+    % »Ich wünsche mir, dass der Geschirrschrank weiter links ist als der Kühlschrank und der Herd weiter rechts als das Spülbecken.«
+    Gs #< Ks #\/ Hd #> Sb, % Da fängt Frau Treborn noch einmal an nachzudenken. Schließlich meint sie: »Beide Wünsche können wir dir nicht erfüllen, Emelie, aber immerhin einen.«
+    solve(Nr),
+    Ranking = [(Nr[I], I) : I in 1..N].sort(),
+    foreach((R,I) in Ranking) printf("%d. %s%n", R, Str[I]) end,
+    nl, fail. /* 
+1. Spülmaschine
+2. Geschirrschrank
+3. Kühlschrank
+4. Herd
+5. Spülbecken
+no more solutions, korrekt */

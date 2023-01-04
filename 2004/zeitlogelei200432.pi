@@ -1,0 +1,91 @@
+/* Zeit Logelei Nr. 2004/32 (2004/31 fehlt, 2004/33 ist ein Kreuzzahlrätsel!)
+https://www.zeit.de/2004/32/Spielen_2fLogelei_32/komplettansicht
+1. Die kleine Bettina möchte, während ihre Mutter den Nachmittag bei einer Freundin verbringt, einen Mürbteigkuchen backen. 
+Sie weiß, dass der Teig aus Eiern, Butter und Mehl besteht, aber sie weiß nicht, wie viel man jeweils braucht. 
+Allerdings hat sie ihrer Mutter schon oft genug zugeschaut, um einem Teig anzusehen, was fehlt.
+Sie fängt also damit an, den Rest der angebrochenen Butter (150 Gramm), einen Messbecher voll Mehl (225 Gramm) und ein Ei zusammenzumischen. 
+Nach dem Verrühren stellt sie fest: Das Verhältnis von Butter zu Mehl stimmt schon, nur enthält der Teig zu viel Ei. 
+Also gibt sie einen weiteren Messbecher Mehl und einen weiteren Block Butter (250 Gramm) hinzu. 
+Jetzt ist der Teig natürlich wieder viel zu trocken, also gibt sie auch noch ein zweites Ei dazu. 
+Danach stimmt das Verhältnis von Ei zu Butter, aber es fehlt Mehl. Also schüttet Bettina einen dritten Messbecher Mehl dazu.
+So gibt sie immer weiter ein Ei, einen Block Butter oder einen Messbecher voll Mehl dazu, bis nach einiger Zeit der Teig endlich richtig aussieht. 
+Dann kommt die Mutter heim, und nach dem ersten Schreck beschließt sie, dass viele Gäste zu einer großen Kuchenfeier eingeladen werden müssen.
+Warum? Wie viel der verschiedenen Zutaten hat Bettina insgesamt verwendet? */
+import util, cp.
+main1 ?=> 
+    % Normalisere die Mengenverhältnisse:
+    Standard = [1, 200, 300], % 1 Ei entspricht 200g Butter und 300g Mehl (Standardmengen)
+    println(" 1 Ei,    150g Butter,  225g Mehl im Kuchen"),
+    Kuchen =  [4, 3, 3], % Startmengen als aktuelle Menge (1, 150g, 225g) / Standardmenge * 4
+    Portion = [4, 5, 3], % Größe einer Portion (1, 250g bzw. 225g) / Standardmenge * 4
+    while( min(Kuchen) != max(Kuchen) ) % solange die Mengenverhälnisse nicht ausgeglichen sind
+        foreach(I in 1..3, Kuchen[I] = min(Kuchen)) Kuchen[I] := Kuchen[I] + Portion[I] end,
+        printf("%2d Eier, %4dg Butter, %4dg Mehl im Kuchen%n", Kuchen[1] // 4, Kuchen[2] * Standard[2] // 4, Kuchen[3] * Standard[3] // 4)
+    end. /* 
+ 1 Ei,    150g Butter,  225g Mehl im Kuchen
+ 1 Eier,  400g Butter,  450g Mehl im Kuchen
+ 2 Eier,  400g Butter,  675g Mehl im Kuchen
+ 3 Eier,  650g Butter,  900g Mehl im Kuchen
+ 4 Eier,  650g Butter, 1125g Mehl im Kuchen
+ 4 Eier,  900g Butter, 1350g Mehl im Kuchen
+ 5 Eier, 1150g Butter, 1575g Mehl im Kuchen
+ 6 Eier, 1150g Butter, 1800g Mehl im Kuchen
+ 6 Eier, 1400g Butter, 2025g Mehl im Kuchen
+ 7 Eier, 1400g Butter, 2250g Mehl im Kuchen
+ 8 Eier, 1650g Butter, 2475g Mehl im Kuchen
+ 9 Eier, 1900g Butter, 2700g Mehl im Kuchen
+10 Eier, 1900g Butter, 2925g Mehl im Kuchen
+10 Eier, 2150g Butter, 3150g Mehl im Kuchen
+11 Eier, 2150g Butter, 3375g Mehl im Kuchen
+11 Eier, 2400g Butter, 3375g Mehl im Kuchen
+12 Eier, 2400g Butter, 3600g Mehl im Kuchen
+CPU time 0.001 seconds, sieht gut aus, ist aber ein sehr großer Kuchen! */
+
+/* 2. DIESER KASTEN ENTHÄLT ............. I, ............. N UND ........... R.
+Schreiben Sie Zahlen (ausgeschrieben) in die Lücken, sodass der Satz stimmt. */
+main2 ?=>
+    Zahlen = ["EINS", "ZWEI", "DREI", "VIER", "FÜNF", "SECHS", "SIEBEN", "ACHT", "NEUN", "ZEHN"], N = len(Zahlen),
+    FZahl = {freq(Zahl) : Zahl in Zahlen}.transpose(), % FZahl[J,I] = Häufigkeit von J im I.ten Zahlwort
+    Kasten = "DIESER KASTEN ENTHÄLT ............. I, ............. N UND ........... R",
+    FKasten = freq(Kasten),
+    L = new_list(3), L :: 1..N, % ausgewählte Zahlen für die drei Lücken
+    Cnt = new_array(3,3), % Cnt[J,K] zählt die Vorkommen von J im K.ten Zahlwort des Kastens 
+    foreach(J in 1..3, K in 1..3) element(L[K], FZahl[J], Cnt[J,K]) end, 
+    foreach(J in 1..3) L[J] #= FKasten[J] + sum(Cnt[J]) end,
+    solve(L ++ vars(Cnt)),
+    Final = "DIESER KASTEN ENTHÄLT " ++ Zahlen[L[1]] ++ " I," ++ Zahlen[L[2]] ++ " N UND " ++ Zahlen[L[3]] ++ " R",
+    println(Final),
+    fail. /*
+DIESER KASTEN ENTHÄLT VIER I,FÜNF N UND VIER R
+CPU time 0.001 seconds, no more solutions, sieht gut aus! */
+freq(Str) = Res =>
+    Chr = ['I', 'N', 'R'], TotalFq = {0, 0, 0}, % Frequenz der drei Buchstaben
+    foreach(C in Str, I in 1..3, C = Chr[I]) TotalFq[I] := TotalFq[I] + 1 end,
+    Res = TotalFq.
+
+/* 3. Bernd möchte Anne anrufen, aber er hat ihre Telefonnummer vergessen. Dabei hatte ihm Anne doch noch erzählt, 
+wie man sie sich leicht merken kann: Sie besteht aus drei hintereinander geschriebenen Kubikzahlen, die alle maximal 
+dreistellig sind … aber welche? Bernd weiß nur noch, dass die Telefonnummer siebenstellig ist und dass die erste 
+und die letzte Ziffer die einzigen beiden sind, die gleich sind. Können Sie Bernd helfen? */
+main3 ?=>
+    Cnum = new_list(3), Cnum :: [X*X*X : X in 1..9], % die drei Cubes
+    % Len = new_list(3), Len :: 1..3, sum(Len) #= 7, % die Anzahl der Ziffern der Cubes addiert sich zu 7
+    Cstr = [[_,_,_],[_,_,_],[_,_,_]], Cstr :: 0..9, % String-Darstellung der drei Cubes
+    foreach(I in 1..3) 
+        Cnum[I] #= sum([Cstr[I,J]*10**(3-J) : J in 1..3]) % convert Num -> Str
+    end,
+     Cstr[1,1] #> 0                     #=> I1 #= 1,
+    (Cstr[1,1] #= 0 #/\ Cstr[1,2] #> 0) #=> I1 #= 2,
+    (Cstr[1,1] #= 0 #/\ Cstr[1,2] #= 0) #=> I1 #= 3,
+    element(I1, Cstr[1], Cstr[3,3]), % erste und letzte Ziffer sind gleich
+    Cvars = vars(Cstr), count(0, Cvars, 2), % zwei Nullen!
+    all_different_except_0(Cvars[1..8]), % sonst keine Ziffern gleich
+    solve([I1] ++ Cnum ++ Cvars), 
+    println(Cnum),
+    nl, fail. /*
+[27,64,512]
+CPU time 0.004 seconds, no more solutions, sieht sehr gut aus! */
+
+/* Auflösung aus Nr. 31:
+1. Die Ehepaare sind (in Klammern die Hobbys): Stefan (Kakteen züchten) und Marta (Fußball), Robert (Go spielen) und Sandra (Schwimmen), Michael (Reiten) und Katja (Tanzen), Dominik (Kochen) und Eveline (Jonglieren)
+2. 42009 + 3206 + 479109 = 524324 */

@@ -1,0 +1,43 @@
+/* Zeit Logelei Nr. 2003/46
+https://www.zeit.de/2003/46/Spielen_2fLogelei_46
+"Was wissen Sie über Stoldinen?", fragt der Professor den Prüfling. Dieser antwortet: "Es gibt insgesamt fünf Stoldinen, 
+von denen jede genau eine der drei im Folgenden genannten Tätigkeiten ausübt. ..
+"Damit haben Sie die Prüfung glänzend bestanden", erklärt der Professor feierlich, "denn nun ist klar, welche Stoldine was tut." */
+import cp.
+main ?=>
+    Sstr = ["Borwulp", "Gadel", "Kluff", "Parf", "Wonk"], B=1, G=2, K=3, P=4, W=5, NS=5, 
+    Vstr = ["heudelt", "g?lsert", "merfel"], H=1, G=2, M=3, NV=3,
+    Verb = new_list(NS), Verb :: 1..NV, 
+    % Merfelt die r"ffleibende Wonkstoldine ihr litziges Weierb"sschen, so g"lsert die naufh"rmelnde Kluffstoldine, falls sie nicht am Bickenfersch heudelt, den Jompraff am Dundel.
+    (M #= Verb[W] #/\ Verb[K] #!= H) #=> Verb[K] #= G, 
+    % Wenn die r"ffleibende Wonkstoldine nicht den Jompraff am Dundel g"lsert, dann tut dies die hurpende Borwulpstoldine. 
+    Verb[W] #!= G #=> Verb[B] #= G,
+    % Heudelt die naufh"rmelnde Kluffstoldine am Bickenfersch, dann merfelt die beusige Parfstoldine, sofern sie nicht den Jompraff am Dundel g"lsert, ihr litziges Weierb"sschen.
+    Verb[K] #= H #=> (Verb[P] #= M #\/ Verb[P] #= G),
+    % Wenn die naufh"rmelnde Kluffstoldine den Jompraff am Dundel g"lsert, dann merfelt die hurpende Borwulpstoldine ihr litziges Weierb"sschen. 
+    Verb[K] #= G #=> Verb[B] #= M,
+    % Merfelt die beusige Parfstoldine nicht ihr litziges Weierb"sschen, dann tut dies jedoch, falls die r"ffleibende Wonkstoldine den Jompraff am Dundel g"lsert, die unterz"ckende Gadelstoldine.
+    (Verb[P] #!= M #/\ Verb[W] #= G) #=> Verb[G] #= M,
+    % Heudelt die naufh"rmelnde Kluffstoldine am Bickenfersch, so tut dies auch die beusige Parfstoldine. 
+    Verb[K] #= H #=> Verb[P] #= H,
+    % Wenn jedoch die beusige Parfstoldine ihr litziges Weierb"sschen merfelt, dann g"lsert die r"ffleibende Wonkstoldine nicht den Jompraff am Dundel.
+    Verb[P] #= M #=> Verb[W] #!= G,
+    % Heudelt die r"ffleibende Wonkstoldine am Bickenfersch, so tut dies auch die unterz"ckende Gadelstoldine. 
+    Verb[W] #= H #=> Verb[G] #= H,
+    % Merfelt die unterz"ckende Gadelstoldine ihr litziges Weierb"sschen, so heudelt die beusige Parfstoldine nicht am Bickenfersch und g"lsert sie auch nicht den Jompraff am Dundel. 
+    Verb[G] #= M #=> (Verb[P] #!= H #/\ Verb[P] #!= G),
+    % Heudelt die unterz"ckende Gadelstoldine am Bickenfersch, dann g"lsert die beusige Parfstoldine den Jompraff am Dundel."
+    Verb[G] #= H #=> Verb[P] #= G,
+    solve(Verb), 
+    foreach(IV in 1..NV, IS in 1..NS, Verb[IS] = IV)
+        printf("%s %s.%n", Sstr[IS], Vstr[IV])
+    end,
+    nl, fail. /*
+Gadel heudelt.
+Wonk heudelt.
+Borwulp g?lsert.
+Parf g?lsert.
+Kluff merfel.
+no more solutions, korrekt */
+
+/* Aufl"sung aus Nr. 45 1. F"r die Anzahl m der M"nner gilt: m=3a+1=5b+2=7c+3=11d+4. Aus 3a+1=5b+2 ergibt sich b=(3a-1)/5. Die Anzahlen der Reihen, a und b, k"nnen nur ganze Zahlen sein, mithin muss 3a-1 durch 5 teilbar sein. Das kleinste a, das dies erf"llt, ist 2. Folglich ist a eine Zahl, die sich in der Form a=2+5x darstellen l"sst, worin x eine ganze Zahl ist. Darum ist b=(3(2+5x)-1)/5=3+5x. Weil c=(3a-2)/7 ist, gilt c=(4+15x)/7. Die kleinste Zahl die, dies zu einer ganzen Zahl macht, ist x=3. Also ist x=3+7y und darum a=17+35y, b=10+21y und c=7+15y. F"r d ergibt sich auf die gleiche Weise d=(48+105y)/11; y muss deshalb die Form y=3+11z haben, worin wieder z eine ganze Zahl ist. Es sind also: a=122+385z; b=73+231z; c=52+165z; d=33+105z. F"r z=1 w"re die Anzahl m=751, also gr""er als 497. Darum ist z=0; ergo sind es 367 Soldaten gewesen 2. Die beiden Gleichungen 400-x=10y+4 und 400+x=400+y liefern x=y=36. Also ist die Hausnummer 364 3. 1537•154=236698 */

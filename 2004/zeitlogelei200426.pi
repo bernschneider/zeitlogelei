@@ -1,0 +1,45 @@
+/* Zeit Logelei Nr. 2004/26
+https://www.zeit.de/2004/26/Spielen_2fLogelei_26/komplettansicht
+Herr Huttkewitz verzweifelt dieses Jahr an seiner Steuererklärung – sein Steuerberater, das Finanzamt und ein guter Freund geben ihm ganz unterschiedliche Ratschläge und Tipps dazu.
+.. Können Sie Herrn Huttkewitz sagen, was er tun muss, wenn er sich an all das halten möchte, was ihm von verschiedenen Seiten geraten wurde? */
+import cp.
+main ?=> 
+    Str = ["einkommensfreie Kapitalbezüge geltend machen", "die Steuerersatzleistungen zurückfordern", "die Solidaritätspauschale angeben", 
+           "die geringfügigen Vermögenskosten ankreuzen", "eine Arbeitslohnveranlagung einreichen", "sich die begünstigten Mehraufwendungen erstatten lassen", 
+           "Anspruch auf Saldo-Vorsorge erheben", "die Anlage GSF ausfüllen", "eine Bescheinigung über Werbungszinsen beilegen", "die zuzurechnende Organgesellschaft veranlagen"],
+    Todo = [Kapital, Steuerersatz, Solidaritaet, Vermoegen, Arbeitslohn, Mehraufwendungen, SaldoVorsorge, GSF, Werbungszinsen, Organgesellschaft], 
+    Todo :: 0..1, N = len(Todo), % 1 = er sollte das tun, 0 = er sollte das nicht tun
+    % Auf den Formularen steht: Erst durch Ankreuzen der geringfügigen Vermögenskosten erhält man die Berechtigung, von der Veranlagung der zuzurechnenden Organgesellschaft abzusehen: 
+    #~ Vermoegen #=> Organgesellschaft,
+    % Steuerzahler, die sich trotz Zurückforderung von Steuerersatzleistungen keine begünstigten Mehraufwendungen erstatten lassen, sind verpflichtet, Anlage GSF auszufüllen:
+    (Steuerersatz #/\ #~ Mehraufwendungen) #=> GSF,
+    % Das Zurückfordern von Steuerersatzleistungen ist nur möglich, wenn auch eine Arbeitslohnveranlagung eingereicht wird:
+    Steuerersatz #=> Arbeitslohn,
+    % Ein Anruf beim Finanzamt hat ergeben: Wenn Sie weder die zuzurechnende Organgesellschaft veranlagen noch Anspruch auf Saldo-Vorsorge erheben, 
+    % müssen Sie eine Bescheinigung über Werbungszinsen beilegen:
+    (#~ Organgesellschaft #/\ #~SaldoVorsorge) #=> Werbungszinsen,
+    % Wenn Sie die einkommensfreien Kapitalbezüge nicht geltend machen, können Sie auch keine Arbeitslohnveranlagung einreichen:
+    #~ Kapital #=> #~Arbeitslohn,
+    % Der Steuerberater empfiehlt: Wenn Sie die einkommensfreien Kapitalbezüge geltend machen, sollten Sie auf jeden Fall auch die Steuerersatzleistungen zurückfordern:
+    Kapital #=> Steuerersatz,
+    % Wenn Sie weder eine Bescheinigung über Werbungszinsen beilegen, noch die zuzurechnende Organgesellschaft veranlagen, empfehle ich Ihnen dringend, die Solidaritätspauschale anzugeben:
+    (#~ Werbungszinsen #/\ #~ Organgesellschaft) #=> Solidaritaet,
+    % Denken Sie daran, die einkommensfreien Kapitalbezüge geltend zu machen oder die Steuerersatzleistungen zurückzufordern. Sie können natürlich auch beides tun:
+    Kapital #\/ Steuerersatz,
+    % Ein Freund hat Tipps gegeben: Wenn du eine Bescheinigung über Werbungszinsen beilegst, macht es keinen Sinn, ein Kreuz bei "geringfügige Vermögenskosten" zu machen: 
+    Werbungszinsen #=> (#~ Vermoegen),
+    % Man kann nicht gleichzeitig eine Arbeitslohnveranlagung einreichen und die zuzurechnende Organgesellschaft veranlagen:
+    #~ Arbeitslohn #\/ #~ Organgesellschaft,
+    % Wenn du die Solidaritätspauschale angibst, würde ich die Anlage GSF nicht ausfüllen:
+    Solidaritaet #=> #~ GSF,
+    solve(Todo),
+    print("Herr Huttkewitz sollte "),       foreach (I in 1..N, Todo[I] = 1) printf("%s, ", Str[I]) end, nl,
+    print("Herr Huttkewitz sollte nicht "), foreach (I in 1..N, Todo[I] = 0) printf("%s, ", Str[I]) end,
+    nl, fail. /*
+Herr Huttkewitz sollte einkommensfreie Kapitalbezüge geltend machen, die Steuerersatzleistungen zurückfordern, die Solidaritätspauschale angeben, 
+die geringfügigen Vermögenskosten ankreuzen, eine Arbeitslohnveranlagung einreichen, sich die begünstigten Mehraufwendungen erstatten lassen, Anspruch auf Saldo-Vorsorge erheben.
+Herr Huttkewitz sollte nicht die Anlage GSF ausfüllen, eine Bescheinigung über Werbungszinsen beilegen, die zuzurechnende Organgesellschaft veranlagen.
+no more solutions, korrekt */
+
+/* Auflösung aus Nr. 25:
+Simon war in Australien, Neuseeland, Estland, Lettland, Litauen, Russland, Pakistan, Brunei, China, Argentinien, Brasilien, Paraguay und Madagaskar */

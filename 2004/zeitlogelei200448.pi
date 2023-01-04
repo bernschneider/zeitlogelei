@@ -1,0 +1,118 @@
+/* Zeit Logelei Nr. 2004/48
+https://www.zeit.de/2004/48/Spielen_2fLogelei_48/komplettansicht
+1. Kürzlich ist es zum ersten Mal gelungen, eine Unterhaltung zwischen drei Merkur-Bewohnern zu beobachten und aufzuzeichnen. Auf diese Art erhofft man sich, 
+neue Erkenntnisse über ihre Sprache zu gewinnen. Bei der Unterhaltung handelt es sich um Small Talk: So wie es auf der Erde üblich ist, sich über das Wetter 
+zu unterhalten, unterhält man sich auf dem Merkur darüber, wer welche Farbe hat. Es folgt die vollständige Niederschrift des Gesprächs:
+
+Die Wörter "ül" und "pum" sind Konjunktionen: Eines dieser Wörter bedeutet "und", das andere "oder" im Sinne von entweder – oder.
+Können Sie der Wissenschaft einen Dienst erweisen und den Merkur-Wörtern ihre Bedeutung zuordnen? */
+
+import util, cp.
+main1 ?=> 
+    R=1, B=2, V=3, %die drei Personen Rot, Blau, Violett
+    % Die Grammatik der Sprache ist weitestgehend bekannt: Die Wörter "bru", "sa" und "no" sind die Personalpronomen ich, du und er (er im Sinne von: der dritte Anwesende). 
+    % Welches der Wörter was bedeutet, ist allerdings noch unbekannt:
+    Pron = [Bru, Sa, No], Pron :: 1..3, all_different(Pron), PStr = ["ich", "du", "er"], % Pron=1: ich, Pron=2: du, Pron=3: er
+    % Von den Wörtern "trell" und "kwoll" bedeutet eines "ist" und das andere "ist nicht". 
+    Verb = [Trell, Kwoll], Verb :: 0..1, all_different(Verb), VStr = ["ist nicht", "ist"], % Verb=0: ist nicht, Verb=1: ist
+    % "Parant", "atelg" und "wising" sind Farbwörter. Da es unhöflich ist, über Farben zu sprechen, die nicht anwesend sind, ist anzunehmen, 
+    % dass es sich um die Farben Rot, Blau und Violett handelt:
+    Farb = [Parant, Atelg, Wising], Farb :: 1..3, all_different(Farb), FStr = ["rot", "blau", "violett"], % Farb=1: Rot, Farb=2: Blau, Farb=3: Violett
+    % Die Wörter "ül" und "pum" sind Konjunktionen: Eines dieser Wörter bedeutet "und", das andere "oder" im Sinne von entweder – oder:
+    Konj = [Uel, Pum], Konj :: 1..2, all_different(Konj), KStr = ["und", "xor"], % Konj=1: und, Konj=2: xor
+    Vars = Pron ++ Verb ++ Farb, 
+    foreach((W1,W2, P1,V1,F1, K,  P2,V2,F2) in [
+    (R,B, Bru,Kwoll,Wising, Pum, Sa,Trell,Parant), %, % Rotes Wesen zu blauem Wesen: "Bru kwoll wising pum sa trell parant.":
+    (B,V, Bru,Kwoll,Atelg, Uel, No,Kwoll,Atelg), % Blau zu Violett: "Bru kwoll atelg ül no kwoll atelg."
+    (V,R, Sa,Trell,Parant, Uel, Sa,trell,Wising), % Violett zu Rot: "Sa trell parant ül sa trell wising."
+    (R,V, No,Trell,Atelg, Pum, Sa,Trell,Atelg), % Rot zu Violett: "No trell atelg pum sa trell atelg."
+    (V,B, No,Kwoll,Atelg, Uel, Bru,Tell,Wising), % Violett zu Blau: "No kwoll atelg ül bru trell wising."
+    (B,R, Bru,Tell,Wising, Pum, Bru,Trell,Atelg)])% Blau zu Rot: "Bru trell wising pum bru trell atelg."
+        IDE = [W1,W2,6-W1-W2], % ich, du, er
+        element(P1, IDE, FF1), element(P2, IDE, FF2), % FF1 = Person, von der in Aus1 die Rede ist
+        Aus1 #= ((FF1 #= F1) #= V1), Aus2 #= ((FF2 #= F2) #= V2),
+        K #= 1 #=> Aus1 #/\ Aus2, K #= 2 #=> Aus1 #^  Aus2
+    end,
+    solve(Vars),
+    printf("Personalpronomen: bru = %s, sa = %s, no = %s%n", PStr[Bru], PStr[Sa], PStr[No]),
+    printf("Verben: trell = %s, kwoll = %s%n", VStr[1+Trell], VStr[1+Kwoll]),
+    printf("Farben: parant = %s, atelg = %s, wising = %s%n", FStr[Parant], FStr[Atelg], FStr[Wising]),
+    printf("Konjunktionen: pum = %s, ül = %s%n", KStr[Pum], KStr[Uel]),
+    nl, fail. /*
+Personalpronomen: bru = du, sa = er, no = ich
+Verben: trell = ist nicht, kwoll = ist
+Farben: parant = rot, atelg = violett, wising = blau
+Konjunktionen: pum = und, ül = xor
+CPU time 0.001 seconds, no more solutions, korrekt */
+
+/* 2. Das blaue und das rote Wesen unterscheiden sich übrigens ein bisschen vom violetten:
+BLAU • ROT
+----------
+ANLR
+  OINL
+   ALNE
+-------
+ANTENNE */
+    main2 =>
+        mult(["BLAU", "ROT", "ANLR", "OINL", "ALNE", "ANTENNE"]). /*
+9058 * 634
+-----------
+5706
+  3170
+   5072
+-----------
+5742772 */
+
+/* Auflösung aus Nr. 47:
+Knarf, Gerfel, Surf und Nurfel börsen, Hurfel, Börf, Alfel und Querf roffen.
+
+Auflösung aus Nr. 45:
+In der ZEIT Nr. 46/04 haben wir durch ein Versehen leider die falsche Auflösung abgedruckt. Hier ist die richtige:
+1. An dem Projekt arbeiten mit: Frau Norching, Herr Sonntag und Herr Sommerbruch.
+2. Der Wanderer sollte fragen: "Würde dein Bruder sagen, dass dieser Weg nach Balbenhausen führt?" Lautet die Antwort "Nein", so führt der Weg nach Balbenhausen, lautet die Antwort "Ja", so führt der andere Weg dorthin */
+
+add(L) => % das letzte Element von L ist die Summe der vorherigen Elemente
+   Letter = keys(new_set(flatten(L))), % verwendete Buchstaben
+   Digit = new_list(len(Letter)), Digit :: 0..9, % eine Ziffer je Buchstabe
+   all_different(Digit),
+   Zeilen = len(L) - 1, % Anzahl der Summanden, im Beispiel = 2
+   Num = new_array(len(L)), % numerische Repräsentation der Elemente von L
+   foreach(I in 1..len(L))
+       S = [Digit[find_first_of(Letter, C)] : C in L[I]], % Convert Letter C -> Digit
+       to_num(S, Num[I]), S[1] #!= 0
+   end,
+   sum([Num[I] : I in 1.. Zeilen]) #= Num[len(L)],
+   solve(Digit ++ Num),
+   foreach(I in 1..Zeilen) printf("%6d%n", Num[I]) end,
+   printf("------%n"),
+   printf("%6d%n%n", Num[len(L)]).
+
+mult(L) => % L[1] * L[2] = L[len(L)]; dazwischen stehen die Teilrechnungen
+   Letter = keys(new_set(flatten(L))), % verwendete Buchstaben
+   Digit = new_list(len(Letter)), Digit :: 0..9, % eine Ziffer je Buchstabe
+   all_different(Digit),
+   Zeilen = len(L[1]), % Anzahl der Teilrechnungen, im Beispiel = 4
+   LenZeile = max([len(L[2+I]) : I in 1..Zeilen]), % maximale Länge der Zeilen, im Beispiel = 5
+   Num = new_array(len(L)), % numerische Repräsentation der Elemente von L
+   foreach(I in 1..len(L))
+       S = [Digit[find_first_of(Letter, C)] : C in L[I]], % Convert Letter C -> Digit
+       to_num(S, Num[I]), S[1] #!= 0
+   end,
+   Num[1] * Num[2] #= Num[len(L)], % Hauptgleichung (im Beispiel DEZI * WERT = PARKZEIT)
+   /*L1 = L[1],
+   foreach(I in 1..Zeilen) % zeilenweise Teilrechnung:
+       Digit[find_first_of(Letter, L1[I])] * Num[2] #= Num[2+I]
+   end,*/
+   solve(Digit ++ Num),
+   printf("%d * %d%n", Num[1], Num[2]),
+   printf("-----------%n"),
+   foreach(I in 1..Zeilen)
+       foreach(_ in 2..I+LenZeile-len(L[2+I])) print(' ') end, % Indent
+       println(Num[2+I])
+   end,
+   printf("-----------%n"),
+   printf("%d%n%n", Num[len(L)]).
+
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).

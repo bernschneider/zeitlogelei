@@ -1,0 +1,36 @@
+/* Zeit Logelei Nr. 2003/51
+https://www.zeit.de/2003/51/Spielen_2fLogelei_51 (XML-Fehler, Text muss aus Seitenquelltest extrahiert werden)
+Beim Logikerball ist Paul wieder in seinem Element. Eilig rast er von Tisch zu Tisch, um die Gäste, die sich eigentlich amüsieren möchten, mit logischen Problemen zu belästigen.
+Unsere Tischrunde hat sich vorgenommen, Paul keines Blickes zu würdigen. Doch es hilft uns nicht. Schon naht er schnellen Fußes. "Wen seht ihr dort am Nachbartisch?"", 
+fragt er keuchend, "Britta, Dagmar, Celina und Frauke seht ihr." "Na und?"", fragt einer von uns nicht eben freundlich. Doch Paul fährt unbeirrt fort: 
+"Mit Nachnamen heißen die Damen Kunz, Lohmann, Meier und Normann. Eine ist blond, eine brünett, eine ist schwarz- und eine rothaarig.""
+"Letzteres sehen wir selbst", meint ein anderer aus unserer Runde kühl. "Doch wer ist wer?", fragt Paul, "das wollt ihr natürlich gern wissen."
+"Nicht unbedingt" wirft mein Gegenüber ein. Doch auch diese Einlassung überhört Paul geflissentlich. "Ich werd’s euch in fünf Sätzen sagen", verheißt er, 
+"aber aufgepasst: Von jedem meiner fünf Sätze ist nur eine Hälfte wahr, die andere hingegen trifft nicht zu." Nun hebt Paul, so als wolle er eine Rede halten, 
+in feierlichem Ton an: .. .Die letzte Silbe noch auf den Lippen, flitzt Paul schon zum nächsten Opfer. "Wer also ist wer?", ruft er uns noch im Laufen zu.
+Jetzt grübeln wir ganz gegen unseren Willen darüber nach, wie die vier Damen mit Vor- und Nachnamen heißen und wer von ihnen welche Haarfarbe hat. */
+import cp.
+main ?=> %     1          2           3             4
+    Vstr = ["Britta", "Celina",   "Dagmar",    "Frauke"],  
+    Nstr = ["Kunz",   "Lohmann",  "Meier",     "Normann"], 
+    Hstr = ["blond",  "Brünett",  "rothaarig", "schwarzhaarig"], Bl=1, Br=2, Rh=3, Sh=4,
+    Vorname =  new_list(4), Vorname  :: 1..4, assignment(Vorname,  RVorname), % Haarfarbe -> Vorname
+    Nachname = new_list(4), Nachname :: 1..4, all_different(Nachname),        % Haarfarbe -> Nachname
+    element(RVorname[2], Nachname, NCelina),
+    element(RVorname[3], Nachname, NDagmar),
+    element(RVorname[4], Nachname, NFrauke), 
+    Nachname[Bl] #= 1 #^  NFrauke #= 2,     % "Die blonde Dame heißt Kunz, und Frauke heißt mit Nachnamen Lohmann.
+    Vorname[Rh] #!= 3 #^ Vorname[Br] #!= 4, % Die Rothaarige heißt nicht Dagmar, und Frauke ist nicht die Brünette.
+    Vorname[Br] #!= 1 #^ NDagmar #!= 4,     % Britta ist nicht brünett, und Dagmar heißt nicht Normann.
+    Vorname[Sh] #!= 1 #^ Vorname[Br] #!= 2, % Britta ist nicht die Schwarzhaarige, und Celina ist nicht brünett.
+    NCelina #= 3 #^ Nachname[Sh] #= 4,      % Celina heißt Meier mit Nachnamen, und die Schwarzhaarige heißt Normann."
+    solve(Vorname ++ RVorname ++ Nachname ++ [NCelina, NDagmar, NFrauke]),
+    foreach (I in 1..4) 
+        printf("%s %s ist %s%n", Vstr[Vorname[I]], Nstr[Nachname[I]], Hstr[I] ) 
+    end,
+    nl, fail. /*
+Dagmar Normann ist blond
+Frauke Lohmann ist Brünett
+Celina Meier ist rothaarig
+Britta Kunz ist schwarzhaarig
+no more solutions, korrekt */

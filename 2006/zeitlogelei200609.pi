@@ -1,0 +1,41 @@
+/* Zeit Logelei Nr. 2006/09 (2006/08 ist ein Kreuzzahlrätsel)
+https://www.zeit.de/2006/09/Spielen_2fLogelei_09
+Thorsten will nach Huckenstein und trifft auf eine Weggabelung mit zwei Wegweisern.  */ 
+import util, cp.
+main ?=> 
+    L = new_list(6), L :: 0..1, % linker Wegweiser,  L[I] = 1 <=> I. Aussage ist wahr
+    R = new_list(6), R :: 0..1, % rechter Wegweiser, R[I] = 1 <=> I. Aussage ist wahr
+    % Auf dem linken steht:
+    % 1. Auf diesem und dem anderen Wegweiser haben die Aussagen mit der gleichen Nummer immer unterschiedlichen Wahrheitsgehalt.
+    L[1] #= (sum([(L[I] #= R[I]) : I in 1..6]) #= 0),
+    % 2. Mindestens eine der ersten beiden Aussagen auf dem anderen Wegweiser ist falsch.
+    L[2] #= (R[1] + R[2] #< 2),
+    % 3. Mindestens eine der beiden Aussagen 3 und 4 auf dem anderen Wegweiser ist richtig.
+    L[3] #= (R[3] + R[4] #> 0),
+    % 4. Genau eine der beiden Aussagen 2 und 4 auf dem anderen Wegweiser ist falsch.
+    L[4] #= (R[2] + R[4] #= 1),
+    % 5. Die beiden Aussagen 3 und 5 auf dem anderen Wegweiser sind richtig.
+    L[5] #= (R[3] + R[5] #= 2),
+    % 6. Dieser Weg führt nach Huckenstein, der andere nach Bordenbröhl.
+    % Und auf dem anderen Schild liest Thorsten:
+    % 1. Die zweite Aussage auf dem anderen Wegweiser ist falsch.
+    R[1] #= (L[2] #= 0),
+    % 2. Die erste Aussage auf dem anderen Wegweiser ist richtig.
+    R[2] #= (L[1] #= 1),
+    % 3. Die vierte Aussage auf dem anderen Wegweiser ist falsch.
+    R[3] #= (L[4] #= 0),
+    % 4. Genau die Hälfte der Aussagen auf dem anderen Wegweiser ist richtig.
+    R[4] #= (sum(L) #= 3),
+    % 5. Genau eine der beiden Aussagen 3 und 5 auf dem anderen Wegweiser ist falsch.
+    R[5] #= (L[3] + L[5] #= 1),
+    % 6. Dieser Weg führt nach Huckenstein, der andere nach Bordenbröhl.
+    R[6] #^ L[6], % vgl. Zeile 19
+    solve(L ++ R), % 1 2 3 4 5 6
+    println(L),   % [0,1,1,1,0,0]
+    println(R),   % [0,0,0,1,1,1]
+    % Nun weiß Thorsten, dass einer der Wege nach Huckenstein führt. Doch welcher? (Antwort in Zeile 19)
+    if L[6] = 1 then print("Der linke ") else print("Der rechte ") end, 
+    println("Weg führt nach Huckenstein."),
+    fail. 
+/* Der rechte Weg führt nach Huckenstein.
+no more solutions, sieht gut aus */

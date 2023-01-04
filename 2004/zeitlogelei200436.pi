@@ -1,0 +1,42 @@
+/* Zeit Logelei Nr. 2004/36 (2004/35 ist ein Kreuzzahlrätsel!)
+https://www.zeit.de/2004/36/Spielen_2fLogelei_36/komplettansicht
+1. An der Theke der neu eröffneten Pizzeria hängt ein Schild mit der Aufschrift: "Wer herausfinden kann, welche Zutaten bei der Pizza di Casa verwendet wurden, erhält eine umsonst."
+Konrad, der gerade kein Geld dabei hat, aber recht hungrig ist, hätte gern eine. Genau in diesem Moment beginnen ein paar Kunden sich lautstark über die Pizza zu unterhalten. 
+Wie wild geworden schreibt Konrad mit. Nachher findet er folgende Aussagen in seinem Notizbuch: .. Wenn Konrad den Aussagen glaubt, auf welche Zutaten muss er dann tippen? */
+import util, cp.
+main1 ?=> 
+    Str = ["Ananas", "Brokkoli", "Mozzarella", "Salami", "Schinken", "Tunfisch", "Zwiebeln"],
+    Pizza = [A, B, M, Sa, Sc, T, Z], Pizza :: 0..1, % 1 = ist auf der Pizza de la Casa
+    Z #= 1 #=> A #= 0, % "Wenn Zwiebeln auf der Pizza sind, dann sind aber keine Ananas drauf."
+    (M #= 1 #/\ T #= 1) #=> Z #= 1, % "Wenn auf der Pizza sowohl Mozzarella ist als auch Tunfisch, dann gibt es darauf auch Zwiebeln."
+    M #= 0 #=> B #= 1, % "Wenn kein Mozzarella auf der Pizza ist, dann aber Brokkoli."
+    T #= 0 #=> (Z #= 1 #\/ A #= 1), % "Wenn kein Tunfisch auf der Pizza ist, dann aber Zwiebeln oder Ananas oder beides."
+    (Sa #= 1 #/\ Z #= 1) #=> B #= 1, % "Wenn sowohl Salami als auch Zwiebeln auf der Pizza sind, dann auch Brokkoli."
+    (T #= 1 #/\ Z #= 1) #=> A #= 1, % "Wenn Tunfisch und Zwiebeln drauf sind, dann ist auch Ananas drauf."
+    A #= 1 #=> Z #= 1, % "Wenn Ananasstücke drauf sind, dann auch Zwiebeln."
+    (B #= 1 #/\ Z #= 1) #=> Sc #= 1, % "Wenn auf der Pizza Brokkoli und Zwiebeln sind, dann auch Schinken."
+    B #= 1 #=> M #= 1, % "Wenn Brokkoli auf der Pizza ist, dann auch Mozzarella."
+    A #= 0 #=> (T #= 1 #\/ Sa #= 1), % "Wenn keine Ananas auf der Pizza ist, dann aber Tunfisch oder Salami oder beides."
+    solve(Pizza),
+    foreach(I in 1..len(Pizza), Pizza[I] = 1) printf("%s ", Str[I]) end,
+    nl, fail. /* 
+Brokkoli Mozzarella Salami Schinken Zwiebeln 
+no more solutions, korrekt */
+
+main2 =>
+    % Es handelt sich um einen normalen Brief für 55 Cent, einen Din-A4-Brief für 1,44 Euro und eine Büchersendung für 77 Cent. 
+    Porto = [55, 144, 77],
+    % Er hat jeweils eine Briefmarke zu 6, 18, 19, 20, 29, 32 und 40 Cent und zwei Briefmarken zu je 56 Cent
+    Vals = [6, 18, 19, 20, 29, 32, 40, 56, 56], N = len(Vals),
+    Brief = new_list(N), Brief :: 1..3, % Nr. des Briefs
+    foreach(B in 1..3) 
+        Porto[B] #= sum([Vals[I] * (Brief[I] #= B) : I in 1..N])
+    end,
+    solve(Brief),
+    foreach(B in 1..3)
+        printf("%3d = %w%n", Porto[B], [Vals[I] : I in 1..N, Brief[I] = B])
+    end. /*
+ 55 = [6,20,29]
+144 = [32,56,56]
+ 77 = [18,19,40]
+korrekt! */

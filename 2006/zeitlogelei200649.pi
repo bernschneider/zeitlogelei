@@ -1,0 +1,46 @@
+/* Zeit Logelei Nr. 2006/49 (Achtung: 2006/48 ist ein Kreuzzahlrätsel)
+https://www.zeit.de/2006/49/Spielen-Logelei-49
+Eines Morgens trommelte der Schäferhund seine zehn Schafe zusammen und eröffnete ihnen: 
+»Ich vermute, dass manche von euch in Wirklichkeit Wölfe im Schafspelz sind.« Daraufhin antworteten die Schafe: */
+import cp.
+main ?=> 
+   Wolf = new_list(10),    Wolf :: 0..1, % 0 = Schaf, 1 = Wolf (lügt)
+   Wcnt #= sum(Wolf), % Anzahl der Wölfe
+   Schwarz = new_list(10), Schwarz :: 0..1, % 0 = weiß, 1 = schwarz (lügt)
+   sum(Schwarz) #= 1, % es waren neun weiße und ein schwarzes Schaf
+   Wahr = new_list(10),    Wahr :: 0..1, % 0 = lügt, 1 = sagt die Wahrheit
+   foreach(I in 1..10) 
+        (Schwarz[I] #= 0 #/\ Wolf[I] #= 0) #=> Wahr[I] #= 1, % Weiße Schafe sagen immer die Wahrheit, ...
+        (Schwarz[I] #= 1 #\/ Wolf[I] #= 1) #=> Wahr[I] #= 0  % während schwarze Schafe und Wölfe immer lügen
+   end,
+   Wahr[1]  #= (Wcnt #>= 1), % 1. Schaf: »Mindestens eines von uns ist ein Wolf.« 
+   Wahr[2]  #= (Wcnt #= 2),  % 2. Schaf: »Genau zwei von uns sind Wölfe.« 
+   Wahr[3]  #= (Wcnt #!= 3), % 3. Schaf: »Die Anzahl der Wölfe unter uns ist nicht drei.« 
+   Wahr[4]  #= (Wcnt #= 4),  % 4. Schaf: »Es befinden sich genau vier Wölfe in unserer Herde.«
+   Wahr[5]  #= (Wcnt #> 5),  % 5. Schaf: »Mehr als fünf von uns sind Wölfe.« 
+   Wahr[6]  #= (Wcnt #=< 6), % 6. Schaf: »Die Anzahl der Wölfe in unserer Herde ist höchstens sechs.« 
+   Wahr[7]  #= (Wcnt #< 7),  % 7. Schaf: »Unter uns befinden sich weniger als sieben Wölfe.«
+   Wahr[8]  #= (Wcnt #> 8),  % 8. Schaf: »Mehr als acht von uns sind Wölfe.« 
+   Wahr[9]  #= (Wcnt #>= 9), % 9. Schaf: »Mindestens neun Wölfe befinden sich unter uns.« 
+   Wahr[10] #= (Wcnt #= 10), % 10. Schaf: »Wir sind alle zehn Wölfe.«
+   % Trotzdem konnte er die Wölfe nicht entlarven. Deshalb fragte er das schwarze Schaf: »Bist du ein Wolf?« – »Ja.« 
+   foreach(I in 1..10) Schwarz[I] #= 1 #=> Wolf[I] #= 0 end, % das schwarze Schaf lügt!
+   sum(Wolf) + 1 + sum(Wahr) #= 10, % überflüssig
+   solve(Wolf ++ [Wcnt] ++ Schwarz ++ Wahr),
+   % Da wusste er alles. Wissen Sie auch, welche Schafe Wölfe sind? Und wissen Sie, welches der Schafe schwarz war?
+   foreach(I in 1..10, Wolf[I]=1)    printf("%d ", I) end, printf("sind Wölfe (%d Stück), ", Wcnt),
+   foreach(I in 1..10, Schwarz[I]=1) printf("%d ", I) end, println("war schwarz."),
+   fail. /*
+5 8 9 10 sind Wölfe, 2 war schwarz.
+4 5 8 9 10 sind Wölfe, 2 war schwarz.
+2 8 9 10 sind Wölfe, 5 war schwarz.
+2 5 9 10 sind Wölfe, 8 war schwarz.
+2 5 8 10 sind Wölfe, 9 war schwarz.
+2 5 8 9 sind Wölfe, 10 war schwarz.
+2 5 8 9 10 sind Wölfe, 4 war schwarz. <- korrekt!
+2 4 8 9 10 sind Wölfe, 5 war schwarz.
+2 4 5 9 10 sind Wölfe, 8 war schwarz.
+2 4 5 8 10 sind Wölfe, 9 war schwarz.
+2 4 5 8 9 sind Wölfe, 10 war schwarz. 
+too many solutions :-( 
+ZEIT: Das zweite, das fünfte, das achte, das neunte und das zehnte Schaf sind Wölfe im Schafspelz. Das schwarze Schaf ist das vierte.*/

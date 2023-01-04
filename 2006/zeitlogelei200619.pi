@@ -1,0 +1,33 @@
+/* Zeit Logelei Nr. 2006/19 (Achtung: neue URL-Stuktur, 2006/20 ist ein Kreuzzahlrätsel, die folgenden bis 2006/30 sind nicht vorhanden)
+https://www.zeit.de/2006/19/Spielen_2fLogelei_19
+Von den Unsen ist bekannt, dass sie entweder immer lügen oder immer die Wahrheit sagen. */
+import util, cp.
+main ?=> 
+    Wahr = [A, B, C, D, E, F, G, H, I, K], Wahr :: 0..1, Ustr = ["A", "Bo", "Co", "Do", "E", "Fo", "Go", "Ho", "I", "Ko"], N = len(Wahr),
+    % Ansen, der Magier: »Wenn Honsen, der Medizinmann, lügt, dann sagt genau einer von Donsen, dem Wächter, und Insen, dem Späher, die Wahrheit.« 
+    A #= (H #= 0 #=> D + I #= 1),
+    % Bonsen, der Häuptling: »Wenn Consen, der Krieger, und Ensen, der Stallbursche, lügen, dann sagt Konsen, der Älteste, die Wahrheit.« 
+    B #= ((C #= 0 #/\ E #= 0) #=> K #= 1),   
+    % Consen, der Krieger: »Wenn Konsen, der Älteste, lügt, dann lügt auch Donsen, der Wächter.« 
+    C #= (K #= 0 #=> D #= 0),
+    % Donsen, der Wächter: »Wenn Insen, der Späher, die Wahrheit sagt, dann lügt entweder Gonsen oder Ensen.« 
+    D #= (I #= 1 #=> G + E #= 1),
+    % Ensen, der Stallbursche: »Wenn Ansen, der Magier, lügt, dann sagt Insen die Wahrheit.« 
+    E #= (A #= 0 #=> I #= 1),
+    % Fonsen, der Jäger: »Wenn Insen, der Späher, und Ansen, der Magier, beide die Wahrheit sagen, dann lügt Gonsen, der Gärtner.« 
+    F #= (I + A #= 2 #=> G #= 0),
+    % Gonsen, der Gärtner: »Wenn Insen lügt, dann lügt auch Fonsen.« 
+    G #= (I #= 0 #=> F #= 0),
+    % Honsen, der Medizinmann: »Wenn Ensen die Wahrheit sagt, dann sagt auch Donsen, der Wächter, die Wahrheit.« 
+    H #= (E #= 1 #=> D #= 1), 
+    % Insen, der Späher: »Wenn Honsen, der Medizinmann, lügt, dann sagt Bonsen, der Häuptling, die Wahrheit.« 
+    I #= (H #= 0 #=> B #= 1),
+    % Konsen, der Älteste: »Wenn Ensen, der Stallbursche, lügt, dann sagt von Insen, dem Späher, und Ansen, dem Magier, genau einer die Wahrheit.«
+    K #= (E #= 0 #=> I + A #= 1), 
+    solve(Wahr),
+    foreach(X in 1..N, Wahr[X]=0) printf("%snsen ", Ustr[X]) end, println("lügen, die anderen sagen die Wahrheit."),
+    nl, fail. 
+/* Donsen Fonsen Honsen lügen, die anderen sagen die Wahrheit.
+CPU time 0.001 seconds, no more solutions, sieht gut aus */
+/* Auflösung aus Nr. 18:
+Farben: 30797+50906=81703, Formen: 58683+23020=81703 */

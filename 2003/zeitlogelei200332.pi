@@ -1,0 +1,65 @@
+/* Zeit Logelei Nr. 2003/32 (2003/31 ist ein Kreuzzahlrätsel)
+https://www.zeit.de/2003/32/Spielen_2fLogelei_32
+1. Frau Morkmanns Sohn ist krank. Deshalb ruft sie beim Doktor an. "Wie alt ist Ihr Sohn?", fragt dieser Frau Morkmann und erhält diese Antwort:
+"Das ist mir zu kompliziert", schimpft der Arzt und hängt ein. Wie alt sind Frau Morkmann, ihr Sohn und ihr Vater? */
+import util, cp, alphametik.
+main1 ?=> 
+    Al = [S, M, V], Al :: 1..100, increasing_strict(Al),    
+    M + Delta #= 5 * S, % "Wenn ich so alt sein werde, wie mein Vater heute ist, 
+    Delta #= V - M,     % .. dann werde ich fünfmal so alt sein, wie mein Sohn heute ist, ..
+    S + Delta #= 8 + M, %  .. und mein Sohn wird dann acht Jahre älter sein, als ich heute bin. 
+    V + M #= 100,       % Mein Vater und ich sind übrigens zusammen hundert Jahre alt."
+    solve([Delta|Al]),
+    printf("Der Sohn ist %d, Frau Morkmann %d und ihr Vater %d Jahre alt.%n", S, M, V), 
+    fail. /* Der Sohn ist 13, Frau Morkmann 35 und ihr Vater 65 Jahre alt.
+no more solutions, korrekt */
+
+/* 2. Als Susi gefragt wurde, wie alt sie sei, gab sie diese merkwürdige Antwort: .. Wie alt ist Susi? */
+main2 ?=>
+    Al = [Z,E], Al :: 0..9, 10 * Z + E #> 0,
+    % "Wenn du zu meinem Alter dessen beiden Ziffern hinzuzählst, ..
+    10 * Z + E + Z + E #= 10 * E + Z, % .. erhältst du eine Zahl mit den gleichen Ziffern, jedoch in umgekehrter Reihenfolge."
+    solve(Al), 
+    printf("Susi ist %d Jahre alt.%n", 10 * Z + E), fail. /*
+Susi ist 45 Jahre alt. no more solutions, korrekt */
+
+/* 3. "Wenn du das Alter meines Vaters mit dem meines Bruders malnimmst, besteht das Produkt aus den gleichen Ziffern wie die 
+ihrer beiden Lebensalter, aber in anderer Reihenfolge", erklärt Elke ihrem Freund. Wie alt sind Bruder und Vater? */
+main3 ?=>
+    Al = [V, B], Al :: 1..99, V #> B, 
+    LV = [_,_],   LV :: 0..9, to_num(LV, V), % die Zifferndarstellung von V
+    LB = [_,_],   LB :: 0..9, to_num(LB, B), % B
+    LP = [_,_,_], LP :: 0..9, to_num(LP, P), P #= V * B, % V * B
+    LVB = LV ++ LB,
+    foreach(D in 1..9) count(D, LVB, CD), count(D, LP,  CD) end, 
+    15 #< V - B, V - B #< 75, % Plausiregeln
+    solve(Al ++ [P] ++ LV ++ LB ++ LVB ++ LP), 
+    printf("Elkes Vater ist %d, ihr Bruder %d Jahre alt.%n", V, B), fail. /*
+Elkes Vater ist 51, ihr Bruder 3 Jahre alt.
+ no more solutions, korrekt */
+
+/* 4. Ruth, Lena und Judith schwatzen über ihr Alter. 
+Man kann von jungen Mädchen kaum erwarten, dass sie stets die Wahrheit sagen, wenn es ums Alter geht. 
+Wie alt sind die Mädchen? */
+main4 ?=>
+    Al = [R,L,J], Al :: 1..30,
+    W = new_array(3,3), W :: 0..1, % W[M,I] = 1 <=> die I.te Aussage von M ist wahr
+    foreach(WM in W) sum(WM) #= 2 end, % Tatsächlich hat jede in dieser Unterhaltung nur zwei wahre Aussagen gemacht. 
+    W[1,1] #= (R #> min(Al)), % Ruth: "Ich bin nicht die Jüngste von uns." 
+    W[2,1] #= (J #= 23), % Lena: "Judith ist 23." 
+    W[3,1] #= (J #= 22), % Judith: "Ich bin 22." 
+    W[1,2] #= (L #= 25), % Ruth: "Lena ist 25." 
+    W[2,2] #= (L #< J), % Lena: "Ich bin jünger als Judith." 
+    W[3,2] #= (J + 2 #= R), % Judith: "Ich bin zwei Jahre jünger als Ruth." 
+    W[1,3] #= (abs(L - R) #= 3), % Ruth: "Der Altersunterschied zwischen Lena und mir beträgt drei Jahre." 
+    W[3,3] #= (J #= 1 + L), % Judith: "Ich bin ein Jahr älter als Lena." 
+    W[2,3] #= (R #= 3 + J), % Lena: "Ruth ist drei Jahre älter als Judith."
+    solve(vars(W) ++ Al),
+    printf("Ruth ist %d, Lena ist %d, Judith ist %d Jahre alt.%n", R, L, J), fail. /*
+Ruth ist 25, Lena ist 22, Judith ist 23 Jahre alt.
+no more solutions, korrekt */
+
+/* 5. Was ziemt sich nicht bei einer Dame?
+FRAGEN = WIE • ALT */
+main5 =>
+    mult(["WIE", "ALT", "FRAGEN"]). %  856 * 319 = 273064 korrekt

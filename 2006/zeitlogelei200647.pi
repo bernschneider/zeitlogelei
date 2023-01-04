@@ -1,0 +1,49 @@
+/* Zeit Logelei Nr. 2006/47 (Achtung: 2006/48 ist ein Kreuzzahlrätsel, auf 2006/46 fehlt das Bild)
+https://www.zeit.de/2006/47/Spielen-Logelei-47
+Acht Freunde gehen zusammen ins Kino. Dort sind keine acht Plätze mehr nebeneinander frei, aber immerhin gibt es vier Plätze 
+ganz links in der fünften Reihe und vier Plätze direkt dahinter in der sechsten. Jetzt geht die Diskussion los, wer wo sitzt: */
+import cp. % 1 2 3 4 (fünfte Reihe)
+main ?=>   % 5 6 7 8 (sechste Reihe)
+   Pl = new_list(8), % Auf welchem Pl_atz sitzt Freund X? (2 * (Reihe - 5 ) + Sitz)
+   Fr = new_list(8), % Welcher Fr_eund sitzt in Reihe 5 auf Sitz I (I = 1..4) bzw. in Reihe 6 auf Sitz I-4 (I = 5..8)
+   assignment(Pl, Fr),
+   C=1, L=2, N=3, S=4, B=5, F=6, I=7, R=8,
+   Str = ["Christina", "Laura", "Natascha", "Susanne", "Bernd", "Frank", "Ingo", "Ralf"],
+   %                             ^----- essen Popcorn ------^
+   % Christina: »Ich möchte nicht am linken Rand sitzen; da sieht man nicht so gut.«:
+   Pl[C] #!= 1, Pl[C] #!= 5, 
+   % Frank: »Ich auch nicht.«:
+   Pl[F] #!= 1, Pl[F] #!= 5, 
+   % Natascha: »Ich würde schon gerne ganz links sitzen, damit ich leichter auf die Toilette gehen kann.«:
+   Pl[N] #= 1 #\/ Pl[N] #= 5, 
+   % Susanne: »Ich wäre gerne in derselben Reihe wie Natascha, damit ich ihr Popcorn klauen kann.«:
+   Pl[S] #=< 4 #<=> Pl[N] #=< 4, 
+   % Bernd: »Ich auch.«:
+   Pl[B] #=< 4 #<=> Pl[N] #=< 4, 
+   % Frank: »Hauptsache, ich muss nicht zwischen zwei von euch Popcorn-Essern sitzen.«:
+   foreach(X in [2,3,6,7]) % mögliche Mittelplätze
+       % Wenn auf X-1 und X+1 Popcornesser sitzen (siehe Zeile 12), sitzt auf X nicht Frank:
+       (Fr[X-1] #>= 3 #/\ Fr[X-1] #=< 5 #/\ Fr[X+1] #>= 3 #/\ Fr[X+1] #=< 5) #=> Fr[X] #!= F 
+   end,
+   % Ralf: »Und ich möchte nicht direkt vor Natascha sitzen, weil mich sonst das Gewühle in der Popcorn-Tüte stört.«:
+   Pl[R] + 4 #!= Pl[N], 
+   % Christina: »Ingo, du möchtest doch sicher wieder zwischen zwei Frauen sitzen.«:
+   sum([(Fr[X-1] #=< 4) * (Fr[X] #= I) * (Fr[X+1] #=< 4) : X in [2,3,6,7]]) #= 1, 
+   % Ingo: »Erraten. Und du möchtest dich neben deinen Ralf setzen?« – »Klar.«:
+   Pl[C] #=< 4 #<=> Pl[R] #=< 4, abs(Pl[C] - Pl[R]) #= 1, 
+   % Laura: »Ich möchte nicht direkt hinter Bernd, Frank oder Natascha sitzen, sonst sehe ich nichts: 
+   foreach(X in 1..4) Fr[4+X]#= L #=> (Fr[X] #!= B #/\ Fr[X] #!= F #/\ Fr[X] #!= N) end,
+   % Und übrigens auch nicht ganz links in der fünften Reihe; sonst blockiert mir dieser Riese in der vierten die Sicht.«:
+   Pl[L] #!= 1, 
+   solve(Pl ++ Fr),
+   % Na, dann ist doch alles klar«, mischt sich ein Herr aus der Reihe dahinter ein. Wie setzen sich die acht hin?
+   foreach(Reihe in 0..1)
+       printf("Reihe %d: ", 5 + Reihe),
+       foreach(Sitz in 1..4) printf("%9s ", Str[Fr[4 * Reihe + Sitz]]) end, nl
+   end, 
+   nl, fail. /*
+Reihe 5:  Natascha      Ingo   Susanne     Bernd 
+Reihe 6:      Ralf Christina     Laura     Frank
+no more solutions, korrekt */
+/* Auflösung aus Nr. 46:
+120=40+80, 2+1=7–4, 3+2=5, 68+9+9=86 */

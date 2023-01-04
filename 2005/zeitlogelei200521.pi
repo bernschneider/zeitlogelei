@@ -1,0 +1,55 @@
+/* Zeit Logelei Nr. 2005/21 (2005/20 ist ein Kreuzzahlrätsel!)
+https://www.zeit.de/2005/21/Spielen_2fLogelei_21
+Zwölf Männer haben zum Abschluss des Kochunterrichts vier Mahlzeiten gekocht (jeweils bestehend aus einer Fleischsorte mit Sauce, Gemüse und Beilage), 
+ohne dass ihre Lehrerin, Frau Zartbitter, dabei war. Diese soll nun erraten, was es gleich zu essen geben wird. 
+Hilfsbereit, wie die zwölf sind, haben sie ein paar Tipps für Frau Zartbitter: .. "Aber das ist doch großer Unsinn, was ihr mir da erzählt!" ruft Frau Zartbitter aus. 
+"Aber nein!", widerspricht Karl. "Jeder von uns hat genau zwei Aussagen gemacht, und eine davon war richtig, die andere falsch!" Frau Zartbitter fängt an zu grübeln. 
+Wer kann ihr helfen, bevor das Essen kalt wird? */
+import util, cp.
+main ?=> %      1             2               3               4
+    Str= {{"Geflügel",   "Rindfleisch", "Schweinebraten", "Wild"},     % 1=Fleisch
+          {"Curry",      "Kerbel",      "Rotwein",        "Tomaten"},  % 2=Sauce
+          {"Blumenkohl", "Bohnen",      "Erbsen",         "Karotten"}, % 3=Gemüse
+          {"Kartoffeln", "Nudeln",      "Reis",           "Spätzle"}}, % 4=Beilage
+    Fle=1, Sau=2, Gem=3, Bei=4,
+    G = new_array(4,4), G :: 1..4, % G[I,Fle] = Fleischzutat, G[I,Sau] = Sauce, usw.
+    foreach(I in 1..4) G[I,Fle] #= I end, % breakimg symmetry
+    foreach(L in G.transpose()) all_different(L) end,
+    foreach( [J1,V1, J2,V2, W1, J3,V3, J4,V4, W2] in [
+        % Alfred: "Die Tomatensauce wird nicht zu den Spätzle gereicht." "Die Erbsen werden nicht mit der Rotweinsauce zusammen serviert."
+        [Sau,4, Bei,4, 0, Gem,3, Sau,3, 0],
+        % Björn: "Zum Rindfleisch haben wir keine Spätzle gekocht." "Zum Wild gibt es Kerbelsauce."
+        [Fle,2, Bei,4, 0, Fle,4, Sau,2, 1],
+        % Christoph: "Zu den Spätzle gibt es Blumenkohl." "Zum Rindfleisch gibt es Erbsen."
+        [Bei,4, Gem,1, 1, Fle,2, Gem,3, 1],
+        % David: "Zum Geflügel gibt es keine Spätzle." "Zum Rindfleisch gibt es Spätzle."
+        [Fle,1, Bei,4, 0, Fle,2, Bei,4, 1],
+        % Ernst: "Die leckere Kerbelsauce wird zum Wild gereicht." "Zum Geflügel gibt es Erbsen."
+        [Sau,2, Fle,4, 1, Fle,1, Gem,3, 1],
+        % Fabian: "Zu Karotten haben wir keine Rotweinsauce zubereitet." "Zum Schweinebraten werden als Beilage Kartoffeln serviert."
+        [Gem,4, Sau,3, 0, Fle,3, Bei,1, 1],
+        % Gerald: "Zum Wild gibt es keine Erbsen." "Zur Rotweinsauce gibt es kein Rindfleisch."
+        [Fle,4, Gem,3, 0, Sau,3, Fle,2, 0],
+        % Harald: "Die Rotweinsauce wird zum Wild serviert." "Zum Rindfleisch gibt es Bohnen."
+        [Sau,3, Fle,4, 1, Fle,2, Gem,2, 1],
+        % Ingo: "Zum Wild gibt es Spätzle." "Die Karotten werden mit Nudeln serviert."
+        [Fle,4, Bei,4, 1, Gem,4, Bei,2, 1],
+        % Jürgen: "Nudeln und Karotten werden zusammen serviert." "Zum Schweinebraten gibt es Reis."
+        [Bei,2, Gem,4, 1, Fle,3, Bei,3, 1],
+        % Karl: "Zu den Erbsen gibt es Kerbelsauce." "Zum Rindfleisch gibt es keine Currysauce."
+        [Gem,3, Sau,2, 1, Fle,2, Sau,1, 0],
+        % Lars: "Die Nudeln werden nicht mit Tomatensauce serviert." "Zum Geflügel gibt es Nudeln."
+        [Bei,2, Sau,4, 0, Fle,1, Bei,2, 1] ]) 
+            A1 #= sum([(G[I,J1] #= V1)*(G[I,J2] #= V2) : I in 1 ..4]) #= W1,
+            A2 #= sum([(G[I,J3] #= V3)*(G[I,J4] #= V4) : I in 1 ..4]) #= W2,
+            A1 #^ A2
+    end,
+    solve(vars(G)),
+    foreach(I in 1..4)
+        printf("%s mit %s, %s und %ssauce.%n", Str[1,G[I,1]], Str[3,G[I,3]], Str[4,G[I,4]], Str[2,G[I,2]])
+    end, nl, fail.   /*
+Geflügel mit Erbsen, Kartoffeln und Currysauce.
+Rindfleisch mit Bohnen, Nudeln und Rotweinsauce.
+Schweinebraten mit Karotten, Reis und Kerbelsauce.
+Wild mit Blumenkohl, Spätzle und Tomatensauce.
+CPU time 0.006 seconds, no more solutions, korrekt */

@@ -1,0 +1,30 @@
+/* Zeit Logelei Nr. 2004/24 (Achtung: 2004/23 ist ein Kreuzzahlrärtsel)
+https://www.zeit.de/2004/24/Spielen_2fLogelei_24/komplettansicht
+Anna, Frieda und Bertram wollen einen Sandkuchen mit vielen Extra-Zutaten backen. Hier ein paar kulinarische Tipps von den drei Sandkasten-Experten:
+.. Was muss in den Sandkuchen, wenn alle Meinungen von Anna, Frieda und Bertram berücksichtigt werden sollen?  */
+import cp.
+main ?=> 
+    Str = ["Blätter", "Erde", "Gänseblümchen", "Gras", "Steine", "Wasser", "Zweige"], N = len(Str),
+    L =    [B,         E,      Gb,              G,      S,        W,        Z],  L :: 0..1, % L[I] = 1 <=> Str[I] kommt in den Kuchen
+    E #\/ S, % Bertram: "Damit der Kuchen stabil wird, müssen wir Erde oder Steine einrühren."
+    S #=> (G #\/ B), % Frieda: "Wenn Steine im Kuchen sind, soll aber zum Ausgleich auch was Grünes rein: Gras oder Blätter."
+    (E #/\ W) #=> S, % Anna: "Erde und Wasser zusammen machen den Kuchen schön weich. Wenn wir das beides rein tun, müssen wir auch Steine hinzugeben."
+    % Frieda: "Aber zu fest soll er auch nicht werden. Wir brauchen auch was, damit er aufgeht. Irgendwelche Hefepilze. Aber Pilze haben wir nicht"
+    % Anna: "Mein Papa hat mal erzählt, dass Pilze in Erde und auf Blättern wachsen."
+    % Bertram: "Oder im Wasser. Ich bin mir ganz sicher, dass Pilze auch im Wasser wachsen können."
+    E #\/ B #\/ W, % Frieda: "Okay, dann brauchen wir also Erde, Blätter oder Wasser, damit der Kuchen auch gut aufgeht."
+    % Bertram: "Ich hab mal in einem Kochbuch gelesen, dass Blätter und Steine zusammen schwer verdaulich sind. 
+    (B #/\ S) #=> G, % Deshalb muss in diesem Fall unbedingt Gras dazugegeben werden, um die Verdauung zu fördern."
+    #~(G #/\ W), % Anna: "Bääh, Gras mit Wasser schmeckt doch nicht!"
+    E #=> W, % Bertram: "Wenn Erde reinkommt, muss auch Wasser rein, damit die Erde schön schlammig wird."
+    % Anna: "Wir brauchen was zum Verzieren! Gänseblümchen. Oder Zweige."
+    % Frieda: "Ich finde, mit Erde kann man auch gut verzieren."
+    Gb #\/ Z #\/ E, % Anna: "Okay, dann also Gänseblümchen oder Zweige oder Erde zum Verzieren. Oder mehrere davon."
+    #~(Z #/\ B), % Frieda: "Zweige und Blätter zusammen wären doof. Wir wollen doch keinen Baumkuchen backen!"
+    (E #/\ Gb) #=> G, % Bertram: "Wenn da Erde und Gänseblümchen reinkommen, wird es ganz offensichtlich ein Wiesenkuchen, und in einen Wiesenkuchen muss auch etwas Gras."
+    solve(L),
+    printf("In den Kuchen kommen "), foreach (I in 1..N, L[I] = 1) printf("%s, ", Str[I]) end,
+    printf("- nicht aber "),         foreach (I in 1..N, L[I] = 0) printf("%s, ", Str[I]) end,
+    nl, fail. /*
+In den Kuchen kommen Blätter, Gänseblümchen, Gras, Steine, - nicht aber Erde, Wasser, Zweige
+no more solutions, korrekt */

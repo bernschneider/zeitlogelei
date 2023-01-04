@@ -1,0 +1,45 @@
+/* Zeit Logelei Nr. 2005/18
+https://www.zeit.de/2005/18/Spielen_2fLogelei_18/komplettansicht
+Beim Wetterdienst sitzen drei Meteorologen beisammen und studieren die Wetterdaten. »Es ist wie verhext. Aus diesen Daten kann doch kein Mensch 
+eine vernünftige Wettervorhersage erstellen«, klagt Herr Frohgemut. Immerhin ist es den drei Forschern schon gelungen, einige Einschränkungen herauszufinden: 
+... Wie wird die Wettervorhersage lauten? */
+import cp.
+main ?=>
+    %           1        2        3         4        5
+    HiStr = ["Sonne", "Nebel", "Regen", "Schnee", "Hagel"], % Es wird entweder Sonnenschein oder Nebel geben, regnen, schneien oder hageln. 
+    %             1              2                3
+    WoStr = ["wolkenlos", "leicht bewölkt", "stark bewölkt"], % Der Himmel kann wolkenlos, leicht bewölkt oder stark bewölkt sein. 
+    %          1    2     3    4     5    6     7    8
+    WRStr = ["NW", "N", "NO", "O", "SO", "S", "SW", "W"], % Der Wind wird aus einer der vier Haupt- beziehungsweise der vier Nebenhimmelsrichtungen wehen mit mindestens 2 Windstärken.
+    NHi = len(HiStr), NWo = len(WoStr), NWR = len(WRStr),
+    Vars = [Hi, Wo, WR, Temp, WS],
+    Hi :: 1..NHi, Wo :: 1..NWo, WR :: 1..NWR, Temp :: -20..40, WS :: 2..12, % WS = Windstärke
+    Hi #> 1 #<=> Wo #= 3, % keine Sonne <=> stark bewölkt
+    /* Herr Ungemach: »Hier sind ein Hoch und ein Tief eng beieinander, das bedeutet zweierlei: Wenn die Windstärke größer als 5 ist, so kommt der Wind 
+    aus einer der drei nördlichen Himmelsrichtungen. Und wenn sie kleiner als 8 ist, so kommt der Wind aus einer der drei westlichen Himmelsrichtungen.« */
+    WS #> 5 #=> WR #=< 3, WS #< 8 #=> (WR #= 1 #\/ WR #>= 7), 
+    % Herr Frohgemut: »Aber bei über 15 Grad haben wir Wind aus einer der drei südlichen oder der drei östlichen Himmelsrichtungen.« 
+    Temp #> 15 #=> (3 #=< WR #/\ WR #<= 7),
+    /* Herr Felsenfest: »Wie Sie sicherlich wissen, meine Herren, werden wir bei leichter Bewölkung maximal 27 Grad erreichen, 
+    bei starker Bewölkung maximal 19 Grad und bei Nebel maximal 25 Grad haben.« */
+    Wo #= 2 #=> Temp #=< 27, Wo #= 3 #=> Temp #=< 19, Hi #= 2 #=> Temp #=< 25, 
+    % Herr Ungemach: »Nur bei Ost- oder Südostwind wird es wolkenlos werden, das sieht man hier auf dem Satellitenbild sehr deutlich. 
+    Wo #= 1 #=> (WR #= 4 #\/ WR #= 5),
+    % Und wenn der Wind nicht gerade aus Nordosten kommt, werden wir über 26 Grad haben.« 
+    WR #!= 3 #=> Temp #> 26,
+    % Herr Felsenfest: »Diese Kaltfront sagt eindeutig: Schnee oder Hagel kommt nur infrage, wenn die Temperatur maximal 3 Grad ist.«
+    Temp #> 3 #=> (Hi #!= 4 #/\ Hi #!= 5),
+    % Herr Frohgemut: »Aus den Daten der Windmessungen bei Grönland entnehme ich: Wenn es leicht bewölkt ist, so wird die Windstärke 6 nicht überschreiten.«
+    Wo #= 2 #=> WS #=< 6, 
+    /* Herr Ungemach rechnet ein wenig herum und bemerkt dann: »Das ist aber sehr merkwürdig: Wenn die Windstärke keine Quadratzahl ist, 
+    dann wird der Wind aus einer der drei östlichen Richtungen wehen.« */
+    (WS #!= 4 #/\ WS #!= 9) #=> (3 #=< WR #/\ WR #<= 5),
+    % Herr Frohgemut: »Bei Wind aus einer der drei östlichen Himmelsrichtungen kann es aber nicht stark bewölkt sein.« 
+    (3 #=< WR #/\ WR #<= 5) #=> Wo #!= 3,
+    % Herr Felsenfest: »Regenwetter gibt es nur, wenn die Windstärke mindestens 6 beträgt.« 
+    WS #=< 6 #=> Hi #!= 3,
+    solve(Vars),
+    printf("Es gibt %s bei %d Grad, der Himmel ist %s. Der Wind kommt aus %s mit Stärke %d%n", HiStr[Hi], Temp, WoStr[Wo], WRStr[WR], WS),
+    fail. /* 
+Es gibt Sonne bei 27 Grad, der Himmel ist leicht bewölkt. Der Wind kommt aus SW mit Stärke 4
+CPU time 0.001 seconds, no more solutions, korrekt */

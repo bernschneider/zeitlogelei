@@ -1,0 +1,27 @@
+/* Zeit Logelei Nr. 2006/33 An welcher Krankheit leidet  der Patient? (Achtung: 2006/34 ist ein Kreuzzahrätsel)
+https://www.zeit.de/2006/33/Spielen-Logelei-33/komplettansicht
+Professor Flausenbaus hat seinen Studenten einen schwierigen Fall vorgelegt. Die Studenten sollen herausfinden, an welcher Krankheit der Patient leidet.
+Martin, zum Professor gewandt: »Da stimmt doch was nicht, vielleicht hat der Patient ja mehrere Krankheiten auf einmal?
+Professor Flausenbaus: »Aber nein, der Patient hat nur genau eine Krankheit, aber einer von euch fünfen hat sich vertan!«
+Und zwar? */
+import util, cp.
+main ?=> 
+    Wahr = [Ro, Ma, Mi, Ra, Fl], Wahr :: 0..1, Sstr = ["Roland", "Martin", "Michael", "Ralf", "Florian"],
+    sum(Wahr) #= 4, % einer von euch fünfen hat sich vertan!
+    RS=1, SB=2, JF=3, LW=4, MG=5, Kstr =  ["rektifizierende Sobramie", "sulfondernde Bolgethie", "juckende Fantasie", "luftige Wapsilie", "morbsende Gluckerie"], 
+    Kh :: 1..5, % Krankheit des Patienten
+    % Roland: »Die rosa Schuppen hier bedeuten, dass der Patient entweder rektifizierende Sobramie oder sulfondernde Bolgethie hat.«
+    Ro #= (Kh #= RS #\/ Kh #= SB), 
+    % Martin: »Das Nasensausen, über das sich der Patient beschwert, deutet darauf hin, dass es sich weder um juckende Fantasie noch um luftige Wapsilie handeln kann.«
+    Ma #= (Kh #!= JF #/\ Kh #!= LW), 
+    % Michael: »Aber schau nur: Der Frobeniusseismograf zeigt einen starken Ausschlag im Frembium. Das deutet auf morbsende Gluckerie oder juckende Fantasie hin!«
+    Mi #= (Kh #= MG #\/ Kh #= JF), 
+    % Ralf, ein Anhänger der intuitiven Diagnostik: »Mein Gefühl sagt mir: Es ist entweder solfondernde Bolgethie oder luftige Wapsilie.«
+    Ra #= (Kh #= SB #\/ Kh #= LW), 
+    % Florian: »Da der Patient keine Wimpernzuckungen beklagt, kann es sich nicht um morbsende Gluckerie oder rektifizierende Sombramie handeln.« 
+    Fl #= (Kh #!= MG #/\ Kh #!= RS), 
+    solve([Kh|Wahr]),
+    printf("%s hat sich vertan, der Patient hat %s.%n", Sstr[find_first_of(Wahr, 0)], Kstr[Kh]),
+    nl, fail. 
+/* Michael hat sich vertan, der Patient hat sulfondernde Bolgethie.
+no more solutions, sieht gut aus */

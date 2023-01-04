@@ -1,0 +1,32 @@
+/* Zeit Logelei Nr. 2005/06
+https://www.zeit.de/2005/06/Spielen_2fLogelei_06/komplettansicht
+»Was soll ich bloß kochen?«, klagt Alfons der Unentschlossene. »Klare Ochsenschwanzsuppe, französische Zwiebelsuppe oder Lachsklößchen in Kräuterbrühe? 
+Und als Hauptspeise Kalbskoteletts mit Champignons, Saté-Spießchen mit Erdnusssauce oder Rehmedaillons in Preiselbeersahne? 
+Als Beilage könnte ich Püree aus grünen Erbsen machen oder Lauchgemüse mit frischem Koreander oder vielleicht einfach nur Rahmspinat? 
+Und dann der Nachtisch: Lieber Reisauflauf mit Mangopüree, Mascarpone-Schmarrn mit Aprikosen oder Dampfnudeln mit Karamellsauce?«
+»Und was ist mit Salat?«, fragt Claudwig Weißbescheid. »Ach du lieber Gott, einen Salat brauche ich auch noch. Soll ich lieber einen rustikalen Lauchsalat zubereiten, 
+einen Brokkolisalat mit Zitronen-Mayonnaise oder einfach einen ganz gewöhnlichen gemischten Salat mit Roquefort-Dressing? Hach, man hat es schon schwer!«
+Claudwig Weißbescheid hat zwar kein Patentrezept, aber immerhin weiß er: ... Können Sie Alfons bei seiner Kochentscheidung helfen? */
+import util, cp.
+main ?=>      %         1                   2                      3
+    SSuppe =   ["Ochsenschwanzsuppe", "Zwiebelsuppe",        "Lachsklößchen"],
+    SHaupt =   ["Kalbskoteletts",     "Saté-Spießchen",      "Rehmedaillons"],
+    SBeilage = ["Püree",              "Lauchgemüse",         "Rahmspinat"],
+    SNach =    ["Reisauflauf",        "Mascarpone-Schmarrn", "Dampfnudeln"],
+    SSalat =   ["Lauchsalat",         "Brokkolisalat",       "Salat mit Roquefort-Dressing"],
+    L = [Suppe, Haupt, Beilage, Nach, Salat], L :: 1..3, % Index der jeweiligen Speise
+    Haupt #= 1  #=> Nach #!= 1, % »Reisauflauf mit Mangopüree darf nicht nach Kalbskoteletts mit Champignons serviert werden, 
+    Nach #= 3   #=> Suppe #!= 2, % französische Zwiebelsuppe ist kein guter Anfang für ein Mahl, das mit Dampfnudeln in Karamellsauce endet, und 
+    Haupt #= 3  #=> Salat #!= 2, % Brokkolisalat mit Zitronen-Mayonnaise passt nicht zu Rehmedaillons in Preiselbeersahne. 
+    Haupt #= 2  #=> Beilage #= 3, % Zu Saté-Spießchen mit Erdnusssauce hingegen sollte man auf jeden Fall Rahmspinat servieren.« »Meinst du?« »Auf jeden Fall. 
+    Salat #!= 2 #=> Nach #!= 2, % Aber wenn du keinen Brokkolisalat mit Zitronen-Mayonnaise machst, würde ich auch vom Mascarpone-Schmarrn mit Aprikosen abraten. 
+    Suppe #= 1  #=> Salat #= 2, % Beachte auch, dass zu einer klaren Ochsenschwanzsuppe weder rustikaler Lauchsalat noch gemischter Salat mit Roquefort-Dressing passt. 
+    Suppe #= 3  #=> Nach #= 2, % Die hohe Küche empfiehlt übrigens als Nachtisch zu Lachsklößchen in Kräuterbrühe einen Mascarpone-Schmarrn mit Aprikosen, 
+    Salat #= 2  #=> Nach #= 1, % wohingegen davon abgeraten wird, Brokkolisalat mit Zitronen-Mayonnaise zu servieren, wenn man keinen Reisauflauf mit Mangopüree als Nachtisch bieten kann. 
+    % Und wenn ich noch einen ganz persönlichen Wunsch anbringen dürfte: 
+    Suppe #= 2  #=> Haupt #= 1, %Falls du eine französische Zwiebelsuppe machst, würde ich danach gerne Kalbskoteletts mit Champignons essen.«
+    solve(L),
+    printf("Die beste Speisefolge: %s, %s, %s und %s, dazu %s.%n", SSuppe[Suppe], SHaupt[Haupt], SBeilage[Beilage], SNach[Nach], SSalat[Salat]), 
+    fail. /* 
+Die beste Speisefolge: Ochsenschwanzsuppe, Saté-Spießchen, Rahmspinat und Reisauflauf, dazu Brokkolisalat.
+CPU time 0.0 seconds, no more solutions, korrekt */

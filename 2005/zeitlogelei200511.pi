@@ -1,0 +1,54 @@
+/* Zeit Logelei Nr. 2005/11
+https://www.zeit.de/2005/11/Spielen_2fLogelei_11/komplettansicht
+Professor Reppert untersucht die vom Aussterben bedrohten Beutelhörnchen. Sein Assistent Huselkopf soll deshalb nachschlagen, was über sie bekannt ist.
+... »Na wunderbar«, freut sich Professor Reppert, »jetzt weiß ich alles über die noch lebenden Beutelhörnchen.« Sie auch? */
+import cp.
+main ?=> % Aus diversen Artikeln konnte er Folgendes extrahieren:
+    %                1         2       3       4
+    SFarbe   = ["schwarz", "grau", "weiß", "braun"], % »Beutelhörnchen können schwarz, grau, weiß oder braun sein.
+    %                 1             2              3
+    SOrt     = ["in Höhlen", "auf Wiesen", "auf Bäumen"], % sie leben in Höhlen, auf Wiesen oder Bäumen. 
+    %                1           2         3
+    SSchwanz = ["buschigen", "dünnen", "keinen"], % Manche haben einen buschigen Schwanz, manche nur einen dünnen und manche gar keinen.
+    %              1        2
+    SFell    = ["lang",  "kurz"],
+    SPfoten  = ["klein", "groß"],
+    % Fragen Sie mal beim IIAO (International Institute for Animal Observation) nach, was man dort weiß.«
+    N = 4, % Vom IIAO kann Huselkopf in Erfahrung bringen, dass es nur noch vier lebende Beutelhörnchen gibt. 
+    Farbe   = new_list(N), Farbe   :: 1..4,
+    Ort     = new_list(N), Ort     :: 1..3,
+    Schwanz = new_list(N), Schwanz :: 1..3,
+    Fell    = new_list(N), Fell    :: 1..2,
+    Pfoten  = new_list(N), Pfoten  :: 1..2,
+    at_least(2, Pfoten, 1), % Es gibt etliche Beutelhörnchenarten mit kleinen Pfoten
+    foreach(I in 1..N)
+        (Fell[I] #= 1 #/\ Schwanz[I] #= 1) #=> Farbe[I] #= 4, % Wenn das Fell eines Beutelhörnchens mit buschigem Schwanz lang ist, dann ist es braun. 
+        Ort[I] #= 2 #=> Fell[I] #= 2, % Wiesenbeutelhörnchen haben allerdings immer kurzes Fell. 
+        Schwanz[I] #= 2 #=> Pfoten[I] #= 1, % Beutelhörnchen mit dünnem Schwanz haben kleine Pfoten. 
+        Pfoten[I] #= 1 #=> (Ort[I] #!= 1 #/\ Farbe[I] #!= 1), % Beutelhörnchenarten mit kleinen Pfoten leben nie in Höhlen und sind auch nie schwarz. 
+        Schwanz[I] #= 3 #=> Ort[I] #= 1,  % Schwanzlose Beutelhörnchen hingegen leben immer in Höhlen. 
+        % Ende des 19. Jahrhunderts waren die Beutelhörnchen mit buschigem Schwanz bei Jägern besonders beliebt; 
+        Schwanz[I] #= 1 #=> Fell[I] #!= 2 % diejenigen unter ihnen mit kurzem Fell wurden schon damals ausgerottet.«
+    end,
+    /* Zunächst ist Professor Reppert erfreut über all diese Ergebnisse, doch dann stellt er fest: »Diese Artikel sind ja alle schon mindestens 15 Jahre alt. 
+    Inzwischen sind vermutlich noch viele weitere Beutelhörnchenarten ausgestorben. Außerdem wurden Aussagen von Leuten notiert, die kürzlich Beutelhörnchen beobachtet haben: */
+    sum([(Ort[I] #= 2)*(Schwanz[I] #= 2) : I in 1..4]) #> 0, % In einer Wiese wurde ein Beutelhörnchen mit dünnem Schwanz gesehen 
+    sum([(Ort[I] #= 3)*(Schwanz[I] #= 1) : I in 1..4]) #> 0, % ...und auf einem Baum eins mit buschigem Schwanz. 
+    sum([(Fell[I] #= 1)*(Pfoten[I] #= 2) : I in 1..4]) #>= 2, % Jemand berichtet, drei Beutelhörnchen mit langem Fell gesehen zu haben; zwei davon mit großen Pfoten ..
+    sum([(Fell[I] #= 1)*(Pfoten[I] #= 1) : I in 1..4]) #>= 1, % .. und eins mit kleinen. 
+    at_least(1, Farbe, 1), at_least(1, Farbe, 2), at_least(1, Farbe, 3), % Verschiedene Leute berichten von Beutelhörnchen in verschiedenen Farben. Gesehen wurde ein schwarzes, ein graues und ein weißes
+    sum([(Farbe[I] #= 2)*(Ort[I] #= 1) : I in 1..4]) #>= 1, % Das graue wurde in einer Höhle gesehen, bei den anderen ist der Ort unbekannt.
+    increasing(Farbe), % Farbe #= [4,1,2,3], % breaking symmetry
+    solve(Farbe ++ Ort ++ Schwanz ++ Fell ++ Pfoten), 
+    foreach(I in 1..4)
+        printf("Ein %ses mit %sen Pfoten, %sem Fell und %s Schwanz, das %s lebt.%n", SFarbe[Farbe[I]], SPfoten[Pfoten[I]], SFell[Fell[I]], SSchwanz[Schwanz[I]], SOrt[Ort[I]] )
+    end,
+    nl, fail.  /* Diese Beutelhörnchen gibt es noch:
+Ein braunes mit kleinen Pfoten, langem Fell und buschigen Schwanz, das auf Bäumen lebt.
+Ein schwarzes mit großen Pfoten, langem Fell und keinen Schwanz, das in Höhlen lebt.
+Ein graues mit großen Pfoten, langem Fell und keinen Schwanz, das in Höhlen lebt.
+Ein weißes mit kleinen Pfoten, kurzem Fell und dünnen Schwanz, das auf Wiesen lebt.
+CPU time 0.002 seconds, no more solutions, korrekt */
+/* Auflösung aus Nr. 10:
+1. Sabrina sollte die folgenden CDs kaufen: Listen to This, Sliver Disc, Sounds from the Box und Play it back
+2. Nach dem Kauf besitzt sie 49 CDs, die sie in sieben Stapeln mit je sieben CDs anordnen kann */

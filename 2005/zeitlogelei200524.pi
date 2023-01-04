@@ -1,0 +1,23 @@
+/* Zeit Logelei Nr. 2005/24
+https://www.zeit.de/2005/24/Spielen_2fLogelei_24
+Freudestrahlend kommt der kleine Manfred, der ein berüchtigter Schlaumeier ist, zu seinem großen Bruder:
+"Ich habe mir eine dreistellige Zahl ausgedacht, und wenn ich diese Zahl zweimal hintereinander schreibe, dann ist die neue Zahl durch 7 teilbar."
+Jürgen aber, der natürlich auch nicht auf den Kopf gefallen ist, gibt sich überhaupt nicht beeindruckt:"Das ist doch klar."
+Manfred lässt sich durch seinen Bruder in seinem Enthusiasmus nicht bremsen: "Aber das besondere an meiner Zahl ist, dass ich, 
+nachdem ich die sechsstellige Zahl durch 7 geteilt habe, gerade das Quadrat meiner ursprünglichen Zahl erhalte."
+Jürgen denkt ein wenig nach und meint: "Ah, dann kenne ich deine Zahl jetzt." Und jetzt zwei Fragen: Warum wusste Jürgen sofort, 
+dass die zweimal hintereinander geschriebene Zahl durch 7 teilbar ist? Und wie lautet die Zahl? */
+import cp.
+main ?=> 
+    X :: 100..999, 
+    Y #= 1000 * X + X,
+    % Y = 1001 * X ist durch 1001 teilbar, damit auch durch alle Teiler von 1001, 1001 = 7 * 143 =>  7 | Y
+    Y #= 7 * X * X, % Y / 7 = X^2
+    solve([X,Y]),
+    printf("Y = %d%n", Y),
+    nl, fail.
+/* Y = 143143, CPU time 0.001 seconds, no more solutions, korrekt */
+
+/* Auflösung aus Nr. 26 (leider fehlt diese Seite)
+Das Glas links vorn gehört Vanessa und das daneben Bertram. Henning hat sein Glas links hinten abgestellt und Fred seins rechts daneben. 
+Das Glas in der Mitte des Tisches gehört Silvia, das ganz rechts gehört Doreen und das auf dem Stuhl Maren */

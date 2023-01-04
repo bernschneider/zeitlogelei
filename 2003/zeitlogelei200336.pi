@@ -1,0 +1,37 @@
+/* Zeit Logelei Nr. 2003/36
+https://www.zeit.de/2003/36/Spielen_2fLogelei_36
+11. Jemand hat Andreas verprügelt. "Wer ist es gewesen", fragt der Polizeibeamte, dem Andreas sein Unglück gemeldet hat, streng. 
+"Ich bin sicher, es war einer von den drei Typen, die mich nicht leiden können, sie heißen Karl, Malte und Norbert." Und der Beamte fügt die Adressen der drei Männer hinzu. 
+Flugs schwärmt ein Einsatzwagen aus und holt die drei Verdächtigen auf die Wache. Hier untersucht Detektiv Fassihn den Fall. ...
+Nach diesem Verhör ist Fassihn überzeugt davon, dass jeder Befragte genau eine falsche Antwort gegeben hat und dass tatsächlich einer von den drei Burschen Andreas verprügelt hat. 
+Angenommen, Fassihn hätte damit Recht: Wer hat Andreas verprügelt? */
+import cp, alphametik.
+main1 ?=>  
+    Nstr = ["Karl", "Norbert", "Malte"], 
+    T = [Karl, Norbert, Malte], T :: 0..1, % 1 = hat Andreas verprügelt
+    sum(T) #= 1, % einer von den drei Burschen hat Andreas verprügelt
+    A = new_array(3,3), A :: 0..1, % A[I,J] = 1 <=> I´s J.te Aussage ist wahr
+    foreach(I in 1..3) sum(A[I]) #= 2 end, % jeder Befragte hat genau eine falsche Antwort gegeben
+    A[1,1] #<=> #~ Karl, % Zuerst nimmt er sich Karl vor. Er fragt ihn: "Hast du Andreas verprügelt?" Karl 1: "Nein, das habe ich nicht getan." 
+    % A[1,2]:  Fassihn: "Wann hast du das letzte Mal Malte gesehen?" Karl 2: "Ich habe Malte bis heute noch nie gesehen." 
+    % A[1,3]:  Fassihn: "Kennst du Andreas?" Karl 3: "Ja, den kenne ich."
+    A[2,1] #<=> #~ Norbert, % Jetzt wendet sich Fassihn Norbert zu. Er fragt ihn: "Hast du Andreas verprügelt?" Norbert 1: "Nein, das habe ich nicht getan." 
+    A[2,2] #<=> #~ A[1,2], % Fassihn: "Hat Karl den Malte schon früher gesehen?" Norbert 2: "Karl hat gelogen, als er sagte, er habe Malte bis heute nicht gesehen" 
+    % A[2,3]: Fassihn: "Weißt du, wer Andreas verprügelt hat?" Norbert 3: "Nein, das weiß ich nicht."
+    A[3,1] #<=> #~ Malte, % Nun kommt Malte an die Reihe. Fassihn fragt ihn: "Hast du Andreas verprügelt?" Malte 1: "Nein, das habe ich nicht." 
+    A[3,2] #<=> #~ A[1,2], % Fassihn: "Kennst du Karl und Norbert?" Malte 2: "Ja, das sind meine Kumpel." 
+    A[3,3] #<=> #~ Karl, % Fassihn: "Hat Karl den Andreas verprügelt?" Malte 3: "Nein, Karl verprügelt nie jemanden."
+    solve(T ++ vars(A)), 
+    foreach(I in 1..3, T[I] = 1)
+        printf("%s hat Andreas verprügelt.%n", Nstr[I])
+    end, nl, fail. /* 
+Malte hat Andreas verprügelt.
+no more solutiojs, korrekt */
+
+/* 2. Alphametischer Rat: SEI * KEIN = FROSCH */
+main2 ?=>
+    mult(["SEI", "KEIN", "FROSCH"]), fail. /* 
+278 * 1785 = 496230
+no more solutions, korrekt */
+
+/* Auflösung aus Nr. 35: 1. In Klammern stehen die – der Reihe nach nummerierten – Bedingungen. Die L"den sind mit deren Anfangsbuchstaben bezeichnet. F ist (1,3,4) Mo, Di, Fr, Sa offen. D ist (1,5,7) nicht sowohl Sa als auch Mo zu. U ist (1,6,9) nicht sowohl Sa als auch Mo zu. Entweder (2) U als Einziger Sa zu und D als Einziger Mo zu oder D als Einziger Sa zu und U als Einziger Mo zu. Der erste Fall aber widerspr"che 8. Mithin (6,9) sind – wegen (10) nur – am Dienstag alle drei L"den offen. 2. 17, 5, 3; denn 17 ist der Unterschied zwischen 1 (linker Nachbar) und 7+11; 5 ist der Unterschied zwischen 7 und 1+11; 3 ist der Unterschied zwischen 11 und 1+7. 3. 58 " 9714 = 563412 */

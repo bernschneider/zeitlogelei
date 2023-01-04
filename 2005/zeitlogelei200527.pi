@@ -1,0 +1,31 @@
+/* Zeit Logelei Nr. 2005/27 (2005/26 nicht vorhanden)
+https://www.zeit.de/2005/27/Spielen_2fLogelei_27
+Beim Kongress insulanischer logischer Transaktionen wird dieses Jahr nach dem auf Kualesien üblichen Verfahren abgestimmt. 
+Auf Kualesien ist es üblich, immer mehrere Aussagen logisch zu verknüpfen. Hierbei wird, wie bei insulanischen Kongressen üblich, 
+vorausgesetzt, dass bereits jeder Teilnehmer die Position der anderen kennt und es nur noch darum geht, diese explizit mitgeteilt 
+zu haben. Bei der diesjährigen Abstimmung ging es um den freien Handel mit Logik-Produkten. Die Abstimmung lief wie folgt: ..
+Wie geht die Abstimmung aus, und wer ist dafür und wer dagegen? */
+import cp.
+main ?=> 
+    B=1, G=2, H=3, M=4, Q=5, S=6, _Y=7, Pstr = ["Bulafu", "Gonisum", "Hongi", "Moringu", "Qachqoch", "Sonu-Sonu", "Yonginga"], N = len(Pstr),
+    Pro = new_list(N), Pro :: 0..1, 
+    % Moringu vom Erenafu-Atoll: Wenn Sonu-Sonu dafür ist, dann auch ich. – 
+    Pro[S] #= 1 #=> Pro[M] #= 1,
+    % Sonu-Sonu von Lesni-Lesni: Wenn Hongi nicht mit abstimmen würde, würde eine gerade Anzahl dafür stimmen.
+    (sum(Pro) - Pro[H]) mod 2 #= 0,
+    % Hongi von Kualesien: Ich stimme anders ab als Bulafu. – 
+    Pro[H] #!= Pro[B],
+    % Bulafu vom Kwalmut-Archipel: Wenn Moringu dafür stimmt, dann stimme ich auch dafür.
+    Pro[M] #= 1 #=> Pro[B] #= 1,
+    % Yonginga von Wulkanien: Von Lesni-Lesni, Kualesien und vom Kwalmut-Archipel kommt eine gerade Anzahl von Stimmen für den freien Handel.
+    (Pro[S] + Pro[H] + Pro[B]) mod 2 #= 0,
+    % Gonisum von der Hunseninsel: Wenn Kualesien dagegen stimmt, dann stimmt auch die Hunneninsel dagegen.
+    Pro[H] #= 0 #=> Pro[G] #= 0,
+    % Qachqoch aus Ilfien: Von den anderen sechs Teilnehmern stimmt eine ungerade Anzahl dafür.
+    (sum(Pro) - Pro[Q]) mod 2 #= 1,
+    solve(Pro),
+    printf("%d sind dafür, %d dagegen. ", sum(Pro), N - sum(Pro)),
+    foreach(I in 1..N, Pro[I] = 1) printf("%s ", Pstr[I]) end, println("stimmen dafür."),
+    nl, fail.
+/* 4 sind dafür, 3 dagegen. Bulafu Moringu Qachqoch Sonu-Sonu stimmen dafür.
+no more solutions, korrekt */

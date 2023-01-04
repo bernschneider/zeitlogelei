@@ -1,0 +1,71 @@
+/* Zeit Logelei Nr. 2005/32
+https://www.zeit.de/2005/32/Spielen_2fLogelei_32
+Neun Freunde wollen sich Pizza bestellen, was gar nicht so einfach ist. Was müssen die Freunde bestellen? */
+import util, cp.
+main ?=>   %      1               2               3            4            5             6              7                 8             9
+    Gstr = ["Pizza Napoli", "Nizza-Salat", "Bauern-Salat", "Lasagne", "Tortellini", "Pizza Hawai", "Pizza Bolognese", "Spaghetti", "Pizza Spezial"],
+    A=1, B=2, L=3, M=4, N=5, P=6, R=7, S=8, W=9,
+    % Fstr = ["Anselm", "Bernd", "Lena", "Manuela", "Nadja", "Peter", "Rüdiger", "Sophia", "Wolfram"],
+    % Ger[G,F] = Fre[F,G] = so viele Viertel des Gerichts G bekommt Freund F (bei den Salaten sind es Hälften):
+    Fre = new_array(9,9), Fre :: 0..4, Ger = transpose(Fre), 
+    % Man kann nur ganze Gerichte bestellen:
+    foreach(G in 1..9) 
+        Ganz = cond((G = 2; G = 3), 2, 4),
+        sum(Ger[G]) mod Ganz #= 0 
+    end, 
+    % Nadja: »Ich esse eine ganze Pizza Napoli und einen halben Salat. Nizza oder Bauern.« 
+    % Anselm: »Würdest du ein Viertel Pizza abgeben? Ich möchte nämlich von jeder Sorte, die bestellt wird, ein Viertel.« – 
+    [A_PN,A_PH,A_PB,A_PS] :: 0..1,  FreA = [A_PN,0,0, 0,0,A_PH, A_PB,0,A_PS], will(Fre[A], FreA), 
+    foreach(G in [1,6,7,9]) sum(Ger[G]) #> 0 #<=> FreA[G] #= 1 end,
+    % Nadja: »Gut, aber dann nehme ich einen ganzen Salat. Nizza oder Bauern oder halb-halb.«
+    [N_NS,N_BS] :: 0..2, N_NS + N_BS #= 2, will(Fre[N], [3,N_NS,N_BS, 0,0,0, 0,0,0]), 
+    % Lena: »Einen halben Nizza nehme ich auch, und dazu eine halbe Lasagne oder eine halbe Portion Tortellini.« 
+    [L_LA,L_TO] :: [0,2], L_LA + L_TO #= 2, will(Fre[L], [0,1,0, L_LA,L_TO,0, 0,0,0]), 
+    % Wolfram: »Ich möchte eine Pizza Hawaii oder eine Pizza bolognese oder Spaghetti. Ich würde aber auch ein Viertel meiner Pizza oder meiner Spaghetti abgeben.« 
+    [W_PH,W_PB,W_SP] :: [0,3,4], Wsum #= W_PH + W_PB + W_SP, Wsum :: [3,4], will(Fre[W], [0,0,0, 0,0,W_PH, W_PB,W_SP,0]), 
+    % Manuela: »Ich möchte vier Pizza-Viertel, mindestens drei mit Hackfleisch. Das gibt’s auf der Pizza bolognese und auf der Pizza Spezial.« 
+    [M_PN,M_PH,M_PB,M_PS] :: 0..4, sum([M_PN,M_PH,M_PB,M_PS]) #= 4, M_PB + M_PS #>= 3, will(Fre[M], [M_PN,0,0, 0,0,M_PH, M_PB,0,M_PS]), 
+    % Peter: »Igitt, die Spezial ist mit Oliven! Und die Napoli auch. Ich nehme zwei beliebige Pizza-Viertel, aber ohne Oliven!« 
+    % Peter: »Statt der halben Pizza würde ich auch eine halbe Portion Tortellini nehmen.«:
+    [P_TO,P_PH,P_PB] :: 0..2, sum([P_TO,P_PH,P_PB]) #= 2, will(Fre[P], [0,0,0, 0,P_TO,P_PH, P_PB,0,0]),
+    % Manuela: »Ich möchte Oliven auf mindestens zwei meiner vier Viertel.« 
+    M_PN + M_PS #>= 2,
+    % Bernd: »Ich hätte am liebsten vier verschiedene Viertel. Wenn aber eine Pizza doppelt vorkommt, ist es mir auch recht.« 
+    [B_PN,B_PH,B_PB,B_PS] :: 0..2, sum([B_PN,B_PH,B_PB,B_PS]) #= 4, 
+    will(Fre[B], [B_PN,0,0, 0,0,B_PH, B_PB,0,B_PS]), 
+    % nvalue(Cnt, [B_PN,B_PH,B_PB,B_PS]), Cnt #!= 2, % schließe zwei Doppelte aus! 
+    % Rüdiger: »Ich nehme eine ganze Portion Tortellini oder Spaghetti. Alternativ nur eine halbe und dafür einen Bauernsalat dazu.« 
+    [R_TO,R_SP] :: 0..4, R_BS :: 0..2, R_TO + R_SP #>= 2, R_TO + R_SP + R_BS #= 4, 
+    will(Fre[R], [0,0,R_BS, 0,R_TO,0, 0,R_SP,0]),
+    % Sophia: »Reicht dir ein halber Salat? Ich möchte nämlich zwei verschiedene halbe Salate.« – 
+    will(Fre[S], [0,1,1, 0,0,0, 0,0,0]), 
+    % Rüdiger: »Wenn ich einen halben Salat nehme, dann hätte ich gern eine dreiviertel Portion Nudeln. 
+    %           Es macht mir nichts aus, Tortellini und Spaghetti zu mischen, wenn die Menge stimmt.« -> Zeile 31
+    solve(vars(Ger) ++ vars(Fre) ++ FreA ++ [A_PN,A_PH,A_PB,A_PS, N_NS,N_BS, L_LA,L_TO, W_PH,W_PB,W_SP,Wsum, M_PN,M_PH,M_PB,M_PS, P_TO,P_PH,P_PB, B_PN,B_PH,B_PB,B_PS, R_TO,R_SP]),
+    foreach(G in 1..9)
+        printf("%15s: %w%n", Gstr[G], Ger[G])
+    end. %,
+    % nl, fail. 
+/*                A B L M N P R S W
+   Pizza Napoli: {1,0,0,0,3,0,0,0,0}
+    Nizza-Salat: {0,0,1,0,0,0,0,1,0}
+   Bauern-Salat: {0,0,0,0,2,0,1,1,0}
+        Lasagne: {0,0,0,0,0,0,0,0,0}
+     Tortellini: {0,0,2,0,0,0,2,0,0}
+    Pizza Hawai: {1,1,0,0,0,2,0,0,0}
+Pizza Bolognese: {1,2,0,2,0,0,0,0,3}
+      Spaghetti: {0,0,0,0,0,0,0,0,0}
+  Pizza Spezial: {1,1,0,2,0,0,0,0,0}
+leider keine Lösung für Rüdige^r (Zeile 38) :-( 
+oder keine Lösung für Peter-v (Zeile 30):
+   Pizza Napoli: {1,0,0,0,3,0,0,0,0}
+    Nizza-Salat: {0,0,1,0,0,0,0,1,0}
+   Bauern-Salat: {0,0,0,0,2,0,1,1,0}
+        Lasagne: {0,0,0,0,0,0,0,0,0}
+     Tortellini: {0,0,2,0,0,0,2,0,0}
+    Pizza Hawai: {0,0,0,0,0,0,0,0,0}
+Pizza Bolognese: {1,2,0,0,0,1,0,0,0}
+      Spaghetti: {0,0,0,0,0,0,1,0,3}
+  Pizza Spezial: {1,2,0,4,0,1,0,0,0} */
+will(F1,F2) =>
+    foreach(G in 1..9) F1[G] #= F2[G] end.

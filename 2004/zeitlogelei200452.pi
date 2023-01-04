@@ -1,0 +1,61 @@
+/* Zeit Logelei Nr. 2004/52 (Achtung: 2004/51 ist ein Kreuzzahlrätsel!)
+https://www.zeit.de/2004/52/Spielen_2fLogelei_52/komplettansicht
+1. Die Sekretärin von Herrn Veilchen ist schwanger und wird demnächst in Mutterschaftsurlaub gehen. Deshalb hatte Herr Veilchen heute zwei Bewerberinnen eingeladen. 
+Nachdem die beiden gegangen sind, wollte sich Herr Veilchen schnell ein paar Notizen machen, doch ein Telefonanruf seiner Frau bringt ihn völlig durcheinander.
+Seine Sekretärin weiß aber noch ein wenig über die beiden Frauen: .. Herr Veilchen wird aus diesen Angaben nicht schlau.
+Können Sie ihm helfen, die Informationen seiner Sekretärin über die beiden Bewerberinnen zuzuordnen? */
+import cp.
+main1 ?=> %       1           2
+    StrVn = ["Manuela",  "Tanja"], M=1, T=2,
+    Str = [["Rosendorf", "Nelkenfeld"],   % Nn
+           ["braune",    "grüne"],        % Au
+           ["braune",    "graue"],        % Ht
+           ["blaues",    "grünes"],       % Kl
+           ["brünett",   "blond"],        % Hf
+           ["Frankfurt", "Mannheim"],     % St
+           ["Kleinere",  "Größere"]],     % Gr
+    Nn=1, Au=2, Ht=3, Kl=4, Hf=5, St=6, Gr=7, 
+    E = new_array(7,2), E :: 1..2, % Vorname -> (Nachname, Augen, Handtasche, Kleid, Haarfarbe, Stadt, Größe)
+    R = new_array(7,2), R :: 1..2, foreach(I in 1..7) assignment(E[I], R[I]) end, 
+    % Wenn die Frau mit den grünen Augen die graue Handtasche hatte, dann war Tanja die Brünette:
+    element(R[Au,2], E[Ht], Ht1), Ht1 #= 2 #=> E[Hf,T] #= 1,
+    % Wenn die Frau mit den braunen Augen Rosendorf hieß, dann war die Brünette aus Mannheim:
+    element(R[Au,1], E[Nn], Nn2), element(R[Hf,1], E[St], St2), Nn2 #= 1 #=> St2 #= 2,
+    % Wenn Manuela ein grünes Kleid anhatte, dann hatte die Kleinere braune Augen:
+    element(R[Gr,1], E[Au], Au3), E[Kl,M] #= 2 #=> Au3 #= 1,
+    % Wenn die Frau aus Mannheim groß war, dann hatte Manuela ein blaues Kleid an:
+    element(R[St,2], E[Gr], Gr4), Gr4 #= 2 #=> E[Kl,M] #= 1,
+    % Wenn Frau Rosendorf ein grünes Kleid anhatte, dann war die Frau mit der grauen Handtasche aus Mannheim:
+    element(R[St,1], E[Kl], Kl5), element(R[Ht,2], E[St], St5), Kl5 #= 2 #=> St5 #= 2,
+    % Wenn die Frau mit den braunen Augen die braune Handtasche hatte, dann war die Frau mit dem blauen Kleid die Größere:
+    element(R[Au,1], E[Ht], Ht6), element(R[Kl,1], E[Gr], Gr6), Ht6 #= 1 #=> Gr6 #= 2,
+    % Wenn die Brünette eine braune Handtasche hatte, dann hatte Tanja ein blaues Kleid:
+    element(R[Hf,1], E[Ht], Ht7), Ht7 #= 1 #=> E[Kl,T] #= 1,
+    % Wenn die Brünette ein blaues Kleid anhatte, dann hatte Frau Nelkenfeld die graue Handtasche:
+    element(R[Hf,1], E[Kl], Kl8), element(R[Nn,2], E[Ht], Ht8), Kl8 #= 1 #=> Ht8 #= 2,
+    % Wenn die Kleinere der beiden ein grünes Kleid anhatte, dann hatte die Brünette grüne Augen:
+    element(R[Gr,1], E[Kl], Kl9), element(R[Hf,1], E[Au], Au9), Kl9 #= 2 #=> Au9 #= 2,
+    % Wenn die Dame mit dem blauen Kleid eine braune Handtasche hatte, dann war die Kleinere Tanja: 
+    element(R[Kl,1], E[Ht], Ht10), Ht10 #= 1 #=> E[Gr,T] #= 1,
+    % Wenn die Brünette braune Augen hatte, dann war Manuela die Größere:
+    element(R[Hf,1], E[Au], Au11), Au11 #= 1 #=> E[Gr,M] #= 2,
+    % Wenn die Blonde braune Augen hatte, dann war Tanja aus Frankfurt:
+    element(R[Hf,2], E[Au], Au12), Au12 #= 1 #=> E[St,T] #= 1,
+    solve(vars(E) ++ vars(R)),
+    foreach(S in 1..2) 
+        printf("%s %s hat %s Augen, eine %s Handtasche, ein %s Kleid, ist %s, kommt aus %s und ist die %s.%n", 
+                StrVn[S], Str[Nn,E[Nn,S]], Str[Au,E[Au,S]], Str[Ht,E[Ht,S]], Str[Kl,E[Kl,S]], Str[Hf,E[Hf,S]], Str[St,E[St,S]], Str[Gr,E[Gr,S]])
+    end, nl, fail. /*
+Manuela Rosendorf hat grüne Augen, eine braune Handtasche, ein grünes Kleid, ist blond, kommt aus Frankfurt und ist die Größere.
+Tanja Nelkenfeld hat braune Augen, eine graue Handtasche, ein blaues Kleid, ist brünett, kommt aus Mannheim und ist die Kleinere.
+no more solutions, sieht gut aus! */
+
+/* 2. Wie alt sind die beiden? */
+main2 ?=>
+    Al = [M,S], Al :: 1..100,
+    M + 3 #= 3 * S, % Monika zu Sabine: "Wenn ich drei Jahre älter wäre, wäre ich dreimal so alt wie du, ..
+    M - 3 #= 2 * S, % .. und wenn ich drei Jahre jünger wäre, wäre ich doppelt so alt wie du." 
+    solve(Al),
+    printf("Monika ist %d und Sabine %d Jahre alt.%n", M, S), fail. /*
+    Monika ist 15 und Sabine 6 Jahre alt.
+    no more solutions, sieht gut aus! */

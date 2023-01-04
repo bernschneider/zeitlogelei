@@ -1,0 +1,60 @@
+/* Zeit Logelei Nr. 2003/38
+https://www.zeit.de/2003/38/Spielen_2fLogelei_38 Vier Logelei-Klassiker und eine Alphametik
+1. Zwei Bauern bringen ihr Vieh zum Markt. ... Welcher Bauer hat wie viele Schafe zum Markt gebracht? */
+import cp, alphametik.
+main1 ?=> 
+    S = [S1, S2], S :: 1..100,
+    % Sagt der eine zum anderen: "Gib mir eines deiner Schafe, dann habe ich genauso viele wie du."
+    S1 + 1 #= S2 - 1,
+    % Der andere erwidert: "Ja, aber wenn du mir eines von deinen Schafen gibst, dann werde ich doppelt so viele haben wie du."
+    S2 + 1 #= 2* (S1 -1),
+    solve(S),
+    printf("%d und %d Schafe.%n", S1, S2), % 5 und 7 Schafe, no more solutions, korrekt
+    fail. 
+
+/* 2. Auf dem Flohmarkt bietet Uwe alte Schellack-Schallplatten an, _Jazzplatten zu je drei Euro, _Swingplatten zu je zwei Euro und _Schlagerplatten zu je 50 Cent pro Stück.
+Jörg hat 22 Euro bei sich, die er restlos für 22 Schallplatten an Uwes Stand ausgeben möchte.
+Wie viele Platten jeder Sorte kann er dafür kaufen? */
+main2 ?=>
+    Anz = [Jazz, Swing, Schlager], Anz :: 0..100,
+    2200 #= 300 * Jazz + 200 * Swing + 50 * Schlager,
+    22 #= Jazz + Swing + Schlager,
+    solve(Anz),
+    printf("%d Jazz-, %d Swing- und %d Schlagerplatten.%n", Jazz, Swing, Schlager),
+    fail. % 2 Jazz-, 4 Swing- und 16 Schlagerplatten, no more solutions, korrekt
+
+/* 3. Otto fragt seine Liebste: "In welchem Jahr wollen wir heiraten?"
+Die ist recht abergläubisch, darum antwortet sie: "Nur in einem Jahr, in dem es keinen Freitag, den Dreizehnten gibt."
+Otto überlegt sich, in welchem Jahr dies sein mag. Wer kann ihm helfen? */
+main3 ?=> 
+    print("Die Hochzeit muss ausfallen").
+/* In einem Schaltjahr beginnen Jan., Feb., März, Mai, Juni, Sept. und Okt. an voneinander verschiedenen Wochentagen, 
+im Nichtschaltjahr Jan., Feb., April, Mai, Juni, Aug. und Sept.. Darum hat jedes Jahr mindestens einen Freitag, den 13. */
+
+/* 4. Sechs Mädchen wollen ein Märchen aufführen. Jedes möchte die Königstochter spielen, aber es gibt nur eine in dem Theaterstück.
+Also schlägt Kathrin vor: "Wir stellen uns im Kreis auf; eine denkt sich eine Zahl aus, zum Beispiel acht, und dann zählen wir ab. 
+Die Achte ist ausgezählt, sie muss den Kreis verlassen, und bei der Nächsten beginnt das Auszählen von neuem mit der Acht. Wer übrig bleibt, soll die Königstochter sein."
+Die Mädchen bilden den Kreis .. */
+main4 ?=>
+    % Die 6 Mädchen stehen im Modulo-Kreis an den Positionen 0..5.
+    Out = new_list(6), % Out[2..6] sind die Positionen der auscheidenden Mädchen
+    % Sagen wir Kathrin steht auf Position 5. Dann steht ihre Nachbarin auf 0 und rückt in der Nummerierung 0..N nie nach vorn!
+    Out[1] #= 5, 
+    % Kathrin bestimmt: "Bei mir beginnt das Zählen, und gezählt wird rechts herum."
+    % Sie wendet sich an ihre rechte Nachbarin (Pos. 0) und fordert sie auf, sich eine Zahl C auszudenken, bis zu der ausgezählt werden soll.
+    C :: 1..18, 
+    % Welche Zahl wählt sie, die ihr die Rolle der Königstochter sichert, sie also nie ausscheidet, Out somit nie 0 wird?
+    Out :: 1..5,
+    % Beim Ausscheiden von Mädchen J rücken die Mädchen mit der Position K > J nach vorn an Position K-1:
+    foreach(I in 1..5)    % vvv------------------------------------------------^^^^^^^^^
+        Out[I+1] #= (Out[I] - 1 + C) mod (7-I) % wir zählen um C Positionen weiter, beginnend bei der Position des nach vorn gerückten Mädchens
+    end,
+    solve([C] ++ Out),
+    printf("Mit der %d klappt es: %w%n", C, Out), fail. % Mit der 10 klappt es: [5,2,1,2,2,1], no more solutions, korrekt
+
+/* 5. Eine ungewöhnliche Alphametik: AUS ^ 2 = PASTUS.
+AUS soll eine Primzahl sein und PASTUS deren Quadrat. */
+main5 =>
+    mult(["AUS", "AUS", "PASTUS"]). % 601 * 601 = 361201, korrekt
+
+/* Aufl"sung aus Nr. 37: 1. Gabi hat das blaue Abendkleid gew"hlt, Maria das kurze Kleid in Gelb, Nora das rote Sommerkleid, Petra das gr"ne Winterkleid und Renate den roten Party-Dress. 2. 603 mal 108 = 65124 oder 607 mal 104 = 63128: DAME = 1062 */

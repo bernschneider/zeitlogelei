@@ -1,0 +1,25 @@
+/* Zeit Logelei Nr. 2006/15 ((2006/14 ist ohne Bild, 2006/16 ist ein Kreuzzahlrätsel)
+https://www.zeit.de/2006/15/Spielen_2fLogelei_15
+Bauer Forenmüller kommt vom Markttag nach Hause und erzählt seiner Frau: »Heute hatte ich sechs merkwürdige Kunden. */
+import util, cp.
+main ?=> 
+    B = new_list(7), B :: 0..100, % so viele Kürbisse hat der Bauer vor dem I.ten Kunden
+    K = new_list(6), K :: 0..100, % so viele Kürbisse bekommt Kunde I
+    foreach(I in 1..6) 
+        B[I+1] #= B[I] - K[I], % nach dem I.ten Kunden hat der Bauer K[I] Kürbisse weniger
+        % Jeder wollte immer genau ein Drittel der Kürbisse kaufen, die ich hatte.« – »Dann musstest du einen Kürbis klein schneiden?«, 
+        % fragt seine Frau. »Das hätte ich zwar bei jedem der sechs Kunden machen müssen, aber jedes Mal wehrten diese ab und meinten, 
+        % ich könne einfach den letzten Kürbis vollständig lassen. »Das heißt also, du hast jedem etwas mehr als ein Drittel verkauf?« »Ja«
+        3 *  K[I]      #> B[I],
+        3 * (K[I] - 1) #< B[I]
+    end,
+    % Und das Merkwürdigste daran ist, am Ende hatte ich alle Kürbisse verkauft, und das, obwohl niemand sonst Kürbisse haben wollte.«: 
+    B[7] #= 0,
+    solve(B ++ K),
+    println(B), % [17,11,7,4,2,1,0]
+    println(K), %   [6, 4,3,2,1,1]
+    % Wie viele Kürbisse hat der Bauer verkauft?
+    printf("Der Bauer hat %d Kürbisse verkauft.", B[1]),
+    nl, fail. 
+/* Der Bauer hat 17 Kürbisse verkauft.
+no more solutions, sieht gut aus! */

@@ -1,0 +1,39 @@
+/* Zeit Logelei Nr. 2005/17
+https://www.zeit.de/2005/17/Spielen_2fLogelei_17/komplettansicht
+"Jetzt habe ich alle sechs Bücher gekauft, die du mir empfohlen hast", klagt Alfons der Unentschlossene bei seinem Freund Claudwig Weißbescheid, 
+"und nun weiß ich nicht, welches ich als Erstes lesen soll. Wie soll ich wissen, in welcher Reihenfolge man die Bücher am besten liest, 
+wenn ich sie noch gar nicht kenne?" "Dann ist ja gut, dass ich sie schon gelesen habe", antwortet Claudwig, "lass mal sehen…
+"Und was ist jetzt die Reihenfolge, in der ich die Bücher lesen sollte?", fragt Alfons, der das Gefühl hat, noch weniger zu wissen als vorher. 
+"Das musst du schon selbst wissen", antwortet Claudwig. Wissen Sie es? */
+import cp.
+main ?=> 
+    Str = ["Der das Licht sucht", "Der rote Kessel", "Die Kurtisanen des Patriarchen", "Die Verwünschung", "Palast der Wände", "Tigermond"], 
+    Rank = [L, K, P, V, W, T], N = len(Rank), Rank :: 1..N, all_different(Rank),
+    % "Wenn du Palast der _Wände vor Die Kurtisanen des _Patriarchen liest, dann am besten auch vor _Tigermond. 
+    W #< P #=> W #< T,
+    % Wenn du hingegen Die Kurtisanen des _Patriarchen nach _Tigermond liest, dann solltest du Die _Verwünschung vor Die Kurtisanen des _Patriarchen lesen 
+    % und Der das _Licht sucht nach Der rote _Kessel. 
+    P #> T #=> (V #< P #/\ L #> K),
+    T #> K #\/ T #> L,  % In _Tigermond wird vorausgesetzt, dass man Der rote _Kessel oder Der das _Licht sucht schon kennt, 
+    P #> V #\/ P #> T,  % und die Hauptperson aus Die Kurtisanen des _Patriarchen sollte man vorher in Die _Verwünschung oder in _Tigermond kennen gelernt haben." – "Ach."
+    % "Beachte: Wenn du Palast der _Wände später als Die _Verwünschung liest, solltest du wenigstens Die Kurtisanen des _Patriarchen vor Der rote _Kessel lesen. 
+    W #> V #=> P #< K,
+    % Ich hatte übrigens mal einen Freund, der kam auf die Idee, erst Der das _Licht sucht zu lesen, dann Palast der _Wände und danach erst _Tigermond, 
+    % obwohl ich ihm davon abgeraten hatte. Diese drei Bücher kann man in jeder Reihenfolge lesen außer in dieser!" – "Da wirst du wohl Recht haben."
+    #~(L #< W #/\ W #< T), 
+    % "Natürlich habe ich Recht. Das hat mein Freund hinterher dann auch eingesehen. Ich persönlich habe Tigermond vor Die _Verwünschung gelesen; 
+    % du kannst _Tigermond natürlich auch danach lesen, aber dann ist es wichtig, Die Kurtisanen des _Patriarchen vor Der das _Licht sucht zu lesen 
+    T #> V #=> (P #< L #/\ W #< K), % und Palast der _Wände vor Der rote _Kessel. – "Ja, äh, danke…" – "Moment, noch eine Sache: 
+    % Wenn du Die Kurtisanen des _Patriarchen beim Lesen von Die _Verwünschung noch nicht kennst, solltest du auch Palast der _Wände beim Lesen von Der das _Licht sucht nicht kennen." – 
+    P #> V #=> W #> L,
+    solve(Rank),
+    Ranking = [(Rank[I],I) : I in 1..N].sort(),
+    foreach((R,I) in Ranking) printf("%d. %s%n", R, Str[I]) end,
+    fail. /* 
+1. Die Verwünschung
+2. Die Kurtisanen des Patriarchen
+3. Der das Licht sucht
+4. Tigermond
+5. Palast der Wände
+6. Der rote Kessel
+CPU time 0.002 seconds, no more solutions, korrekt */

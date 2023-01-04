@@ -1,0 +1,114 @@
+/* Zeit Logelei Nr. 2004/49
+https://www.zeit.de/2004/49/Spielen_2fLogelei_49/komplettansicht
+1. Herr Doktor Schmalfuß wurde auf die (eigentlich unbewohnte) Insel Yukapoatl geschickt, um zu erkunden, warum die Mitglieder der dortigen Forschungsstation ständig krank sind. 
+An den Symptomen erkennt er sofort: Es handelt sich um die Folgen unausgewogener Vitaminzufuhr. Es stellt sich heraus, dass sich die Forscher von den exotischen Früchten der 
+Insel ernähren, und die enthalten zwar eigentlich viele Vitamine, aber jede Frucht enthält nur wenige verschiedene. Doktor Schmalfuß untersucht also, welche Frucht was enthält, 
+um einen ausgewogenen Speiseplan zu erstellen. Das Ergebnis seiner Untersuchungen ist: ... Nun hat Schmalfuß ein Problem:  Wie kann er eine geeignete Mahlzeit zusammenstellen? */
+import util, cp.
+main1 ?=>
+    Str = ["Kuyamaras", "Sonnenfrüchte",  "Kaktusbirnen", "Granatpflaumen", "Sinquats", "Mamayas", "Mongos"], N = len(Str),
+    M = new_list(N), M :: 0..1, % M[I] = 1 <=> Frucht I gehört zur Mahlzeit
+    sum(M) #= 3, % drei Früchte sind von der Menge her genug für eine ganze Mahlzeit. 
+    %     A B1 B2 B3 B6 B12 C D E
+    C = {{0, 0, 0, 1, 0, 1, 1,0,1}, % Kuyamaras enthalten die Vitamine B3, B12, C und E.
+         {1, 1, 1, 0, 0, 0, 0,0,1}, % Sonnenfrüchte enthalten die Vitamine A, B1, B2 und E.
+         {1, 0, 0, 0, 0, 1, 0,1,0}, % Kaktusbirnen enthalten die Vitamine A, B12 und D.
+         {1, 1, 0, 1, 1, 0, 0,0,0}, % Granatpflaumen enthalten die Vitamine A, B1, B3 und B6.
+         {0, 1, 1, 0, 0, 0, 1,1,0}, % Sinquats enthalten die Vitamine B1, B2, C und D.
+         {0, 1, 0, 1, 0, 0, 0,1,0}, % Mamayas enthalten die Vitamine B1, B3 und D.
+         {0, 0, 1, 0, 1, 0, 0,0,1}},% Mongos enthalten die Vitamine B2, B6 und E.
+    Ct = C.transpose(),
+    % In jeder Mahlzeit sollen alle Vitamine (A, B1, B2, B3, B6, B12, C, D und E) vorkommen:
+    foreach(V in 1..9)
+        scalar_product(M, Ct[V], Product),
+        Product #> 0
+    end,
+    solve(M),
+    foreach(F in 1..N, M[F] = 1) printf("%s ", Str[F]) end, 
+    println("gehören zur Mahlzeit."), 
+    fail. 
+/* Kuyamaras Granatpflaumen Sinquats gehören zur Mahlzeit.
+CPU time 0.001 seconds, no more solutions, korrekt */
+
+/* 2. Frau Sumpfdotter hat eine ganz andere Lösung für das Problem. Sie ist Vertreterin für Nahrungsmittelzusätze und bewirbt ihr Produkt VITA-MAX mit einer Alphametik:
+VITA • MAX 
+---------- 
+WXXX 
+ MWTX 
+  WIWG 
+   WCIG 
+------- 
+WICHTIG */
+main2 =>
+    mult(["VITA", "MAX", "WXXX", "MWTX", "WIWG", "WCIG", "WICHTIG"]).
+/* 7986 * 365
+-----------
+2555
+ 3285
+  2920
+   2190
+-----------
+2914890
+CPU time 0.009 seconds, korrekt*/
+
+/* 3. Eine buddhistische Weisheit:
+   YIN 
++ YANG 
+------ 
+ TEILT */
+main3 =>
+    add(["YIN", "YANG", "TEILT"]).
+/*    925
+  9356
+------
+ 10281
+CPU time 0.001 seconds, KORREKT */
+
+/* Auflösung aus Nr. 48:
+1. Bei den Personalpronomen bedeuten: »no« = »ich«, »bru« = »du«, »sa« = »er«. Die Verben sind »kwoll« = »ist« und »trell« = »ist nicht«. Die Farben sind »parant« = »rot«, »atelg« = »violett«, »wising« = »blau«. Und die Konjunktionen sind »pum« = »und« und »ül« = »oder«
+2. 9058 • 634 = 5742772 */
+add(L) => % das letzte Element von L ist die Summe der vorherigen Elemente
+   Letter = keys(new_set(flatten(L))), % verwendete Buchstaben
+   Digit = new_list(len(Letter)), Digit :: 0..9, % eine Ziffer je Buchstabe
+   all_different(Digit),
+   Zeilen = len(L) - 1, % Anzahl der Summanden, im Beispiel = 2
+   Num = new_array(len(L)), % numerische Repräsentation der Elemente von L
+   foreach(I in 1..len(L))
+       S = [Digit[find_first_of(Letter, C)] : C in L[I]], % Convert Letter C -> Digit
+       to_num(S, Num[I]), S[1] #!= 0
+   end,
+   sum([Num[I] : I in 1.. Zeilen]) #= Num[len(L)],
+   solve(Digit ++ Num),
+   foreach(I in 1..Zeilen) printf("%6d%n", Num[I]) end,
+   printf("------%n"),
+   printf("%6d%n%n", Num[len(L)]).
+
+mult(L) => % L[1] * L[2] = L[len(L)]; dazwischen stehen die Teilrechnungen
+   Letter = keys(new_set(flatten(L))), % verwendete Buchstaben
+   Digit = new_list(len(Letter)), Digit :: 0..9, % eine Ziffer je Buchstabe
+   all_different(Digit),
+   Zeilen = len(L[1]), % Anzahl der Teilrechnungen, im Beispiel = 4
+   LenZeile = max([len(L[2+I]) : I in 1..Zeilen]), % maximale Länge der Zeilen, im Beispiel = 5
+   Num = new_array(len(L)), % numerische Repräsentation der Elemente von L
+   foreach(I in 1..len(L))
+       S = [Digit[find_first_of(Letter, C)] : C in L[I]], % Convert Letter C -> Digit
+       to_num(S, Num[I]), S[1] #!= 0
+   end,
+   Num[1] * Num[2] #= Num[len(L)], % Hauptgleichung (im Beispiel DEZI * WERT = PARKZEIT)
+   L1 = L[1],
+   foreach(I in 1..Zeilen) % zeilenweise Teilrechnung:
+       Digit[find_first_of(Letter, L1[I])] * Num[2] #= Num[2+I]
+   end,
+   solve(Digit ++ Num),
+   printf("%d * %d%n", Num[1], Num[2]),
+   printf("-----------%n"),
+   foreach(I in 1..Zeilen)
+       foreach(_ in 2..I+LenZeile-len(L[2+I])) print(' ') end, % Indent
+       println(Num[2+I])
+   end,
+   printf("-----------%n"),
+   printf("%d%n%n", Num[len(L)]).
+
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).

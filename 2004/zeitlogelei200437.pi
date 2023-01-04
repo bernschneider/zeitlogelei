@@ -1,0 +1,69 @@
+/* Zeit Logelei Nr. 2004/37
+https://www.zeit.de/2004/37/Spielen_2fLogelei_37/komplettansicht
+1. Die Chefköchin der Kantine ist im Urlaub, deshalb muss Frau Gengenbach heute vertretungsweise die Essenspläne zusammenstellen. 
+Dabei stellt sich heraus, dass das gar nicht so einfach ist. Es soll drei Menüs geben, 
+und jedes Menü soll aus einer Suppe, einer Hauptspeise, einer Beilage, einem Salat und einem Nachtisch bestehen. 
+Zutaten für die folgenden Gerichte sind vorhanden: Hühnercremesuppe, kanadische Frühlingssuppe, klare Gemüsebrühe.
+Als Hauptgerichte: Brokkoli-Mais-Medaillon, Hähnchen-Cordon-rouge, panierter Rehrücken.
+Als Beilagen: Rahmspätzle »Hausfrauen-Art«, Tiroler Blattspinat, Kaiserrisotto mit Speck.
+Salate: Getreide-Rohkost-Salat, Bauernsalat mit Putenbruststreifen, bunter Sommersalat.
+Als Nachtische: Apfel Hélène, Waldmeisterpudding, Kokos-Vanille-Jogurt
+Bei der Zusammenstellung muss man einiges beachten: .. */
+import util, cp, alphametik.
+main1 ?=> 
+    Suppe=1, Hauptspeise=2, Beilage=3, Salat=4, Nachtisch=5,
+    %                 1                         2                            3
+    Str = [["Huehnercremesuppe",       "Fruehlingssuppe",        "klare Gemuesebruehe"],     % Suppe
+           ["Brokkoli-Mais-Medaillon", "Haehnchen-Cordon-rouge", "panierter Rehruecken"],    % Hauptspeise
+           ["Rahmspaetzle",            "Tiroler Blattspinat",    "Kaiserrisotto mit Speck"], % Beilage 
+           ["Getreide-Rohkost-Salat",  "Bauernsalat",            "bunter Sommersalat"],      % Salat
+           ["Apfel Helene",            "Waldmeisterpudding",     "Kokos-Vanille-Jogurt"]],   % Nachtisch
+    M = new_array(3,5), M :: 1..3, Mt = M.transpose(),
+    % Es soll mindestens ein vegetarisches Menü geben. (Hühnercremesuppe, Hähnchen-Cordon-rouge, Rehrücken, Risotto und Bauernsalat sind nicht vegetarisch.):
+    M[1,Suppe] #!= 1, M[1,Hauptspeise] #= 1, M[1,Beilage] #!= 3, M[1,Salat] #!= 2, % sagen wir, das vegatarische Menü ist Menü 1
+    M[2,Hauptspeise] #= 2, M[3,Hauptspeise] #= 3, % breaking symmetries
+    foreach(J in 1..5) all_different(Mt[J]) end,
+    foreach(I in 1..3)
+        M[I,Suppe] #= 1       #=> M[I,Hauptspeise] #!= 2, % Die Hühnercremesuppe passt nicht zum Hähnchen-Cordon-rouge. 
+        M[I,Salat] #= 3       #=> M[I,Suppe] #= 2, % Der bunte Sommersalat passt besonders gut zur kanadischen Frühlingssuppe und sollte deshalb ins selbe Menü. 
+        M[I,Hauptspeise] #= 3 #=> M[I,Nachtisch] #= 3, % Zum panierten Rehrücken ist als Nachtisch Kokos-Vanille-Jogurt besonders geeignet. 
+        M[I,Beilage] #= 3     #=> (M[I,Hauptspeise] #!= 2 #/\ M[I,Salat] #!= 2), % Das Kaiserrisotto passt weder zum Hähnchen-Cordon-rouge noch zum Bauernsalat. 
+        M[I,Salat] #= 3       #=> M[I,Nachtisch] #!= 1, % Der bunte Sommersalat macht sich farblich nicht so gut neben dem Apfel Hélène. 
+        M[I,Hauptspeise] #= 2 #=> M[I,Beilage] #!= 2 % Hähnchen-Cordon-rouge und Blattspinat zusammen sind schwer verdaulich.
+    end,
+    solve(M),
+    printf("%23s %23s %23s%n", "MENUE 1: (vegetarisch)", "MENUE 2:", "MENUE 3:"),
+    foreach(J in 1..5)
+        printf("%23s %23s %23s%n", Str[J,M[1,J]], Str[J,M[2,J]], Str[J,M[3,J]]) 
+    end,
+    nl, fail. /* 
+ MENUE 1: (vegetarisch)                MENUE 2:                MENUE 3:
+        Fruehlingssuppe     klare Gemuesebruehe       Huehnercremesuppe
+Brokkoli-Mais-Medaillon  Haehnchen-Cordon-rouge    panierter Rehruecken
+    Tiroler Blattspinat            Rahmspaetzle Kaiserrisotto mit Speck
+     bunter Sommersalat             Bauernsalat  Getreide-Rohkost-Salat
+     Waldmeisterpudding            Apfel Helene    Kokos-Vanille-Jogurt
+    no more solutions, korrekt */
+
+/* 2. Frau Gengenbach schaut in die Mensaküche und ruft:
+REH • RÜCKEN = UNMENGEN
+Ausgerechnet ergibt sich:
+REH • RÜCKEN
+ KÜMHGN
+ RNEKÜÜN
+   RÜCKEN
+ UNMENGEN */
+main2 =>
+    mult(["REH", "RÜCKEN", "KÜMHGN", "RNEKÜÜN", "RÜCKEN", "UNMENGEN"]). /* 
+271 * 296570
+-----------
+ 593140
+ 2075990
+   296570
+-----------
+80370470
+korrekt */
+
+/* Auflösung aus Nr. 36:
+1. Die Pizza ist mit Brokkoli, Zwiebeln, Mozzarella, Salami und Schinken belegt.
+2. Für den 55-Cent-Brief muss Herr Postfix die 6-Cent- die 20-Cent- und die 29-Cent-Briefmarke verwenden, für die 77-Cent-Büchersendung die 18-Cent-, die 19-Cent- und die 40-Cent-Marke und für den großen 1,44-Euro-Brief die 32-Cent- und die beiden 56-Cent-Marken */

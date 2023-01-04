@@ -1,0 +1,42 @@
+/* Zeit Logelei Nr. 2005/08 (2005/09 ist ein Kreuzzahlrätsel)
+https://www.zeit.de/2005/08/Spielen_2fLogelei_08/komplettansicht
+Für Karl-Friedrich ist die Zeit gekommen, seine _sieben_ Sachen zu packen. Aber welche? Insgesamt besitzt er zwölf. Er grübelt: */
+import util, cp.
+main ?=> 
+    Str = ["Füllfederhalter", "Gummiente", "Hans das Meerschweinchen", "Kaffeemühle", "Kopfkissen", "Spazierstock", 
+           "Strandtuch", "Taschenmesser", "Taschentuch", "Taschenuhr", "Wintermantel", "Zahnbürste"],
+    L = [Fu, Gu, Ha, Ka, Ko, Sp, St, Tm, Tt, Tu, Wi, Za], L :: 0..1, % L[I] = 1 <=> Karl-Friedrich nimmt Item I mit
+    sum(L) #= 7, % .. seine _sieben_ Sachen packen.
+    % »Wenn ich mit meinem dicken _Wintermantel losziehe, dann muss auch mein dazu passender _Spazierstock mit. 
+    Wi #= 1 #=> Sp #= 1,
+    % Andererseits: Wenn ich sowohl mein _Taschen_messer als auch meinen _Spazierstock mitnehme, werden mich die Leute für dumm halten, 
+    % denn mit einem _Taschen_messer kann man sich jederzeit einen neuen Spazierstock schnitzen, und ich möchte nicht für dumm gehalten werden.
+    Tm + Sp #< 2,
+    % Wenn ich meinen _Füllfederhalter dabeihabe, werde ich mir früher oder später die Finger mit Tinte beschmieren, und dann brauche ich mein besticktes _Taschen_tuch, um sie wieder zu säubern. 
+    Fu #= 1 #=> Tt #= 1,
+    % Und wenn ich meine elektrische _Kaffeemühle mitnehme, brauche ich auch meine gelbe _Zahnbürste, um mir nach dem Kaffeetrinken die Zähne zu putzen.
+    Ka #= 1 #=> Za #= 1,
+    % Ich kann unmöglich meine gelbe _Zahnbürste, meine _Gummiente und meine goldene _Taschen_uhr gleichzeitig mit mir herumtragen; so viel Gelb auf einmal bringt Unglück. 
+    Za + Gu + Tu #< 3,
+    % Aber einen Freund brauche ich unterwegs. Wenn meine _Gummiente nicht mitkommen kann, dann muss wenigstens _Hans, das Meerschweinchen, mit.
+    Gu #= 0 #=> Ha #= 1,
+    % Wenn ich mein _Kopfkissen zum Schlafen mitnehme, brauche ich auch meine goldene _Taschen_uhr zum Aufwachen. 
+    Ko #= 1 #=> Tu #= 1,
+    % Andererseits: Meine _Gummiente und mein _Füllfederhalter passen nicht gemeinsam unters _Kopfkissen, aber dort müssen sie hin, wenn ich schlafe, denn beide sind wertvoll. 
+    % Also macht es keinen Sinn, das _Kopfkissen mitzunehmen, wenn ich beide dabeihabe.
+    Gu + Fu #= 2 #=> Ko #= 0,
+    % Was stecke ich denn in meine Hosentasche? Mindestens meine gelbe _Zahnbürste oder mein _Taschen_messer, damit sich die Tasche voll anfühlt. 
+    Za + Tm #> 0,
+    % Andererseits: Die _Zahnbürste zusammen mit meinem bestickten _Taschen_tuch in die Hosentasche zu stecken wäre unhygienisch, 
+    % und woanders als in der Hosentasche möchte ich weder die _Zahnbürste noch das _Taschen_tuch transportieren. Beides zusammen kann ich also nicht mitnehmen.
+    Za + Tt #< 2,
+    % Wenn ich _Hans, das Meerschweinchen, mitnehme, darf ich auf keinen Fall mein großes _Strandtuch mitnehmen; Hans könnte darin ersticken.« 
+    Ha + St #< 2,
+    solve(L),
+    foreach(I in 1..12, L[I] = 1) printf("%s, ", Str[I]) end,
+    nl, fail. /* 
+Hans das Meerschweinchen, Kaffeemühle, Kopfkissen, Spazierstock, Taschenuhr, Wintermantel, Zahnbürste
+CPU time 0.0 seconds, no more solutions */
+/* Auflösung aus Nr. 7:
+1. Kurt, Martin, Johann und Lars haben die Wahrheit gesagt, alle anderen haben gelogen
+2. 6760518 : 933 = 7246 */

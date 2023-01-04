@@ -1,0 +1,72 @@
+/* Zeit Logelei Nr. 2003/34 https://www.zeit.de/2003/34/Spielen_2fLogelei_34
+Herr Zahlmüller vom Bezirksamt ist arg verwirrt. Seine Akten über das Haus Gartenstraße Nummer 2 sind sehr lückenhaft. 
+Zwar weiü er, dass die vier Familien Ickel, Appen, Otto und Erben darin wohnen und jede aus Vater, Mutter und Tochter besteht. 
+Doch wie diese zwölf Leute mit Vornamen heißen, ist nicht amtskundig. ..
+Wer wie mit Vor- und Zunamen heißt, steht nicht in den Akten. Wer heißt wie? */
+import util, cp, alphametik.
+main1 ?=>   %  1         2            3        4
+    Nstr = ["Appen",  "Erben",     "Ickel", "Otto"], A=1, E=2, I=3, O=4,
+    % Bekannt ist, dass die vier Tüchter Astrid, Inge, Elke und Ortrud heißen ..
+    Tstr = ["Astrid", "Elke",      "Inge",  "Ortrud"],
+    % .. und sich die übrigen Personen in die Vornamen Axel, Erich, Ingo, Oscar, Anna, Elisabeth, Irma und Olga teilen. 
+    Mstr = ["Anna",   "Elisabeth", "Irma",  "Olga"], 
+    Vstr = ["Axel",   "Erich",     "Ingo",  "Oscar"],
+    N2V = new_array(3,4), N2V :: 1..4, % N2V[P,F] = Vorname der Person P in der F.ten Familie 
+    V2N = new_array(3,4),              % F=A: Appen, F=E: Eppen, usw.:
+    Em=1, Ef=2, To=3, % Person P = Ehemann, Ehefrau, Tochter
+    foreach(P in 1..3) assignment(N2V[P], V2N[P]) end,
+    W = new_array(4,2), W :: 0..1, % W[F,I] = 1 <=> die I-te Aussage von Familie F ist wahr
+    FAnna #= V2N[Ef,A], element(FAnna, N2V[Em], AnnasMann), element(FAnna, N2V[To], AnnasTochter), 
+    % Zahlmüller erkundigt sich im Haus. Herr Appen macht diese beiden Aussagen: 
+    % "In der Familie, in der die Ehefrau Anna heißt, beginnen der Nach- und die Vornamen jeweils mit einem anderen Buchstaben.":
+    W[A,1] #= (A #!= FAnna #/\ AnnasMann #!= FAnna #/\ AnnasTochter #!= FAnna), 
+    W[A,2] #= (N2V[Em,I] #= O), % Und: "Herr Ickel heißt Oscar."
+    % Herr Erben gibt die Auskünfte:  
+    W[E,1] #= (OscarsFrau #!= I),        element(V2N[Em,O], N2V[Ef], OscarsFrau),        % "Oscars Frau heißt nicht Irma.
+    W[E,2] #= (ElisabethsTochter #!= E), element(V2N[Ef,E], N2V[To], ElisabethsTochter), % Elisabeths Tochter heißt nicht Elke."
+    AOtto #= [N2V[Em,O], N2V[Ef,O], N2V[To,O]], % die Anfangsbuchstabennummern der Familie Otto
+    % Herr Ickel sagt:
+    W[I,1] #= (N2V[Em,A] #= A), % "Herr Appen heißt Axel."
+    % "In Familie Otto hat jeder Vorname einen anderen, von O verschiedenen Anfangsbuchstaben.":
+    W[I,2] #= (AOtto :: 1..3 #/\ N2V[Em,O] #!= N2V[Ef,O] #/\ N2V[Em,O] #!= N2V[To,O] #/\ N2V[Ef,O] #!= N2V[To,O] ), 
+    % Herr Otto gibt diese beiden Sätze zu Protokoll:  
+    W[O,1] #= (N2V[Em,I] #= I #/\ N2V[Ef,I] #= I #/\ N2V[To,I] #= I), % "In Familie Ickel haben alle Vornamen den Anfangsbuchstaben I."
+    W[O,2] #= (N2V[Em,A] #!= A), % "Herr Appen heißt nicht Axel."
+    % Zahlmüller ist immer noch arg verwirrt. Glücklicherweise trifft er im Flur den Hausmeister, der ihm dies verrät: 
+    % "Die Leute hier mügen Amtspersonen nicht. Darum haben sie sich darauf geeinigt, dass jeder Mann nur zwei Auskünfte gibt.
+    foreach(F in 1..4)
+        L #= [F, N2V[Em,F], N2V[Ef,F], N2V[To,F]], % das sind die vier Anfangsbuchstaben
+        nvalue(Cnt, L), 
+        % Die Auskünfte sind dann und nur dann beide wahr, wenn in seiner Familie die Anfangsbuchstaben des Nachnamens und der drei Vornamen ,,
+        Cnt #= 4     #=> W[F,1] + W[F,2] #= 2, % .. allesamt voneinander verschieden sind:
+        % Beginnen jedoch Nach- und Vornamen in einer Familie mit demselben Buchstaben, dann – und nur dann – ..
+        Cnt #= 1     #=> W[F,1] + W[F,2] #= 0, % .. sind beide Aussagen des Familienvaters falsch:
+        Cnt :: [2,3] #=> W[F,1] + W[F,2] #= 1, % sonst ist eine Aussage wahr, die andere falsch
+        % In keiner Familie beginnen genau drei der vier Namen mit demselben Buchstaben.":
+        foreach(Y in 1..4) sum([(X #= Y) : X in L]) #!= 3 end
+    end,
+    solve([FAnna, OscarsFrau, ElisabethsTochter] ++ vars(N2V) ++ vars(V2N) ++ vars(W)),
+    println(W),
+    foreach(F in 1..4) 
+        printf("%s, %s und %s %s.%n", Vstr[N2V[Em,F]], Mstr[N2V[Ef,F]], Tstr[N2V[To,F]], Nstr[F]) 
+    end, nl, fail. /* 
+Axel, Anna und Astrid Appen.
+Erich, Irma und Inge Erben.
+Ingo, Elisabeth und Elke Ickel.
+Oscar, Olga und Ortrud Otto.    -> korrekt laut ZEIT!
+W = {{0,0},{1,0},{1,0},{0,0}}
+W[A,1] + W[A,2] = 0: Appen: "Bei Anna Vor- != Nachname" f, "Herr Ickel heißt Oscar." ist f
+W[E,1] + W[E,2] = 1: Erben: "Oscars Frau heißt nicht Irma" w, "Elisabeths Tochter heißt nicht Elke." f
+W[I,1] + W[I,2] = 1: Ickel: "Herr Appen heißt Axel." w "In Familie Otto alle Vornamenanfangsbuchstaben verschieden, != O f
+W[O,1] + W[O,2] = 0: Otto: "In Familie Ickel haben alle Vornamen den Anfangsbuchstaben I." f  "Herr Appen heißt nicht Axel." f 
+
+Axel, Elisabeth und Elke Appen.
+Ingo, Anna und Inge Erben.
+Erich, Irma und Astrid Ickel.
+Oscar, Olga und Ortrud Otto.    -> sieht auch gut aus!
+W = {{1,0},{1,0},{1,0},{0,0}}
+W[A,1] + W[A,2] = 1: Appen: "Bei Anna Vor- != Nachname" w, "Herr Ickel heißt Oscar." ist f
+W[E,1] + W[E,2] = 1: Erben: "Oscars Frau heißt nicht Irma" w, "Elisabeths Tochter heißt nicht Elke." f
+W[I,1] + W[I,2] = 1: Ickel: "Herr Appen heißt Axel." w "In Familie Otto alle Vornamenanfangsbuchstaben verschieden, != O f
+W[O,1] + W[O,2] = 0: Otto: "In Familie Ickel haben alle Vornamen den Anfangsbuchstaben I." f  "Herr Appen heißt nicht Axel." f 
+no more solutions */

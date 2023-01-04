@@ -1,0 +1,41 @@
+/* Zeit Logelei Nr. 2004/29 (Achtung 2004/28 ist ein Kreuzzahlrätsel!)
+https://www.zeit.de/2004/29/Spielen_2fLogelei_29/komplettansicht
+1. Helga und Klaus sind mit dem Auto nach Mörwisch unterwegs, um Helgas Tante Friedoline zu besuchen. Punkt 17.00 Uhr klingelt das Handy von Klaus. 
+Es ist Tante Friedoline, die nachfragt, wann die beiden wohl ankommen werden. "Oh, ich weiß es nicht", antwortet Klaus, "wir sind auf der Autobahn im Stop-and-go-Verkehr. */
+import cp.
+main1 => 
+    % S1 = Straßenkilometer um 17 Uhr, S2 = dito um 18 Uhr
+    Km = [S1, Ressow, S2, Moerwisch], Km :: 1..100, % strict_increasing(Km)
+    % Aber auf dem Straßenschild hier steht, dass Mörwisch nur noch eineinhalb mal so weit weg ist wie Reessow." 
+    3 * (Ressow - S1) #= 2 * (Moerwisch - S1), 
+    % Eine Stunde später, um Punkt 18.00 Uhr, die beiden sind mittlerweile 12 Kilometer weiter gefahren, ruft Tante Friedoline erneut an. 
+    V = 12, S1 + 12 #= S2,  
+    /* "Für welche Uhrzeit soll ich denn das Abendessen richten?", will die Tante wissen. "Oh, keine Ahnung, das Radio berichtet, dass der Stop-and-go-Verkehr bis 
+    weit über Mörwisch hinaus reicht, und wir werden wohl den Rest des Weges in der gleichen Geschwindigkeit wie bisher zurücklegen. 
+    Aber jetzt sind wir schon zwei Kilometer hinter Reessow." */
+    2 + Ressow #= S2, 
+    /* "Ah, dann weiß ich ja, für wann ich das Abendessen richten muss!", erwidert die Tante, die schließlich weiß, wie weit es zwischen Mörwisch und Reessow ist. 
+    Aber Sie, lieber Leser, der Sie diese Information nicht besitzen, können Sie auch herausfinden, wann die beiden in Mörwisch ankommen? */
+    solve(Km),
+    RestKm = Moerwisch - S2, RestStd = RestKm / V, RestMin = round(60 * RestStd), 
+    printf("Helga und Klaus haben noch %d Kilometer zu fahren und werden um 18.%d Uhr in Mörwisch ankommen.%n", RestKm, RestMin). /*
+Helga und Klaus haben noch 3 Kilometer zu fahren und werden um 18.15 Uhr in Mörwisch ankommen.
+korrekt */
+
+/* 2. Professor Knusi wertet seinen Besuch bei den Örfeln aus, von denen bekannt ist, dass sie entweder immer die Wahrheit sagen oder immer lügen. 
+Er hat jeden der Örfel gefragt, wer denn jetzt die Wahrheit sagt, und Folgendes erhalten: .. Und wer lügt jetzt? */
+main2 =>
+    Oerfel = [B, G, N, S, T, W], Oerfel :: 0..1, 
+    W #= (B #^ #~ N),           % Wörfel: Börfel sagt die Wahrheit, oder Nörfel lügt, aber nicht beides ist der Fall.
+    B #= (K #\/ #~ G #\/ S) ,   % Börfel: Körfel sagt die Wahrheit, oder Görfel lügt, oder Sörfel sagt die Wahrheit.
+    K #= (G #\/ #~ W #\/ B),    % Körfel: Görfel sagt die Wahrheit, oder Wörfel lügt, oder Börfel sagt die Wahrheit.
+    S #= (#~ B #/\ G),          % Sörfel: Börfel lügt, und Görfel sagt die Wahrheit.
+    G #= (T #^ #~ N),           % Görfel: Törfel sagt die Wahrheit, oder Nörfel lügt, aber nicht beides ist der Fall.
+    N #= (B #\/ #~ W #\/ #~ T), % Nörfel: Börfel sagt die Wahrheit, oder Wörfel lügt, oder Törfel lügt. 
+    T #= (#~ B #/\ #~ G),       % Törfel: Börfel lügt, und Görfel lügt.
+    solve(Oerfel),
+    Chr = "BGNSTW",
+    foreach(I in 1..6, Oerfel[I] = 0) printf("%cörfel ", Chr[I]) end,
+    println("lügen, die anderen nicht."). /*
+Görfel Sörfel Törfel lügen, die anderen nicht
+korrekt */
