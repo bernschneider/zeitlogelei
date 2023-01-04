@@ -1,0 +1,34 @@
+% NEUE Logeleien 40
+% Ausflüge
+
+import cp, util.
+
+
+go =>
+	%  1  2	VORN
+	% 11 12	HINTEN
+	% 20	ZUHAUSE
+	Va=1, Mu=2, Al=3, Ma=4, Ge=5, Name = ["Va", "Mu", "Al", "Ma", "Ge"],
+	Sitze = new_array(5,5), % (Sonntag,Person) -> Sitznummer  
+	Vars = array_matrix_to_list(Sitze), Vars :: [1,2,11,12,20], 
+	foreach(Ausflug in Sitze)
+		all_different(Ausflug)
+	end,
+	foreach(P in 1..5)
+		sum([ (Sitze[S,P] #= 20): S in 1..5]) #= 1
+	end,
+	foreach(P in 1..5)
+	    Neib = [ P1 * (abs(Sitze[S,P] - Sitze[S,P1]) #= 1) : S in 1..5, P1 in 1..5, P1 != P ],
+		all_different_except_0(Neib)
+	end,
+	solve(Vars),
+	foreach(S in 1..5, P in 1..5)
+		printf("%2i ",Sitze[S,P]),
+		if P = 5 then nl end
+	end.
+/*
+ */
+
+
+
+

@@ -1,0 +1,24 @@
+/* Neue Logeleien 78 Schul-AGs */
+import cp. 
+
+main => 
+    L = find_all(Result, cs(Result)),
+    println(result=L).
+/*
+[7,9,8,5,6,4,3]
+[8,9,7,4,6,5,3]
+result = [9,9] korrekt (in beiden Lösungen ist die Antwort 9 */
+
+cs(Result) =>
+    % Der Lehrer beschreibt diese 7 disjunkten Gruppen:
+    Vars = [C, K, S, CK, CS, KS, CKS], 
+    Vars :: 3..21, % die kleinste Gruppe umfasst 3 Schüler
+    all_different(Vars),
+    % In jeder AG sind 21 Schüler:
+    C + CK + CS + CKS #= 21,
+    K + CK + KS + CKS #= 21,
+    S + CS + KS + CKS #= 21,
+    max(Vars) #= K, % K ist die größte Gruppe
+    Result #= CS + CKS,
+    solve([Result] ++ Vars),
+    println(Vars).

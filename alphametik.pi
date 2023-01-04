@@ -1,0 +1,77 @@
+/* Zeit Logelei Nr. 51/2022 Alphametik mit mehrdeutigen Buchstaben */
+module alphametik.
+import cp, util.
+add(L) => % das letzte Element von L ist die Summe der vorherigen Elemente
+   Letter = keys(new_set(flatten(L))), % verwendete Buchstaben
+   Digit = new_list(len(Letter)), Digit :: 0..9, % eine Ziffer je Buchstabe
+   all_different(Digit),
+   Zeilen = len(L) - 1, % Anzahl der Summanden, im Beispiel = 2
+   Num = new_array(len(L)), % numerische Repräsentation der Elemente von L
+   foreach(I in 1..len(L))
+       S = [Digit[find_first_of(Letter, C)] : C in L[I]], % Convert Letter C -> Digit
+       to_num(S, Num[I]), S[1] #!= 0
+   end,
+   sum([Num[I] : I in 1..Zeilen]) #= Num[len(L)],
+   solve(Digit ++ Num),
+   foreach(I in 1..Zeilen) printf("%6d%n", Num[I]) end,
+   printf("------%n"),
+   printf("%6d%n%n", Num[len(L)]).
+
+mult(L) => % L[1] * L[2] = L[len(L)]; dazwischen stehen ggfs. Teilrechnungen; "" für ausgelassene Zeilem
+   Letter = keys(new_set(flatten(L))), % verwendete Buchstaben
+   Digit = new_list(len(Letter)), Digit :: 0..9, % eine Ziffer je Buchstabe
+   all_different(Digit),
+   Num = new_array(len(L)), Num :: 0..999999999, % numerische Repräsentation der Elemente von L
+   foreach(I in 1..len(L))
+       if L[I] = "" then Num[I] #= 0
+                    else
+                         S = [Digit[find_first_of(Letter, C)] : C in L[I]], % Convert Letter C -> Digit
+                         to_num(S, Num[I]),
+                         if len(S) > 1 then S[1] #!= 0 end
+       end 
+   end,
+   Num[1] * Num[2] #= Num[len(L)], % Hauptgleichung (im Beispiel DEZI * WERT = PARKZEIT)
+   L1 = L[1],
+   Zeilen = len(L[1]), % Anzahl der Teilrechnungen
+   if len(L) > 3 then % es gibt Zwischenrechnungen
+        foreach(I in 1..Zeilen, L[I] != "") % zeilenweise Teilrechnung:
+            Digit[find_first_of(Letter, L1[I])] * Num[2] #= Num[2+I]
+        end
+   end,
+   solve(Digit ++ Num),
+   printf("%d * %d%n", Num[1], Num[2]),
+   printf("-----------%n"),
+   if len(L) > 3 then 
+       LenZeile = max([len(L[2+I]) : I in 1..Zeilen]), % maximale Länge der Zeilen, im Beispiel = 5
+       foreach(I in 1..Zeilen, L[2+I] != "")
+            foreach(_ in 2..I+LenZeile-len(L[2+I])) print(' ') end, % Indent
+            println(Num[2+I])
+       end,
+       printf("-----------%n")
+   end,
+   printf("%d%n%n", Num[len(L)]).
+
+add(Ops, L) => % Ops is a list of operators corresponding to the elements of L ('+', '-', '=')
+   Letter = keys(new_set(flatten(L))), % verwendete Buchstaben
+   Digit = new_list(len(Letter)), Digit :: 0..9, % eine Ziffer je Buchstabe
+   all_different(Digit),
+   Zeilen = len(L),
+   Num = new_array(len(L)), % numerische Repräsentation der Elemente von L
+   foreach(I in 1..len(L))
+       S = [Digit[find_first_of(Letter, C)] : C in L[I]], % Convert Letter C -> Digit
+       to_num(S, Num[I]), S[1] #!= 0
+   end,
+   Fs = [cond(Op = '-', -1, 1) : Op in Ops],
+   I0 = 1, % Index der letzten Zwischensumme
+   foreach(I in 1..Zeilen, Ops[I] = '=')
+       sum([Fs[J] * Num[J] : J in I0..I-1]) #= Num[I], % addiere bzw. subtrahiere die Zeilen beginnend mit der letzten Zwischensumme
+       I0 := I
+   end,
+   solve(Digit ++ Num),
+   foreach(I in 1..Zeilen) 
+       if Ops[I] = '=' then printf("------%n%6d%n", Num[I]) else printf("%6d%n", Fs[I] * Num[I]) end
+   end.
+
+to_num(List, Num) => 
+        Len = length(List),
+        Num #= sum([List[I]*10**(Len-I) : I in 1..Len]).

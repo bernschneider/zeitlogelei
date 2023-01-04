@@ -1,0 +1,64 @@
+% Modul für Zeit Logelei 2010/28
+% Erzeuge alle erlaubten Zimmer durch spiegeln und transponieren aus den Basismustern
+module matrix.
+import util.
+rotate(Q) = Res => % rechts drehen um 90 Grad
+    NZ = len(Q[1]), NS = len(Q), Res = new_array(NZ,NS),
+    foreach(Z in 1..NZ, S in 1..NS) Res[Z,S] = Q[S,NZ+1-Z] end. 
+
+reflecth(Q) = Res => % spiegeln horizontal
+    NZ = len(Q), NS = len(Q[1]), Res = new_array(NZ,NS),
+    foreach(Z in 1..NZ, S in 1..NS) Res[Z,S] = Q[NZ+1-Z,S] end.
+
+reflectv(Q) = Res =>  % spiegeln vertikal
+    NZ = len(Q), NS = len(Q[1]), Res = new_array(NZ,NS),
+    foreach(Z in 1..NZ, S in 1..NS)  Res[Z,S] = Q[Z,NS+1-S] end. 
+
+matprint(Q) =>
+    NZ = len(Q), NS = len(Q[1]), 
+    foreach(Z in 1..NZ, S in 1..NS)
+        printf("%d|", Q[Z,S]),
+        if S=NS then nl end
+    end, nl.
+
+generate(Klein, Gross, GrossV, Bad_kl, Bad_gr) =>
+    Klein1 = {{1,1,1,1,1},
+              {1,1,1,1,1},
+              {1,1,1,0,0}},
+    Klein = variants(Klein1),
+    Gross1 = {{1,1,1,1,1},
+              {1,1,1,1,1},
+              {1,1,1,1,1},
+              {1,1,1,1,1}},
+    Gross = [Gross1, transpose(Gross1)],
+    Gross2 = {{0,0,1,1,1},
+              {0,0,1,1,1},
+              {1,1,1,1,1},
+              {1,1,1,1,1},
+              {1,1,1,1,1}},
+    GrossV = variantsGV(Gross2),
+    Bad_kl = [{{1,1},
+               {1,1}}],
+    Bad_gr1 = {{1,1,1},
+               {1,1,1}},
+    Bad_gr = [Bad_gr1, transpose(Bad_gr1)].  
+    % Res = [Klein, Gross, GrossV, Bad_kl, Bad_gr]. %,
+    % foreach(Kat in Res, Pi in Kat) matprint(Pi) end.
+
+variants(Q) = Res1 =>
+    Res = [Q],
+    Res := [reflecth(head(Res))|Res],
+    Res := [reflectv(head(Res))|Res],
+    Res := [reflecth(head(Res))|Res],
+    Res := [transpose(Res[4])|Res],
+    Res := [reflecth(head(Res))|Res],
+    Res := [reflectv(head(Res))|Res],
+    Res := [reflecth(head(Res))|Res],
+    Res1 = reverse(Res).
+
+variantsGV(Q) = Res1 =>
+    Res = [Q],
+    Res := [reflecth(head(Res))|Res],
+    Res := [reflectv(head(Res))|Res],
+    Res := [reflecth(head(Res))|Res],
+    Res1 = reverse(Res).

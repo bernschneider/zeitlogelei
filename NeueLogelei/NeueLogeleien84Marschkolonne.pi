@@ -1,0 +1,11 @@
+/* Neue Logeleien 84 Marschkolonne */
+import cp. 
+
+main =>
+    Max = 497, N :: 1..Max,
+    N mod 3 #= 1,
+    N mod 5 #= 2,
+    N mod 7 #= 3,
+    N mod 11 #= 4,
+    solve_all([N]) = Sols,
+    println(Sols). % [[367]] korrekt

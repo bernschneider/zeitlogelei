@@ -1,0 +1,38 @@
+/* Neue Logeleien 77 Schachbrett Frage 3: 21x I3 + 1x 1 */
+import util.
+import sat. 
+
+main =>
+   N = 8, Gmax = 21,
+   F = new_array(N,N), F :: 0..Gmax, % markiert das I3-Tetromino (F>0) bzw. das 1x1-Feld (F=0)
+   Fvars = vars(F),
+   count(0, Fvars, 1), 
+   foreach(G in 1..Gmax) count(G, Fvars, 3) end,
+   % Berechne die Zahl der Nachbarn, keiner hat einen diagonalen Nachbarn
+   ONb = new_array(N,N), ONb :: 0..2, % Zahl der orthogonalen Nachbarn
+   foreach(Z in 1..N, S in 1..N)
+   		Fb #= F[Z,S], Fb #= 0 #<=> ONb[Z,S] #= 0,
+   		ONb[Z,S] #= sum([(F[Z1,S1] #= Fb): {Z1,S1} in [{Z-1,S},{Z,S-1},{Z,S+1},{Z+1,S}], Z1 > 0, Z1 =< N, S1 > 0, S1 =< N]),
+   		0        #= sum([(F[Z1,S1] #= Fb): {Z1,S1} in [{Z-1,S-1},{Z-1,S+1},{Z+1,S-1},{Z+1,S+1}], Z1 > 0, Z1 =< N, S1 > 0, S1 =< N])
+   end,
+   % I3 hat in Summe 4 orthogonale und 0 diagonale Nachbarn:
+   foreach(G in 1..Gmax)
+   		sum([ONb[Z,S]*(F[Z,S]#=G) : Z in 1..N, S in 1..N]) #= 4
+   end,
+   MVars = array_matrix_to_list(F) ++ array_matrix_to_list(ONb), 
+   solve(MVars),
+   foreach(Z in 1..N) 
+      foreach(S in 1..N) 
+		   if F[Z,S]=0 then print("  |") else printf("%2d|",F[Z,S]) end
+	  end, nl
+   end.
+/*
+ 7|17|17|17| 9| 3| 3| 3|
+ 7| 5| 5| 5| 9|10|10|10|
+ 7| 6| 6| 6| 9|  |13| 4|
+16| 8|15|12|12|12|13| 4|
+16| 8|15|21|21|21|13| 4|
+16| 8|15|11|14|14|14|19|
+ 1| 1| 1|11|18|18|18|19|
+ 2| 2| 2|11|20|20|20|19|
+CPU time 48.021 seconds korrekt */

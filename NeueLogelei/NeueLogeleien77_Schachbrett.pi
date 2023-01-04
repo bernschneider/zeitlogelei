@@ -1,0 +1,33 @@
+/* Neue Logeleien 77 Schachbrett Frage 2: 15x L + 1x I3 */
+import util.
+import sat. 
+
+main =>
+   N = 8, Gmax = 15,
+   F = new_array(N,N), F :: 0..Gmax, % markiert das L- (F>0) bzw. O-Tetromino (F=0)
+   foreach(G in 0..Gmax)
+   		sum([(F[Z,S]#= G) : Z in 1..N, S in 1..N]) #= 4
+   end,
+   % Berechne die Zahl der Nachbarn: 
+   ONb = new_array(N,N), ONb :: 1..2, % Zahl der orthogonalen Nachbarn
+   DNb = new_array(N,N), DNb :: 0..1, % hat diagonalen Nachbar
+   foreach(Z in 1..N, S in 1..N)
+   		Fb #= F[Z,S], 
+   		ONb[Z,S] #= sum([(F[Z1,S1] #= Fb): {Z1,S1} in [{Z-1,S},{Z,S-1},{Z,S+1},{Z+1,S}], Z1 > 0, Z1 =< N, S1 > 0, S1 =< N]),
+   		DNb[Z,S] #= sum([(F[Z1,S1] #= Fb): {Z1,S1} in [{Z-1,S-1},{Z-1,S+1},{Z+1,S-1},{Z+1,S+1}], Z1 > 0, Z1 =< N, S1 > 0, S1 =< N])
+   end,
+   % L hat in Summe 6 orthogonale und 2 diagonale Nachbarn:
+   foreach(G in 1..Gmax)
+   		sum([ONb[Z,S]*(F[Z,S]#=G) : Z in 1..N, S in 1..N]) #= 6,
+   		sum([DNb[Z,S]*(F[Z,S]#=G) : Z in 1..N, S in 1..N]) #= 2
+   end,
+   % O hat 8 orthogonale Nachbarn:
+   sum([ONb[Z,S]*(F[Z,S]#=0) : Z in 1..N, S in 1..N]) #= 8,
+   MVars = array_matrix_to_list(F) ++ array_matrix_to_list(ONb) ++ array_matrix_to_list(DNb), 
+   solve(MVars),
+   foreach(Z in 1..N) 
+      foreach(S in 1..N) 
+		   if F[Z,S]=0 then print("  |") else printf("%2d|",F[Z,S]) end
+	  end, nl
+   end.
+/* no solution -> korrekt */

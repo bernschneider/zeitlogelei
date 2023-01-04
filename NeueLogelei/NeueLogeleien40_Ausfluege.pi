@@ -1,0 +1,30 @@
+% NEUE Logeleien 40
+% Ausflüge
+
+import cp.
+
+
+go =>
+	% 1 2	VORN
+	% 3 4	HINTEN
+	% 5		ZUHAUSE
+	V=1, M=2, A=3, M=4, G=5, Letter = "VMAMG",
+	Sitze = new_array(5,5), Sitze :: 1..5, 
+	foreach(Ausflug in Sitze)
+		all_different(Ausflug)
+	end,
+	all_different([Sitze[S,5] : S in 1..5]), % jeder ist mal zuhause geblieben
+	foreach(P in 1..5)
+		all_different_except_0([ Sitze[S,N] * (Sitze[S,Platz] #= P) : S in 1..5, (Platz,N) in [(1,2),(2,1),(3,4),(4,3)] ])
+	end,
+	solve(Sitze),
+	foreach(S in 1..5, Platz in 1..5)
+		printf("%c ",Letter[Sitze[S,Platz]]),
+		if Platz = 5 then nl end
+	end.
+/*
+ */
+
+
+
+

@@ -1,0 +1,19 @@
+/* Neue Logeleien 78 Schul-AGs */
+import cp. 
+
+main =>
+    % Der Lehrer beschreibt diese 7 disjunkten Gruppen:
+    Vars = [C, K, S, CK, CS, KS, CKS], 
+    Vars :: 3..21, % die kleinste Gruppe umfasst 3 Schüler
+    all_different(Vars),
+    % In jeder AG sind 21 Schüler:
+    C + CK + CS + CKS #= 21,
+    K + CK + KS + CKS #= 21,
+    S + CS + KS + CKS #= 21,
+    max(Vars) #= K, % K ist die größte Gruppe
+    solve_all([Vars]) = Sols, println(Sols),
+    % [[[7,9,8,5,6,4,3]],[[8,9,7,4,6,5,3]]] 
+    % CS und CKS sind in beiden Lösungen gleich, nämlich 6 bzw. 3!
+    solve(Vars),
+    printf("%d der C-Teilnehmer nehmen auch am S-Kurs teil", CS + CKS), % 9 = korrekt
+    printf("By the way: Die Klasse hat %d Schüler.", sum(Vars)).

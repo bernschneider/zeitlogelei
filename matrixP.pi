@@ -1,0 +1,62 @@
+% Modul für Pentomino.pi
+% Erzeuge Pentominos durch Drehen aus den Basismustern.
+% Achtung: Es fehlen die gespiegelten Varianten!
+% Wenn diese benötigt werden, verwende matrixL aus dem logelei-Verzeichnis!
+module matrixP.
+import util.
+rotate(Q) = Res => % rechts drehen um 90 Grad
+    NZ = len(Q[1]), NS = len(Q), Res = new_array(NZ,NS),
+    foreach(Z in 1..NZ, S in 1..NS) Res[Z,S] = Q[S,NZ+1-Z] end. 
+
+matprint(Q) =>
+    NZ = len(Q), NS = len(Q[1]), 
+    foreach(Z in 1..NZ, S in 1..NS)
+        printf("%d|", Q[Z,S]),
+        if S=NS then nl end
+    end, nl.
+
+generate(Res) =>
+    P0 = [{{1,1,1,1}, % L
+           {1,0,0,0}},
+          {{0,1,1,1}, % N
+           {1,1,0,0}},
+          {{1,1,1,1}, % Y
+           {0,1,0,0}},
+          {{1,1,0}, % F
+           {0,1,1},
+           {0,1,0}},
+          {{1,1,1}, % T
+           {0,1,0},
+           {0,1,0}},
+          {{0,0,1}, % W
+           {0,1,1},
+           {1,1,0}},
+          {{1,1,1}, % P
+           {1,1,0}},
+          {{0,0,1}, % V
+           {0,0,1},
+           {1,1,1}},
+          {{1,0,1}, % U
+           {1,1,1}},
+          {{1,0,0}, % Z
+           {1,1,1},
+           {0,0,1}},
+          {{1,1,1,1,1}}, % I
+          {{0,1,0}, % X
+           {1,1,1},
+           {0,1,0}}],
+    Np = len(P0), P = [],
+    foreach(I in 1..Np)
+        VarI = [P0[I]],
+        foreach(_ in 1..3) VarI := [rotate(head(VarI))|VarI] end,
+        P := [VarI|P]
+    end,
+    Res = P.
+
+    /*main => 
+        generate(P),
+        foreach(VarI in P)
+            foreach(Q in VarI) matprint(Q) end,
+            println("---")
+        end.*/
+    % P[1] = X, dann kommen P[2] = I, P[3] = Z, U, V, P, W, T, F, Y, N, L

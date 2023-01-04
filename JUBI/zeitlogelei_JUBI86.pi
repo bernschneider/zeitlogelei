@@ -1,0 +1,36 @@
+/* Zeit Logelei JUBI p.86 unten */
+import cp.
+import util.
+
+go =>	
+	N = 4, Max = 50,
+	Kinder = new_list(N), Kinder :: 1..Max, % Alter der Kinder
+	increasing_strict(Kinder),
+	Fotos = new_list(6), Fotos :: 1..Max, % Foto gemacht vor ... Jahren
+	foreach(I in 2..5)
+		Fotos[I] #= Fotos[I-1] + 1
+	end, Fotos[6] #= 48,
+	Idx = new_array(6,2), Idx :: 1..N,   % Welche beiden Kinder?
+	foreach(F in 1..6)
+		I1 #= Idx[F,1], I2 #= Idx[F,2], I1 #!= I2,
+		element(I1, Kinder, K1), element(I2, Kinder, K2),
+		Delta #= Fotos[F], K1 #> Delta, K2 #> Delta,
+		(K1 - Delta) #= 2 * (K2 - Delta)
+	end,
+
+    solve(Kinder ++ Fotos ++ vars(Idx)),
+    printf("Kinder heute: %w%n", Kinder),
+    foreach(F in 1..6)
+    	printf("Vor %d Jahren: %w%n", Fotos[F], [Kinder[I]-Fotos[F] : I in 1..N])
+    end.
+    /*
+Kinder heute: [45,46,49,50]
+Vor 40 Jahren: [5,6,9,10]
+Vor 41 Jahren: [4,5,8,9]
+Vor 42 Jahren: [3,4,7,8]
+Vor 43 Jahren: [2,3,6,7]
+Vor 44 Jahren: [1,2,5,6]
+Vor 48 Jahren: [-3,-2,1,2]
+
+CPU time 0.15 seconds.
+	*/
